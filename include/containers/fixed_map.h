@@ -33,16 +33,16 @@
 
 /*! @class fixed_map draupnir-lib/include/containers/fixed_map.h
  *  @brief Compile-time associative container for key-to-type value mapping.
- *  @details Object of this type provides std::map / QMap -like interface for accesing values of specified type. Compared
+ *  @details Object of this type provides a std::map/QMap-like interface for accesing values of specified type. Compared
  *           to std::map / QMap amount of keys within fixed_map is specified during compile-time as an argument. Some details:
- *           - This class contains std::array of std::pair objects. Each of this std::pair objects has one key from the provided
- *             array and one object of the specified Value type.
- *           - This std::pair objects can be accessed by using std::array iterators exported via fixed_map::begin, fixed_map::cbegin
- *             fixed_map::end, fixed_map::cend methods.
- *           - To access objects of value_type being stored within this fixed_map a fixed_map::get method or opeartor[] can be
- *             used.
- *           - By default objects of value_type within this fixed_map are initialized in the follwing way: numbers as 0, pointers
- *             as nullptr and other types as their default constructor.
+ *           - The container holds an std::array of std::pair objects, each pair storing a key from the provided array
+ *             and a value object of the specified type.
+ *           - These pairs can be accessed via standard iterators exported through fixed_map::begin, ::cbegin,
+ *             ::end and ::cend.
+ *           - Values can be retrieved using fixed_map::get or the operator[].
+ *           - By default value_type objects are initialized as follows: numbers to 0, pointers to nullptr and other types
+ *             via their default constructor.
+ *
  *  @tparam keys_array - static constexpr С-style array of the key values.
  *  @tparam value_type - type to store.
  * @note The container size and key set are defined at compile-time. */
@@ -140,15 +140,15 @@ public:
         }
     }
 
-    /*! @brief Returns reference to the Value object associated with specified key.
-     * @note If the provided key is not avaliable within the keys_array provided as template argument - an UB will happen. */
+    /*! @brief Returns reference to the value_type object associated with the given key.
+    *  @note If the key is not available in the keys_array template argument, undefined behaviour will occur. */
     [[nodiscard]] constexpr value_type& get(key_type key) { return _get_impl<0>(key); }
 
-    /*! @brief Returns reference to the Value object associated with specified key.
-     * @note If the provided key is not avaliable within the keys_array provided as template argument - an UB will happen. */
+    /*! @brief Returns reference to the value_type object associated with the given key.
+         *  @note If the key is not available in the keys_array template argument, undefined behaviour will occur. */
     [[nodiscard]] constexpr value_type& operator[](key_type key) { return _get_impl<0>(key); }
 
-    /*! @brief Returns reference to the Value obeject for a specific index. */
+     /*! @brief Returns reference to the value_type object for a specific index. */
     [[nodiscard]] constexpr value_type& value_by_index(int index) { return m_data[index].second; }
 
     /*! @brief Clears the fixed_map container. Values associated with all keys are reset to default ones. This means: numbers
@@ -156,9 +156,9 @@ public:
     void clear() { _clear_impl<0>(); }
 
 protected:
-    /*! @brief Values within this fixed_map object are stored within the std::array of std::pair objects. Each of std::pair
-     *         objects is storing obe of the keys provided (as const key_type) and corresponding value_type object. Objects
-     *         of value_type can be accessed / modified by methods like fixed_map::get and fixed_map::for_each_value. */
+    /*! @brief Values are stored in an std::array of std::pair objects. Each pair holds one of the provided keys (as const
+     *         key_type) and its associated value_type object. Objects of value_type can be accessed / modified by methods
+     *         like fixed_map::get and fixed_map::for_each_value. */
     std::array<std::pair<const key_type,value_type>, keys_size> m_data;
 
 private:

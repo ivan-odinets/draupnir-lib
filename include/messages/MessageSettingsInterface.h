@@ -33,13 +33,13 @@
 #include <QString>
 
 /*! @class MessageSettingsInterface draupnir-lib/include/messages/MessageSettingsInterface.h
- *  @brief This is an interface class for a settings objects used within MessageSystem.
- *  @details When enabled - MessageSystem-related objects can use this interface to access the setting of the application.
+ *  @brief Interface for settings objects used within the MessageSystem.
+ *  @details When enabled, MessageSystem-related components use this interface to access the application's settings.
  *           To implement this interface one must implement following methods:
  *           - bool MessageSettingsInterface::contains(const QString& key);
  *           - QVariant value(const QString& key, const QVariant& defaultValue = QVariant{});
  *           - void setValue(const QString& key, const QVariant& value);
- *           This methods should work the same as analogues within QSettings / AppSettings.
+ *           These methods should work the same as analogues within QSettings / AppSettings.
  *
  *           In addition for convenient usage within MessageSystem-related objects this interface has a few helper methods.
  *
@@ -122,7 +122,7 @@ public:
                    "Provided pointer is nullptr.");
     }
 
-    /*! @brief Trivial virtual destrcutor. */
+    /*! @brief Trivial virtual destructor. */
     ~MessageSettingsAdapter() final = default;
 
     /*! @brief Checks if a value is existing for a provided key within instance of Settings. */

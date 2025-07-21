@@ -50,7 +50,7 @@ public:
     /*! @brief Defines configuration sections (used as key prefixes). Global: keys without a specific section. Core, Network,
      *         Files, GUI: map to corresponding QSettings sections/prefixes. */
     enum Section {
-        Global,    /*!< @brief Tis corresponds to the default section of the config file: everything which is not fitting
+        Global,    /*!< @brief This corresponds to the default section of the config file: everything which is not fitting
                                to the categories below. */
         Core,      /*!< @brief This corresponds to the [core] section of config file. */        
         Network,   /*!< @brief This corresponds to the [network] section of config file. */

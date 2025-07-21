@@ -60,7 +60,7 @@ public:
     explicit MessageListModel(QObject *parent = nullptr);
 
     /*! @brief Destructor.
-     * @note In the desctructor all Message objects contained within this MessageListModel are deleted. */
+     * @note All Message objects stored inside the model are deleted in the destructor
     ~MessageListModel() final;
 
     /*! @brief This method is used to add Message objects to the model. Accepts pointer to the Message object. */

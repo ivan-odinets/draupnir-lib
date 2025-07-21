@@ -23,6 +23,15 @@ Draupnir-lib is a growing set of utility classes, containers, and widgets for C+
     - MessageSystem: Infrastructure to display notifications to user about the events within the application.
     - ProxyHelper: Consists of: ProxyHelper itself (static utility for converting QNetworkProxy objects to and from QString representation); ProxyEditDialog (dialog window for editing QNetworkProxy settings); ProxyEditWidget (widget for editing and displaying QNetworkProxy objects)
 
+### Message System Architecture
+
+The MessageSystem is composed of several template-based classes:
+
+- **MessageHandler / MessageHandlerTemplate** – `MessageHandler` exposes the runtime API for processing messages. `MessageHandlerTemplate` implements it and keeps a policy map specifying how each message type should be displayed. The `Logger` forwards log entries to the handler which consults this map and stores settings via `AppSettings` or a custom `MessageSettingsInterface`.
+- **MessageUiBuilder / MessageUiBuilderTemplate** – responsible for creating widgets (log views, notification menus, settings) that work with the same `MessageHandlerTemplate` instance.
+- **MessageSystemTemplate** – ties the handler and UI builder together for a fixed set of message traits and exposes them through `MessageSystemInterface`.
+
+
 ## Odin’s Ring
 
 Draupnir — Odin’s magical ring, which every ninth night would create eight new rings of equal power and value.

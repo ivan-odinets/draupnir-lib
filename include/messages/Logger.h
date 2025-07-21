@@ -52,8 +52,8 @@ public:
 
     /*! @brief Sets the MessageHandler instance used to process messages.
      *  @param handler Pointer to a valid MessageHandler instance.
-     * @note This method **must** be called before any logging occures, otherwise - the nullptr will be derefered.
-     * @note Not thread-safe. Must be called once during initialization. */
+     *  @note This method **must** be called before any logging occurs; otherwise a nullptr will be dereferenced.
+     *  @note Not thread-safe. Must be called once during initialization. */
     void setMessageHandler(MessageHandler* handler);
 
     /*! @brief Starts a new message group for batch logging.

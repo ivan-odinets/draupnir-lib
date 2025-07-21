@@ -32,15 +32,15 @@
 /*! @class MessageGroup draupnir-lib/messages/MessageGroup.h
  *  @brief Represents a logical group of related log messages.
  *  @details The MessageGroup class is a lightweight wrapper around an integer ID, used to group related log messages together.
- *           Messages assigned to the same group are immidiately displayed to the user within MessgeListModel (see MessageHandler),
- *           upon loging via Logger object. However displaying of proper notification (systray / messagebox) to user is delayed
- *           untill this group is flushed or ended.
+ *           Messages assigned to the same group are immediately shown in the MessageListModel (see MessageHandler)
+ *           when logged via the Logger. Displaying the actual notification (system tray or message box) is postponed
+ *           until this group is flushed or ended.
  *
  *           This class is copyable, comparable, and hashable, making it usable as a key in standard and Qt containers such as
  *           std::map, std::unordered_map, QMap, QHash, etc.
  *
  * @see Logger, MessageHandler, MessageHandlerTemplate.
- * @todo Imrpove randomness of the MessageGroup::generateUniqueGroup method. */
+ * @todo Improve randomness of the MessageGroup::generateUniqueGroup method. */
 
 class MessageGroup
 {

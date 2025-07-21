@@ -38,8 +38,12 @@
  *           central access point for both message processing (MessageHandler and MessageHandlerTemplate) and message GUI
  *           (MessageUiBuilder and MessageUiBuilderTemplate).
  *
- *           Provided MessageTraits... are passed down to the MessageHandlerTemplate and MessageUiBUilderTemplate which are accessible
- *           by thier interfaces. In addition to user-specified MessageTraits this class has the following default message types:
+ *           Provided MessageTraits... are passed down to the MessageHandlerTemplate and MessageUiBuilderTemplate, which operate on the
+ *           same set of types. `MessageHandlerTemplate` stores notification policies while `MessageUiBuilderTemplate` creates widgets
+ *           to view and configure them. This class wires both together so that the `Logger` can send messages through the handler and
+ *           the resulting UI stays synchronized.
+ *
+ *           In addition to user-specified MessageTraits this class has the following default message types:
  *           - Debug (DebugMessageTrait);
  *           - Info (InfoMessageTrait);
  *           - Warning (WarningMessageTrait);
@@ -47,7 +51,7 @@
  *
  *           To be registered as a MessageTrait custom message class must have the following:
  *           - static constexpr MessageType type - member with unique MessageType representing this message type. This value should be
- *             a 64-bit integer with only one bit set (flag). The simpliest way to obtain these values - by using MessageType::nextType
+ *             a 64-bit integer with only one bit set (flag). The simplest way to obtain these values is to use MessageType::nextType
  *             method.
  *           - static constexpr const char* settingsKey - member with C-style string explaining under what name this message type should
  *             be stored within settings;
@@ -66,7 +70,7 @@ class MessageSystemTemplate final : public MessageSystemInterface
 public:
     /*! @brief Default constructor. Configures MessageUiBuilderTemplate.
      *  @details A static_assert will happen within this constructor if:
-     *           - Classes within provded MessageTraits... and predefined MessageTraits (e.g. DebugMessageTrait) have duplicated IDs;
+     *           - Classes within provided MessageTraits... and predefined MessageTraits (e.g. DebugMessageTrait) have duplicated IDs;
      *           - These MessageTraits... have IDs where multiple bits are set. */
     MessageSystemTemplate() {
         static_assert(MessageTraitsHelper<

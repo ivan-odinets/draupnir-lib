@@ -40,10 +40,10 @@ class MessageUiBuilder;
 
 /*! @class MessageSystemInterface draupnir-lib/include/messages/MessageSystemInterface.h
  *  @brief This is an interface class for a MessageSystemTemplate template class.
- *  @details This interface is used to simplify passing the objects of speific MessageSystemTemplate implementations at
+ *  @details This interface is used to simplify passing the objects of specific MessageSystemTemplate implementations at
  *           runtime.
  *
- * @see MessageSystemTemplate, MessageHanlder, MessageHandlerTemplate, MessageUiBuilder, MessageUiBuilderTemplate, Logger. */
+ * @see MessageSystemTemplate, MessageHandler, MessageHandlerTemplate, MessageUiBuilder, MessageUiBuilderTemplate, Logger. */
 
 class MessageSystemInterface
 {
@@ -54,20 +54,20 @@ public:
 #ifdef DRAUPNIR_MSGSYS_APP_SETTINGS
     /*! @brief This method should load settings for this MessageSystemInterface implementation from the provided AppSettings
      *         object.
-     * @note This method is present only when having DRAUPNIR_MSGSYS_APP_SETTINGS marco enabled. */
+     * @note This method is present only when the DRAUPNIR_MSGSYS_APP_SETTINGS macro is enabled. */
     virtual void loadSettings(AppSettings* settings) = 0;
 #endif // DRAUPNIR_MSGSYS_APP_SETTINGS
 
 #ifdef DRAUPNIR_MSGSYS_CUSTOM_SETTINGS
     /*! @brief This method should load settings for this MessageSystemInterface implementation from the provided MessageSettingsInterface
      *         object.
-     * @note This method is present only when having DRAUPNIR_MSGSYS_CUSTOM_SETTINGS marco enabled. */
+     * @note This method is present only when the DRAUPNIR_MSGSYS_CUSTOM_SETTINGS macro is enabled. */
     virtual void loadSettings(MessageSettingsInterface* settingsInterface) = 0;
 
-    /*! @brief This is a helper method to simplify usage of QSettings / similar objects within MessageSystemInterface. This method creates
-     *         MessageSettingsAdapter implementation by using specified Settings class and uses it as a settings stprage.
-     *  @tparam Settings class of settings storage. This class should be usable as an argument for the MessageSettingsAdapter
-     * @note This method is present only when having DRAUPNIR_MSGSYS_CUSTOM_SETTINGS marco enabled. */
+    /*! @brief Helper to wrap an arbitrary settings class in a MessageSettingsAdapter.
+     *  @details Creates a MessageSettingsAdapter using the provided SettingsImpl class and uses it as the settings storage.
+     *  @tparam SettingsImpl Class of the settings storage. Must be compatible with MessageSettingsAdapter.
+     *  @note This method is present only when the DRAUPNIR_MSGSYS_CUSTOM_SETTINGS macro is enabled. */
     template<class SettingsImpl>
     void loadSettings(SettingsImpl* settingsImpl) {
         loadSettings(new MessageSettingsAdapter<SettingsImpl>{settingsImpl});

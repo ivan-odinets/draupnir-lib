@@ -35,28 +35,28 @@ class QWidget;
  *  @details This class defines the interface for creating GUI widgets used for displaying messages. The implementation is provided
  *           by MessageUiBuilderTemplate class.
  *
- * @see MessageUiBuilderTemplate, MessageSystemTemolate. */
+ * @see MessageUiBuilderTemplate, MessageSystemTemplate. */
 
 class MessageUiBuilder
 {
 public:
-    /*! @brief This method should return LogWidget (as a pointer to QWidget) which is ready-to-use together with MessageSystemTemplate
+    /*! @brief This method should return a LogWidget (as a pointer to QWidget) ready to be used with MessageSystemTemplate
      *         to which this MessageUiBuilder implementation is belonging.
      *  @details The returned widget is configured and ready to display messages coming from the corresponding message handler.
      *  @param parent Optional parent widget.
-     * @note Its caller responsibility to manage memory properly. */
+     * @note It is the caller's responsibility to manage memory properly. */
     virtual QWidget* createConfiguredLogWidget(QWidget* parent = nullptr) const = 0;
 
-    /*! @brief This method shuould return NotificationTypeMenu (as a pointer to QMenu) which is ready-to-use for changing the type of
-     *         notification for specified MessageType.
+    /*! @brief Returns a NotificationTypeMenu (as a pointer to QMenu) that allows changing the notification type for specified
+     *         MessageType.
      *  @param messageType Type of message notification for which will be configured by this NotificationTypeMenu.
      *  @param parent Optional parent widget.
-     * @note Its caller responsibility to manage memory properly. */
+     * @note It is the caller's responsibility to manage memory properly. */
     virtual QMenu* createConfiguredNotificationMenu(MessageType messageType, QWidget* parent = nullptr) const = 0;
 
-    /*! @brief This method should return a ready-to-use widget for configuring notification settings within this MessageSystem.
+    /*! @brief Returns a ready-to-use widget for configuring notification settings within this MessageSystem.
      *  @param parent Optional parent widget.
-     * @note Its caller responsibility to manage memory properly. */
+     * @note It is the caller's responsibility to manage memory properly. */
     virtual QWidget* createConfiguredNotificationSettingsWidget(QWidget* parent = nullptr) const = 0;
 
 protected:

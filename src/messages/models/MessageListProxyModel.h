@@ -32,8 +32,8 @@
 /*! @class MessageListProxyModel core/messages/MessageListProxyModel.h
  *  @brief This class is a proxy model for MessageListModel which is used for filtering  Message objects. By default this model
  *         will accept any message type.
- *  @details Filtering is done by bitwise comparing between value returned within Message::type method and m_allowedType specifyed
- *           in this model. See MessageType. */
+ *  @details Filtering is done by bitwise comparison between the value returned by Message::type and m_allowedType
+ *           stored in this model. See MessageType. */
 
 class MessageListProxyModel final : public QSortFilterProxyModel
 {

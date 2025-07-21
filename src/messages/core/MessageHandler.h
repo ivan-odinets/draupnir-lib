@@ -45,6 +45,10 @@ class QSystemTrayIcon;
  *  @details This class provides an interface for managing how messages are processed, stored, and displayed to the user. Messages
  *           can be handled immediately or in grouped batches via MessageGroup.
  *
+ *           Interaction with MessageHandlerTemplate MessageHandler defines the runtime API while MessageHandlerTemplate supplies a
+ *           concrete implementation that maps compile-time message traits to Notification types. Logger sends messages to the
+ *           current MessageHandler instance, which consults these policies to show or queue notifications.
+ *
  * @note The actual policy for each message type is defined in derived class (MessageHandlerTemplate).
  * @note MessageHandler is intended to be used together with the Logger singleton as its primary backend.
  * @note Message objects processed via MessageHandler::processMessage are also stored in a MessageListModel to display within
@@ -56,7 +60,7 @@ class MessageHandler : public QObject
 {
     Q_OBJECT
 public:
-    /*! @brief Defauult constructor. Creates MessageListModel. */
+    /*! @brief Default constructor. Creates the underlying MessageListModel. */
     explicit MessageHandler(QObject* parent = nullptr);
 
     /*! @brief Destructor. Deletes internal MessageListModel. */
@@ -69,7 +73,7 @@ public:
 
 #endif // QT_NO_SYSTEMTRAYICON
 
-    /*! @brief General slot to set specific Notification::Type for cetrain MessageType. */
+    /*! @brief General method to set the Notification::Type for a certain MessageType. */
     virtual void setNotification(MessageType type, const Notification::Type notificationType) = 0;
 
     /*! @brief Returns Notification::Type which is used for given MessageType. */
@@ -98,39 +102,33 @@ public slots:
     /*! @brief Shows to user how specific Notification::Type things will be displayed. */
     void showDummy(Notification::Type type);
 
-    /*! @brief This slot is used to process provided Message object. During processing Message object is added to the
-     *         MessageListModel and than propper notification is displayed to the user. */
+    /*! @brief Processes a single Message object. The message is added to the MessageListModel and then the appropriate
+     *         notification is displayed to the user. */
     void processMessage(Message* message);
 
-    /*! @brief This slot is used for batch processing of the provided Message object. During such processing Message
-     *         object is added to the MessageListModel, however notification to user is displayed only after calling
-     *         the MessageHandler::flush or MessageHandler::endMessageGroup method. */
+    /*! @brief Processes a Message object as part of a batch. The message is added to the MessageListModel, but the notification
+     *         is shown only after MessageHandler::flush or MessageHandler::endMessageGroup is called. */
     void processMessage(Message* message, MessageGroup group);
 
-    /*! @brief This slot is used to process provided QList of Message objects. During processing each Message object
-     *         is added to the MessagelIstModel and than propper notification is displayed to the user.
-     * @note If provided Message objects should be shown by using different notification methods - each group of Message
-     *       objects will be shown by using its own notification type. */
+    /*! @brief Processes a list of Message objects. Each Message is added to the MessageListModel and then the proper notification
+     *         is displayed to the user.
+     * @note If different notification methods are required, each group of messages will use its own notification type. */
     void processMessageList(const QList<Message*>& messageList);
 
-    /*! @brief This method showing provided Message object to the user according to the saved Notification::Type for
-     *         such message type.
-     * @note During execution of this method Message object **is not** passed to the MessageListModel. */
+    /*! @brief Shows the given Message using the Notification::Type stored for its type.
+     * @note During execution the Message object is **not** added to the MessageListModel. */
     void showMessage(Message* message);
 
-    /*! @brief This method showing provided Message object to the user according to the provided Notification::Type for
-     *         such message type.
-     * @note During execution of this method Message object **is not** passed to the MessageListModel. */
+    /*! @brief Shows the given Message using the provided Notification::Type.
+     * @note During execution the Message object is **not** added to the MessageListModel. */
     void showMessage(Message* message, const Notification::Type type);
 
-    /*! @brief This method showing provided list of Message objects to the user according to the saved Notification::Type for
-     *         such message type.
-     * @note During execution of this method Message object **is not** passed to the MessageListModel. */
+    /*! @brief Shows a list of Message objects using the saved Notification::Type for their type.
+     * @note During execution the Message objects are **not** added to the MessageListModel. */
     void showMessageList(const QList<Message*>& messageList);
 
-    /*! @brief This method showing provided list of Message objects to the user according to the provided Notification::Type
-     *         for such message type.
-     * @note During execution of this method Message object **is not** passed to the MessageListModel. */
+    /*! @brief Shows a list of Message objects using the provided Notification::Type.
+     * @note During execution the Message objects are **not** added to the MessageListModel. */
     void showMessageList(const QList<Message*>& messageList, const Notification::Type type);
 
 signals:

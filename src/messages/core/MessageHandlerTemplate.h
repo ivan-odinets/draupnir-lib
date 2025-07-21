@@ -40,10 +40,12 @@
 
 /*! @class MessageHandlerTemplate draupnir-lib/src/messages/core/MessageHandlerTemplate.h
  *  @brief Templated implementation of MessageHandler based on statically known message types.
- *  @details This class manages a mapping between message type identifiers and notification display types. The configuration is
- *           loaded from AppSettings and stored in a fixed_map for fast access.
+ *  @details It extends MessageHandler and therefore can be used wherever a MessageHandler pointer is expected. Policies for each
+ *           message type are defined at compile time through MessageTraits... and can be persisted via AppSettings or a custom
+ *           MessageSettingsInterface.
  *
- *           It provides compile-time resolution of message types using template parameter packs.
+ *           MessageSystemTemplate creates a single instance of this class and shares it with MessageUiBuilderTemplate so that UI
+ *           elements reflect and modify the same notification policy map.
  *
  * @tparam MessageTraits... List of message types supported by this handler.
  * @see MessageHandler, Logger, fixed_map
