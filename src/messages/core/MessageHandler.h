@@ -28,7 +28,6 @@
 #include <QObject>
 
 #include <QMap>
-#include <QQueue>
 
 #include "Message.h"
 #include "MessageType.h"

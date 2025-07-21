@@ -67,7 +67,7 @@ QString Notification::toConfigString(Notification::Type type)
     case UnknownType:
         return QLatin1String("unknown");
     }
-    Q_ASSERT(false);
+    Q_UNREACHABLE();
     return QString();
 }
 
@@ -86,6 +86,6 @@ QString Notification::toDisplayString(Notification::Type type)
         Q_ASSERT(false);
         return QString();
     }
-    Q_ASSERT(false);
+    Q_UNREACHABLE();
     return QString();
 }

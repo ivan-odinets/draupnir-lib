@@ -42,6 +42,7 @@ MessageHandler::MessageHandler(QObject* parent) :
 MessageHandler::~MessageHandler()
 {
     p_messageListModel->deleteLater();
+    delete p_dummy;
 }
 
 MessageGroup MessageHandler::beginMessageGroup()
@@ -53,7 +54,7 @@ MessageGroup MessageHandler::beginMessageGroup()
         return MessageHandler::beginMessageGroup();
     }
 
-    m_messageGroupsMap.insert(newGroup, QQueue<Message*>{});
+    m_messageGroupsMap.insert(newGroup, QList<Message*>{});
     return newGroup;
 }
 
@@ -95,6 +96,7 @@ void MessageHandler::showDummy(Notification::Type type)
         _showMessageBox(p_dummy);
         return;
     case Notification::UnknownType:
+        Q_ASSERT_X(false, "MessageHandler::showDummy", "Unknown notification type");
         return;
     }
 }
@@ -142,6 +144,7 @@ void MessageHandler::showMessage(Message* message, Notification::Type type)
         _showMessageBox(message);
         return;
     case Notification::UnknownType:
+        Q_ASSERT_X(false, "MessageHandler::showMessage", "Unknown notification type");
         return;
     }
 }
@@ -191,6 +194,7 @@ void MessageHandler::showMessageList(const QList<Message*>& messageList, Notific
         _showMessageBox(messageList);
         return;
     case Notification::UnknownType:
+        Q_ASSERT_X(false, "MessageHandler::showMessageList", "Unknown notification type");
         return;
     }
 }
@@ -199,6 +203,7 @@ void MessageHandler::showMessageList(const QList<Message*>& messageList, Notific
 
 void MessageHandler::_showMessageInSystray(Message* message)
 {
+    Q_ASSERT_X(w_trayIcon, "MessageHandler::_showMessageInSystray", "Tray icon is null");
     w_trayIcon->showMessage(
         message->brief(),
         message->what(),
@@ -208,6 +213,7 @@ void MessageHandler::_showMessageInSystray(Message* message)
 
 void MessageHandler::_showMessageListTray(const QList<Message*>& messageList)
 {
+    Q_ASSERT_X(w_trayIcon, "MessageHandler::_showMessageListTray", "Tray icon is null");
     w_trayIcon->showMessage(
         qApp->applicationName(),
         tr("%1 new messages received. Check log for details.").arg(messageList.count()),

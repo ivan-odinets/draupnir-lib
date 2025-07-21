@@ -50,6 +50,9 @@ void MessageListModel::append(Message* message)
 
 void MessageListModel::append(const QList<Message*>& messages)
 {
+    if (messages.isEmpty())
+        return;
+
 #ifndef QT_NO_DEBUG
     // Just to be sure that no nullptrs are here
     for (Message* message : messages) {
