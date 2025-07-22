@@ -54,12 +54,12 @@ public:
     /*! @brief Destructor. Cleans up created UI elements (if they exist) via QObject::deleteLater. */
     ~UiManager() {
         if (w_mainWindow) {
-            w_mainWindow->deleteLater();
+            delete w_mainWindow;
             w_mainWindow = nullptr;
         }
 
         if (w_trayIcon) {
-            w_trayIcon->deleteLater();
+            delete w_trayIcon;
             w_trayIcon = nullptr;
         }
     }
