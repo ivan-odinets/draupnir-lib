@@ -64,6 +64,15 @@ public:
         return result;
     }
 
+    /*! @brief Returns a QMenu containing NotificationTypeMenu entries for all available MessageType
+     *  @param parent Optional parent widget.
+     * @note It is the caller's responsibility to manage memory properly. */
+    QMenu* createConfiguredGlobalNotificationsMenu(QWidget* parent = nullptr) final {
+        QMenu* result = new QMenu{parent};
+        _populateGlobalNotificationsMenu<MessageTypes...>(result);
+        return result;
+    };
+
     /*! @brief Creates and returns NotificationTypeMenu (as a pointer to QMenu) which is ready-to-use for changing the type of
      *         notification for specified MessageType.
      *  @param messageType Type of message notification for which will be configured by this NotificationTypeMenu.
@@ -164,6 +173,16 @@ private:
     MessageSettingsInterface* p_settings;
 #endif // DRAUPNIR_MSGSYS_APP_SETTINGS
     MessageHandlerTemplate<MessageTypes...>* p_handler;
+
+    template<class First, class... Rest>
+    inline void _populateGlobalNotificationsMenu(QMenu* dest) {
+        auto menu = createConfiguredNotificationMenu(First::type);
+        menu->setTitle(First::displayName());
+        dest->addMenu(menu);
+
+        if constexpr (sizeof...(Rest) > 0)
+            return _populateGlobalNotificationsMenu<Rest...>(dest);
+    }
 };
 
 #endif // MESSAGEUIBUILDERTEMPLATE_H

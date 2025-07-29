@@ -47,6 +47,11 @@ public:
      * @note It is the caller's responsibility to manage memory properly. */
     virtual QWidget* createConfiguredLogWidget(QWidget* parent = nullptr) const = 0;
 
+    /*! @brief Returns a QMenu containing NotificationTypeMenu entries for all available MessageType
+     *  @param parent Optional parent widget.
+     * @note It is the caller's responsibility to manage memory properly. */
+    virtual QMenu* createConfiguredGlobalNotificationsMenu(QWidget* parent = nullptr) = 0;
+
     /*! @brief Returns a NotificationTypeMenu (as a pointer to QMenu) that allows changing the notification type for specified
      *         MessageType.
      *  @param messageType Type of message notification for which will be configured by this NotificationTypeMenu.
