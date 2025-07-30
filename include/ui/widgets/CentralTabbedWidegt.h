@@ -107,6 +107,19 @@ public:
     /*! @brief Constructs the widget with already constructed tab widgets.
      *  @param parent Optional parent widget.
      *  @param widgets External widget instances (one per TabTrait::widget). */
+    explicit CentralTabbedWidgetTemplate(QWidget* parent, typename TabTraits::widget... widgets) :
+        CentralTabbedWidget{parent},
+        p_settings{nullptr},
+        m_widgets{std::forward_as_tuple(widgets...)}
+    {
+        static_assert(sizeof...(TabTraits) > 0,"Empty list of widgets is not allowed.");
+
+        _setupTabsImpl<0,TabTraits...>();
+    }
+
+    /*! @brief Constructs the widget with already constructed tab widgets.
+     *  @param parent Optional parent widget.
+     *  @param widgets External widget instances (one per TabTrait::widget). */
     explicit CentralTabbedWidgetTemplate(QWidget* parent, typename TabTraits::widget&&... widgets) :
         CentralTabbedWidget{parent},
         p_settings{nullptr},
