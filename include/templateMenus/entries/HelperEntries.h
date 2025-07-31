@@ -37,6 +37,56 @@
 
 namespace Draupnir::Menus {
 
+/*! @class ActionEntry draupnir-lib/templateMenus/entries/HelperEntries.h
+ *  @brief Menu trait describing a simple QAction entry. Provides a QAction with display name set.
+ *  @tparam displayNameImpl - a callable returning QString. */
+
+template<auto displayNameImpl>
+class ActionEntry
+{
+public:
+    using Type = QAction;
+
+    /*! @brief Creates a QAction.
+     *  @param parent Optional parent object.
+     *  @return Newly created QAction pointer. */
+    static QAction* createElement(QWidget* parent = nullptr) {
+        return new QAction{displayName(), parent};
+    }
+
+    /*! @brief Returns display name for this QAction (from displayNameImpl).
+     *  @return QAction title (QString). */
+    static QString displayName() {
+        return displayNameImpl();
+    }
+};
+
+/*! @class CheckableEntry draupnir-lib/templateMenus/entries/HelperEntries.h
+ *  @brief Menu trait describing a Checkable entry. Provides a QAction with setCheckable(true).
+ *  @tparam displayNameImpl - a callable returning QString. */
+
+template<auto displayNameImpl>
+class CheckableEntry
+{
+public:
+    using Type = QAction;
+
+    /*! @brief Creates a checkable QAction.
+     *  @param parent Optional parent object.
+     *  @return Newly created QAction pointer with checkable property set. */
+    static QAction* createElement(QWidget* parent = nullptr) {
+        QAction* result = new QAction{displayName(),parent};
+        result->setCheckable(true);
+        return result;
+    }
+
+    /*! @brief Returns display name for this QAction (from displayNameImpl).
+     *  @return QAction title (QString). */
+    static QString displayName() {
+        return displayNameImpl();
+    }
+};
+
 /*! @class SeparatorEntry draupnir-lib/templateMenus/entries/HelperEntries.h
  *  @brief Menu trait describing a separator entry. Provides a QAction marked as a separator. */
 
