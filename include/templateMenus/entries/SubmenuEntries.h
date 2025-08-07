@@ -25,6 +25,7 @@
 #ifndef SUBMENUENTRIES_H
 #define SUBMENUENTRIES_H
 
+#include <QDebug>
 #include <QString>
 
 class QWidget;
@@ -80,8 +81,10 @@ public:
      * @warning If m_creator is not set, this will Q_ASSERT_X in debug and crash in release (nullptr dereference)! */
     static CustomMenu* createElement(QWidget* parent = nullptr) {
         Q_ASSERT_X(m_creator,"DynamicCustomMenu::createElement",
-            qPrintable(QLatin1String("Menu creator is not set. CustomMenu=%1; displayName()=%2")
-                       .arg(QString::fromUtf8(typeid(CustomMenu).name())).arg(displayName())));
+            qPrintable(QLatin1String("Menu creator is not set. CustomMenu=%1; decltype(this)=%2; displayName()=%3")
+                       .arg(QString::fromUtf8(typeid(CustomMenu).name()))
+                       .arg(QString::fromUtf8(typeid(DynamicCustomMenu<displayNameImpl,CustomMenu>).name()))
+                       .arg(displayName())));
         return m_creator(displayName(),parent);
     }
 

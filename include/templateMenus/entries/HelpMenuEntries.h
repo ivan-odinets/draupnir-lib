@@ -46,6 +46,30 @@ inline constexpr auto helpMenuName = []() -> QString {
     return QObject::tr("Help");
 };
 
+/*! @class HelpEntryMenuTrait draupnir-lib/templateMenus/entries/HelpMenuEntries.h
+ *  @brief Trait for the "Help" menu action (application help). Provides a QAction with the main application icon and
+ *         localized name. */
+
+class HelpEntryMenuTrait
+{
+public:
+    using Type = QAction;
+
+    /*! @brief Creates a QAction for the "About" action, with app icon.
+     *  @param parent Optional parent object.
+     *  @return Newly allocated QAction pointer.
+     *
+     * @note Uses the application's window icon as the action icon. Should only be called after QApplication is created. */
+    static QAction* createElement(QWidget* parent = nullptr) {
+        QAction* result = new QAction{displayName(), parent};
+        return result;
+    }
+
+    /*! @brief Returns the localized display name ("Help").
+     *  @return QString. */
+    static QString displayName() { return QObject::tr("Help"); }
+};
+
 /*! @class AboutAppMenuTrait draupnir-lib/templateMenus/entries/HelpMenuEntries.h
  *  @brief Trait for the "About" menu action (application about box). Provides a QAction with the main application icon and
  *         localized name. */

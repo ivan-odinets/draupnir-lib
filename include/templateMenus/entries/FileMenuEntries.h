@@ -168,6 +168,26 @@ inline constexpr auto recentMenuEntryName = []() -> QString {
 
 using RecentFileEntry = CustomMenuEntryTrait<recentMenuEntryName,RecentFilesMenu>;
 
+/*! @class ExitApplicationEntry draupnir-lib/templateMenus/entries/FileMenuEntries.h
+ *  @brief Trait for "File -> Exit" menu action. Provides an action with display name. */
+
+class ExitApplicationEntry
+{
+public:
+    using Type = QAction;
+
+    /*! @brief Creates a QAction for the "Exit" file action.
+     *  @param parent Optional parent QObject.
+     *  @return Newly allocated QAction pointer. */
+    static QAction* createElement(QWidget* parent = nullptr) {
+        return new QAction{QIcon::fromTheme("application-exit"), displayName(), parent};
+    }
+
+    /*! @brief Returns the localized display name for the action.
+     *  @return Localized QString ("Exit"). */
+    static QString displayName() { return QObject::tr("Exit"); }
+};
+
 } // namespace Draupnir::Menus
 
 #endif // FILEMENUENTRIES_H
