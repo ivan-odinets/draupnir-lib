@@ -109,6 +109,8 @@ public:
         w_trayIcon = new TrayIconClass;
 
         p_messageSystem->handler()->setTrayIcon(w_trayIcon);
+
+        w_mainWindow->setTrayIcon(w_trayIcon);
     }
 
     /*! @brief Shows the MainWindow and TrayIcon (depending on settings). The TrayIcon is always shown. The MainWindow is shown
