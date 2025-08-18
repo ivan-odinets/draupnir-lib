@@ -59,15 +59,29 @@ QAction* RecentFilesMenu::getFileAction(const QFileInfo& fileInfo)
 void RecentFilesMenu::loadRecentFiles(const QStringList& filePathsList)
 {
     reset();
-    for (const QString& filePath : filePathsList)
-        addRecentAction(QFileInfo{filePath});
+    for (const QString& filePath : filePathsList) {
+        const QFileInfo fileInfo{filePath};
+        addRecentAction(fileInfo);
+        m_recentFiles.append(std::move(fileInfo));
+    }
 }
 
 void RecentFilesMenu::loadRecentFiles(const QList<QFileInfo>& fileInfoList)
 {
     reset();
-    for (const QFileInfo& fileInfo : fileInfoList)
+    for (const QFileInfo& fileInfo : fileInfoList) {
         addRecentAction(fileInfo);
+    }
+    m_recentFiles = fileInfoList;
+}
+
+void RecentFilesMenu::loadRecentFiles(QList<QFileInfo>&& fileInfoList)
+{
+    reset();
+    for (const QFileInfo& fileInfo : fileInfoList) {
+        addRecentAction(fileInfo);
+    }
+    m_recentFiles = std::move(fileInfoList);
 }
 
 void RecentFilesMenu::reset()
@@ -77,6 +91,16 @@ void RecentFilesMenu::reset()
         action->deleteLater();
     }
     w_recentFilesActions->actions().clear();
+    m_recentFiles.clear();
+}
+
+QStringList RecentFilesMenu::recentFilesPathsList() const
+{
+    QStringList result;
+    for (const QFileInfo& fileInfo : m_recentFiles)
+        result.append(fileInfo.absoluteFilePath());
+
+    return result;
 }
 
 void RecentFilesMenu::addRecentAction(const QFileInfo& fileInfo)
@@ -87,6 +111,7 @@ void RecentFilesMenu::addRecentAction(const QFileInfo& fileInfo)
 
     insertAction(w_recentFilesSeparator,recentFileAction);
     w_recentFilesActions->addAction(recentFileAction);
+    m_recentFiles.append(fileInfo);
 }
 
 void RecentFilesMenu::updateRecentAction(const QFileInfo& oldFileInfo, const QFileInfo& newFileInfo)
@@ -94,7 +119,13 @@ void RecentFilesMenu::updateRecentAction(const QFileInfo& oldFileInfo, const QFi
     QAction* action = getFileAction(oldFileInfo);
     Q_ASSERT_X(action, "RecentFilesMenu::updateRecentAction",
                "Provided oldFileInfo is not mathcing to any of the QActions within this RecentFilesMenu");
+    Q_ASSERT_X(m_recentFiles.contains(oldFileInfo), "RecentFilesMenu::updateRecentAction",
+               "Provided oldFileInfo is not contained within the QList<QFileInfo> m_recentFiles");
+
     updateRecentAction(action, newFileInfo);
+    m_recentFiles.replace(
+        m_recentFiles.indexOf(oldFileInfo), newFileInfo
+    );
 }
 
 void RecentFilesMenu::updateRecentAction(QAction* action, const QFileInfo& fileInfo)

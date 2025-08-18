@@ -79,8 +79,26 @@ public:
      *  @param fileInfoList List of QFileInfo objects. */
     void loadRecentFiles(const QList<QFileInfo>& fileInfoList);
 
+    /*! @brief Populates the menu with recent files given as a list of QFileInfo. Clears previous entries.
+     *  @param fileInfoList List of QFileInfo objects. */
+    void loadRecentFiles(QList<QFileInfo>&& fileInfoList);
+
     /*! @brief Removes all recent file actions from the menu and clears the list. */
     void reset();
+
+    /*! @brief Returns a list of recent files. */
+    QList<QFileInfo> fileInfoList() const { return m_recentFiles; }
+
+    /*! @brief Returns QStringList containing list of full paths to the recent file entries. */
+    QStringList recentFilesPathsList() const;
+
+signals:
+    /*! @brief Emitted when the menu is cleared (via reset() or "Clear" action). */
+    void recentFilesMenuCleared();
+
+    /*! @brief Emitted when a user selects a file from the recent files menu.
+     *  @param fileInfo QFileInfo of the selected file. */
+    void recentFileSelected(const QFileInfo& fileInfo);
 
 public slots:
     /*! @brief Adds a file as a recent entry in the menu. If the file already exists, a new entry will be added (duplicates
@@ -105,14 +123,6 @@ public slots:
      * @note Asserts in debug if action is not managed by this menu. */
     void removeRecentAction(QAction* action);
 
-signals:
-    /*! @brief Emitted when the menu is cleared (via reset() or "Clear" action). */
-    void recentFilesMenuCleared();
-
-    /*! @brief Emitted when a user selects a file from the recent files menu.
-     *  @param fileInfo QFileInfo of the selected file. */
-    void recentFileSelected(const QFileInfo& fileInfo);
-
 protected:
     /*! @brief Handles retranslation on QEvent::LanguageChange.
      *  @param event The event pointer. */
@@ -129,6 +139,8 @@ private slots:
     void _onRecentClearRequested();
 
 private:
+    QList<QFileInfo> m_recentFiles;
+
     /*! @brief Initializes the menu structure, connects signals/slots, and sets up actions. */
     void _setupUi();
 
