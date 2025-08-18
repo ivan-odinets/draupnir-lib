@@ -24,6 +24,11 @@ HEADERS += \
     $$PWD/include/templateMenus/entries/SubmenuEntries.h \
     $$PWD/include/templateMenus/handlers/AbstractHandlers.h \
     $$PWD/include/templateMenus/handlers/GenericMenuEntriesHandler.h \
+    $$PWD/include/templateMenus/handlers/helpMenu/AboutAppEntryHandler.h \
+    $$PWD/include/templateMenus/handlers/helpMenu/AboutQtEntryHandler.h \
+    $$PWD/include/templateMenus/handlers/helpMenu/HelpEntryHandler.h \
+    $$PWD/include/templateMenus/handlers/helpMenu/HelpMenuEntriesHandler.h \
+    $$PWD/include/templateMenus/handlers/settingsMenu/MinimizeOnCloseEntryHandler.h \
     $$PWD/include/templateMenus/menus/MenuBarTemplate.h \
     $$PWD/include/templateMenus/menus/MenuEntriesContainer.h \
     $$PWD/include/templateMenus/menus/MenuTemplate.h \
