@@ -64,6 +64,9 @@ public:
      *  @return Number of entries (always equals staticCount()). */
     constexpr int count() const { return staticCount(); }
 
+    template<class Entry>
+    static constexpr bool contains() { return MenuEntriesContainer<Entries...>::template contains<Entry>(); }
+
     /*! @brief Provides access to the entry at the specified compile-time index.
      *  @tparam Index Compile-time index (0-based).
      *  @return Pointer to the element at the specified index.
@@ -92,6 +95,11 @@ public:
     }
 
 protected:
+    template<class Implementation, class Menu>
+    friend class MenuHandlerTemplate;
+
+    MenuEntriesContainer<Entries...> m_container;
+
     /*! @brief Qt event handler, automatically retranslates all entry texts when language changes.
      *  @param event The event pointer. */
     void changeEvent(QEvent* event) final {
@@ -100,9 +108,6 @@ protected:
         }
         QMenuBar::changeEvent(event);
     }
-
-private:
-    MenuEntriesContainer<Entries...> m_container;
 };
 
 }; // namespace Draupnir::Menus

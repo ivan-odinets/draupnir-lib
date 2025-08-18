@@ -63,6 +63,9 @@ public:
      *  @return Number of entries (always equals staticCount()). */
     constexpr int count() const { return staticCount(); }
 
+    template<class Entry>
+    static constexpr bool contains() { return MenuEntriesContainer<Entries...>::template contains<Entry>(); }
+
     /*! @brief Provides access to the entry at a specific compile-time index.
      *  @tparam Index Compile-time index (0-based).
      *  @return Pointer to the element at the specified index.
@@ -89,7 +92,17 @@ public:
         return m_container.template get<Entry>();
     }
 
+    template<class Entry, class... Args>
+    QMetaObject::Connection on(Args... args) {
+        return m_container.template on<Entry,Args...>(args...);
+    }
+
 protected:
+    template<class Implementation, class Menu>
+    friend class MenuHandlerTemplate;
+
+    MenuEntriesContainer<Entries...> m_container;
+
     /*! @brief Qt event handler, automatically retranslates all entry texts when language changes.
      *  @param event The event pointer. */
     void changeEvent(QEvent* event) override {
@@ -100,7 +113,7 @@ protected:
     }
 
 private:
-    MenuEntriesContainer<Entries...> m_container;
+
 };
 
 } // namespace Draupnir::Menus

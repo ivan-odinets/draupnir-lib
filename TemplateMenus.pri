@@ -22,6 +22,8 @@ HEADERS += \
     $$PWD/include/templateMenus/entries/HelperEntries.h \
     $$PWD/include/templateMenus/entries/SettingsMenuEntry.h \
     $$PWD/include/templateMenus/entries/SubmenuEntries.h \
+    $$PWD/include/templateMenus/handlers/AbstractHandlers.h \
+    $$PWD/include/templateMenus/handlers/GenericMenuEntriesHandler.h \
     $$PWD/include/templateMenus/menus/MenuBarTemplate.h \
     $$PWD/include/templateMenus/menus/MenuEntriesContainer.h \
     $$PWD/include/templateMenus/menus/MenuTemplate.h \

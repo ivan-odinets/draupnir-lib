@@ -25,12 +25,15 @@
 #ifndef MENUENTRIESCONTAINER_H
 #define MENUENTRIESCONTAINER_H
 
+#include <QAction>
+#include <QDebug>
 #include <QObject>
+
+class QMenu;
 
 #include <tuple>
 
-class QAction;
-class QMenu;
+#include "../../utils/common.h"
 
 namespace Draupnir::Menus {
 
@@ -66,6 +69,9 @@ public:
      *  @return Number of elements as constexpr int (always equals staticCount()). */
     constexpr int count() const { return staticCount(); }
 
+    template<class Entry>
+    static constexpr bool contains() { return is_one_of_v<Entry,Entries...>; }
+
     /*! @brief Returns a pointer to the element at the specified compile-time index.
      *  @tparam Index Index of the element to access (0-based).
      *  @return Pointer to the stored element. */
@@ -81,6 +87,19 @@ public:
     template<class Entry>
     auto get() {
         return std::get<_getEntryIndex<0, Entry, Entries...>()>(m_elements);
+    }
+
+    template<class Entry, class... Args>
+    QMetaObject::Connection on(Args... args) {
+        auto entry = get<Entry>();
+
+        if constexpr (std::is_base_of_v<QAction, typename Entry::Type> || std::is_same_v<QAction, typename Entry::Type>) {
+            return QObject::connect(entry, &QAction::triggered, args...);
+        } else {
+            static_assert(std::is_base_of_v<QAction, typename Entry::Type> || std::is_same_v<QAction, typename Entry::Type>,
+                "Only QAction-based things are allowed within this method.");
+            return QMetaObject::Connection{};
+        }
     }
 
     /*! @brief Adds all elements stored in this container to the given Qt UI container (QMenu, QMenuBar, etc.).
