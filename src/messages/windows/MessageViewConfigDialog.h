@@ -73,7 +73,7 @@ private:
 #include <QCheckBox>
 #include <QLabel>
 
-#include "../../../include/containers/fixed_tuple_map.h"
+#include "../../../include/containers/fixed_map.h"
 
 template<class... MessageTypes>
 class MessageViewConfigDialogTemplate : public MessageViewConfigDialog

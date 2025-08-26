@@ -131,7 +131,6 @@ private:
 #endif // DRAUPNIR_MSGSYS_CUSTOM_SETTINGS
 
     MessageListModel*                  p_messageListModel;
-
     MessageListView*                   w_messagesListView;
     // MessageListView configurator
     QToolButton*                       w_configureViewButton;

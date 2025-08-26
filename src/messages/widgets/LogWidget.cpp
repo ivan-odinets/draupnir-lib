@@ -193,6 +193,7 @@ void LogWidget::_onConfigureClicked()
 
     p_viewConfigDialog = createDialog();
     p_viewConfigDialog->setAttribute(Qt::WA_DeleteOnClose);
+    p_viewConfigDialog->displayFilterConfig(w_messagesListView->messageTypeFilter());
 
     connect(p_viewConfigDialog, &MessageViewConfigDialog::messageTypeViewChanged,
             w_messagesListView, &MessageListView::setMessageTypeDisplayed);
