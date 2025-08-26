@@ -146,6 +146,7 @@ public:
      *  @return Newly allocated QAction pointer. */
     static QAction* createElement(QWidget* parent = nullptr) {
         QAction* result = new QAction{QIcon::fromTheme("document-close"), displayName(), parent};
+        result->setShortcut(QObject::tr("Ctrl+W"));
         return result;
     }
 
