@@ -24,6 +24,16 @@ HEADERS += \
     $$PWD/include/templateMenus/entries/SubmenuEntries.h \
     $$PWD/include/templateMenus/handlers/AbstractHandlers.h \
     $$PWD/include/templateMenus/handlers/GenericMenuEntriesHandler.h \
+    $$PWD/include/templateMenus/handlers/fileMenu/FileCloseEntryHandler.h \
+    $$PWD/include/templateMenus/handlers/fileMenu/FileEntriesHandlersContext.h \
+    $$PWD/include/templateMenus/handlers/fileMenu/FileExitEntryHandler.h \
+    $$PWD/include/templateMenus/handlers/fileMenu/FileManagerValidator.h \
+    $$PWD/include/templateMenus/handlers/fileMenu/FileMenuEntriesHandler.h \
+    $$PWD/include/templateMenus/handlers/fileMenu/FileNewEntryHandler.h \
+    $$PWD/include/templateMenus/handlers/fileMenu/FileOpenEntryHandler.h \
+    $$PWD/include/templateMenus/handlers/fileMenu/FileRecentEntryHandler.h \
+    $$PWD/include/templateMenus/handlers/fileMenu/FileSaveAsEntryHandler.h \
+    $$PWD/include/templateMenus/handlers/fileMenu/FileSaveEntryHandler.h \
     $$PWD/include/templateMenus/handlers/helpMenu/AboutAppEntryHandler.h \
     $$PWD/include/templateMenus/handlers/helpMenu/AboutQtEntryHandler.h \
     $$PWD/include/templateMenus/handlers/helpMenu/HelpEntryHandler.h \
