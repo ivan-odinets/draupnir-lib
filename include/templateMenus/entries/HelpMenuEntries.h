@@ -94,6 +94,27 @@ public:
     static QString displayName() { return QObject::tr("About"); }
 };
 
+/*! @class AboutDraupnirLibMenuTrait draupnir-lib/templateMenus/entries/HelpMenuEntries.h
+ *  @brief Trait for the "About DraupnirLib" menu action. Provides a QAction with localized name. */
+
+class AboutDraupnirLibMenuTrait
+{
+public:
+    using Type = QAction;
+
+    /*! @brief Creates a QAction for the "About DraupnirLib" action.
+     *  @param parent Optional parent object.
+     *  @return Newly allocated QAction pointer. */
+    static QAction* createElement(QWidget* parent = nullptr) {
+        QAction* result = new QAction{displayName(), parent};
+        return result;
+    }
+
+    /*! @brief Returns the localized display name ("About Qt").
+     *  @return QString. */
+    static QString displayName() { return QObject::tr("About DraupnirLib"); }
+};
+
 /*! @class AboutQtMenuTrait draupnir-lib/templateMenus/entries/HelpMenuEntries.h
  *  @brief Trait for the "About Qt" menu action. Provides a QAction with localized name (for the standard Qt about dialog). */
 
