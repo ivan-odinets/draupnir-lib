@@ -62,7 +62,6 @@ struct is_pair<std::pair<First,Second> > : std::true_type {};
 template<typename T>
 constexpr bool is_pair_v = is_pair<T>::value;
 
-
 /*! @brief Type trait for detecting std::tuple types.
  *  @details Inherits from std::true_type if T is a std::tuple, otherwise std::false_type.
  *  @tparam T - type to test. */
@@ -79,5 +78,20 @@ struct is_tuple<std::tuple<Args...>> : std::true_type {};
  *  @details True if T is a std::tuple, false otherwise. */
 template<typename T>
 constexpr bool is_tuple_v = is_tuple<T>::value;
+
+/*! @brief This is a struct.
+ * @todo DocumentMe. */
+template<typename T, typename Tuple>
+struct is_type_in_tuple : std::false_type {};
+
+/*! @brief This is a struct.
+ * @todo DocumentMe. */
+template<typename T, typename... Ts>
+struct is_type_in_tuple<T, std::tuple<Ts...>> : std::disjunction<std::is_same<T, Ts>...> { };
+
+/*! @brief This is a var.
+ * @todo DocumentMe. */
+template<typename T, typename Tuple>
+inline constexpr bool is_type_in_tuple_v = is_type_in_tuple<T, Tuple>::value;
 
 #endif // COMMON_H
