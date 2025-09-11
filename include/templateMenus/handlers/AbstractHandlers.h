@@ -60,7 +60,7 @@ public:
 
     /*! @brief Connects the QAction::triggered(bool) signal to Implementation::onTriggered(bool).
      *  @param action Pointer to a QAction. Must be checkable. */
-    void connectAction(QAction* action) {
+    void connect(QAction* action) {
         p_action = action;
 
         QObject::connect(action, &QAction::triggered, [this](bool state){
@@ -171,12 +171,13 @@ private:
 template<class Context,class HandledEntry>
 class GenericMenuEntryHandler
 {
+    template<class> static inline constexpr bool dependent_false_v = false;
 public:
     /*! @brief Dummy constructor, triggers a compile-time error. Instantiating this template always results in a static_assert
      *         failure, indicating that a specialization for the given HandledEntry is missing.
      *  @param Unused Reference to context (only required for interface compatibility).  */
     GenericMenuEntryHandler(Context&) {
-        static_assert(!std::is_same_v<HandledEntry,HandledEntry>,
+        static_assert(dependent_false_v<HandledEntry>,
                 "GenericMenuEntryHandler template MUST be specialized for all handled entries.");
     }
 };

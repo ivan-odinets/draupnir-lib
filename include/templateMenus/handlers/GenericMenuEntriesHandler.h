@@ -115,6 +115,10 @@ protected:
      *  @return Reference to the internal context. */
     Context& context() { return m_context; }
 
+    std::tuple<
+        GenericMenuEntryHandler<Context, HandledEntries>...
+    >& handlers() { return m_handlers; }
+
 private:
     Context m_context;
     std::tuple<

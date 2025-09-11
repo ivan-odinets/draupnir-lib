@@ -27,11 +27,6 @@
 
 #include "../GenericMenuEntriesHandler.h"
 
-// We need these includes, as in any case this file will be included together with one or more of them
-#include "AboutAppEntryHandler.h" // IWYU pragma: keep
-#include "AboutQtEntryHandler.h"  // IWYU pragma: keep
-#include "HelpEntryHandler.h"     // IWYU pragma: keep
-
 namespace Draupnir::Menus {
 
 /*! @class HelpMenuEntriesHandler draupnir-lib/include/templateMenus/handlers/helpMenu/HelpMenuEntriesHandler.h
