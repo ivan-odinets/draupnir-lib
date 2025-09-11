@@ -39,6 +39,11 @@ HEADERS += \
     $$PWD/include/templateMenus/handlers/helpMenu/HelpEntryHandler.h \
     $$PWD/include/templateMenus/handlers/helpMenu/HelpMenuEntriesHandler.h \
     $$PWD/include/templateMenus/handlers/settingsMenu/MinimizeOnCloseEntryHandler.h \
+    $$PWD/include/templateMenus/handlers/settingsMenu/MinimizeToTrayEntryHandler.h \
+    $$PWD/include/templateMenus/handlers/settingsMenu/SettingsCheckableEntryHandler.h \
+    $$PWD/include/templateMenus/handlers/settingsMenu/SettingsEntriesHandlerContext.h \
+    $$PWD/include/templateMenus/handlers/settingsMenu/SettingsMenuEntriesHandler.h \
+    $$PWD/include/templateMenus/handlers/settingsMenu/StartHiddenEntryHandler.h \
     $$PWD/include/templateMenus/menus/MenuBarTemplate.h \
     $$PWD/include/templateMenus/menus/MenuEntriesContainer.h \
     $$PWD/include/templateMenus/menus/MenuTemplate.h \
