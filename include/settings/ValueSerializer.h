@@ -54,7 +54,6 @@ template<class Backend,class Value>
 class ValueSerializer
 {
 public:
-
     /*! @brief Retrieves a value from the backend by key, or returns a default if not found or conversion fails.
      *  @param backend Pointer to the settings backend.
      *  @param key     Storage key used to retrieve the value.

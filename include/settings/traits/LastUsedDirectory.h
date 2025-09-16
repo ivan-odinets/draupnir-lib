@@ -31,6 +31,19 @@
 namespace Draupnir::Settings
 {
 
+/*! @struct LastUsedDirectory
+ *  @brief Setting trait for tracking the most recently used directory.
+ *  @details This trait defines how the "last used directory" setting is stored and retrieved.
+ *           It provides:
+ *           - The value type (`QString`);
+ *           - A unique storage key ("lastUsedDirectory");
+ *           - A default value (the user's home directory).
+ *
+ * @note This trait has no associated menu entry (Entry = void). It is intended for internal use, e.g. remembering the last
+ *       path used in file dialogs.
+ *
+ * @see SettingsRegistry, SettingsBundle */
+
 struct LastUsedDirectory {
     using Entry = void;      //!< No associated menu entry.
     using Value = QString;   //!< Underlying value type.

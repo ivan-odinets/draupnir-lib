@@ -30,12 +30,12 @@
 namespace Draupnir::Settings
 {
 
-struct ActiveWidgetIndex {
+struct RecentFileList {
     using Entry = void;           //!< No associated menu entry.
     using Value = QStringList;    //!< Underlying value type.
 
     /*! @brief Return the persistent storage key ("recentFiles"). */
-    static QString key() { return "recentFiles"; }
+    static QString key() { return "files/recentFiles"; }
 
     /*! @brief Return the default value - empty QStringList. */
     static QStringList defaultValue() { return QStringList{}; }

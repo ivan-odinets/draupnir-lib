@@ -28,7 +28,7 @@
 #include <tuple>
 
 #include "SettingTemplate.h"
-#include "SettingBundle.h"
+#include "SettingsBundle.h"
 
 namespace Draupnir::Settings
 {
