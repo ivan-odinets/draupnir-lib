@@ -22,7 +22,7 @@
  *
  */
 
-#include "AppSettings.h"
+#include "core/AppSettings.h"
 
 #include <QDebug>
 #include <QSettings>

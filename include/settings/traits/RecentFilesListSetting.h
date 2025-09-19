@@ -22,19 +22,21 @@
  *
  */
 
-#ifndef RECENTFILESLIST_H
-#define RECENTFILESLIST_H
+#ifndef RECENTFILESLISTSETTING_H
+#define RECENTFILESLISTSETTING_H
 
 #include <QStringList>
 
 namespace Draupnir::Settings
 {
 
-struct RecentFileList {
-    using Entry = void;           //!< No associated menu entry.
-    using Value = QStringList;    //!< Underlying value type.
+struct RecentFileList
+{
+    /*! @brief Underlying value type. */
+    using Value = QStringList;
 
-    /*! @brief Return the persistent storage key ("recentFiles"). */
+    /*! @brief Return the persistent storage key ("recentFiles").
+     * @todo Add normal prefix for this setting. */
     static QString key() { return "files/recentFiles"; }
 
     /*! @brief Return the default value - empty QStringList. */
@@ -43,4 +45,4 @@ struct RecentFileList {
 
 }
 
-#endif // RECENTFILESLIST_H
+#endif // RECENTFILESLISTSETTING_H

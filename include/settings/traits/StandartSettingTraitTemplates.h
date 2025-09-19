@@ -22,21 +22,22 @@
  *
  */
 
-#ifndef SETTINGTRAITTEMPLATE_H
-#define SETTINGTRAITTEMPLATE_H
+#ifndef STANDARTSETTINGTRAITTEMPLATES_H
+#define STANDARTSETTINGTRAITTEMPLATES_H
 
+#include <QSize>
 #include <QString>
+
+/*! @file StandartSettingTraitTemplates.h
+ *  @brief This file contains templaits for creating a standart SettingTrait objects. */
 
 namespace Draupnir::Settings
 {
 
 /*! @struct SettingTraitTemplate
  *  @brief Generic template for defining a setting trait.
- *  @details This struct provides a concise way to declare new setting traits that connect a menu entry with its underlying
- *           value type, persistent key, and default value.
- *
- *           A setting trait defined via this template supplies:
- *           - using Entry — the associated menu entry trait type;
+ *  @details This struct provides a concise way to declare new setting traits. A setting trait defined via this template
+ *           supplies:
  *           - using Value — the underlying C++ value type (e.g. bool, int, QString);
  *           - static QString key() — the storage key as a QString, built from @p settingsKey;
  *           - static Value defaultValue() — the default value.
@@ -46,25 +47,23 @@ namespace Draupnir::Settings
  *           inline constexpr const char darkModeKey[] = "darkMode";
  *
  *           using DarkMode = SettingTraitTemplate<
- *              MyApp::Menus::DarkModeEntry, // associated menu entry
  *              bool,                        // value type
  *              darkModeKey,                 // persistent key
  *              false                        // default value
  *           >;
  *           @endcode
  *
- *  @tparam MenuEntryClass  The menu entry trait class this setting corresponds to.
  *  @tparam ValueClass      The underlying C++ type of the setting value.
  *  @tparam settingsKey     Pointer to a global constexpr string key.
  *  @tparam value           Default value of type @c ValueClass.
  *
  *  @see SettingTraitForEntry, SettingsRegistry, SettingsEntriesHandlerContext */
 
-template<class MenuEntryClass,class ValueClass,const char* const settingsKey,auto value>
+template<class ValueClass,const char* const settingsKey,auto value>
 struct SettingTraitTemplate
 {
-    using Entry = MenuEntryClass;   //!< Associated menu entry trait type.
-    using Value = ValueClass;       //!< Underlying value type.
+    /*! @brief Underlying value type. */
+    using Value = ValueClass;
 
     /*! @brief Return the persistent key as a QString. */
     static QString key() { return QString{settingsKey}; }
@@ -73,6 +72,33 @@ struct SettingTraitTemplate
     static Value defaultValue() { return value; }
 };
 
+/*! @struct SizeSettingTraitTemplate
+ *  @brief Generic template for defining a setting trait for storing a QSize object
+ *  @details This struct provides a concise way to declare new QSize setting traits. A setting trait defined via this template
+ *           supplies:
+ *           - using QSize — the underlying C++ value type;
+ *           - static QString key() — the storage key as a QString, built from @p settingsKey;
+ *           - static QSize defaultValue() — the default value constructed from provided width and height
+ *
+ *  @tparam settingsKey     Pointer to a global constexpr string key.
+ *  @tparam defaultWidth    Default width.
+ *  @tparam defaultHeight   Default height.
+
+ *  @see SettingTraitForEntry, SettingsRegistry, SettingsEntriesHandlerContext */
+
+template<const char* settingsKey,int defaultWidth, int defaultHeight = defaultWidth>
+struct SizeSettingTraitTemplate
+{
+    /*! @brief Underlying value type. */
+    using Value = QSize;
+
+    /*! @brief Return the persistent key as a QString. */
+    static QString key() { return QString{settingsKey}; }
+
+    /*! @brief Return the default value. */
+    static QSize defaultValue() { return QSize{defaultWidth,defaultHeight}; }
 };
 
-#endif // SETTINGTRAITTEMPLATE_H
+};
+
+#endif // STANDARTSETTINGTRAITTEMPLATES_H

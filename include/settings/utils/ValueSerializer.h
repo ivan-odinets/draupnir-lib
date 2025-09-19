@@ -30,11 +30,14 @@
 namespace Draupnir::Settings
 {
 
-/*! @class ValueSerializer draupnir-lib/incldue/settings/ValueSerializer.h
- *  @brief Provides type-safe serialization and deserialization of values using a settings backend.
+/*! @class ValueSerializer draupnir-lib/incldue/settings/utils/ValueSerializer.h
+ *  @brief Provides type-safe serialization and deserialization of values using a specified backend.
  *  @details This class provides static `get()` and `set()` methods for reading/writing a value to a settings backend using
  *           a string key. It performs runtime type conversion via `QVariant` and supports a fallback to the default value
  *           if the key is not present or conversion fails.
+ *
+ *           This template may be specialized if the Value needs to be stored under one key, but QVarient convertion mechanism
+ *           is not good. For example when storing enums as their string representation.
  *
  *           ### Usage example:
  *           @code

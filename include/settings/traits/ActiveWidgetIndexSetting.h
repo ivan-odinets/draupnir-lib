@@ -22,39 +22,38 @@
  *
  */
 
-#ifndef ACTIVEWIDGETINDEX_H
-#define ACTIVEWIDGETINDEX_H
+#ifndef ACTIVEWIDGETINDEXSETTING_H
+#define ACTIVEWIDGETINDEXSETTING_H
 
 #include <QString>
 
 namespace Draupnir::Settings
 {
 
-/*! @struct ActiveWidgetIndex
+/*! @struct ActiveWidgetIndexSetting
  *  @brief Setting trait describing the index of currently active widget (e.g. within QTabWidget)
- *  @details This trait defines a setting that stores and retrieves the active widget index as int. It does not correspond to
- *           a specific menu entry (hence Entry is set to void), but can be used directly in a SettingsRegistry or similar
- *           infrastructure.
+ *  @details This trait defines a setting that stores and retrieves the active widget index as int.
  *
  *           Provides:
- *           - using Entry = void (no associated menu entry);
  *           - using Value = int (the stored C++ type);
  *           - static QString key() — returns the persistent key string ("activeWidgetIndex");
- *           - static Value defaultValue() — returns the default index = 0.
+ *           - static int defaultValue() — returns the default index = 0.
  *
  *           Example:
  *           @code
  *           SettingsRegistry<ActiveWidgetIndex> registry;
- *           registry.loadSettings(appSettings);
+ *           registry.loadSettings();
  *
- *           int index = registry.getSetting<ActiveWidgetIndex>();
+ *           int index = registry.template get<ActiveWidgetIndex>();
  *           @endcode */
 
-struct ActiveWidgetIndex {
-    using Entry = void;      //!< No associated menu entry.
-    using Value = int;       //!< Underlying value type.
+struct ActiveWidgetIndexSetting
+{
+    /*! @brief Underlying value type. */
+    using Value = int;
 
-    /*! @brief Return the persistent storage key ("activeWidgetIndex"). */
+    /*! @brief Return the persistent storage key ("activeWidgetIndex").
+     * @todo Add normal prefix for this setting. */
     static QString key() { return "activeWidgetIndex"; }
 
     /*! @brief Return the default value - 0. */
@@ -63,4 +62,4 @@ struct ActiveWidgetIndex {
 
 };
 
-#endif // ACTIVEWIDGETINDEX_H
+#endif // ACTIVEWIDGETINDEXSETTING_H

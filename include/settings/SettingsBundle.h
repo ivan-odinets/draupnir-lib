@@ -32,12 +32,11 @@
 #if defined(DRAUPNIR_SETTINGS_USE_QSETTINGS)
     #include <QSettings>
 #elif defined(DRAUPNIR_SETTINGS_USE_APPSETTINGS)
-    #include "AppSettings.h"
+    #include "core/AppSettings.h"
 #endif // DRAUPNIR_SETTINGS_USE_QSETTINGS || DRAUPNIR_SETTINGS_USE_APPSETTINGS
 
 #include "SettingTemplate.h"
-#include "SettingTraitSerializer.h"
-#include "SettingTraitForEntry.h"
+#include "utils/SettingTraitSerializer.h"
 
 #include "../utils/common.h"
 
@@ -109,6 +108,43 @@ public:
                (!std::apply([](auto*... ptrs) { return (... || (ptrs == nullptr)); }, m_settingTemplatePtrTuple));
     }
 
+    /*! @brief Returns the pointer to the enabled Backend. */
+    Backend* settings() { return p_backend; }
+
+    /*! @brief Prints all keys and values in the bundle using qDebug(). Intended for quick inspection and debugging. */
+    void printAllToDebug() const {
+        Q_ASSERT_X(isValid(), "SettingsBundle<SettingsTraits...>::printAllToDebug",
+                   "This method must be called only for valid SettingsBundle objects.");
+
+        qDebug() << "SettingsBundle<SettingsTraits...>::printAllToDebug()";
+        _debugPrintAllImpl<SettingTraits...>();
+    }
+
+    template<class Bundle>
+    Bundle getSettingsBundle() {
+        static_assert(Bundle::template canBeFullyPopulatedFrom<SettingsBundle<SettingTraits...>>(),
+                "Requested Bundle can not be fully populated by this SettingsBundle<SettingTraits...> instance.");
+        Q_ASSERT_X(p_backend, "SettingsBundle<SettingTraits...>::getSettingsBundle<Bundle>()",
+                   "This bundle must have been initialized from corresponding SettingsRegistry.");
+
+        Bundle result{p_backend};
+        _populateSettingBundle<Bundle,SettingTraits...>(result);
+        return result;
+    }
+
+    /*! @brief Shortcut to get a SettingsBundle for a specific subset of traits. Equivalent to
+     *         getSettingsBundle<SettingsBundle<SubsetOfTraits...>>().
+     *  @tparam SubsetOfTraits One or more traits that exist within this registry. */
+    template<class... SubsetOfTraits>
+    SettingsBundle<SubsetOfTraits...> getSettingBundleForTraits() {
+        static_assert(SettingsBundle<SubsetOfTraits...>::template canBeFullyPopulatedFrom<SettingsBundle<SettingTraits...>>(),
+                "Requested Bundle can not be fully populated by this SettingsBundle<SettingTraits...> instance.");
+        Q_ASSERT_X(p_backend, "SettingsBundle<SettingTraits...>::getSettingBundleForTraits<Bundle>()",
+                   "This bundle must have been initialized from corresponding SettingsRegistry.");
+
+        return getSettingsBundle<SettingsBundle<SubsetOfTraits...>>();
+    };
+
     /*! @brief Returns a const reference to the value associated with a specific SettingTrait.
      *  @tparam Trait Must be one of the traits in the bundle.
      *  @return Const reference to the setting's value. */
@@ -120,19 +156,6 @@ public:
                    "Backend pointer was not set.");
 
         return std::get<SettingTemplate<Trait>*>(m_settingTemplatePtrTuple)->value;
-    }
-
-    /*! @brief Returns a const reference to the value associated with a MenuEntry.
-     *  @tparam MenuEntry Type mapped to a SettingTrait via SettingTraitForEntry<MenuEntry>.
-     *  @return Const reference to the setting's value. */
-    template<class MenuEntry>
-    const typename SettingTraitForEntry<MenuEntry>::type::Value& getByMenuEntry() const {
-        static_assert(is_one_of_v<typename SettingTraitForEntry<MenuEntry>::type,SettingTraits...>,
-                "Trait for the specified MenuEntry is not a member of SettingTraits... pack.");
-        Q_ASSERT_X(p_backend, "SettingBundle<SettingTraits...>::get<Trait>",
-                   "Backend pointer was not set.");
-
-        return get<SettingTraitForEntry<MenuEntry>::type>();
     }
 
     /*! @brief Sets and persists the value of a specific SettingTrait.
@@ -147,15 +170,6 @@ public:
 
         std::get<SettingTemplate<Trait>*>(m_settingTemplatePtrTuple)->value = value;
         SettingTraitSerializer<Backend,Trait>::set(p_backend, value);
-    }
-
-    /*! @brief Prints all keys and values in the bundle using qDebug(). Intended for quick inspection and debugging. */
-    void printAllToDebug() const {
-        Q_ASSERT_X(isValid(), "SettingsBundle<SettingsTraits...>::printAllToDebug",
-                   "This method must be called only for valid SettingsBundle objects.");
-
-        qDebug() << "SettingsBundle<SettingsTraits...>::printAllToDebug()";
-        _debugPrintAllImpl<SettingTraits...>();
     }
 
 protected:
@@ -207,14 +221,35 @@ private:
             _debugPrintAllImpl<Rest...>();
     }
 
-    template<class SettingsRegistry, class First,class... Rest>
+    /*! @brief Populates a SettingsBundle by assigning internal trait pointers.
+     *  @tparam Bundle Target bundle type. */
+    template<class Bundle,class First, class... Rest>
+    inline void _populateSettingBundle(Bundle& bundle) {
+
+        if constexpr (Bundle::template contains<First>()) {
+            bundle.registerSetting(std::get<SettingTemplate<First>*>(m_settingTemplatePtrTuple));
+        }
+
+        if constexpr (sizeof...(Rest) > 0)
+            _populateSettingBundle<Bundle,Rest...>(bundle);
+    }
+
+    template<class T>
+    struct always_false : std::false_type {};
+
+    template<class T> struct printFuck;
+
+    template<class Source, class First,class... Rest>
     static constexpr bool _canBePopulatedFromImpl() {
-        if constexpr (!SettingsRegistry::template containsSetting<First>)
+        if constexpr (!Source::template contains<First>()) {
+            static_assert(printFuck<First>::value,
+                          "❌ This SettingTrait is missing in SettingsRegistry");
             return false;
-        else if constexpr (sizeof...(Rest) > 0)
-            return _canBePopulatedFromImpl<SettingsRegistry,Rest...>();
-        else
+        } else if constexpr (sizeof...(Rest) > 0) {
+            return _canBePopulatedFromImpl<Source,Rest...>();
+        } else {
             return true;
+        }
     }
 };
 

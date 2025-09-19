@@ -32,15 +32,12 @@
 namespace Draupnir::Settings
 {
 
-/*! @class SettingTraitValidator draupnir-lib/incldue/settings/SettingTraitValidator.h
+/*! @class SettingTraitValidator draupnir-lib/incldue/settings/utils/SettingTraitValidator.h
  *  @brief Compile-time validator for SettingTrait requirements.
- *  @details This helper performs SFINAE-based checks to ensure a given SettingTrait conforms to the expected interface:
- *           - Вefines nested type Value;
+ *  @details This helper performs SFINAE-based checks to ensure a given SettingTrait provides expected interface:
+ *           - Defines nested type Value;
  *           - Provides static QString key();
  *           - Provides static Value defaultValue().
- *
- *           Use isValidTrait<SettingTrait>() in static contexts (e.g. static_assert) or to gate template instantiations
- *           via SFINAE/if constexpr.
  *
  * @note The detection utilities (has_valueType, has_key, has_defaultValue) are implemented via std::void_t. They evaluate
  *       to std::true_type if and only if the corresponding expression is well-formed. */
@@ -48,29 +45,6 @@ namespace Draupnir::Settings
 class SettingTraitValidator
 {
 public:
-    /*! @brief Check whether SettingTrait satisfies the minimal trait contract.
-     *  @details The contract is:
-     *           - typename SettingTrait::Value exists;
-     *           - static QString SettingTrait::key();
-     *           - static SettingTrait::Value SettingTrait::defaultValue();
-     *
-     *           On failure, this function triggers compile-time diagnostics via static_assert with a descriptive message.
-     *  @tparam SettingTrait Candidate trait type to validate.
-     *  @return true if all required members are present; otherwise compilation fails. */
-//    template<class SettingTrait>
-//    static bool constexpr isValidTrait() {
-//        static_assert(has_valueType<SettingTrait>::value,
-//                "Provided SettingTrait does not have the Value type defined");
-//        static_assert(has_key<SettingTrait>::value,
-//                "Provided SettingTrait does not have the static QString key() method defined");
-//        static_assert(has_defaultValue<SettingTrait>::value,
-//                "Provided SettingTrait does not have the static typename SettingTrait::Value defaultValue() method defined");
-
-//        return has_valueType<SettingTrait>::value &&
-//               has_key<SettingTrait>::value &&
-//               has_defaultValue<SettingTrait>::value;
-//    }
-
     /*! @brief Checks that typename SettingTrait::Value exists. */
     template<class SettingTrait, class = void>
     struct has_valueType : std::false_type {};

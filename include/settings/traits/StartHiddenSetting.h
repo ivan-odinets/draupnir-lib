@@ -22,39 +22,39 @@
  *
  */
 
-#ifndef LASTUSEDDIRECTORY_H
-#define LASTUSEDDIRECTORY_H
+#ifndef STARTHIDDENSETTING_H
+#define STARTHIDDENSETTING_H
 
-#include <QDir>
-#include <QString>
+#include "StandartSettingTraitTemplates.h"
 
 namespace Draupnir::Settings
 {
 
-/*! @struct LastUsedDirectory
- *  @brief Setting trait for tracking the most recently used directory.
- *  @details This trait defines how the "last used directory" setting is stored and retrieved.
- *           It provides:
- *           - The value type (`QString`);
- *           - A unique storage key ("lastUsedDirectory");
- *           - A default value (the user's home directory).
+/*! @struct StartHiddenSetting
+ *  @brief Concrete setting trait describing the "Start Hidden" option.
+ *  @details This struct provides StartHiddenSetting trait with:
+ *           - using Value = bool;
+ *           - static QString key();
+ *           - static bool defaultValue();
  *
- * @note This trait has no associated menu entry (Entry = void). It is intended for internal use, e.g. remembering the last
- *       path used in file dialogs.
+ *           It can be used in SettingsRegistry, SettingsEntriesHandlerContext, or any handler expecting a SettingTrait.
  *
  * @see SettingsRegistry, SettingsBundle */
 
-struct LastUsedDirectory {
-    using Entry = void;      //!< No associated menu entry.
-    using Value = QString;   //!< Underlying value type.
+struct StartHiddenSetting
+{
+    /*! @brief Underlying value type. */
+    using Value = bool;
 
-    /*! @brief Return the persistent storage key ("lastUsedDirectory"). */
-    static QString key() { return "lastUsedDirectory"; }
+    /*! @brief Return the persistent storage key ("startHidden").
+     * @todo Add normal prefix for this setting. */
+    static QString key() { return "startHidden"; }
 
-    /*! @brief Return the default value - home directory of the user. */
-    static QString defaultValue() { return QDir::homePath(); }
+    /*! @brief Return the default value - home directory of the user.
+     * @todo Add #define to reconfigure this. */
+    static bool defaultValue() { return false; }
 };
 
-}
+};
 
-#endif // LASTUSEDDIRECTORY_H
+#endif // STARTHIDDENSETTING_H

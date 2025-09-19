@@ -25,7 +25,7 @@
 #ifndef SETTINGTEMPLATE_H
 #define SETTINGTEMPLATE_H
 
-#include "SettingTraitValidator.h"
+#include "utils/SettingTraitValidator.h"
 
 namespace Draupnir::Settings {
 

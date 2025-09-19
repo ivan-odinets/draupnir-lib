@@ -28,13 +28,13 @@
 #if defined(DRAUPNIR_SETTINGS_USE_QSETTINGS)
     #include <QSettings>
 #elif defined(DRAUPNIR_SETTINGS_USE_APPSETTINGS)
-    #include "AppSettings.h"
+    #include "core/AppSettings.h"
 #endif // DRAUPNIR_SETTINGS_USE_QSETTINGS || DRAUPNIR_SETTINGS_USE_APPSETTINGS
 
-#include "SettingTraitsConcat.h"
-#include "SettingTraitForEntry.h"
-#include "SettingTraitValidator.h"
-#include "SettingTraitSerializer.h"
+#include "utils/SettingTraitsConcat.h"
+//#include "utils/SettingTraitForEntry.h"
+#include "utils/SettingTraitValidator.h"
+#include "utils/SettingTraitSerializer.h"
 
 #include "../utils/common.h"
 
@@ -90,10 +90,30 @@ class SettingsRegistry
     using AbstractSettingsTuple = typename TupleConcat<typename Flatten<Traits>::type...>::type;
 
 public:
+    /*! @brief Checks at compile time whether a specific SettingTrait is part of this registry.
+     *  @tparam SettingTrait A trait to check for. */
+    template<class SettingTrait>
+    static constexpr bool contains() { return is_type_in_tuple_v<SettingTemplate<SettingTrait>,AbstractSettingsTuple>; }
+
+    /*! @brief Checks at compile time whether a specific SettingTrait is part of this registry.
+     *  @tparam SettingTrait A trait to check for. */
+    template<class SettingTrait>
+    [[deprecated]] static constexpr bool containsSetting() {
+        return is_type_in_tuple_v<SettingTemplate<SettingTrait>,AbstractSettingsTuple>;
+    }
+
+    /*! @brief Returns whether the SettingsRegistry is empty.
+     *  @return False if sizeof...(Traits> != 0. */
+    static constexpr bool isEmpty() { return sizeof...(Traits) == 0; }
+
     /*! @brief Default constructor. Initializes internal Backend pointer to nullptr. */
     SettingsRegistry() :
         p_backend{nullptr}
     {}
+
+    ~SettingsRegistry() {
+        delete p_backend;
+    }
 
     /*! @brief Creates Backend object and loads all registered settings from the Backend. */
     void loadSettings() {
@@ -102,6 +122,10 @@ public:
 
         _loadSettingsImpl<0>();
     }
+
+    /*! @brief Checks whether the SettingsRegistry has been bound to backend.
+     *  @return true if backend pointer is not nullptr, false otherwise. */
+    bool isLoaded() const { return p_backend != nullptr; }
 
 #if defined(DRAUPNIR_SETTINGS_USE_APPSETTINGS)
     /*! @brief Enable or disable preservation mode (no writing to config file).
@@ -132,7 +156,7 @@ public:
      *  @tparam Bundle A concrete instantiation of SettingsBundle<Ts...>
      *  @return An initialized SettingsBundle with pointers to internal AbstractSetting<T> instances. */
     template<class Bundle>
-    Bundle getSettingBundle() {
+    Bundle getSettingsBundle() {
         static_assert(Bundle::template canBeFullyPopulatedFrom<SettingsRegistry<Traits...>>(),
                 "Requested Bundle can not be fully populated by this SettingsRegistry<Traits...> instance.");
         Q_ASSERT_X(p_backend, "SettingsRegistry<SettingTraits...>::getSettingsBundle<Bundle>()",
@@ -153,43 +177,27 @@ public:
         Q_ASSERT_X(p_backend, "SettingsRegistry<SettingTraits...>::getSettingBundleForTraits<SubsetOfTraits...>()",
                    "SettingsRegistry<SettingTraits...>::loadSettings method must have been called before.");
 
-        return getSettingBundle<SettingsBundle<SubsetOfTraits...>>();
+        return getSettingsBundle<SettingsBundle<SubsetOfTraits...>>();
     };
 
-    /*! @brief Checks at compile time whether a setting is present for the given MenuEntry. Resolves
-     *         `SettingTraitForEntry<MenuEntry>::type` and checks presence in registry.
-     *  @tparam MenuEntry Menu entry type mapped to a SettingTrait.
-     *  @return true if trait is registered; false otherwise. */
-    template<class MenuEntry>
-    static constexpr bool containsSettingForMenuEntry() {
-        return containsSetting<typename SettingTraitForEntry<MenuEntry>::type>();
-    }
-
-    /*! @brief Checks at compile time whether a specific SettingTrait is part of this registry.
-     *  @tparam SettingTrait A trait to check for. */
-    template<class SettingTrait>
-    static constexpr bool containsSetting() {
-        return is_type_in_tuple_v<SettingTemplate<SettingTrait>,AbstractSettingsTuple>;
-    }
-
-    /*! @brief Gets the value of a setting associated with a given MenuEntry.
-     *  @tparam MenuEntry Type mapped to a SettingTrait via SettingTraitForEntry<>.
-     *  @return const reference to the setting's stored value. */
-    template<class MenuEntry>
-    const typename SettingTraitForEntry<MenuEntry>::type::Value& getSettingForMenuEntry() const {
-        static_assert(containsSetting<typename SettingTraitForEntry<MenuEntry>::type>,
-                "Setting trait for MenuEntry specified is not registered within this SettingsRegistry.");
-        Q_ASSERT_X(p_backend, "SettingsRegistry<SettingTraits...>::getSettingForMenuEntry<MenuEntry>",
-                   "SettingsRegistry<SettingTraits...>::loadSettings method must have been called before.");
-        return get<typename SettingTraitForEntry<MenuEntry>::type>();
-    }
+//    /*! @brief Gets the value of a setting associated with a given MenuEntry.
+//     *  @tparam MenuEntry Type mapped to a SettingTrait via SettingTraitForEntry<>.
+//     *  @return const reference to the setting's stored value. */
+//    template<class MenuEntry>
+//    const typename SettingTraitForEntry<MenuEntry>::type::Value& getSettingForMenuEntry() const {
+//        static_assert(containsSetting<typename SettingTraitForEntry<MenuEntry>::type>,
+//                "Setting trait for MenuEntry specified is not registered within this SettingsRegistry.");
+//        Q_ASSERT_X(p_backend, "SettingsRegistry<SettingTraits...>::getSettingForMenuEntry<MenuEntry>",
+//                   "SettingsRegistry<SettingTraits...>::loadSettings method must have been called before.");
+//        return get<typename SettingTraitForEntry<MenuEntry>::type>();
+//    }
 
     /*! @brief Gets the value of a specific setting.
      *  @tparam SettingTrait Trait present in the registry.
      *  @return const reference to the setting's stored value. */
     template<class SettingTrait>
     const typename SettingTrait::Value& get() const {
-        static_assert(containsSetting<SettingTrait>(),
+        static_assert(contains<SettingTrait>(),
                 "SettingTrait specified is not registered within this SettingsRegistry.");
         Q_ASSERT_X(p_backend, "SettingsRegistry<SettingTraits...>::get<SettingTrait>",
                    "SettingsRegistry<SettingTraits...>::loadSettings method must have been called before.");
@@ -201,7 +209,7 @@ public:
      *  @param value New value to store and persist. */
     template<class SettingTrait>
     void set(const typename SettingTrait::Value& value) {
-        static_assert(containsSetting<SettingTrait>(),
+        static_assert(contains<SettingTrait>(),
                 "SettingTrait specified is not registered within this SettingsRegistry.");
         Q_ASSERT_X(p_backend, "SettingsRegistry<SettingTraits...>::set<SettingTrait>",
                    "SettingsRegistry<SettingTraits...>::loadSettings method must have been called before.");

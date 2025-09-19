@@ -22,8 +22,8 @@
  *
  */
 
-#ifndef WINDOWSIZE_H
-#define WINDOWSIZE_H
+#ifndef WINDOWSIZESETTING_H
+#define WINDOWSIZESETTING_H
 
 #include <QSize>
 #include <QString>
@@ -33,12 +33,10 @@ namespace Draupnir::Settings
 
 /*! @struct WindowSize
  *  @brief Setting trait describing the main application window size.
- *  @details This trait defines a setting that stores and retrieves the window size (width and height) as a QSize. It does
- *           not correspond to a specific menu entry (hence Entry is set to void), but can be used directly in a SettingsRegistry
- *           or similar infrastructure.
+ *  @details This trait defines a setting that stores and retrieves the window size (width and height) as a QSize. It can
+ *           be used directly in a SettingsRegistry.
  *
  *           Provides:
- *           - using Entry = void (no associated menu entry);
  *           - using Value = QSize (the stored C++ type);
  *           - static QString key() — returns the persistent key string ("windowSize");
  *           - static Value defaultValue() — returns the default QSize (empty size).
@@ -46,14 +44,15 @@ namespace Draupnir::Settings
  *           Example:
  *           @code
  *           SettingsRegistry<WindowSize> registry;
- *           registry.loadSettings(appSettings);
+ *           registry.loadSettings();
  *
- *           QSize sz = registry.getSetting<WindowSize>();
+ *           QSize sz = registry.template get<WindowSize>();
  *           @endcode */
 
-struct WindowSize {
-    using Entry = void;   //!< No associated menu entry.
-    using Value = QSize;  //!< Underlying value type.
+struct WindowSizeSetting
+{
+    /*! @brief Underlying value type. */
+    using Value = QSize;
 
     /*! @brief Return the persistent storage key ("windowSize"). */
     static QString key() { return "windowSize"; }
@@ -64,4 +63,4 @@ struct WindowSize {
 
 };
 
-#endif // WINDOWSIZE_H
+#endif // WINDOWSIZESETTING_H
