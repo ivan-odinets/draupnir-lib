@@ -34,7 +34,7 @@ public:
         QMessageBox::information(
             nullptr,
             QObject::tr("About Draupnit Lib"),
-            QObject::tr("This Application is using the DraupnirLib.");
+            QObject::tr("This Application is using the DraupnirLib.")
         );
     }
 };
