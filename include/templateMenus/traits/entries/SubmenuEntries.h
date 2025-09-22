@@ -34,7 +34,7 @@ class QWidget;
 
 namespace Draupnir::Menus {
 
-/*! @class CustomMenuEntryTrait draupnir-lib/templateMenus/entries/SubmenuEntries.h
+/*! @class CustomMenuEntryTrait draupnir-lib/templateMenus/traits/entries/SubmenuEntries.h
  *  @brief Trait for describing a menu entry that uses a custom menu class. Provides static creation of the custom menu,
  *         passing displayName() and parent as arguments.
  *  @tparam displayNameImpl A callable returning a QString (used for the menu's title).
@@ -60,7 +60,7 @@ public:
     }
 };
 
-/*! @class DynamicCustomMenu draupnir-lib/templateMenus/entries/SubmenuEntries.h
+/*! @class DynamicCustomMenu draupnir-lib/templateMenus/traits/entries/SubmenuEntries.h
  *  @brief Trait for a menu entry whose custom menu is constructed via a dynamic user-supplied factory.
  *  @tparam displayNameImpl A callable returning a QString (used for the menu's title).
  *  @tparam CustomMenu      The custom menu class type (should match the factory).
@@ -109,7 +109,7 @@ private:
 template<class... Entries>
 class MenuTemplate;
 
-/*! @class MenuTemplateEntry draupnir-lib/templateMenus/entries/SubmenuEntries.h
+/*! @class MenuTemplateEntry draupnir-lib/templateMenus/traits/entries/SubmenuEntries.h
  *  @brief Trait for a nested sub-menu described by a MenuTemplate with compile-time entries. Provides static creation of
  *         the menu template (as a QMenu subclass) with the given entries.
  *  @tparam displayNameFunction Callable returning a QString (used as menu title).

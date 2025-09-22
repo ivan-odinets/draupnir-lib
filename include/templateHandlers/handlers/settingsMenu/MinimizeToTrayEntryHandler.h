@@ -22,24 +22,34 @@
  *
  */
 
-#ifndef STARTHIDDENENTRYHANDLER_H
-#define STARTHIDDENENTRYHANDLER_H
+#ifndef MINIMIZETOTRAYENTRYHANDLER_H
+#define MINIMIZETOTRAYENTRYHANDLER_H
 
 #include "SettingsCheckableEntryHandler.h"
 
-namespace Draupnir::Menus
+namespace Draupnir::Handlers
 {
 
 template<class SettingsContext>
-class GenericMenuEntryHandler<SettingsContext,StartHiddenMenuEntry> :
-    public SettingsCheckableEntryHandler<SettingsContext,StartHiddenMenuEntry>
+class GenericMenuEntryHandler<SettingsContext,Draupnir::Menus::MinimizeToTrayEntry> :
+    public SettingsCheckableEntryHandler<SettingsContext,Draupnir::Menus::MinimizeToTrayEntry>
 {
 public:
     GenericMenuEntryHandler(SettingsContext& context) :
-        SettingsCheckableEntryHandler<SettingsContext,StartHiddenMenuEntry>{context}
+        SettingsCheckableEntryHandler<SettingsContext,Draupnir::Menus::MinimizeToTrayEntry>{context}
     {}
 };
 
-}; // namespace Draupnir::Menus
+/*! @struct SettingTraitForEntry<Draupnir::Menus::MinimizeToTrayEntry>
+ *  @brief Specialization mapping the "Minimize to Tray" menu entry to its setting trait.
+ *  @details Associates the menu entry trait Draupnir::Menus::MinimizeToTrayEntry with the corresponding MinimizeToTray
+ *           setting trait. This mapping allows SettingsMenuEntriesHandler to resolve the correct value type and key at
+ *           compile time. */
 
-#endif // STARTHIDDENENTRYHANDLER_H
+template<> struct SettingTraitForEntry<Draupnir::Menus::MinimizeToTrayEntry> {
+    using type = Settings::MinimizeToTraySetting;
+};
+
+};
+
+#endif // MINIMIZETOTRAYENTRYHANDLER_H

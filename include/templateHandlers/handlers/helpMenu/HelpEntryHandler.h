@@ -25,20 +25,21 @@
 #ifndef HELPENTRYHANDLER_H
 #define HELPENTRYHANDLER_H
 
-#include "../AbstractHandlers.h"
+#include "handlers/AbstractHandlers.h"
 
 #include <QDialog>
 #include <QPointer>
 
-#include "../../entries/HelpMenuEntries.h"
+#include "traits/entries/HelpMenuEntries.h"
 
-namespace Draupnir::Menus
+namespace Draupnir::Handlers
 {
 
 template<class Context,class HandledEntry>
 class GenericMenuEntryHandler;
 
-/*! @class GenericHelpMenuEntryHandler<HelpContext, HelpEntryMenuTrait> draupnir-lib/include/templateMenus/handlers/helpMenu/HelpEntryHandler.h
+/*! @class GenericHelpMenuEntryHandler<HelpContext, Draupnir::Menus::HelpEntryMenuTrait>
+ *  @headerfile draupnir-lib/include/templateHandlers/handlers/helpMenu/HelpEntryHandler.h
  *  @brief Specialization of the menu entry handler for HelpEntryMenuTrait
  *  @details This specialization handles help menu entry that should open a custom dialog. It inherits QAction connection logic
  *           from ActionHandler, and defines the slot (`onTriggered()`) which creates and shows the dialog using a static factory
@@ -48,11 +49,13 @@ class GenericMenuEntryHandler;
  *           manage the dialog lifetime, even if the dialog is closed externally.
  * @tparam HelpContext A class providing a static method `createHelpDialog()` that returns either a QDialog* or a type derived from QDialog.
  *
- * @see ActionHandler */
+ * @see ActionHandler
+ * @todo Make GenericMenuEntryHandler for the Help Menu: CRTP with user override. static_assert if sth is wrong.
+ * @todo Is this should be contextless? */
 
 template<class HelpContext>
-class GenericMenuEntryHandler<HelpContext,HelpEntryMenuTrait> :
-        public ActionHandler<GenericMenuEntryHandler<HelpContext,HelpEntryMenuTrait>,HelpEntryMenuTrait>
+class GenericMenuEntryHandler<HelpContext,Draupnir::Menus::HelpEntryMenuTrait> :
+        public ActionHandler<GenericMenuEntryHandler<HelpContext,Draupnir::Menus::HelpEntryMenuTrait>,Draupnir::Menus::HelpEntryMenuTrait>
 {
 private:
     /*! @struct has_createHelpDialog

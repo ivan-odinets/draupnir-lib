@@ -27,18 +27,19 @@
 
 #include <QApplication>
 
-#include "../../entries/HelpMenuEntries.h"
+#include "traits/entries/HelpMenuEntries.h"
 
-namespace Draupnir::Menus
+namespace Draupnir::Handlers
 {
 
 template<class Context,class HandledEntry>
 class GenericMenuEntryHandler;
 
-/*! @class GenericHelpMenuEntryHandler<HelpContext, AboutQtMenuTrait> draupnir-lib/incldue/templateMenus/handlers/helpMenu/AboutQtEntryHandler.h
+/*! @class GenericHelpMenuEntryHandler<HelpContext, Draupnir::Menus::AboutQtMenuTrait>
+ *  @headerfile draupnir-lib/incldue/templateHandlers/handlers/helpMenu/AboutQtEntryHandler.h
  *  @brief Partial specialization that wires a QAction to the standard QApplication::aboutQt dialog.
  *  @details This specialization handles the AboutQtMenuTrait entry by connecting its QAction::triggered() signal directly to
- *           QApplication::aboutQt. It ignores the provided \c HelpContext because no contextual data is required to show
+ *           QApplication::aboutQt. It ignores the provided - HelpContext because no contextual data is required to show
  *           the standard Qt “About” dialog.
  *  @tparam HelpContext Any type representing the help/“About” handling context (unused in this specialization).
  *
@@ -47,7 +48,7 @@ class GenericMenuEntryHandler;
  * @note The slot QApplication::aboutQt is invoked on qApp; ensure this code runs on the GUI thread. */
 
 template<class HelpContext>
-class GenericMenuEntryHandler<HelpContext,AboutQtMenuTrait>
+class GenericMenuEntryHandler<HelpContext,Draupnir::Menus::AboutQtMenuTrait>
 {
 public:
     /*! @brief Constructs the handler.

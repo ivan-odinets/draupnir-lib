@@ -28,9 +28,9 @@
 #include <QAction>
 
 #include "SubmenuEntries.h"
-#include "../menus/RecentFilesMenu.h"
+#include "../../menus/RecentFilesMenu.h"
 
-/*! @file draupnir-lib/templateMenus/entries/FileMenuEntries.h
+/*! @file draupnir-lib/templateMenus/traits/entries/FileMenuEntries.h
  *  @brief Menu action and menu entry trait classes for the draupnir UI framework.
  *  @details This file contains trait classes describing standard file menu actions.
  *           All menu trait classes must provide:
@@ -47,7 +47,7 @@ inline constexpr auto fileMenuName = []() -> QString {
     return QObject::tr("File");
 };
 
-/*! @class FileNewEntry draupnir-lib/templateMenus/entries/FileMenuEntries.h
+/*! @class FileNewEntry draupnir-lib/templateMenus/traits/entries/FileMenuEntries.h
  *  @brief Trait for "File -> New" menu action. Provides an action with standard icon, display name, and shortcut (Ctrl+N). */
 
 class FileNewEntry
@@ -69,7 +69,7 @@ public:
     static QString displayName() { return QObject::tr("New"); }
 };
 
-/*! @class FileOpenEntry draupnir-lib/templateMenus/entries/FileMenuEntries.h
+/*! @class FileOpenEntry draupnir-lib/templateMenus/traits/entries/FileMenuEntries.h
  *  @brief Trait for "File -> Open" menu action. Provides an action with standard icon, display name, and shortcut (Ctrl+O). */
 
 class FileOpenEntry
@@ -91,7 +91,7 @@ public:
     static QString displayName() { return QObject::tr("Open"); }
 };
 
-/*! @class FileSaveEntry draupnir-lib/templateMenus/entries/FileMenuEntries.h
+/*! @class FileSaveEntry draupnir-lib/templateMenus/traits/entries/FileMenuEntries.h
  *  @brief Trait for "File -> Save" menu action. Provides an action with standard icon, display name, and shortcut (Ctrl+S). */
 
 class FileSaveEntry
@@ -113,7 +113,7 @@ public:
     static QString displayName() { return QObject::tr("Save"); }
 };
 
-/*! @class FileSaveAsEntry draupnir-lib/templateMenus/entries/FileMenuEntries.h
+/*! @class FileSaveAsEntry draupnir-lib/templateMenus/traits/entries/FileMenuEntries.h
  *  @brief Trait for "File -> Save As" menu action. Provides an action with standard icon and display name. */
 
 class FileSaveAsEntry
@@ -133,7 +133,7 @@ public:
     static QString displayName() { return QObject::tr("Save As"); }
 };
 
-/*! @class FileCloseEntry draupnir-lib/templateMenus/entries/FileMenuEntries.h
+/*! @class FileCloseEntry draupnir-lib/templateMenus/traits/entries/FileMenuEntries.h
  *  @brief Trait for "File -> Close" menu action. Provides an action with standard icon and display name. */
 
 class FileCloseEntry
@@ -155,7 +155,7 @@ public:
     static QString displayName() { return QObject::tr("Close"); }
 };
 
-/*! @var recentMenuEntryName draupnir-lib/templateMenus/entries/FileMenuEntries.h
+/*! @var recentMenuEntryName draupnir-lib/templateMenus/traits/entries/FileMenuEntries.h
  *  @brief Inline constexpr lambda returning the localized display name for the "Recent" submenu. To be used in menu trait
  *         template parameters. */
 
@@ -163,13 +163,13 @@ inline constexpr auto recentMenuEntryName = []() -> QString {
     return QObject::tr("Recent");
 };
 
-/*! @typedef RecentFileEntry draupnir-lib/templateMenus/entries/FileMenuEntries.h
+/*! @typedef RecentFileEntry draupnir-lib/templateMenus/traits/entries/FileMenuEntries.h
  *  @brief Trait type for the "Recent Files" submenu entry, using a custom menu class. Uses CustomMenuEntryTrait to adapt a
  *         custom menu widget for use as a menu entry trait. */
 
 using RecentFileEntry = CustomMenuEntryTrait<recentMenuEntryName,RecentFilesMenu>;
 
-/*! @class ExitApplicationEntry draupnir-lib/templateMenus/entries/FileMenuEntries.h
+/*! @class ExitApplicationEntry draupnir-lib/templateMenus/traits/entries/FileMenuEntries.h
  *  @brief Trait for "File -> Exit" menu action. Provides an action with display name. */
 
 class ExitApplicationEntry

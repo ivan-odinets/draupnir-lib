@@ -26,12 +26,16 @@
 #define FILESAVEASENTRYHANDLER_H
 
 #include "../AbstractHandlers.h"
-#include "../../entries/FileMenuEntries.h"
+#include "traits/entries/FileMenuEntries.h"
 
-namespace Draupnir::Menus
+#include "SettingsBundle.h"
+#include "traits/LastUsedDirectorySetting.h"
+
+namespace Draupnir::Handlers
 {
 
-/*! @class GenericMenuEntryHandler<FileContext, FileSaveAsEntry> draupnir-lib/include/templateMenus/handlers/fileMenu/FileSaveAsEntryHandler.h
+/*! @class GenericMenuEntryHandler<FileContext, Draupnir::Menus::FileSaveAsEntry>
+ *  @headerfile draupnir-lib/include/templateHandlers/handlers/fileMenu/FileSaveAsEntryHandler.h
  *  @brief Specialization of the menu entry handler for "Save As" actions.
  *  @details This template specialization handles the "Save As" menu action, allowing users to save the current file under a
  *           new name. It inherits QAction connection logic from ActionHandler, and provides a concrete slot (`onTriggered()`)
@@ -52,10 +56,12 @@ namespace Draupnir::Menus
  * @see ActionHandler */
 
 template<class FileContext>
-class GenericMenuEntryHandler<FileContext,FileSaveAsEntry> :
-        public ActionHandler<GenericMenuEntryHandler<FileContext,FileSaveAsEntry>,FileSaveAsEntry>
+class GenericMenuEntryHandler<FileContext,Draupnir::Menus::FileSaveAsEntry> :
+        public ActionHandler<GenericMenuEntryHandler<FileContext,Draupnir::Menus::FileSaveAsEntry>,Draupnir::Menus::FileSaveAsEntry>
 {
 public:
+    using SettingsBundle = Settings::SettingsBundle<Settings::LastUsedDirectorySetting>;
+
     /*! @brief Constructs the handler with the given context reference.
      *  @param context Reference to the file context. */
     GenericMenuEntryHandler(FileContext& context) :

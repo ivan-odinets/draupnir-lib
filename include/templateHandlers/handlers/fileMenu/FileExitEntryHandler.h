@@ -26,14 +26,15 @@
 #define FILEEXITENTRYHANDLER_H
 
 #include "../AbstractHandlers.h"
-#include "../../entries/FileMenuEntries.h"
+#include "traits/entries/FileMenuEntries.h"
 
 #include <QApplication>
 
-namespace Draupnir::Menus
+namespace Draupnir::Handlers
 {
 
-/*! @class GenericMenuEntryHandler<FileContext, ExitApplicationEntry> draupnir-lib/include/templateMenus/handlers/fileMenu/FileExitEntryHandler.h
+/*! @class GenericMenuEntryHandler<FileContext, Draupnir::Menus::ExitApplicationEntry>
+ *  @headerfile draupnir-lib/include/templateHandlers/handlers/fileMenu/FileExitEntryHandler.h
  *  @brief Specialization of the menu entry handler for "Exit Application" actions.
  *  @details This template specialization handles the "Exit Application" action in a file menu or similar context. It inherits
  *           QAction connection logic from ActionHandler, and provides a concrete slot (`onTriggered()`) that, when called,
@@ -44,8 +45,8 @@ namespace Draupnir::Menus
  * @see ActionHandler */
 
 template<class FileContext>
-class GenericMenuEntryHandler<FileContext,ExitApplicationEntry> :
-        public ActionHandler<GenericMenuEntryHandler<FileContext,ExitApplicationEntry>,ExitApplicationEntry>
+class GenericMenuEntryHandler<FileContext,Draupnir::Menus::ExitApplicationEntry> :
+        public ActionHandler<GenericMenuEntryHandler<FileContext,Draupnir::Menus::ExitApplicationEntry>,Draupnir::Menus::ExitApplicationEntry>
 {
 public:
     /*! @brief Constructs the handler. Context is required by interface but not used directly.

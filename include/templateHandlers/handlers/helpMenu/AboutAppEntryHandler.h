@@ -29,12 +29,14 @@
 
 #include <QMessageBox>
 
-#include "../../entries/HelpMenuEntries.h"
+#include "traits/entries/HelpMenuEntries.h"
 
-namespace Draupnir::Menus
+namespace Draupnir::Handlers
 {
 
-/*! @class GenericHelpMenuEntryHandler<HelpContext, AboutAppMenuTrait> draupnir-lib/incldue/templateMenus/handlers/helpMenu/AboutAppEntryHandler.h
+/*! @class GenericHelpMenuEntryHandler<HelpContext, Draupnir::MenusAboutAppMenuTrait>
+ *  @headerfile draupnir-lib/incldue/templateHandlers/handlers/helpMenu/AboutAppEntryHandler.h
+ *
  *  @brief Specialization of the menu entry handler for the "About Application" menu entry.
  *  @details This template specialization handles the "About App" action in a help menu. It inherits the QAction connection
  *           logic from ActionHandler, and provides a concrete slot (`onTriggered()`) that displays an about dialog with
@@ -49,8 +51,8 @@ namespace Draupnir::Menus
  * @see ActionHandler */
 
 template<class HelpContext>
-class GenericMenuEntryHandler<HelpContext,AboutAppMenuTrait> :
-        public ActionHandler<GenericMenuEntryHandler<HelpContext,AboutAppMenuTrait>,AboutAppMenuTrait>
+class GenericMenuEntryHandler<HelpContext,Draupnir::Menus::AboutAppMenuTrait> :
+        public ActionHandler<GenericMenuEntryHandler<HelpContext,Draupnir::Menus::AboutAppMenuTrait>,Draupnir::Menus::AboutAppMenuTrait>
 {
 private:
     /*! @struct has_aboutAppText

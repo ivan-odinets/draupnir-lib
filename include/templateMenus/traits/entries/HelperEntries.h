@@ -27,7 +27,7 @@
 
 #include <QAction>
 
-/*! @file draupnir-lib/templateMenus/entries/HelperEntries.h
+/*! @file draupnir-lib/templateMenus/traits/entries/HelperEntries.h
  *  @brief Menu action and menu entry trait classes for the draupnir UI framework.
  *  @details This file contains trait classes describing some helper menu elements like separator and sections.
  *           All menu trait classes must provide:
@@ -37,7 +37,7 @@
 
 namespace Draupnir::Menus {
 
-/*! @class ActionEntry draupnir-lib/templateMenus/entries/HelperEntries.h
+/*! @class ActionEntry draupnir-lib/templateMenus/traits/entries/HelperEntries.h
  *  @brief Menu trait describing a simple QAction entry. Provides a QAction with display name set.
  *  @tparam displayNameImpl - a callable returning QString. */
 
@@ -61,7 +61,7 @@ public:
     }
 };
 
-/*! @class CheckableEntry draupnir-lib/templateMenus/entries/HelperEntries.h
+/*! @class CheckableEntry draupnir-lib/templateMenus/traits/entries/HelperEntries.h
  *  @brief Menu trait describing a Checkable entry. Provides a QAction with setCheckable(true).
  *  @tparam displayNameImpl - a callable returning QString. */
 
@@ -87,7 +87,7 @@ public:
     }
 };
 
-/*! @class SeparatorEntry draupnir-lib/templateMenus/entries/HelperEntries.h
+/*! @class SeparatorEntry draupnir-lib/templateMenus/traits/entries/HelperEntries.h
  *  @brief Menu trait describing a separator entry. Provides a QAction marked as a separator. */
 
 class SeparatorEntry
@@ -112,7 +112,7 @@ public:
     }
 };
 
-/*! @class SectionEntry draupnir-lib/templateMenus/entries/HelperEntries.h
+/*! @class SectionEntry draupnir-lib/templateMenus/traits/entries/HelperEntries.h
  *  @brief Menu trait describing a named section separator.
  *  @tparam displayNameImpl - a callable returning QString. */
 

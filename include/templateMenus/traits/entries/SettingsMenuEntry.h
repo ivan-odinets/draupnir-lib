@@ -25,7 +25,7 @@
 #ifndef SETTINGSMENUENTRY_H
 #define SETTINGSMENUENTRY_H
 
-/*! @file draupnir-lib/templateMenus/entries/SettingsMenuEntries.h
+/*! @file draupnir-lib/templateMenus/traits/entries/SettingsMenuEntries.h
  *  @brief Menu action and menu entry trait classes for the draupnir UI framework.
  *  @details This file contains trait classes describing standard settings menu actions.
  *           All menu trait classes must provide:
@@ -44,7 +44,7 @@ inline constexpr auto settingsMenuName = []() -> QString {
     return QObject::tr("Settings");
 };
 
-/*! @class OpenSettingsEntry draupnir-lib/templateMenus/entries/SettingsMenuEntries.h
+/*! @class OpenSettingsEntry draupnir-lib/templateMenus/traits/entries/SettingsMenuEntries.h
  *  @brief Trait for "Open Settings" action. Provides a non-checkable action for opening the settings dialog or window. */
 
 class OpenSettingsEntry
@@ -64,7 +64,7 @@ public:
     static QString displayName() { return QObject::tr("Open Settings"); }
 };
 
-/*! @class MinimizeOnCloseEntry draupnir-lib/templateMenus/entries/SettingsMenuEntries.h
+/*! @class MinimizeOnCloseEntry draupnir-lib/templateMenus/traits/entries/SettingsMenuEntries.h
  *  @brief Trait for "Minimize on close" checkable action. Provides a checkable action for toggling "minimize on close"
  *         behavior. */
 

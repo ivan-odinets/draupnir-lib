@@ -29,7 +29,7 @@
 #include <QAction>
 #include <QIcon>
 
-/*! @file draupnir-lib/templateMenus/entries/HelpMenuEntries.h
+/*! @file draupnir-lib/templateMenus/traits/entries/HelpMenuEntries.h
  *  @brief Menu action and menu entry trait classes for the draupnir UI framework.
  *  @details This file contains trait classes describing standard help menu actions.
  *           All menu trait classes must provide:
@@ -46,7 +46,7 @@ inline constexpr auto helpMenuName = []() -> QString {
     return QObject::tr("Help");
 };
 
-/*! @class HelpEntryMenuTrait draupnir-lib/templateMenus/entries/HelpMenuEntries.h
+/*! @class HelpEntryMenuTrait draupnir-lib/templateMenus/traits/entries/HelpMenuEntries.h
  *  @brief Trait for the "Help" menu action (application help). Provides a QAction with the main application icon and
  *         localized name. */
 
@@ -70,7 +70,7 @@ public:
     static QString displayName() { return QObject::tr("Help"); }
 };
 
-/*! @class AboutAppMenuTrait draupnir-lib/templateMenus/entries/HelpMenuEntries.h
+/*! @class AboutAppMenuTrait draupnir-lib/templateMenus/traits/entries/HelpMenuEntries.h
  *  @brief Trait for the "About" menu action (application about box). Provides a QAction with the main application icon and
  *         localized name. */
 
@@ -94,7 +94,7 @@ public:
     static QString displayName() { return QObject::tr("About"); }
 };
 
-/*! @class AboutDraupnirLibMenuTrait draupnir-lib/templateMenus/entries/HelpMenuEntries.h
+/*! @class AboutDraupnirLibMenuTrait draupnir-lib/templateMenus/traits/entries/HelpMenuEntries.h
  *  @brief Trait for the "About DraupnirLib" menu action. Provides a QAction with localized name. */
 
 class AboutDraupnirLibMenuTrait
@@ -115,7 +115,7 @@ public:
     static QString displayName() { return QObject::tr("About DraupnirLib"); }
 };
 
-/*! @class AboutQtMenuTrait draupnir-lib/templateMenus/entries/HelpMenuEntries.h
+/*! @class AboutQtMenuTrait draupnir-lib/templateMenus/traits/entries/HelpMenuEntries.h
  *  @brief Trait for the "About Qt" menu action. Provides a QAction with localized name (for the standard Qt about dialog). */
 
 class AboutQtMenuTrait

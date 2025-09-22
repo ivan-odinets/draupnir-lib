@@ -26,17 +26,18 @@
 #define FILECLOSEENTRYHANDLER_H
 
 #include "../AbstractHandlers.h"
-#include "../../entries/FileMenuEntries.h"
+#include "traits/entries/FileMenuEntries.h"
 
 #include <QApplication>
 #include <QMessageBox>
 
-#include "FileManagerValidator.h"
+#include "utils/FileManagerValidator.h"
 
-namespace Draupnir::Menus
+namespace Draupnir::Handlers
 {
 
-/*! @class GenericMenuEntryHandler<FileContext,FileCloseEntry> draupnir-lib/include/templateMenus/handlers/fileMenu/FileCloseEntryHandler.h
+/*! @class GenericMenuEntryHandler<FileContext,Draupnir::Menus::FileCloseEntry>
+ *  @headerfile draupnir-lib/include/templateHandlers/handlers/fileMenu/FileCloseEntryHandler.h
  *  @brief Specialization of the menu entry handler for the "File -> Close" menu entry.
  *  @details This specialization provides the logic for handling file close operations in the file menu. It uses ActionHandler
  *           to connect the QAction, and implements the logic for user interaction when closing a file with possible unsaved
@@ -58,8 +59,8 @@ namespace Draupnir::Menus
  * @see ActionHandler, FileEntriesHandlersContext */
 
 template<class FileContext>
-class GenericMenuEntryHandler<FileContext,FileCloseEntry> :
-    public ActionHandler<GenericMenuEntryHandler<FileContext,FileCloseEntry>,FileCloseEntry>
+class GenericMenuEntryHandler<FileContext,Draupnir::Menus::FileCloseEntry> :
+    public ActionHandler<GenericMenuEntryHandler<FileContext,Draupnir::Menus::FileCloseEntry>,Draupnir::Menus::FileCloseEntry>
 {
 public:
     /*! @brief Constructs the handler, enforcing interface compliance for FileManager. Static assertions ensure the FileManager

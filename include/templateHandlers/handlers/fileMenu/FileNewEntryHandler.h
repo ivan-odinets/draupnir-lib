@@ -25,18 +25,19 @@
 #ifndef FILENEWENTRYHANDLER_H
 #define FILENEWENTRYHANDLER_H
 
-#include "../../entries/FileMenuEntries.h"
 #include "../AbstractHandlers.h"
+#include "traits/entries/FileMenuEntries.h"
 
 #include <QDebug>
 #include <QMessageBox>
 
-#include "FileManagerValidator.h"
+#include "utils/FileManagerValidator.h"
 
-namespace Draupnir::Menus
+namespace Draupnir::Handlers
 {
 
-/*! @class GenericMenuEntryHandler draupnir-lib/include/templateMenus/handlers/fileMenu/FileNewEntryHandler.h
+/*! @class GenericMenuEntryHandler
+ *  @headerfile draupnir-lib/include/templateHandlers/handlers/fileMenu/FileNewEntryHandler.h
  *  @brief Specialization for handling the "File → New" menu action.
  *  @details This handler implements the logic for creating a new file based on the capabilities of the associated FileManager.
  *           It respects both single-file and multi-file workflows by querying FileManager::canHaveMultipleFilesOpened() at
@@ -61,8 +62,8 @@ namespace Draupnir::Menus
  * @see ActionHandler, FileManagerValidator, FileEntriesHandlersContext */
 
 template<class FileContext>
-class GenericMenuEntryHandler<FileContext,FileNewEntry> :
-        public ActionHandler<GenericMenuEntryHandler<FileContext,FileNewEntry>,FileNewEntry>
+class GenericMenuEntryHandler<FileContext,Draupnir::Menus::FileNewEntry> :
+        public ActionHandler<GenericMenuEntryHandler<FileContext,Draupnir::Menus::FileNewEntry>,Draupnir::Menus::FileNewEntry>
 {
 public:
     /*! @brief Constructs the handler.

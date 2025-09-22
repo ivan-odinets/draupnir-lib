@@ -26,10 +26,11 @@
 #define ABSTRACTHANDLERS_H
 
 #include <QAction>
+#include <QDebug>
 
-namespace Draupnir::Menus {
+namespace Draupnir::Handlers {
 
-/*! @class CheckableActionHandler draupnir-lib/include/templateMenus/handlers/AbstractHandlers.h
+/*! @class CheckableActionHandler draupnir-lib/include/templateHandlers/handlers/AbstractHandlers.h
  *  @brief CRTP base class for handling QAction objects that are checkable (emit triggered(bool)).
  *  @details Provides a standard connection to QAction::triggered(bool) and delegates the event handling to provided
  *           Implementation class (method Implementation::onTriggered(bool)).
@@ -77,7 +78,7 @@ private:
     QAction* p_action;
 };
 
-/*! @class ActionHandler draupnir-lib/include/templateMenus/handlers/AbstractHandlers.h
+/*! @class ActionHandler draupnir-lib/include/templateHandlers/handlers/AbstractHandlers.h
  *  @brief CRTP base class for handling regular - QAction objects (without a - bool parameter in the signal).
  *  @tparam Implementation The derived class implementing - onTriggered().
  *  @tparam MenuEntry The menu entry trait (kept for type association; not used internally).
@@ -108,7 +109,7 @@ public:
     }
 };
 
-/*! @class CustomMenuHandler draupnir-lib/include/templateMenus/handlers/AbstractHandlers.h
+/*! @class CustomMenuHandler draupnir-lib/include/templateHandlers/handlers/AbstractHandlers.h
  *  @brief CRTP base class for handling “custom” menu entries (MenuEntry::Type is not QAction but a custom widget/menu).
  *  @tparam Implementation The derived class implementing \c connect(T*).
  *  @tparam MenuEntry The menu entry trait with \c using Type = ... (actual menu/widget type).
@@ -140,8 +141,9 @@ public:
      *  @param menu Object of type \c MenuEntry::Type for handling/connection. */
     void connect(typename MenuEntry::Type* menu) {
         p_menu = menu;
+        qDebug() << "Saving menu...";
 
-        static_cast<Implementation*>(this)->connect(menu);
+        static_cast<Implementation*>(this)->connectImplementation(menu);
     }
 
 protected:
@@ -153,7 +155,7 @@ private:
     typename MenuEntry::Type* p_menu;
 };
 
-/*! @class GenericMenuEntryHandler draupnir-lib/include/templateMenus/handlers/AbstractHandlers.h
+/*! @class GenericMenuEntryHandler draupnir-lib/include/templateHandlers/handlers/AbstractHandlers.h
  *  @brief Non-specialized template for menu entry handlers.
  *  @details This is the primary template for GenericMenuEntryHandler, serving as a catch-all for menu entry types that do
  *           not have a user-provided specialization. Its sole purpose is to trigger a compile-time error when instantiated
@@ -173,6 +175,13 @@ class GenericMenuEntryHandler
 {
     template<class> static inline constexpr bool dependent_false_v = false;
 public:
+    /*! @brief Dummy constructor, triggers a compile-time error. Instantiating this template always results in a static_assert
+     *         failure, indicating that a specialization for the given HandledEntry is missing. */
+    GenericMenuEntryHandler() {
+        static_assert(dependent_false_v<HandledEntry>,
+                "GenericMenuEntryHandler template MUST be specialized for all handled entries.");
+    }
+
     /*! @brief Dummy constructor, triggers a compile-time error. Instantiating this template always results in a static_assert
      *         failure, indicating that a specialization for the given HandledEntry is missing.
      *  @param Unused Reference to context (only required for interface compatibility).  */

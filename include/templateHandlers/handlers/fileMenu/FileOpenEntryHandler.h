@@ -30,12 +30,16 @@
 #include <QDir>
 #include <QMessageBox>
 
-#include "FileManagerValidator.h"
-#include "../../entries/FileMenuEntries.h"
+#include "utils/FileManagerValidator.h"
+#include "traits/entries/FileMenuEntries.h"
 
-namespace Draupnir::Menus {
+#include "SettingsBundle.h"
+#include "traits/LastUsedDirectorySetting.h"
 
-/*! @class GenericMenuEntryHandler draupnir-lib/include/templateMenus/handlers/fileMenu/FileOpenEntryHandler.h
+namespace Draupnir::Handlers {
+
+/*! @class GenericMenuEntryHandler
+ *  @headerfile draupnir-lib/include/templateHandlers/handlers/fileMenu/FileOpenEntryHandler.h
  *  @brief Specialization for handling the "File → Open" menu entry.
  *  @details Implements flexible logic for opening one або several files, depending on capabilities of the provided FileManager
  *           (multi-file or single-file mode, batch open or not). Handles confirmation prompts if current file(s) may be replaced.
@@ -63,10 +67,12 @@ namespace Draupnir::Menus {
  * @see ActionHandler */
 
 template<class FileContext>
-class GenericMenuEntryHandler<FileContext,FileOpenEntry> :
-        public ActionHandler<GenericMenuEntryHandler<FileContext,FileOpenEntry>,FileOpenEntry>
+class GenericMenuEntryHandler<FileContext,Draupnir::Menus::FileOpenEntry> :
+        public ActionHandler<GenericMenuEntryHandler<FileContext,Draupnir::Menus::FileOpenEntry>,Draupnir::Menus::FileOpenEntry>
 {
 public:
+    using SettingsBundle = Settings::SettingsBundle<Settings::LastUsedDirectorySetting>;
+
     /*! @brief Constructs the handler, checks file manager interface compliance. Performs a static_assert to ensure FileManager
      *         has openFile method.
      *  @param context Reference to file context. */
@@ -139,7 +145,7 @@ public:
                 return;
 
             const QFileInfo fileInfo(filePath);
-            m_context.updateLastUsedDirectory(fileInfo.dir().path());
+            m_context.template setSetting<Draupnir::Settings::LastUsedDirectorySetting>(fileInfo.dir().path());
             m_context.fileManager()->openFile(fileInfo);
         }
     }

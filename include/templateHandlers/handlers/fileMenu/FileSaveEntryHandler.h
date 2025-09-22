@@ -26,15 +26,16 @@
 #define FILESAVEENTRYHANDLER_H
 
 #include "../AbstractHandlers.h"
-#include "../../entries/FileMenuEntries.h"
+#include "traits/entries/FileMenuEntries.h"
 
-#include "entries/FileMenuEntries.h"
-#include "FileManagerValidator.h"
+#include "traits/entries/FileMenuEntries.h"
+#include "utils/FileManagerValidator.h"
 
-namespace Draupnir::Menus
+namespace Draupnir::Handlers
 {
 
-/*! @class GenericMenuEntryHandler<FileContext, FileSaveEntry> draupnir-lib/include/templateMenus/handlers/fileMenu/FileSaveEntryHandler.h
+/*! @class GenericMenuEntryHandler<FileContext, FileSaveEntry>
+ *  @headerfile draupnir-lib/include/templateHandlers/handlers/fileMenu/FileSaveEntryHandler.h
  *  @brief Specialization of the menu entry handler for "Save File" actions.
  *  @details This template specialization handles the "Save" menu action in file-related menus. It inherits QAction connection
  *           logic from ActionHandler, and provides a concrete slot (`onTriggered()`) that saves the current file using the
@@ -58,8 +59,8 @@ namespace Draupnir::Menus
  * @see ActionHandler, FileManagerValidator */
 
 template<class FileContext>
-class GenericMenuEntryHandler<FileContext,FileSaveEntry> :
-        public ActionHandler<GenericMenuEntryHandler<FileContext,FileSaveEntry>,FileSaveEntry>
+class GenericMenuEntryHandler<FileContext,Draupnir::Menus::FileSaveEntry> :
+        public ActionHandler<GenericMenuEntryHandler<FileContext,Draupnir::Menus::FileSaveEntry>,Draupnir::Menus::FileSaveEntry>
 {
 public:
     /*! @brief Constructs the handler, statically asserting FileManager interface compliance.

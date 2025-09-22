@@ -22,24 +22,41 @@
  *
  */
 
-#ifndef SETTINGTRAITFORENTRY_H
-#define SETTINGTRAITFORENTRY_H
+#ifndef SETTINGSCHECKABLEENTRYHANDLER_H
+#define SETTINGSCHECKABLEENTRYHANDLER_H
 
-#include "traits/entries/SettingsMenuEntry.h"
+#include "handlers/AbstractHandlers.h"
 
-#include "traits/MinimizeOnCloseSetting.h"
-#include "traits/MinimizeToTraySetting.h"
-#include "traits/StartHiddenSetting.h"
+#include "SettingsBundle.h"
+#include "utils/SettingTraitForEntry.h"
 
 namespace Draupnir::Handlers
 {
 
-template<class Entry>
-struct SettingTraitForEntry
+template<class SettingsContext,class MenuEntry>
+class SettingsCheckableEntryHandler :
+    public CheckableActionHandler<SettingsCheckableEntryHandler<SettingsContext,MenuEntry>>
 {
-    using type = void;
+public:
+    using SettingsBundle = Settings::SettingsBundle<typename SettingTraitForEntry<MenuEntry>::type>;
+
+    SettingsCheckableEntryHandler(SettingsContext& context) :
+        m_context{context}
+    {}
+
+    void onSettingsLoaded() {
+        const bool state = m_context.template get<MenuEntry>();
+        CheckableActionHandler<SettingsCheckableEntryHandler<SettingsContext,MenuEntry>>::action()->setChecked(state);
+    }
+
+    void onTriggered(bool state) {
+        m_context.template set<MenuEntry>(state);
+    }
+
+private:
+    SettingsContext& m_context;
 };
 
 };
 
-#endif // SETTINGTRAITFORENTRY_H
+#endif // SETTINGSCHECKABLEENTRYHANDLER_H

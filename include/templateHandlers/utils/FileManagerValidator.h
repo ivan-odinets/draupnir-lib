@@ -30,10 +30,10 @@
 
 #include <type_traits>
 
-namespace Draupnir::Menus
+namespace Draupnir::Handlers
 {
 
-/*! @class FileManagerValidator draupnir-lib/include/templateMenus/handlers/FileManagerValidator.h
+/*! @class FileManagerValidator draupnir-lib/include/templateHandlers/utils/FileManagerValidator.h
  *  @brief SFINAE-based trait collection for checking file manager interface compliance.
  *  @details Provides a set of compile-time traits (via SFINAE and std::void_t) to verify that a candidate file manager class
  *           implements all required methods for integration with the file menu system. This allows template code to enforce
