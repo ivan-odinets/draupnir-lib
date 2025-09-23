@@ -25,8 +25,9 @@
 #ifndef UIMANAGER_H
 #define UIMANAGER_H
 
-#include "AppSettings.h"
-#include "lib/draupnir-lib/src/messages/core/MessageHandlerTemplate.h"
+#include "SettingsBundle.h"
+#include "core/MessageHandler.h"
+#include "traits/StartHiddenSetting.h"
 #include "MessageSystemInterface.h"
 
 /*! @class UiManager draupnir-lib/ui/UiManager.h
@@ -41,11 +42,11 @@ template<class MainWindowClass, class TrayIconClass>
 class UiManager
 {
 public:
+    using SettingsBundle = Draupnir::Settings::SettingsBundle<Draupnir::Settings::StartHiddenSetting>;
+
     /*! @brief Constructs the UiManager, stores a pointer to the message system and initializes internal pointers to nullptr.
      *  @param messageSystem Pointer to the already initialized MessageSystemInterface. */
-    UiManager(MessageSystemInterface* messageSystem) :
-        p_settings{nullptr},
-        m_startHidden{defaultStartHidden},
+    UiManager(Draupnir::Messages::MessageSystemInterface* messageSystem) :
         p_messageSystem{messageSystem},
         w_mainWindow{nullptr},
         w_trayIcon{nullptr}
@@ -65,42 +66,31 @@ public:
     }
 
     /*! @brief Loads UI-related settings.
-     *  @param settings Pointer to the AppSettings instance.
+     *  @param settings Pointer to the SettingsRegistry instance.
      *  @details This must be called once after createUi() to initialize state (e.g. whether the window starts hidden). Will assert
      *           if called more than once or before UI creation. */
-    void loadSettings(AppSettings* settings) {
+    template<class SettingsRegistry>
+    void loadSettings(SettingsRegistry* settings) {
         Q_ASSERT_X(settings, "UiManager::loadSettings",
-                   "Provided AppSettings pointer is nullptr");
-        Q_ASSERT_X(p_settings == nullptr, "UiManager::loadSettings",
-                   "This method must be called only once.");
-        Q_ASSERT_X(w_mainWindow,"UiManager::loadSettings",
-                   "UiManager::createUi must have been called before.");
+                   "Provided SettingsRegistry pointer is nullptr");
 
-        p_settings = settings;
-
-        m_startHidden = p_settings->value(
-            startHidden_settingsKey, defaultStartHidden
-        ).toBool();
-
-        w_mainWindow->loadSettings(settings);
+        m_settings = settings->template getSettingsBundle<SettingsBundle>();
     }
 
-    /*! @brief @brief Sets the flag indicating whether MainWindow should start hidden. Also stores the state in AppSettings.
+    /*! @brief @brief Sets the flag indicating whether MainWindow should start hidden. Also stores the state in SettingsBundle
      *  @param state True if MainWindow should be hidden at startup. */
     void setStartHidden(bool state) {
-        if (m_startHidden == state)
+        if (startHidden() == state)
             return;
 
-        m_startHidden = state;
-
-        p_settings->setValue(
-            startHidden_settingsKey, state
-        );
+        m_settings.template set<Draupnir::Settings::StartHiddenSetting>(state);
     }
 
     /*! @brief Returns whether the MainWindow is configured to start hidden.
      *  @return True if the UI should not show the MainWindow initially. */
-    bool startHidden() const { return m_startHidden; }
+    bool startHidden() const {
+        return m_settings.template get<Draupnir::Settings::StartHiddenSetting>();
+    }
 
     /*! @brief Creates MainWindow and TrayIcon instances.
      *  @details Instantiates the UI components using the given types and wires TrayIcon to the message system. */
@@ -118,7 +108,7 @@ public:
     void showUi() {
         w_trayIcon->show();
 
-        if (!m_startHidden)
+        if (!m_settings.template get<Draupnir::Settings::StartHiddenSetting>())
             w_mainWindow->show();
     }
 
@@ -131,14 +121,10 @@ public:
     MainWindowClass* mainWindow() { return w_mainWindow; }
 
 private:
-    static const inline QLatin1String  startHidden_settingsKey{"startHidden"};
-    static const inline bool           defaultStartHidden = false;
-
-    AppSettings*             p_settings;
-    bool                     m_startHidden;
-    MessageSystemInterface*  p_messageSystem;
-    MainWindowClass*         w_mainWindow;
-    TrayIconClass*           w_trayIcon;
+    SettingsBundle m_settings;
+    Draupnir::Messages::MessageSystemInterface* p_messageSystem;
+    MainWindowClass* w_mainWindow;
+    TrayIconClass* w_trayIcon;
 };
 
 #endif // UIMANAGER_H

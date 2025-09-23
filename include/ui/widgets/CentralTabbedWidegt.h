@@ -29,7 +29,8 @@
 
 #include <QEvent>
 
-#include "AppSettings.h"
+#include "SettingsBundle.h"
+#include "traits/ActiveWidgetIndexSetting.h"
 
 /*! @class CentralTabbedWidget draupnir-lib/include/ui/CentralTabbedWidget.h
  *  @brief Abstract base class for a central widget composed of tabs.
@@ -39,6 +40,8 @@ class CentralTabbedWidget : public QTabWidget
 {
     Q_OBJECT
 public:
+    using SettingsBundle = Draupnir::Settings::SettingsBundle<Draupnir::Settings::ActiveWidgetIndexSetting>;
+
     /*! @brief Constructs the CentralTabbedWidget and initialzies the base class (`QTabWidget`).
      *  @param parent Optional parent widget. */
     explicit CentralTabbedWidget(QWidget* parent = nullptr) :
@@ -46,12 +49,16 @@ public:
     {}
 
     /*! @brief Destructor. Trivial. */
-    ~CentralTabbedWidget() override = default;
+    ~CentralTabbedWidget() override {
+        m_settings.template set<Draupnir::Settings::ActiveWidgetIndexSetting>(this->currentIndex());
+    };
 
-    /*! @brief Load settings for tab state (e.g., active tab index).
-     *  @param settings Pointer to AppSettings instance.
-     * @note This method must be called only once. */
-    virtual void loadSettings(AppSettings* settings) = 0;
+    template<class SettingsRegistry>
+    void loadSettings(SettingsRegistry* registry) {
+        m_settings = registry->template getSettingsBundle<SettingsBundle>();
+
+        setCurrentIndex(m_settings.template get<Draupnir::Settings::ActiveWidgetIndexSetting>());
+    }
 
     /*! @brief Returns widget pointer of tab with specified index.
      *  @param index index of widget within tabs
@@ -78,7 +85,9 @@ protected:
     }
 
 private:
+    SettingsBundle m_settings;
     virtual void _retranslateTabs() = 0;
+
 };
 
 /*! @class CentralTabbedWidegtTemplate draupnir-lib/include/ui/CentralTabbedWidget.h
@@ -96,7 +105,6 @@ public:
      *  @param parent Optional parent widget. */
     explicit CentralTabbedWidgetTemplate(QWidget* parent = nullptr) :
         CentralTabbedWidget{parent},
-        p_settings{nullptr},
         m_widgets{std::make_tuple(new typename TabTraits::widget...)}
     {
         static_assert(sizeof...(TabTraits) > 0,"Empty list of widgets is not allowed.");
@@ -109,7 +117,6 @@ public:
      *  @param widgets External widget instances (one per TabTrait::widget). */
     explicit CentralTabbedWidgetTemplate(QWidget* parent, typename TabTraits::widget... widgets) :
         CentralTabbedWidget{parent},
-        p_settings{nullptr},
         m_widgets{std::forward_as_tuple(widgets...)}
     {
         static_assert(sizeof...(TabTraits) > 0,"Empty list of widgets is not allowed.");
@@ -122,7 +129,6 @@ public:
      *  @param widgets External widget instances (one per TabTrait::widget). */
     explicit CentralTabbedWidgetTemplate(QWidget* parent, typename TabTraits::widget&&... widgets) :
         CentralTabbedWidget{parent},
-        p_settings{nullptr},
         m_widgets{std::forward_as_tuple(widgets...)}
     {
         static_assert(sizeof...(TabTraits) > 0,"Empty list of widgets is not allowed.");
@@ -131,37 +137,7 @@ public:
     }
 
     /*! @brief Destructor. Stores the current active tab index into settings (if set). */
-    virtual ~CentralTabbedWidgetTemplate() override final {
-        Q_ASSERT_X(p_settings, "CentralTabbedWidgetTemplate::~CentralTabbedWidgetTemplate",
-                   "CentralTabbedWidgetTemplate::loadSettings must have been called before.");
-
-        p_settings->setValue(
-            AppSettings::GUI, activeTab_settingsKey,
-            QTabWidget::currentIndex()
-        );
-    }
-
-    /*! @brief Loads settings from AppSettings (e.g., active tab index).
-     *  @param settings Pointer to AppSettings instance. Should not be null.
-     * @note This method must be called only once. */
-    void loadSettings(AppSettings* settings) final {
-        Q_ASSERT_X(settings,"CentralTabbedWidegtTemplate::loadSettings",
-                   "Provided AppSettings pointer is nullptr.");
-        Q_ASSERT_X(p_settings == nullptr,"CentralTabbedWidegtTemplate::loadSettings",
-                   "This method must be called only once.");
-
-        p_settings = settings;
-
-        bool ok = false;
-
-        const int currentTab = settings->value(
-            AppSettings::GUI, activeTab_settingsKey
-        ).toInt(&ok);
-
-        if ( (currentTab < count()) && (ok)) {
-            QTabWidget::setCurrentIndex(currentTab);
-        }
-    }
+    virtual ~CentralTabbedWidgetTemplate() override final {}
 
     /*! @brief Returns widget pointer matching type Widget.
      *  @tparam Widget type of the widget (must match one of TabTrait::widget).
@@ -172,9 +148,6 @@ public:
     }
 
 private:
-    static inline QLatin1String activeTab_settingsKey{"activeTab"};
-
-    AppSettings* p_settings;
     std::tuple<typename TabTraits::widget...> m_widgets;
 
     /*! @brief Internal recursive helper that adds each tab widget with its label.
