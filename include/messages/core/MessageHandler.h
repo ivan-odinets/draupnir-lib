@@ -29,15 +29,17 @@
 
 #include <QMap>
 
-#include "Message.h"
+#include "core/Message.h"
 #include "MessageType.h"
 #include "MessageGroup.h"
 #include "Notification.h"
 
-class AppSettings;
-class MessageListModel;
-class MessageSettingsInterface;
 class QSystemTrayIcon;
+
+namespace Draupnir::Messages
+{
+
+class MessageListModel;
 
 /*! @class MessageHandler draupnir-lib/src/messages/core/MessageHandler.h
  *  @brief Abstract base class for processing and displaying application messages.
@@ -159,5 +161,7 @@ private:
 
     QMap<MessageGroup,QList<Message*> > m_messageGroupsMap;
 };
+
+}; // namespace Draupnir::Messages
 
 #endif // MESSAGEHANDLER_H

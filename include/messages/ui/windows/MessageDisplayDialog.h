@@ -31,6 +31,9 @@ class QDialogButtonBox;
 class QScrollArea;
 class QVBoxLayout;
 
+namespace Draupnir::Messages
+{
+
 class Message;
 
 /*! @class MessageDisplayDialog draupnir-lib/src/messages/windows/MessageDisplayDialog.h
@@ -81,5 +84,7 @@ private:
     QScrollArea*        w_scrollArea;
     QDialogButtonBox*   w_buttons;
 };
+
+}; // namespace Draupnir::Messages
 
 #endif // MESSAGEDISPLAYDIALOG_H

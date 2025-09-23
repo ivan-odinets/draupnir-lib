@@ -27,10 +27,12 @@
 
 #include <QString>
 
-class MessageHandler;
+namespace Draupnir::Messages { class MessageHandler; }
+
+class Logger;
 
 #include "MessageGroup.h"
-#include "../../src/messages/core/MessageTemplate.h"
+#include "core/MessageTemplate.h"
 
 /*! @class Logger draupnir-lib/include/messages/Logger.h
  *  @brief A singleton class used to log messages from various parts of the application.
@@ -54,23 +56,23 @@ public:
      *  @param handler Pointer to a valid MessageHandler instance.
      *  @note This method **must** be called before any logging occurs; otherwise a nullptr will be dereferenced.
      *  @note Not thread-safe. Must be called once during initialization. */
-    void setMessageHandler(MessageHandler* handler);
+    void setMessageHandler(Draupnir::Messages::MessageHandler* handler);
 
     /*! @brief Starts a new message group for batch logging.
      *  @return A MessageGroup identifier. */
-    MessageGroup beginMessageGroup();
+    Draupnir::Messages::MessageGroup beginMessageGroup();
 
     /*! @brief Returns true if specified MessageGroup is existing.
      *  @param group The group to be checked. */
-    bool groupExisting(MessageGroup group) const;
+    bool groupExisting(Draupnir::Messages::MessageGroup group) const;
 
     /*! @brief Flushes the messages stored in the given group.
      *  @param group The group to flush. */
-    void flush(MessageGroup group);
+    void flush(Draupnir::Messages::MessageGroup group);
 
     /*! @brief Finalizes a message group and releases its resources.
      *  @param group The group to end. */
-    void endMessageGroup(MessageGroup group);
+    void endMessageGroup(Draupnir::Messages::MessageGroup group);
 
     /*! @brief Logs a debug message immediately.
      * @param what Message content. */
@@ -79,7 +81,7 @@ public:
     /*! @brief Logs a debug message into a message group.
      *  @param what Message content.
      *  @param group MessageGroup identifier. */
-    void logDebug(const QString& what, MessageGroup group);
+    void logDebug(const QString& what, Draupnir::Messages::MessageGroup group);
 
     /*! @brief Logs a debug message with brief and details.
      *  @param brief Short summary.
@@ -90,7 +92,7 @@ public:
      *  @param brief Short summary.
      *  @param what Full message.
      *  @param group MessageGroup identifier. */
-    void logDebug(const QString& brief, const QString& what, MessageGroup group);
+    void logDebug(const QString& brief, const QString& what, Draupnir::Messages::MessageGroup group);
 
     /*! @brief Logs an informational message immediately.
      * @param what Message content. */
@@ -99,7 +101,7 @@ public:
     /*! @brief Logs an informational message into a message group.
      *  @param what Message content.
      *  @param group MessageGroup identifier. */
-    void logInfo(const QString& what, MessageGroup group);
+    void logInfo(const QString& what, Draupnir::Messages::MessageGroup group);
 
     /*! @brief Logs an informational message with brief and details.
      *  @param brief Short summary.
@@ -110,7 +112,7 @@ public:
      *  @param brief Short summary.
      *  @param what Full message.
      *  @param group MessageGroup identifier. */
-    void logInfo(const QString& brief, const QString& what, MessageGroup group);
+    void logInfo(const QString& brief, const QString& what, Draupnir::Messages::MessageGroup group);
 
     /*! @brief Logs a warning message immediately.
      * @param what Message content. */
@@ -119,7 +121,7 @@ public:
     /*! @brief Logs a warning message into a message group.
      *  @param what Message content.
      *  @param group MessageGroup identifier. */
-    void logWarning(const QString& what, MessageGroup group);
+    void logWarning(const QString& what, Draupnir::Messages::MessageGroup group);
 
     /*! @brief Logs a warning message with brief and details.
      *  @param brief Short summary.
@@ -130,7 +132,7 @@ public:
      *  @param brief Short summary.
      *  @param what Full message.
      *  @param group MessageGroup identifier. */
-    void logWarning(const QString& brief, const QString& what, MessageGroup group);
+    void logWarning(const QString& brief, const QString& what, Draupnir::Messages::MessageGroup group);
 
     /*! @brief Logs an error message immediately.
      * @param what Message content. */
@@ -139,7 +141,7 @@ public:
     /*! @brief Logs an error message into a message group.
      *  @param what Message content.
      *  @param group MessageGroup identifier. */
-    void logError(const QString& what, MessageGroup group);
+    void logError(const QString& what, Draupnir::Messages::MessageGroup group);
 
     /*! @brief Logs an error message with brief and details.
      *  @param brief Short summary.
@@ -150,14 +152,14 @@ public:
      *  @param brief Short summary.
      *  @param what Full message.
      *  @param group MessageGroup identifier. */
-    void logError(const QString& brief, const QString& what, MessageGroup group);
+    void logError(const QString& brief, const QString& what, Draupnir::Messages::MessageGroup group);
 
     /*! @brief Logs a custom Message object.
      *  @param what Message content.
      *  @tparam MessageTrait The trait describing the message type. */
     template<class MessageTrait>
     void logMessage(const QString& what) {
-        _logMessage(new MessageTemplate<MessageTrait>(what));
+        _logMessage(new Draupnir::Messages::MessageTemplate<MessageTrait>(what));
     }
 
     /*! @brief Logs a custom Message object with brief and details.
@@ -166,20 +168,20 @@ public:
      *  @tparam MessageTrait The trait describing the message type. */
     template<class MessageTrait>
     void logMessage(const QString& brief, const QString& what) {
-        _logMessage(new MessageTemplate<MessageTrait>(brief,what));
+        _logMessage(new Draupnir::Messages::MessageTemplate<MessageTrait>(brief,what));
     }
 
     /*! @brief This method passes provided QList with the pointers to the Message objects to the configured MessageHandler. */
-    [[deprecated]] void logMessageList(const QList<Message*>& messageList);
+    [[deprecated]] void logMessageList(const QList<Draupnir::Messages::Message*>& messageList);
 
 private:
     Logger();
     Q_DISABLE_COPY(Logger);
-    MessageHandler* p_messageHandler;
+    Draupnir::Messages::MessageHandler* p_messageHandler;
 
-    void _logMessage(Message* message);
+    void _logMessage(Draupnir::Messages::Message* message);
 
-    void _logMessage(Message* message, MessageGroup group);
+    void _logMessage(Draupnir::Messages::Message* message, Draupnir::Messages::MessageGroup group);
 };
 
 #define logger Logger::get()

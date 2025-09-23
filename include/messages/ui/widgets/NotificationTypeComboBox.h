@@ -27,7 +27,10 @@
 
 #include <QComboBox>
 
-#include "Notification.h"
+#include "core/Notification.h"
+
+namespace Draupnir::Messages
+{
 
 /*! @class NotificationTypeComboBox draupnir-lib/qt/widgets/NotificationTypeComboBox.h
  *  @brief QComboBox widget for selecting Notification::Type values.
@@ -77,5 +80,7 @@ private:
      *  @details Called during language changes. */
     void _retranslateUi();
 };
+
+}; // namespace Draupnir::Messages
 
 #endif // NOTIFICATIONTYPECOMBOBOX_H

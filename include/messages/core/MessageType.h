@@ -27,7 +27,7 @@
 
 #include <cstdint>
 
-/*! @class MessageType.h draupnir-lib/include/messages/MessageType.h
+/*! @class MessageType.h draupnir-lib/include/messages/core/MessageType.h
  *  @brief Defines the MessageType class used to represent and manipulate message type identifiers.
  *  @details MessageType is a lightweight wrapper over a 64-bit integer that provides type-safe, constexpr-friendly message
  *           identifiers. It's used to distinguish between various message categories such as Debug, Info, Warning, Error,
@@ -37,6 +37,9 @@
  *           from DefaultMessageTypes::FirstCustomType enum key.
  *
  *  @note This class is designed to work efficiently in compile-time contexts. */
+
+namespace Draupnir::Messages
+{
 
 class MessageType
 {
@@ -95,5 +98,7 @@ public:
 private:
     uint64_t m_id;
 };
+
+}; // Draupnir::Messages
 
 #endif // MESSAGETYPE_H

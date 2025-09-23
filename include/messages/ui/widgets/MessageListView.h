@@ -27,7 +27,10 @@
 
 #include <QListView>
 
-#include "MessageType.h"
+#include "core/MessageType.h"
+
+namespace Draupnir::Messages
+{
 
 class MessageListModel;
 class MessageListProxyModel;
@@ -117,5 +120,7 @@ private:
     MessageListModel* p_messageList;
     MessageListProxyModel* p_messageListProxyModel;
 };
+
+}; // namespace Draupnir::Messages
 
 #endif // MESSAGELISTVIEW_H

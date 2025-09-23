@@ -28,10 +28,12 @@
 #include <QMenu>
 #include <QObject>
 
-#include "MessageType.h"
-#include "../core/MessageTraitsHelper.h"
+#include "core/MessageType.h"
 
-/*! @class MessageViewConfigMenu draupnir-lib/src/messages/MessageViewConfigMenu.h
+namespace Draupnir::Messages
+{
+
+/*! @class MessageViewConfigMenu draupnir-lib/messages/ui/menus/MessageViewConfigMenu.h
  *  @brief An QMenu-based menu capable of displaying/editing settings of the MessageListView widget.
  *  @details As many other things within this MessageSystem - this menu consists of two parts: a MessageViewConfigMenu - interface
  *           to the Qt-world and MessageViewConfigMenuTemplate - class implementing template part of this interface. */
@@ -76,10 +78,14 @@ private:
     QAction* w_messageTypesSection;
 };
 
-#include "../../include/containers/fixed_map.h"
+}; // namespace Draupnir::Messages
 
-/*! @class MessageViewConfigMenuTemplate draupnir-lib/src/messages/MessageViewConfigMenu.h
+#include "../../include/containers/fixed_map.h" // IWYU pragma: keep
+
+/*! @class MessageViewConfigMenuTemplate draupnir-lib/include/messages/ui/MessageViewConfigMenu.h
  *  @brief This template class implements message-type-list dependant functionality of the MessageViewConfigMenu. */
+
+namespace Draupnir::Messages {
 
 template<class... MessageTraits>
 class MessageViewConfigMenuTemplate final : public MessageViewConfigMenu
@@ -103,6 +109,13 @@ public:
         m_actionMap[type]->setChecked(isSelected);
     }
 
+    /*! @brief Template version of MessageViewConfigMenuTemplate::displayTypeSelected method.
+     * @todo This method can be optimized. */
+    template<class MessageTrait>
+    void displayTypeSelected(bool isSelected) {
+        displayTypeSelected(MessageTrait::type,isSelected);
+    }
+
     /*! @brief Implementation of MessageViewConfigMenu::displayFilterConfig method. According to the provided filter configuration
      *         marks related QAction entries as selected / deselected.
      * @note No signals should are emitted. */
@@ -119,8 +132,10 @@ public:
     }
 
 private:
+    static constexpr MessageType supportedMessageIds[] = { MessageTraits::type... };
+
     fixed_map<
-        MessageTraitsHelper<MessageTraits...>::supportedMessageIds,
+        supportedMessageIds,
         QAction*
     > m_actionMap;
 
@@ -149,5 +164,7 @@ private:
             _retranslateTypesActionsImpl<Rest...>();
     }
 };
+
+}; // namespace Draupnir::Messages
 
 #endif // MESSAGEVIEWCONFIGMENU_H

@@ -22,33 +22,37 @@
  *
  */
 
-#include "DefaultMessageTraits.h"
+#ifndef MESSAGETEMPLATE_H
+#define MESSAGETEMPLATE_H
 
-#include <QApplication>
-#include <QMessageBox>
-#include <QStyle>
-#include <QSystemTrayIcon>
+#include "core/Message.h"
 
-const QIcon& DebugMessageTrait::icon()
+class Logger;
+
+namespace Draupnir::Messages
 {
-    static const QIcon icon;
-    return icon;
-}
 
-const QIcon& ErrorMessageTrait::icon()
-{
-    static const QIcon icon = qApp->style()->standardIcon(QStyle::SP_MessageBoxCritical);
-    return icon;
-}
+/*! @class MessageTemplate draupnir-lib/src/messages/core/MessageTemplate.h
+ *  @brief This is a helper class to simplify construction of the Message objects from MessageTraits. */
 
-const QIcon& WarningMessageTrait::icon()
+template<class MessageTrait>
+class MessageTemplate final : public Message
 {
-    static const QIcon icon = qApp->style()->standardIcon(QStyle::SP_MessageBoxWarning);
-    return icon;
+public:
+
+protected:
+    friend class ::Logger;
+    friend class MessageHandler; // For dummy message
+
+    MessageTemplate(const QString& text) :
+        Message{MessageTrait::type, MessageTrait::icon(), MessageTrait::displayName(), text}
+    {}
+
+    MessageTemplate(const QString& brief, const QString& text) :
+        Message{MessageTrait::type, MessageTrait::icon(), brief, text}
+    {}
 };
 
-const QIcon& InfoMessageTrait::icon()
-{
-    static const QIcon icon = qApp->style()->standardIcon(QStyle::SP_MessageBoxInformation);
-    return icon;
-};
+}; // namespace Draupnir::Messages
+
+#endif // MESSAGETEMPLATE_H

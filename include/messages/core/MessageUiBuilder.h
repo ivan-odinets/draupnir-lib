@@ -28,7 +28,10 @@
 class QMenu;
 class QWidget;
 
-#include "MessageType.h"
+#include "core/MessageType.h"
+
+namespace Draupnir::Messages
+{
 
 /*! @class MessageUiBuilder draupnir-lib/include/messages/MessageUiBuilder.h
  *  @brief Abstract interface for GUI builder components of the message system.
@@ -45,7 +48,7 @@ public:
      *  @details The returned widget is configured and ready to display messages coming from the corresponding message handler.
      *  @param parent Optional parent widget.
      * @note It is the caller's responsibility to manage memory properly. */
-    virtual QWidget* createConfiguredLogWidget(QWidget* parent = nullptr) const = 0;
+    virtual QWidget* createConfiguredLogWidget(QWidget* parent = nullptr) = 0;
 
     /*! @brief Returns a QMenu containing NotificationTypeMenu entries for all available MessageType
      *  @param parent Optional parent widget.
@@ -70,5 +73,7 @@ protected:
 
     MessageUiBuilder() = default;
 };
+
+}; // namespace Draupnir::Messages
 
 #endif // MESSAGEUIBUILDER_H

@@ -22,27 +22,38 @@
  *
  */
 
-#include "MessageViewConfigDialog.h"
+#include "traits/messages/DefaultMessageTraits.h"
 
-#include <QDialogButtonBox>
-#include <QVBoxLayout>
+#include <QApplication>
+#include <QMessageBox>
+#include <QStyle>
+#include <QSystemTrayIcon>
 
-MessageViewConfigDialog::MessageViewConfigDialog(QWidget* parent)  :
-    QDialog{parent},
-    p_typeSelectorLayout{new QVBoxLayout},
-    p_buttons{new QDialogButtonBox{QDialogButtonBox::Ok|QDialogButtonBox::Close}}
+namespace Draupnir::Messages
 {
-    QVBoxLayout* p_mainLayout = new QVBoxLayout;
-    p_mainLayout->addLayout(p_typeSelectorLayout);
-    p_mainLayout->addWidget(p_buttons);
-    setLayout(p_mainLayout);
 
-    connect(p_buttons, &QDialogButtonBox::accepted, this, &MessageViewConfigDialog::accept);
-    connect(p_buttons, &QDialogButtonBox::rejected, this, &MessageViewConfigDialog::reject);
-
+const QIcon& DebugMessageTrait::icon()
+{
+    static const QIcon icon;
+    return icon;
 }
 
-void MessageViewConfigDialog::addTypeVisibilityCheckBox(QCheckBox* checkBox)
+const QIcon& ErrorMessageTrait::icon()
 {
-    p_typeSelectorLayout->addWidget(checkBox);
+    static const QIcon icon = qApp->style()->standardIcon(QStyle::SP_MessageBoxCritical);
+    return icon;
 }
+
+const QIcon& WarningMessageTrait::icon()
+{
+    static const QIcon icon = qApp->style()->standardIcon(QStyle::SP_MessageBoxWarning);
+    return icon;
+};
+
+const QIcon& InfoMessageTrait::icon()
+{
+    static const QIcon icon = qApp->style()->standardIcon(QStyle::SP_MessageBoxInformation);
+    return icon;
+};
+
+}; // namespace Draupnir::Messages

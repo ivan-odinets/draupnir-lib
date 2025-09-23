@@ -35,7 +35,10 @@ class QFormLayout;
 class QLabel;
 class QVBoxLayout;
 
-#include "MessageType.h"
+#include "core/MessageType.h"
+
+namespace Draupnir::Messages
+{
 
 /*! @class MessageViewConfigDialog draupnir-lib/src/messages/MessageViewConfigDialog.h
  *  @brief An dialog capable of displaying/editing settings of the MessageListView widget. */
@@ -70,10 +73,15 @@ private:
     QDialogButtonBox* p_buttons;
 };
 
+}; // namespace Draupnir::Messages
+
 #include <QCheckBox>
 #include <QLabel>
 
-#include "../../../include/containers/fixed_map.h"
+#include "../../../containers/fixed_map.h"
+
+namespace Draupnir::Messages
+{
 
 template<class... MessageTypes>
 class MessageViewConfigDialogTemplate : public MessageViewConfigDialog
@@ -118,5 +126,7 @@ private:
             _setupUi<Other...>();
     };
 };
+
+}; // namespace Draupnir::Messages
 
 #endif // MESSAGEVIEWCONFIGDIALOG_H

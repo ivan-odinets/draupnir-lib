@@ -27,9 +27,12 @@
 
 #include <QSortFilterProxyModel>
 
-#include "MessageType.h"
+#include "core/MessageType.h"
 
-/*! @class MessageListProxyModel core/messages/MessageListProxyModel.h
+namespace Draupnir::Messages
+{
+
+/*! @class MessageListProxyModel lib/draupnir-lib/core/messages/MessageListProxyModel.h
  *  @brief This class is a proxy model for MessageListModel which is used for filtering  Message objects. By default this model
  *         will accept any message type.
  *  @details Filtering is done by bitwise comparison between the value returned by Message::type and m_allowedType
@@ -62,5 +65,7 @@ protected:
 private:
     MessageType m_typeFilter;
 };
+
+}; // namespace Draupnir::Messages
 
 #endif // MESSAGELISTPROXYMODEL_H

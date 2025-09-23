@@ -32,13 +32,16 @@
 class QFormLayout;
 class QPushButton;
 
-#include "MessageType.h"
-#include "Notification.h"
-#include "NotificationTypeComboBox.h"
+#include "core/MessageType.h"
+#include "core/Notification.h"
+#include "ui/widgets/NotificationTypeComboBox.h"
+
+namespace Draupnir::Messages
+{
 
 class MessageHandler;
 
-/*! @class MessageNotificationSettingsWidget draupnir-lib/src/messages/widgets/MessageNotificationSettingsWidget.h
+/*! @class MessageNotificationSettingsWidget draupnir-lib/messages/ui/widgets/MessageNotificationSettingsWidget.h
  *  @brief Abstract base widget for configuring notification settings for the MessageHandler / MessageHandlerTemplate.
  *  @details This widget serves as a user interface for displaying and modifying notification settings associated with
  *           different message types. It is intended to be subclassed by `MessageNotificationSettingsWidgetTemplate`
@@ -80,8 +83,6 @@ protected:
     /*! @brief Virtual helper to retranslate the labels of each message type. */
     virtual void _retranslateTypeLabels() = 0;
 
-    MessageHandler* p_handler;
-
 private slots:
     void _onShowDummyClicked();
 
@@ -93,9 +94,13 @@ private:
     QFormLayout* p_notificationTypesLayout;
 };
 
+}; // namespace Draupnir::Messages
+
 #include "../../include/containers/fixed_tuple_map.h"
-#include "../core/MessageHandlerTemplate.h"
-#include "../core/MessageTraitsHelper.h"
+#include "core/MessageHandlerTemplate.h"
+
+namespace Draupnir::Messages
+{
 
 /*! @class MessageNotificationSettingsWidgetTemplate draupnir-lib/src/messages/widgets/MessageNotificationSettingsWidget.h
  *  @brief Concrete implementation of `MessageNotificationSettingsWidget` for a fixed set of message traits.
@@ -108,6 +113,10 @@ private:
 template<class... MessageTraits>
 class MessageNotificationSettingsWidgetTemplate final : public MessageNotificationSettingsWidget
 {
+    using MessageHandler = MessageHandlerTemplate<MessageTraits...>;
+
+    static constexpr MessageType supportedMessageIds[] = { MessageTraits::type... };
+
 public:
     /*! @brief Constructs the widget and populates it based on the provided message traits.
      *  @param parent Optional parent widget. */
@@ -131,23 +140,10 @@ public:
     void showNotificationSettings(MessageHandlerTemplate<MessageTraits...>* handler) {
         p_handler = handler;
 
-        auto policyBegin = handler->notificationMapBegin();
-        const auto policyEnd = handler->notificationMapEnd();
-
-        auto widgetMapBegin = m_widgetMap.begin();
-        //const auto widgetMapEnd = m_widgetMap.end();
-
-        while (policyBegin != policyEnd) {
-            std::get<NotificationTypeComboBox*>(widgetMapBegin->second)->setNotificationType(
-                policyBegin->second
-            );
-
-            policyBegin++;
-            widgetMapBegin++;
-        }
+        _showNotificationSettingsImpl<MessageTraits...>();
 
         connect(handler, &MessageHandler::notificationTypeChanged,
-                this, &MessageNotificationSettingsWidget::showNotificationType);
+                this,    &MessageNotificationSettingsWidget::showNotificationType);
     }
 
 protected:
@@ -157,8 +153,10 @@ protected:
     }
 
 private:
+    MessageHandler* p_handler;
+
     fixed_tuple_map<
-        MessageTraitsHelper<MessageTraits...>::supportedMessageIds,
+        supportedMessageIds,
         QLabel*,
         NotificationTypeComboBox*
     > m_widgetMap;
@@ -185,6 +183,18 @@ private:
             _setupUiImpl<Rest...>();
     }
 
+    template<class First, class... Rest>
+    inline void _showNotificationSettingsImpl() {
+
+        m_widgetMap.template get<NotificationTypeComboBox*>(First::type)->setNotificationType(
+//            p_handler->template notification<First>()
+            p_handler->notification(First::type)
+        );
+
+        if constexpr (sizeof...(Rest) > 0)
+            _showNotificationSettingsImpl<Rest...>();
+    }
+
     /*! @brief Recursive compile-time retranslation for trait labels. */
     template<class First, class... Rest>
     inline void _retranslateTypeLabelsImpl() {
@@ -195,5 +205,7 @@ private:
     }
 
 };
+
+}; // namespace Draupnir::Messages
 
 #endif // MESSAGENOTIFICATIONSETTINGSWIDGET_H

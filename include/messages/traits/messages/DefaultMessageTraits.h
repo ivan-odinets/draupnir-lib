@@ -27,16 +27,20 @@
 
 #include <QIcon>
 
-#include "MessageType.h"
-#include "Notification.h"
+#include "core/MessageType.h"
+#include "core/Notification.h"
 
-/*! @file DefaultMessageTraits.h draupnir-lib/src/messages/core/DefaultMessageTraits.h
+namespace Draupnir::Messages
+{
+
+/*! @file DefaultMessageTraits.h draupnir-lib/include/messages/traits/messages/DefaultMessageTraits.h
  *  @brief Contains default message trait definitions used by the logging and messaging subsystem.
  *  @details This file defines a set of default traits used to classify and style messages in the system. Each trait encapsulates
  *           compile-time metadata such as type, settings keys, and icon rendering, and is used to instantiate strongly-typed
- *           Message objects. */
+ *           Message objects.
+ * @todo Standartize SettingsKey prefixes. */
 
-/*! @class DebugMessageTrait draupnir-lib/src/messages/core/DefaultMessageTraits.h
+/*! @class DebugMessageTrait draupnir-lib/include/messages/traits/messages/DefaultMessageTraits.h
  *  @brief Defines metadata for debug-level messages.
  *  @details This trait is intended for internal diagnostic messages. */
 
@@ -59,7 +63,7 @@ public:
     static const QIcon& icon();
 };
 
-/*! @class InfoMessageTrait draupnir-lib/src/messages/core/DefaultMessageTraits.h
+/*! @class InfoMessageTrait draupnir-lib/include/messages/traits/messages/DefaultMessageTraits.h
  *  @brief Defines metadata for informational messages.
  *  @details Messages using this trait are intended to inform the user of successful or neutral operations. */
 
@@ -82,7 +86,7 @@ public:
     static const QIcon& icon();
 };
 
-/*! @class WarningMessageTrait draupnir-lib/src/messages/core/DefaultMessageTraits.h
+/*! @class WarningMessageTrait draupnir-lib/include/messages/traits/messages/DefaultMessageTraits.h
  *  @brief Defines metadata for warning messages.
  *  @details Messages with this trait indicate that something might be wrong, but is not necessarily an error. */
 
@@ -105,7 +109,7 @@ public:
     static const QIcon& icon();
 };
 
-/*! @class ErrorMessageTrait draupnir-lib/src/messages/core/DefaultMessageTraits.h
+/*! @class ErrorMessageTrait draupnir-lib/include/messages/traits/messages/DefaultMessageTraits.h
  *  @brief Defines metadata for error messages.
  *  @details This trait represents critical issues or failures in the application. */
 
@@ -127,5 +131,7 @@ public:
     /*! @brief Returns the icon associated with this message type. */
     static const QIcon& icon();
 };
+
+}; // namespace Draupnir::Messages
 
 #endif // DEFAULTMESSAGETRAITS_H

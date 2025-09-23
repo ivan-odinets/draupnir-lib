@@ -22,14 +22,17 @@
  *
  */
 
-#include "MessageListView.h"
+#include "ui/widgets/MessageListView.h"
 
 #include <QDebug>
 #include <QMouseEvent>
 
-#include "../models/MessageListModel.h"
-#include "../models/MessageListProxyModel.h"
-#include "../windows/MessageDisplayDialog.h"
+#include "models/MessageListModel.h"
+#include "models/MessageListProxyModel.h"
+#include "ui/windows/MessageDisplayDialog.h"
+
+namespace Draupnir::Messages
+{
 
 MessageListView::MessageListView(QWidget* parent) :
     QListView{parent},
@@ -145,3 +148,5 @@ void MessageListView::mouseDoubleClickEvent(QMouseEvent *event)
     dialog->addMessageList(messagesList);
     dialog->show();
 }
+
+}; // namespace Draupnir::Messages

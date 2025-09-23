@@ -28,9 +28,14 @@
 #include "MessageUiBuilder.h"
 #include "MessageHandlerTemplate.h"
 
-#include "../menus/NotificationTypeMenu.h"
-#include "../widgets/LogWidget.h"
-#include "../widgets/MessageNotificationSettingsWidget.h"
+#include "ui/menus/NotificationTypeMenu.h"
+#include "ui/widgets/LogWidget.h"
+#include "ui/widgets/MessageNotificationSettingsWidget.h"
+
+#include "SettingsBundleMerge.h"
+
+namespace Draupnir::Messages
+{
 
 /*! @class MessageUiBuilderTemplate draupnir-lib/src/messages/core/MessageUiBuilderTemplate.h
  *  @brief Default template-based implementation of MessageUiBuilder for a given list of message types.
@@ -45,22 +50,23 @@ template<class... MessageTypes>
 class MessageUiBuilderTemplate final : public MessageUiBuilder
 {
 public:
+    using SettingsBundle = Draupnir::Settings::bundle_merge_all_t<
+        typename LogWidgetTemplate<MessageTypes...>::SettingsBundle
+    >;
+
     /*! @brief Creates and returns a LogWidget configured with the current handler and settings.
      *  @details This method is intended to be used by GUI code that needs a message log viewer.
      *  @param parent Optional parent widget for the created LogWidget.
      *  @return QWidget* Pointer to the fully configured LogWidget. */
-    QWidget* createConfiguredLogWidget(QWidget* parent = nullptr) const final {
-#if defined(DRAUPNIR_MSGSYS_CUSTOM_SETTINGS) || defined(DRAUPNIR_MSGSYS_APP_SETTINGS)
-        Q_ASSERT_X(p_settings, "MessageUiBuilderTemplate::createConfiguredLogWidget",
-                   "MessageUiBuilder::loadSettings method must have been called before.");
-#endif // DRAUPNIR_MSGSYS_CUSTOM_SETTINGS || DRAUPNIR_MSGSYS_APP_SETTINGS
-        LogWidget* result = new LogWidgetTemplate<MessageTypes...>{parent};
+    QWidget* createConfiguredLogWidget(QWidget* parent = nullptr) final {
+        Q_ASSERT_X(m_settings.isValid(),"MessageUiBuilderTemplate<MessageTraits...>::createConfiguredLogWidget",
+                   "Method MessageUiBuilderTemplate<MessageTraits...>::loadSettings must have been called before.");
+
+        auto* result = new LogWidgetTemplate<MessageTypes...>{parent};
 
         result->setMessageListModel(p_handler->messages());
+        result->template loadSettings<SettingsBundle>(&m_settings);
 
-#if defined(DRAUPNIR_MSGSYS_CUSTOM_SETTINGS) || defined(DRAUPNIR_MSGSYS_APP_SETTINGS)
-        result->loadSettings(p_settings);
-#endif // DRAUPNIR_MSGSYS_CUSTOM_SETTINGS || DRAUPNIR_MSGSYS_APP_SETTINGS
         return result;
     }
 
@@ -123,9 +129,6 @@ protected:
     friend class MessageSystemTemplate;
 
     MessageUiBuilderTemplate() :
-#if defined(DRAUPNIR_MSGSYS_APP_SETTINGS) || defined(DRAUPNIR_MSGSYS_CUSTOM_SETTINGS)
-        p_settings{nullptr},
-#endif // DRAUPNIR_MSGSYS_APP_SETTINGS || DRAUPNIR_MSGSYS_CUSTOM_SETTINGS
         p_handler{nullptr}
     {}
 
@@ -141,37 +144,13 @@ protected:
         p_handler = handler;
     }
 
-
-#if defined(DRAUPNIR_MSGSYS_APP_SETTINGS) || defined (DRAUPNIR_MSGSYS_CUSTOM_SETTINGS)
-
-    /*! @brief Loads persistent application settings into the UI builder.
-     *  @details The settings are typically passed from the application and used to configure the LogWidget appearance and behavior.
-     *  @param settings Pointer to the AppSettings or MessageSettingsInterface instance.
-     * @note This method will be present when either DRAUPNIR_MSGSYS_APP_SETTINGS or DRAUPNIR_MSGSYS_CUSTOM_SETTINGS macros are enabled.
-     *       When first macro is enabled - this method will accept AppSettings pointer. When second - MessageSystemInterface. */
-#ifdef DRAUPNIR_MSGSYS_APP_SETTINGS
-    void loadSettings(AppSettings* settings)
-#endif // DRAUPNIR_MSGSYS_APP_SETTINGS
-#ifdef DRAUPNIR_MSGSYS_CUSTOM_SETTINGS
-    void loadSettings(MessageSettingsInterface* settings)
-#endif // DRAUPNIR_MSGSYS_APP_SETTINGS
-    {
-        Q_ASSERT_X(settings, "MessageUiBuilderTemplate::loadSettings",
-                   "Provided settings is nullptr.");
-        Q_ASSERT_X(p_settings == nullptr, "MessageUiBuilderTemplate::loadSettings",
-                   "This method should be called only once.");
-
-        p_settings = settings;
+    template<class SettingsRegistry>
+    void loadSettings(SettingsRegistry* settings) {
+        m_settings = settings->template getSettingsBundle<SettingsBundle>();
     }
-#endif // DRAUPNIR_MSGSYS_CUSTOM_SETTINGS || DRAUPNIR_MSGSYS_APP_SETTINGS
 
 private:
-#ifdef DRAUPNIR_MSGSYS_APP_SETTINGS
-    AppSettings* p_settings;
-#endif // DRAUPNIR_MSGSYS_APP_SETTINGS
-#ifdef DRAUPNIR_MSGSYS_CUSTOM_SETTINGS
-    MessageSettingsInterface* p_settings;
-#endif // DRAUPNIR_MSGSYS_APP_SETTINGS
+    SettingsBundle m_settings;
     MessageHandlerTemplate<MessageTypes...>* p_handler;
 
     template<class First, class... Rest>
@@ -184,5 +163,7 @@ private:
             return _populateGlobalNotificationsMenu<Rest...>(dest);
     }
 };
+
+}; // namespace Draupnir::Messages
 
 #endif // MESSAGEUIBUILDERTEMPLATE_H

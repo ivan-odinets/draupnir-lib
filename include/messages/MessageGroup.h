@@ -29,6 +29,9 @@
 #include <random>
 #include <functional>
 
+namespace Draupnir::Messages
+{
+
 /*! @class MessageGroup draupnir-lib/messages/MessageGroup.h
  *  @brief Represents a logical group of related log messages.
  *  @details The MessageGroup class is a lightweight wrapper around an integer ID, used to group related log messages together.
@@ -90,10 +93,12 @@ private:
     const int m_id;
 };
 
+}; // namespace Draupnir::Messages
+
 namespace std {
     template <>
-    struct hash<MessageGroup> {
-        std::size_t operator()(const MessageGroup& group) const noexcept {
+    struct hash<Draupnir::Messages::MessageGroup> {
+        std::size_t operator()(const Draupnir::Messages::MessageGroup& group) const noexcept {
             return std::hash<int>{}(group.id());
         }
     };
@@ -101,7 +106,7 @@ namespace std {
 
 #include <QHash>
 
-inline uint qHash(const MessageGroup& key, uint seed = 0) noexcept {
+inline uint qHash(const Draupnir::Messages::MessageGroup& key, uint seed = 0) noexcept {
     return qHash(key.id(), seed);
 }
 

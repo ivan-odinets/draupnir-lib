@@ -22,9 +22,12 @@
  *
  */
 
-#include "MessageListProxyModel.h"
+#include "models/MessageListProxyModel.h"
 
-#include "../core/Message.h"
+#include "core/Message.h"
+
+namespace Draupnir::Messages
+{
 
 MessageListProxyModel::MessageListProxyModel(QObject* parent) :
     QSortFilterProxyModel{parent},
@@ -65,3 +68,5 @@ bool MessageListProxyModel::filterAcceptsRow(int sourceRow, const QModelIndex &s
                "Source model for this proxy model MUST provide QModelIndex having internalPointer");
     return (message->type() & m_typeFilter);
 }
+
+}; // namespace Draupnir::Messages

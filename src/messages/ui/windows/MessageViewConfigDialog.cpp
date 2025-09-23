@@ -22,32 +22,32 @@
  *
  */
 
-#include "MessageViewConfigMenu.h"
+#include "ui/windows/MessageViewConfigDialog.h"
 
-#include <QEvent>
+#include <QDialogButtonBox>
+#include <QVBoxLayout>
 
-MessageViewConfigMenu::MessageViewConfigMenu(QWidget* parent) :
-    QMenu{parent},
-    w_messageTypesSection{addSection(QString{})}
+namespace Draupnir::Messages
 {
-    _retranslateUi();
+
+MessageViewConfigDialog::MessageViewConfigDialog(QWidget* parent)  :
+    QDialog{parent},
+    p_typeSelectorLayout{new QVBoxLayout},
+    p_buttons{new QDialogButtonBox{QDialogButtonBox::Ok|QDialogButtonBox::Close}}
+{
+    QVBoxLayout* p_mainLayout = new QVBoxLayout;
+    p_mainLayout->addLayout(p_typeSelectorLayout);
+    p_mainLayout->addWidget(p_buttons);
+    setLayout(p_mainLayout);
+
+    connect(p_buttons, &QDialogButtonBox::accepted, this, &MessageViewConfigDialog::accept);
+    connect(p_buttons, &QDialogButtonBox::rejected, this, &MessageViewConfigDialog::reject);
+
 }
 
-void MessageViewConfigMenu::changeEvent(QEvent* event)
+void MessageViewConfigDialog::addTypeVisibilityCheckBox(QCheckBox* checkBox)
 {
-    if (event->type() == QEvent::LanguageChange) {
-        _retranslateUi();
-
-        retranslateTypesActions();
-    }
+    p_typeSelectorLayout->addWidget(checkBox);
 }
 
-void MessageViewConfigMenu::addMessageTypeAction(QAction* action)
-{
-    addAction(action);
-}
-
-void MessageViewConfigMenu::_retranslateUi()
-{
-    w_messageTypesSection->setText(tr("Messages Shown:"));
-}
+}; // namespace Draupnir::Messages

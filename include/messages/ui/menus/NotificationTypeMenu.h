@@ -27,9 +27,12 @@
 
 #include <QMenu>
 
-#include "Notification.h"
+#include "core/Notification.h"
 
-/*! @class NotificationTypeMenu draupnir-lib/src/messages/NotificationTypeMenu.h
+namespace Draupnir::Messages
+{
+
+/*! @class NotificationTypeMenu draupnir-lib/include/messages/ui/menus/NotificationTypeMenu.h
  *  @brief Menu widget for selecting a Notification::Type at runtime.
  *  @details Provides a QMenu-based UI for choosing the desired notification type (e.g., message box, tray). Automatically
  *           adapts available options depending on build settings (QT_NO_SYSTEMTRAYICON). Emits a signal when the user
@@ -95,5 +98,7 @@ private:
 
     QActionGroup* w_notificationActionGroup;
 };
+
+}; // namespace Draupnir::Messages
 
 #endif // NOTIFICATIONTYPEMENU_H

@@ -22,9 +22,12 @@
  *
  */
 
-#include "MessageListModel.h"
+#include "models/MessageListModel.h"
 
-#include "../core/Message.h"
+#include "core/Message.h"
+
+namespace Draupnir::Messages
+{
 
 MessageListModel::MessageListModel(QObject *parent) :
     QAbstractItemModel{parent},
@@ -190,3 +193,5 @@ void MessageListModel::_setDisplayedContentBit(DisplayedContent content, bool st
     else
         m_displayedContent &= ~content;
 }
+
+}; // namespace Draupnir::Messages

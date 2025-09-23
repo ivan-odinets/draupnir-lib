@@ -25,15 +25,10 @@
 #ifndef MESSAGESYSTEMINTERFACE_H
 #define MESSAGESYSTEMINTERFACE_H
 
-#include "MessageType.h"
+#include "core/MessageType.h"
 
-#ifdef DRAUPNIR_MSGSYS_APP_SETTINGS
-class AppSettings;
-#endif // DRAUPNIR_MSGSYS_APP_SETTINGS
-
-#ifdef DRAUPNIR_MSGSYS_CUSTOM_SETTINGS
-    #include "MessageSettingsInterface.h"
-#endif // DRAUPNIR_MSGSYS_CUSTOM_SETTINGS
+namespace Draupnir::Messages
+{
 
 class MessageHandler;
 class MessageUiBuilder;
@@ -51,29 +46,6 @@ public:
     /*! @brief Trivial virtual destructor. */
     virtual ~MessageSystemInterface() = default;
 
-#ifdef DRAUPNIR_MSGSYS_APP_SETTINGS
-    /*! @brief This method should load settings for this MessageSystemInterface implementation from the provided AppSettings
-     *         object.
-     * @note This method is present only when the DRAUPNIR_MSGSYS_APP_SETTINGS macro is enabled. */
-    virtual void loadSettings(AppSettings* settings) = 0;
-#endif // DRAUPNIR_MSGSYS_APP_SETTINGS
-
-#ifdef DRAUPNIR_MSGSYS_CUSTOM_SETTINGS
-    /*! @brief This method should load settings for this MessageSystemInterface implementation from the provided MessageSettingsInterface
-     *         object.
-     * @note This method is present only when the DRAUPNIR_MSGSYS_CUSTOM_SETTINGS macro is enabled. */
-    virtual void loadSettings(MessageSettingsInterface* settingsInterface) = 0;
-
-    /*! @brief Helper to wrap an arbitrary settings class in a MessageSettingsAdapter.
-     *  @details Creates a MessageSettingsAdapter using the provided SettingsImpl class and uses it as the settings storage.
-     *  @tparam SettingsImpl Class of the settings storage. Must be compatible with MessageSettingsAdapter.
-     *  @note This method is present only when the DRAUPNIR_MSGSYS_CUSTOM_SETTINGS macro is enabled. */
-    template<class SettingsImpl>
-    void loadSettings(SettingsImpl* settingsImpl) {
-        loadSettings(new MessageSettingsAdapter<SettingsImpl>{settingsImpl});
-    }
-#endif // DRAUPNIR_MSGSYS_CUSTOM_SETTINGS
-
     /*! @brief This method should return pointer to MessageHandler interface of this MessageSystem implementation. */
     virtual MessageHandler* handler() = 0;
 
@@ -87,5 +59,7 @@ protected:
     /*! @brief Constructor. Protected as this is an interface. */
     MessageSystemInterface() = default;
 };
+
+}; // namespace Draupnir::Messages
 
 #endif // MESSAGESYSTEMINTERFACE_H

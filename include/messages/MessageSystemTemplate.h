@@ -27,10 +27,15 @@
 
 #include "MessageSystemInterface.h"
 
-#include "../../src/messages/core/DefaultMessageTraits.h"
-#include "../../src/messages/core/MessageTraitsHelper.h"
-#include "../../src/messages/core/MessageHandlerTemplate.h"
-#include "../../src/messages/core/MessageUiBuilderTemplate.h"
+#include "traits/messages/DefaultMessageTraits.h"
+#include "utils/MessageTraitsHelper.h"
+#include "traits/settings/MessageTypeSettingsTrait.h"
+
+#include "SettingsBundle.h"
+#include "SettingsBundleMerge.h"
+
+namespace Draupnir::Messages
+{
 
 /*! @class MessageSystemTemplate draupnir-lib/include/messages/MessageSystemTemplate.h
  *  @brief Template-based implementation of the MessageSystemInterface that defines message types at compile-time.
@@ -62,56 +67,55 @@
  *
  *  @tparam MessageTraits Variadic list of message traits defining custom message types.
  *
- * @see MessageSystemInterface, MessageHandler, MessageHandlerTemplate, MessageUiBuilder, MessageUiBuilderTemplate, MessageType */
+ * @see MessageSystemInterface, MessageHandler, MessageHandlerTemplate, MessageUiBuilder, MessageUiBuilderTemplate, MessageType
+ * @todo Inegrate MessageSystemTemplate settings with the Settings module.
+ * @todo Update the module .pri file.
+ * @todo Update the documentation. */
 
 template<class... MessageTraits>
-class MessageSystemTemplate final : public MessageSystemInterface
+class MessageSystemTemplate final : public Draupnir::Messages::MessageSystemInterface
 {
+    using SpecificMessageTraitsHelper = MessageTraitsHelper<
+        DebugMessageTrait,
+        InfoMessageTrait,
+        WarningMessageTrait,
+        ErrorMessageTrait,
+        MessageTraits...
+    >;
+
+    using MessageHandler = typename SpecificMessageTraitsHelper::MessageHandler;
+
+    using MessageUiBuilder = typename SpecificMessageTraitsHelper::MessageUiBuilder;
+
 public:
+    using SettingsBundle = Draupnir::Settings::bundle_merge_all_t<
+        typename MessageHandler::SettingsBundle,
+        typename MessageUiBuilder::SettingsBundle
+    >;
+
     /*! @brief Default constructor. Configures MessageUiBuilderTemplate.
      *  @details A static_assert will happen within this constructor if:
      *           - Classes within provided MessageTraits... and predefined MessageTraits (e.g. DebugMessageTrait) have duplicated IDs;
      *           - These MessageTraits... have IDs where multiple bits are set. */
     MessageSystemTemplate() {
-        static_assert(MessageTraitsHelper<
-            DebugMessageTrait,
-            InfoMessageTrait,
-            WarningMessageTrait,
-            ErrorMessageTrait,
-            MessageTraits...
-        >::hasUniqueIds(),"MessageTraits... parameter pack has non-unique IDs or these IDs are overlapping with ones for the "\
-                          "default types.");
+        static_assert(SpecificMessageTraitsHelper::hasUniqueIds(),
+                "MessageTraits... parameter pack has non-unique IDs or these IDs are overlapping with ones for the default types.");
 
-        static_assert(MessageTraitsHelper<
-            DebugMessageTrait,
-            InfoMessageTrait,
-            WarningMessageTrait,
-            ErrorMessageTrait,
-            MessageTraits...
-        >::hasFlags(),"MessageTraits... parameter pack has non-flag IDs");
+        static_assert(SpecificMessageTraitsHelper::hasFlags(),
+                "MessageTraits... parameter pack has non-flag IDs");
 
         m_uiBuilder.setMessageHandlerTemplate(&m_handler);
     }
 
-#if defined(DRAUPNIR_MSGSYS_APP_SETTINGS) || defined (DRAUPNIR_MSGSYS_CUSTOM_SETTINGS)
+    template<class SettingsRegistry>
+    void loadSettings(SettingsRegistry* registry) {
+        Q_ASSERT_X(registry, "MessageSystemTemolate<MessageTraits...>::loadSettings",
+                   "SettingsRegistry pointer provided is nullptr.");
 
-/*! @brief This method is used to load settings for this MessageSystemTemplate object from the provided object.
- * @note This method will be present when either DRAUPNIR_MSGSYS_APP_SETTINGS or DRAUPNIR_MSGSYS_CUSTOM_SETTINGS macros are enabled.
- *       When first macro is enabled - this method will accept AppSettings pointer. When second - MessageSystemInterface. */
-#ifdef DRAUPNIR_MSGSYS_APP_SETTINGS
-    void loadSettings(AppSettings* settings) {
-#endif // DRAUPNIR_MSGSYS_APP_SETTINGS
-#ifdef DRAUPNIR_MSGSYS_CUSTOM_SETTINGS
-    void loadSettings(MessageSettingsInterface* settings) {
-#endif // DRAUPNIR_MSGSYS_CUSTOM_SETTINGS
-        Q_ASSERT_X(settings, "MessageSystemTemplate::loadSettings",
-                   "Provided pointer pointer is nullptr.");
+        m_handler.template loadSettings<SettingsRegistry>(registry);
 
-        m_handler.loadSettings(settings);
-        m_uiBuilder.loadSettings(settings);
+        m_uiBuilder.template loadSettings<SettingsRegistry>(registry);
     }
-
-#endif // DRAUPNIR_MSGSYS_APP_SETTINGS || DRAUPNIR_MSGSYS_CUSTOM_SETTINGS
 
     /*! @brief Returns pointer to MessageHandlerTemplate object in form of pointer to the MessageHandler interface. */
     MessageHandler* handler() final { return &m_handler; }
@@ -124,43 +128,15 @@ public:
 
     /*! @brief Returns true if provided type is known to this MessageSystem. */
     static bool staticIsTypeKnown(MessageType type) {
-        return _staticIsTypeKnownImpl<
-                DebugMessageTrait,
-                InfoMessageTrait,
-                WarningMessageTrait,
-                ErrorMessageTrait,
-                MessageTraits...
-               >(type);
+        return SpecificMessageTraitsHelper::isTypeKnown(type);
     }
 
 private:
-    MessageHandlerTemplate<
-        DebugMessageTrait,
-        InfoMessageTrait,
-        WarningMessageTrait,
-        ErrorMessageTrait,
-        MessageTraits...
-    > m_handler;
-
-    MessageUiBuilderTemplate<
-        DebugMessageTrait,
-        InfoMessageTrait,
-        WarningMessageTrait,
-        ErrorMessageTrait,
-        MessageTraits...
-    > m_uiBuilder;
-
-    template<class First, class... Rest>
-    static inline bool _staticIsTypeKnownImpl(MessageType type) {
-        if (First::type == type) {
-            return true;
-        }
-
-        if constexpr (sizeof...(Rest) > 0)
-            return _staticIsTypeKnownImpl<Rest...>(type);
-        else
-            return false;
-    }
+    SettingsBundle m_settings;
+    MessageHandler m_handler;
+    MessageUiBuilder m_uiBuilder;
 };
+
+}; // namespace Draupnir::Messages
 
 #endif // MESSAGESYSTEMTEMPLATE_H

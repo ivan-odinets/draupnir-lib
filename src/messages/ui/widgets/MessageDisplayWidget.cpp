@@ -21,7 +21,8 @@
  * Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
  *
  */
-#include "MessageDisplayWidget.h"
+
+#include "ui/widgets/MessageDisplayWidget.h"
 
 #include <QEvent>
 #include <QFormLayout>
@@ -29,9 +30,12 @@
 #include <QHBoxLayout>
 #include <QStyle>
 
-#include "../core/Message.h"
+#include "core/Message.h"
 
 static QSize defaultIconSize{64,64};
+
+namespace Draupnir::Messages
+{
 
 MessageDisplayWidget::MessageDisplayWidget(QWidget *parent) :
     QWidget{parent},
@@ -105,3 +109,5 @@ void MessageDisplayWidget::_retranslateUi()
     w_messageWhatNameLabel->setText(tr("What:"));
     w_messageDateTimeNameLabel->setText(tr("Date:"));
 }
+
+}; // namespace Draupnir::Messages

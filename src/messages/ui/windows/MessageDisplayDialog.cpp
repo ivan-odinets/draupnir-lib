@@ -22,7 +22,7 @@
  *
  */
 
-#include "MessageDisplayDialog.h"
+#include "ui/windows/MessageDisplayDialog.h"
 
 #include <QDebug>
 #include <QDialogButtonBox>
@@ -30,7 +30,10 @@
 #include <QScrollArea>
 #include <QVBoxLayout>
 
-#include "../widgets/MessageDisplayWidget.h"
+#include "ui/widgets/MessageDisplayWidget.h"
+
+namespace Draupnir::Messages
+{
 
 MessageDisplayDialog::MessageDisplayDialog(QWidget* parent) :
     QDialog{parent},
@@ -92,3 +95,5 @@ void MessageDisplayDialog::clear()
     }
     w_scrollableLayout->addStretch();
 }
+
+}; // namespace Draupnir::Messages

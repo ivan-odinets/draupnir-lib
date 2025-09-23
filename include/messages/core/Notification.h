@@ -35,6 +35,9 @@
  *           utility functions for conversion between enum values and string representations for config and UI.
  * @note When having QT_NO_SYSTEMTRAYICON macro enabled - tray notification type will be not available. */
 
+namespace Draupnir::Messages
+{
+
 class Notification
 {
     Q_DECLARE_TR_FUNCTIONS(Notification);
@@ -100,7 +103,6 @@ private:
 
     friend Type& operator++(Notification::Type& type,int);
 };
-Q_DECLARE_METATYPE(Notification::Type);
 
 /*! @brief Increments a Notification::Type value (postfix operator++).
  *  @details Advances the enum to the next value in Type_values; wraps around at the end.
@@ -111,5 +113,9 @@ inline Notification::Type& operator++(Notification::Type& type,int)
     Notification::Type_values::advance(type);
     return type;
 }
+
+}; // namespace Draupnir::Messages
+
+Q_DECLARE_METATYPE(Draupnir::Messages::Notification::Type);
 
 #endif // NOTIFICATION_H

@@ -22,11 +22,14 @@
  *
  */
 
-#include "NotificationTypeMenu.h"
+#include "ui/menus/NotificationTypeMenu.h"
 
 #include <QAction>
 #include <QActionGroup>
 #include <QEvent>
+
+namespace Draupnir::Messages
+{
 
 NotificationTypeMenu::NotificationTypeMenu(QWidget *parent) :
     QMenu{parent},
@@ -90,7 +93,6 @@ void NotificationTypeMenu::_setupUi()
     connect(w_notificationActionGroup,&QActionGroup::triggered,this,&NotificationTypeMenu::_notificationActionSelected);
 }
 
-
 void NotificationTypeMenu::_retranslateUi()
 {
     for (auto action : w_notificationActionGroup->actions()) {
@@ -99,3 +101,5 @@ void NotificationTypeMenu::_retranslateUi()
         );
     }
 }
+
+}; // namespace Draupnir::Messages

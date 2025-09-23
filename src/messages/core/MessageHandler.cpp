@@ -22,15 +22,18 @@
  *
  */
 
-#include "MessageHandler.h"
+#include "core/MessageHandler.h"
 
 #include <QApplication>
 #include <QSystemTrayIcon>
 
-#include "../core/DefaultMessageTraits.h"
-#include "../core/MessageTemplate.h"
-#include "../models/MessageListModel.h"
-#include "../windows/MessageDisplayDialog.h"
+#include "traits/messages/DefaultMessageTraits.h"
+#include "core/MessageTemplate.h"
+#include "models/MessageListModel.h"
+#include "ui/windows/MessageDisplayDialog.h"
+
+namespace Draupnir::Messages
+{
 
 MessageHandler::MessageHandler(QObject* parent) :
     QObject{parent},
@@ -240,3 +243,5 @@ void MessageHandler::_showMessageBox(const QList<Message*>& messageList)
     dialog.addMessageList(messageList);
     dialog.exec();
 }
+
+}; // namespace Draupnir::Messages

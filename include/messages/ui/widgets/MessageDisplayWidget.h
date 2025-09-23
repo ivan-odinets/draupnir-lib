@@ -30,9 +30,12 @@
 
 class QLabel;
 
+namespace Draupnir::Messages
+{
+
 class Message;
 
-/*! @class MessageDisplayWidget draupnir-lib/src/messages/widgets/MessageDisplayWidget.h
+/*! @class MessageDisplayWidget draupnir-lib/messages/ui/widgets/MessageDisplayWidget.h
  *  @brief A lightweight QWidget used to visually display the contents of a single Message.
  *  @details This widget is designed to present a `Message` object in a user-friendly form using labels for the brief description,
  *           detailed explanation, timestamp, and an icon.
@@ -80,5 +83,7 @@ private:
     QLabel*   w_messageDateTimeLabel;
     QLabel*   w_messageIconLabel;
 };
+
+}; // namespace Draupnir::Messages
 
 #endif // MESSAGEDISPLAYWIDGET_H

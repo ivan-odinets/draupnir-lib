@@ -22,9 +22,12 @@
  *
  */
 
-#include "Notification.h"
+#include "core/Notification.h"
 
 #include <QDebug>
+
+namespace Draupnir::Messages
+{
 
 static const QLatin1String noNotification_key{             "none"    };
 static const QLatin1String messageBoxNotification_key{     "msg"     };
@@ -89,3 +92,5 @@ QString Notification::toDisplayString(Notification::Type type)
     Q_UNREACHABLE();
     return QString();
 }
+
+}; // namespace Draupnir::Messages

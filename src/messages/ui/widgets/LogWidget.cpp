@@ -22,7 +22,7 @@
  *
  */
 
-#include "LogWidget.h"
+#include "ui/widgets/LogWidget.h"
 
 #include <QDebug>
 #include <QLabel>
@@ -34,30 +34,15 @@
 #include <QToolTip>
 #include <QVBoxLayout>
 
-#ifdef DRAUPNIR_MSGSYS_APP_SETTINGS
-    #include "AppSettings.h"
-#endif // DRAUPNIR_MSGSYS_APP_SETTINGS
+#include "models/MessageListModel.h"
+#include "traits/settings/LogWidgetSettingsTraits.h"
+#include "ui/widgets/MessageListView.h"
 
-#ifdef DRAUPNIR_MSGSYS_CUSTOM_SETTINGS
-    #include "MessageSettingsInterface.h"
-#endif // DRAUPNIR_MSGSYS_CUSTOM_SETTINGS
-
-#include "../models/MessageListModel.h"
-#include "MessageListView.h"
-
-static const QSize defaultIconSize{64,64};
-static const uint64_t defaultShownMessageType = MessageType::AllMessages;
-
-#if defined(DRAUPNIR_MSGSYS_APP_SETTINGS) || defined(DRAUPNIR_MSGSYS_CUSTOM_SETTINGS)
-static const QLatin1String iconSize_settingsKey{"ui/messagesIconSize"};
-static const QLatin1String shownMessageTypes_settingsKey{"ui/messagesShown"};
-#endif // DRAUPNIR_MSGSYS_APP_SETTINGS || DRAUPNIR_MSGSYS_CUSTOM_SETTINGS
+namespace Draupnir::Messages
+{
 
 LogWidget::LogWidget(QWidget* parent) :
     QWidget{parent},
-#if defined(DRAUPNIR_MSGSYS_APP_SETTINGS) || defined(DRAUPNIR_MSGSYS_CUSTOM_SETTINGS)
-    p_settings{              nullptr},
-#endif // DRAUPNIR_MSGSYS_APP_SETTINGS || DRAUPNIR_MSGSYS_CUSTOM_SETTINGS
     p_messageListModel{      nullptr},
     w_messagesListView{      new MessageListView},
     w_configureViewButton{   new QToolButton},
@@ -84,8 +69,8 @@ LogWidget::LogWidget(QWidget* parent) :
     // Setup initial strings
     _retranslateUi();
 
-    w_messagesListView->setIconSize(defaultIconSize);
-    w_messagesListView->applyMessageTypeFilter(defaultShownMessageType);
+    w_messagesListView->setIconSize(MessageIconSizeSetting::defaultValue());
+    w_messagesListView->applyMessageTypeFilter(MessagesShown::defaultValue());
     w_iconSizeSlider->setMinimum(12);
     w_iconSizeSlider->setMaximum(128);
 
@@ -104,49 +89,6 @@ LogWidget::LogWidget(QWidget* parent) :
 
 LogWidget::~LogWidget()
 {}
-
-#if defined(DRAUPNIR_MSGSYS_APP_SETTINGS) || defined(DRAUPNIR_MSGSYS_CUSTOM_SETTINGS)
-
-#ifdef DRAUPNIR_MSGSYS_APP_SETTINGS
-void LogWidget::loadSettings(AppSettings* settings)
-#endif // DRAUPNIR_MSGSYS_APP_SETTINGS
-#ifdef DRAUPNIR_MSGSYS_CUSTOM_SETTINGS
-void LogWidget::loadSettings(MessageSettingsInterface* settings)
-#endif
-{
-    Q_ASSERT_X(p_settings == nullptr, "void LogWidget::loadSettings",
-               "This method should be called once");
-    Q_ASSERT_X(settings != nullptr, "void LogWidget::loadSettings",
-               "Provided AppSettings* pointer is nullptr");
-
-    p_settings = settings;
-
-    const QSize messageIconSize = p_settings->value(
-        iconSize_settingsKey, defaultIconSize
-    ).toSize();
-
-    if (messageIconSize.height() != messageIconSize.width()) {
-        qWarning() << iconSize_settingsKey << " value from config file is not square. Using default value and fixing the config file.";
-        p_settings->setValue(
-            iconSize_settingsKey,
-            defaultIconSize
-        );
-        w_iconSizeSlider->setSliderPosition(defaultIconSize.width());
-        w_messagesListView->setIconSize(defaultIconSize);
-    } else {
-        w_iconSizeSlider->setSliderPosition(messageIconSize.width());
-        w_messagesListView->setIconSize(messageIconSize);
-    }
-
-    const MessageType messageTypeFilter = p_settings->value(
-        shownMessageTypes_settingsKey
-    ).toULongLong();
-
-    w_messagesListView->applyMessageTypeFilter(messageTypeFilter);
-    w_detailsMenu->displayFilterConfig(w_messagesListView->messageTypeFilter());
-}
-
-#endif // DRAUPNIR_MSGSYS_APP_SETTINGS || DRAUPNIR_MSGSYS_CUSTOM_SETTINGS
 
 void LogWidget::setMessageListModel(MessageListModel* model)
 {
@@ -175,6 +117,21 @@ void LogWidget::setViewConfigButtonMenu(MessageViewConfigMenu* menu)
 
     w_configureViewButton->setMenu(menu);
 }
+
+void LogWidget::onIconSizeLoaded(const QSize& size)
+{
+    if (size.height() != size.width()) {
+//        qWarning() << iconSize_settingsKey << " value from config file is not square. Using default value and fixing the config file.";
+//        w_iconSizeSlider->setSliderPosition(defaultIconSize.width());
+//        w_messagesListView->setIconSize(defaultIconSize);
+    } else {
+        w_iconSizeSlider->setSliderPosition(size.width());
+        w_messagesListView->setIconSize(size);
+    }
+}
+
+void LogWidget::onDisplayedMessagesMaskLoaded(uint64_t messagesMask)
+{}
 
 void LogWidget::_onLogClearClicked()
 {
@@ -206,12 +163,12 @@ void LogWidget::_onConfigureClicked()
 
 void LogWidget::_onMessageTypeFilterChanged(MessageType,bool)
 {
-#if defined(DRAUPNIR_MSGSYS_APP_SETTINGS) || defined(DRAUPNIR_MSGSYS_CUSTOM_SETTINGS)
-    p_settings->setValue(
-        shownMessageTypes_settingsKey,
-        static_cast<qulonglong>(w_messagesListView->messageTypeFilter().id())
-    );
-#endif // DRAUPNIR_MSGSYS_APP_SETTINGS || DRAUPNIR_MSGSYS_CUSTOM_SETTINGS
+//#if defined(DRAUPNIR_MSGSYS_APP_SETTINGS) || defined(DRAUPNIR_MSGSYS_CUSTOM_SETTINGS)
+//    p_settings->setValue(
+//        shownMessageTypes_settingsKey,
+//        static_cast<qulonglong>(w_messagesListView->messageTypeFilter().id())
+//    );
+//#endif // DRAUPNIR_MSGSYS_APP_SETTINGS || DRAUPNIR_MSGSYS_CUSTOM_SETTINGS
 }
 
 void LogWidget::_onIconSizeChange(int newSize)
@@ -225,14 +182,7 @@ void LogWidget::_onIconSizeChange(int newSize)
 
 void LogWidget::_onIconSizeChangeFinished()
 {
-#if defined(DRAUPNIR_MSGSYS_APP_SETTINGS) || defined(DRAUPNIR_MSGSYS_CUSTOM_SETTINGS)
-    const QSize iconSize = w_messagesListView->iconSize();
-
-    p_settings->setValue(
-        iconSize_settingsKey,
-        iconSize
-    );
-#endif // DRAUPNIR_MSGSYS_APP_SETTINGS || DRAUPNIR_MSGSYS_CUSTOM_SETTINGS
+    this->_saveIconSize(w_messagesListView->iconSize());
 }
 
 void LogWidget::_retranslateUi()
@@ -241,3 +191,5 @@ void LogWidget::_retranslateUi()
     w_clearLogButton->setText(tr("Clear Log"));
     w_iconSizeLabel->setText(tr("Icon size:"));
 }
+
+}; // namespace Draupnir::Messages

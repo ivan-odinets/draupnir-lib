@@ -22,9 +22,12 @@
  *
  */
 
-#include "NotificationTypeComboBox.h"
+#include "ui/widgets/NotificationTypeComboBox.h"
 
 #include <QEvent>
+
+namespace Draupnir::Messages
+{
 
 NotificationTypeComboBox::NotificationTypeComboBox(QWidget* parent) :
     QComboBox{parent}
@@ -85,3 +88,5 @@ void NotificationTypeComboBox::_retranslateUi()
         setItemText(i, Notification::toDisplayString(notificationType));
     }
 }
+
+}; // namespace Draupnir::Messages

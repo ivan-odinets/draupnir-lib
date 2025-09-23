@@ -22,13 +22,16 @@
  *
  */
 
-#include "MessageNotificationSettingsWidget.h"
+#include "ui/widgets/MessageNotificationSettingsWidget.h"
 
 #include <QFormLayout>
 #include <QFrame>
 #include <QHBoxLayout>
 #include <QPushButton>
 #include <QVBoxLayout>
+
+namespace Draupnir::Messages
+{
 
 MessageNotificationSettingsWidget::MessageNotificationSettingsWidget(QWidget *parent) :
     QWidget{parent},
@@ -76,7 +79,7 @@ void MessageNotificationSettingsWidget::addRow(QLabel* label, NotificationTypeCo
 
 void MessageNotificationSettingsWidget::_onShowDummyClicked()
 {
-    p_handler->showDummy(w_testNotiticationSelector->selectedNotificationType());
+//    p_handler->showDummy(w_testNotiticationSelector->selectedNotificationType());
 }
 
 void MessageNotificationSettingsWidget::_retranslateUi()
@@ -84,3 +87,5 @@ void MessageNotificationSettingsWidget::_retranslateUi()
     w_testLabel->setText(tr("Test"));
     w_testButton->setText(tr("Show"));
 }
+
+}; // namespace Draupnir::Messages

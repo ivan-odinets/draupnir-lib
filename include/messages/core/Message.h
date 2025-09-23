@@ -30,6 +30,9 @@
 #include <QIcon>
 #include <QList>
 
+namespace Draupnir::Messages
+{
+
 /*! @class Message draupnir-lib/src/messages/core/Message.h
  *  @brief This class represents some Message from the App about some event happened. This includes errors, balance changes,
  *         etc.
@@ -91,5 +94,7 @@ inline QDebug operator<< (QDebug dbg, Message* messagePtr)
 }
 
 typedef QList<Message*> MessageList;
+
+}; // namespace Draupnir::Messages
 
 #endif // MESSAGE_H

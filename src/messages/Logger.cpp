@@ -24,21 +24,21 @@
 
 #include "Logger.h"
 
-#include "MessageHandler.h"
+#include "core/MessageHandler.h"
 
-#include "DefaultMessageTraits.h"
+#include "traits/messages/DefaultMessageTraits.h"
 
 Logger::Logger() :
     p_messageHandler{nullptr}
 {}
 
-void Logger::setMessageHandler(MessageHandler* handler)
+void Logger::setMessageHandler(Draupnir::Messages::MessageHandler* handler)
 {
     Q_ASSERT_X(handler, "Logger::setMessageHandler","Provided MessageHandler is nullptr");
     p_messageHandler = handler;
 }
 
-MessageGroup Logger::beginMessageGroup()
+Draupnir::Messages::MessageGroup Logger::beginMessageGroup()
 {
     Q_ASSERT_X(p_messageHandler, "Logger::beginMessageGroup",
                "Logger::setMessageHandler with valid MessageHandler must be called before.");
@@ -46,7 +46,7 @@ MessageGroup Logger::beginMessageGroup()
     return p_messageHandler->beginMessageGroup();
 }
 
-bool Logger::groupExisting(MessageGroup group) const
+bool Logger::groupExisting(Draupnir::Messages::MessageGroup group) const
 {
     Q_ASSERT_X(p_messageHandler, "Logger::groupExisting",
                "Logger::setMessageHandler with valid MessageHandler must be called before.");
@@ -54,7 +54,7 @@ bool Logger::groupExisting(MessageGroup group) const
     return p_messageHandler->groupExisting(group);
 }
 
-void Logger::flush(MessageGroup group)
+void Logger::flush(Draupnir::Messages::MessageGroup group)
 {
     Q_ASSERT_X(p_messageHandler, "Logger::flush",
                "Logger::setMessageHandler with valid MessageHandler must be called before.");
@@ -62,7 +62,7 @@ void Logger::flush(MessageGroup group)
     p_messageHandler->flush(group);
 }
 
-void Logger::endMessageGroup(MessageGroup group)
+void Logger::endMessageGroup(Draupnir::Messages::MessageGroup group)
 {
     Q_ASSERT_X(p_messageHandler, "Logger::endMessageGroup",
                "Logger::setMessageHandler with valid MessageHandler must be called before.");
@@ -73,116 +73,116 @@ void Logger::endMessageGroup(MessageGroup group)
 void Logger::logDebug(const QString& what)
 {
     _logMessage(
-        new MessageTemplate<DebugMessageTrait>(what)
+        new Draupnir::Messages::MessageTemplate<Draupnir::Messages::DebugMessageTrait>(what)
     );
 }
 
-void Logger::logDebug(const QString& what, MessageGroup group)
+void Logger::logDebug(const QString& what, Draupnir::Messages::MessageGroup group)
 {
     _logMessage(
-        new MessageTemplate<DebugMessageTrait>(what), group
+        new Draupnir::Messages::MessageTemplate<Draupnir::Messages::DebugMessageTrait>(what), group
     );
 }
 
 void Logger::logDebug(const QString& brief, const QString& what)
 {
     _logMessage(
-        new MessageTemplate<DebugMessageTrait>(brief,what)
+        new Draupnir::Messages::MessageTemplate<Draupnir::Messages::DebugMessageTrait>(brief,what)
     );
 }
 
-void Logger::logDebug(const QString& brief, const QString& what, MessageGroup group)
+void Logger::logDebug(const QString& brief, const QString& what, Draupnir::Messages::MessageGroup group)
 {
     _logMessage(
-        new MessageTemplate<DebugMessageTrait>(brief,what), group
+        new Draupnir::Messages::MessageTemplate<Draupnir::Messages::DebugMessageTrait>(brief,what), group
     );
 }
 
 void Logger::logInfo(const QString& what)
 {
     _logMessage(
-        new MessageTemplate<InfoMessageTrait>(what)
+        new Draupnir::Messages::MessageTemplate<Draupnir::Messages::InfoMessageTrait>(what)
     );
 }
 
-void Logger::logInfo(const QString& what, MessageGroup group)
+void Logger::logInfo(const QString& what, Draupnir::Messages::MessageGroup group)
 {
     _logMessage(
-        new MessageTemplate<InfoMessageTrait>(what), group
+        new Draupnir::Messages::MessageTemplate<Draupnir::Messages::InfoMessageTrait>(what), group
     );
 }
 
 void Logger::logInfo(const QString& brief, const QString& what)
 {
     _logMessage(
-        new MessageTemplate<InfoMessageTrait>(brief,what)
+        new Draupnir::Messages::MessageTemplate<Draupnir::Messages::InfoMessageTrait>(brief,what)
     );
 }
 
-void Logger::logInfo(const QString& brief, const QString& what, MessageGroup group)
+void Logger::logInfo(const QString& brief, const QString& what, Draupnir::Messages::MessageGroup group)
 {
     _logMessage(
-        new MessageTemplate<InfoMessageTrait>(brief,what), group
+        new Draupnir::Messages::MessageTemplate<Draupnir::Messages::InfoMessageTrait>(brief,what), group
     );
 }
 
 void Logger::logWarning(const QString& what)
 {
     _logMessage(
-        new MessageTemplate<WarningMessageTrait>(what)
+        new Draupnir::Messages::MessageTemplate<Draupnir::Messages::WarningMessageTrait>(what)
     );
 }
 
-void Logger::logWarning(const QString& what, MessageGroup group)
+void Logger::logWarning(const QString& what, Draupnir::Messages::MessageGroup group)
 {
     _logMessage(
-        new MessageTemplate<WarningMessageTrait>(what), group
+        new Draupnir::Messages::MessageTemplate<Draupnir::Messages::WarningMessageTrait>(what), group
     );
 }
 
 void Logger::logWarning(const QString& brief, const QString& what)
 {
     _logMessage(
-        new MessageTemplate<WarningMessageTrait>(brief,what)
+        new Draupnir::Messages::MessageTemplate<Draupnir::Messages::WarningMessageTrait>(brief,what)
     );
 }
 
-void Logger::logWarning(const QString& brief, const QString& what, MessageGroup group)
+void Logger::logWarning(const QString& brief, const QString& what, Draupnir::Messages::MessageGroup group)
 {
     _logMessage(
-        new MessageTemplate<WarningMessageTrait>(brief,what), group
+        new Draupnir::Messages::MessageTemplate<Draupnir::Messages::WarningMessageTrait>(brief,what), group
     );
 }
 
 void Logger::logError(const QString& what)
 {
     _logMessage(
-        new MessageTemplate<ErrorMessageTrait>(what)
+        new Draupnir::Messages::MessageTemplate<Draupnir::Messages::ErrorMessageTrait>(what)
     );
 }
 
-void Logger::logError(const QString& what, MessageGroup group)
+void Logger::logError(const QString& what, Draupnir::Messages::MessageGroup group)
 {
     _logMessage(
-        new MessageTemplate<ErrorMessageTrait>(what), group
+        new Draupnir::Messages::MessageTemplate<Draupnir::Messages::ErrorMessageTrait>(what), group
     );
 }
 
 void Logger::logError(const QString& brief, const QString& what)
 {
     _logMessage(
-        new MessageTemplate<ErrorMessageTrait>(brief,what)
+        new Draupnir::Messages::MessageTemplate<Draupnir::Messages::ErrorMessageTrait>(brief,what)
     );
 }
 
-void Logger::logError(const QString& brief, const QString& what, MessageGroup group)
+void Logger::logError(const QString& brief, const QString& what, Draupnir::Messages::MessageGroup group)
 {
     _logMessage(
-        new MessageTemplate<ErrorMessageTrait>(brief,what), group
+        new Draupnir::Messages::MessageTemplate<Draupnir::Messages::ErrorMessageTrait>(brief,what), group
     );
 }
 
-void Logger::_logMessage(Message* message)
+void Logger::_logMessage(Draupnir::Messages::Message* message)
 {
     Q_ASSERT_X(p_messageHandler, "Logger::logMessage",
                "Logger::setMessageHandler with valid MessageHandler must be called before.");
@@ -190,7 +190,7 @@ void Logger::_logMessage(Message* message)
     p_messageHandler->processMessage(message);
 }
 
-void Logger::_logMessage(Message* message, MessageGroup group)
+void Logger::_logMessage(Draupnir::Messages::Message* message, Draupnir::Messages::MessageGroup group)
 {
     Q_ASSERT_X(p_messageHandler, "Logger::logMessage",
                "Logger::setMessageHandler with valid MessageHandler must be called before.");
@@ -198,7 +198,7 @@ void Logger::_logMessage(Message* message, MessageGroup group)
     p_messageHandler->processMessage(message, group);
 }
 
-void Logger::logMessageList(const QList<Message*>& messageList)
+void Logger::logMessageList(const QList<Draupnir::Messages::Message*>& messageList)
 {
     Q_ASSERT_X(p_messageHandler, "Logger::logMessageList",
                "Logger::setMessageHandler with valid MessageHandler must be called before.");

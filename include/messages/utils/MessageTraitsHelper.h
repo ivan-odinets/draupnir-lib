@@ -25,7 +25,12 @@
 #ifndef MESSAGETRAITSHELPER_H
 #define MESSAGETRAITSHELPER_H
 
-#include "MessageType.h"
+#include "core/MessageType.h"
+#include "core/MessageHandlerTemplate.h"
+#include "core/MessageUiBuilderTemplate.h"
+
+namespace Draupnir::Messages
+{
 
 /*! @class MessageTraitsHelper draupnir-lib/src/core/MessageTraitsHelper.h
  *  @brief This class is a helper class to work with MessageTraits... template packs.
@@ -35,6 +40,9 @@ template<class... Args>
 class MessageTraitsHelper
 {
 public:
+    using MessageHandler = MessageHandlerTemplate<Args...>;
+    using MessageUiBuilder = MessageUiBuilderTemplate<Args...>;
+
     /*! @brief Static constexpr member with size of provided Args... pack. */
     static constexpr std::size_t N = sizeof...(Args);
 
@@ -60,6 +68,25 @@ public:
 
         return true;
     }
+
+    static bool isTypeKnown(MessageType type) {
+        return _staticIsTypeKnownImpl<Args...>(type);
+    }
+
+private:
+    template<class First, class... Rest>
+    static inline bool _staticIsTypeKnownImpl(MessageType type) {
+        if (First::type == type) {
+            return true;
+        }
+
+        if constexpr (sizeof...(Rest) > 0)
+            return _staticIsTypeKnownImpl<Rest...>(type);
+        else
+            return false;
+    }
 };
+
+}; // namespace Draupnir::Messages
 
 #endif // MESSAGETRAITSHELPER_H

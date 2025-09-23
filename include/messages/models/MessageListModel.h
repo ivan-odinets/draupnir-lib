@@ -29,9 +29,12 @@
 
 #include <QList>
 
+namespace Draupnir::Messages
+{
+
 class Message;
 
-/*! @class MessageListModel draupnir-lib/src/messages/models/MessageListModel.h
+/*! @class MessageListModel draupnir-lib/include/messages/models/MessageListModel.h
  *  @brief This class is a model containing Message objects. This model can be used in the widgets like QListView to display
  *         Message objects contained within this model.
  *
@@ -111,5 +114,7 @@ private:
     void _setDisplayedContentBit(DisplayedContent content, bool state);
     QList<Message*> m_data;
 };
+
+}; // namespace Draupnir::Messages
 
 #endif // MESSAGELISTMODEL_H

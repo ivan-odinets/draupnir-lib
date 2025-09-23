@@ -22,30 +22,31 @@
  *
  */
 
-#ifndef MESSAGETEMPLATE_H
-#define MESSAGETEMPLATE_H
+#ifndef LOGWIDGETSETTINGSTRAITS_H
+#define LOGWIDGETSETTINGSTRAITS_H
 
-#include "Message.h"
+#include "../settings/traits/StandartSettingTraitTemplates.h"
 
-/*! @class MessageTemplate draupnir-lib/src/messages/core/MessageTemplate.h
- *  @brief This is a helper class to simplify construction of the Message objects from MessageTraits. */
+#include "core/MessageType.h"
 
-template<class MessageTrait>
-class MessageTemplate final : public Message
+namespace Draupnir::Messages
 {
-public:
 
-protected:
-    friend class Logger;
-    friend class MessageHandler; // For dummy message
+inline constexpr const char logWidgetIconSize_settingsKey[] = "ui/messagesIconSize";
 
-    MessageTemplate(const QString& text) :
-        Message{MessageTrait::type, MessageTrait::icon(), MessageTrait::displayName(), text}
-    {}
+using MessageIconSizeSetting = Draupnir::Settings::SizeSettingTraitTemplate<
+    logWidgetIconSize_settingsKey,
+    64
+>;
 
-    MessageTemplate(const QString& brief, const QString& text) :
-        Message{MessageTrait::type, MessageTrait::icon(), brief, text}
-    {}
-};
+inline constexpr const char logWidgetMessagesShown_settingsKey[] = "ui/messagesShown";
 
-#endif // MESSAGETEMPLATE_H
+using MessagesShown = Draupnir::Settings::SettingTraitTemplate<
+    uint64_t,
+    logWidgetMessagesShown_settingsKey,
+    MessageType::AllMessages
+>;
+
+}; // namespace Draupnir::Messages
+
+#endif // LOGWIDGETSETTINGSTRAITS_H
