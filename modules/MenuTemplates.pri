@@ -1,8 +1,6 @@
 !contains(DEFINES, DRAUPNIR_TEMPLATE_MENUS_ENABLED) {
     DEFINES += DRAUPNIR_TEMPLATE_MENUS_ENABLED
 
-    CONFIG += c++20
-
     include(Utils.pri)
 
     INCLUDEPATH += $$PWD/../include/menu_templates

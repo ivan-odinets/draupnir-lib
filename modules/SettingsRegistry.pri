@@ -11,6 +11,8 @@
     # module
     # DEFINES  += DRAUPNIR_SETTINGS_USE_CUSTOM
 
+    include(Utils.pri)
+
     INCLUDEPATH += $$PWD/../include/settings_registry
 
     contains(DEFINES, DRAUPNIR_SETTINGS_USE_APPSETTINGS) {
@@ -25,8 +27,6 @@
         HEADERS += \
             $$PWD/../include/settings_registry/draupnir/core/SettingsBackendInterface.h
     }
-
-    include(Utils.pri)
 
     HEADERS += \
         $$PWD/../include/settings_registry/draupnir/SettingsBundleMerge.h \
