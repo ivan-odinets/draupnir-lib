@@ -1,0 +1,38 @@
+# ---------------------------------------------------------------------------------------------------------------------
+# Build config options.
+# Note: Better to enable/disable sth not in this file, but in the main *.pro
+
+# ---------------------------------------------------------------------------------------------------------------------
+
+QT          += core widgets
+CONFIG      += c++20
+
+# ---------------------------------------------------------------------------------------------------------------------
+
+INCLUDEPATH += $$PWD/../include/handler_templates/
+
+# ---------------------------------------------------------------------------------------------------------------------
+
+HEADERS += \
+    $$PWD/../include/handler_templates/draupnir/handlers/AbstractHandlers.h \
+    $$PWD/../include/handler_templates/draupnir/handlers/GenericMenuEntriesHandler.h \
+    $$PWD/../include/handler_templates/draupnir/handlers/file_menu/FileCloseEntryHandler.h \
+    $$PWD/../include/handler_templates/draupnir/handlers/file_menu/FileExitEntryHandler.h \
+    $$PWD/../include/handler_templates/draupnir/handlers/file_menu/FileMenuEntriesHandler.h \
+    $$PWD/../include/handler_templates/draupnir/handlers/file_menu/FileNewEntryHandler.h \
+    $$PWD/../include/handler_templates/draupnir/handlers/file_menu/FileOpenEntryHandler.h \
+    $$PWD/../include/handler_templates/draupnir/handlers/file_menu/FileRecentEntryHandler.h \
+    $$PWD/../include/handler_templates/draupnir/handlers/file_menu/FileSaveAsEntryHandler.h \
+    $$PWD/../include/handler_templates/draupnir/handlers/file_menu/FileSaveEntryHandler.h \
+    $$PWD/../include/handler_templates/draupnir/handlers/help_menu/AboutAppEntryHandler.h \
+    $$PWD/../include/handler_templates/draupnir/handlers/help_menu/AboutDraupnirLibEntryHandler.h \
+    $$PWD/../include/handler_templates/draupnir/handlers/help_menu/AboutQtEntryHandler.h \
+    $$PWD/../include/handler_templates/draupnir/handlers/help_menu/HelpEntryHandler.h \
+    $$PWD/../include/handler_templates/draupnir/handlers/help_menu/HelpMenuEntriesHandler.h \
+    $$PWD/../include/handler_templates/draupnir/handlers/settings_menu/MinimizeOnCloseEntryHandler.h \
+    $$PWD/../include/handler_templates/draupnir/handlers/settings_menu/MinimizeToTrayEntryHandler.h \
+    $$PWD/../include/handler_templates/draupnir/handlers/settings_menu/SettingsCheckableEntryHandler.h \
+    $$PWD/../include/handler_templates/draupnir/handlers/settings_menu/SettingsMenuEntriesHandler.h \
+    $$PWD/../include/handler_templates/draupnir/handlers/settings_menu/StartHiddenEntryHandler.h \
+    $$PWD/../include/handler_templates/draupnir/utils/FileManagerValidator.h \
+    $$PWD/../include/handler_templates/draupnir/utils/SettingTraitForEntry.h
