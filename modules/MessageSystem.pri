@@ -2,6 +2,7 @@
     DEFINES += DRAUPNIR_MESSAGE_SYSTEM_ENABLED
 
     include(Containers.pri)
+    include(DraupnirVersion.pri)
     include(SettingsRegistry.pri)
 
     INCLUDEPATH += $$PWD/../include/message_system

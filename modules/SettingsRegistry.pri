@@ -11,6 +11,7 @@
     # module
     # DEFINES  += DRAUPNIR_SETTINGS_USE_CUSTOM
 
+    include(DraupnirVersion.pri)
     include(Utils.pri)
 
     INCLUDEPATH += $$PWD/../include/settings_registry

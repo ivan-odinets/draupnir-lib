@@ -1,6 +1,7 @@
 !contains(DEFINES, DRAUPNIR_TEMPLATE_MENUS_ENABLED) {
     DEFINES += DRAUPNIR_TEMPLATE_MENUS_ENABLED
 
+    include(DraupnirVersion.pri)
     include(Utils.pri)
 
     INCLUDEPATH += $$PWD/../include/menu_templates

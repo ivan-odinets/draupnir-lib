@@ -1,6 +1,8 @@
 !contains(DEFINES, DRAUPNIR_UTILS_ENABLED) {
     DEFINES += DRAUPNIR_UTILS_ENABLED
 
+    include(DraupnirVersion.pri)
+
     INCLUDEPATH += $$PWD/../include/utils
 
     HEADERS += \

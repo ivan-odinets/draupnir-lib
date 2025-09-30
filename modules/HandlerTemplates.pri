@@ -1,6 +1,8 @@
 !contains(DEFINES, DRAUPNIR_HANDLER_TEMPLATES_ENABLED) {
     DEFINES += DRAUPNIR_HANDLER_TEMPLATES_ENABLED
 
+    include(DraupnirVersion.pri)
+    include(MenuTemplates.pri)
     include(SettingsRegistry.pri)
 
     INCLUDEPATH += $$PWD/../include/handler_templates/
@@ -28,5 +30,4 @@
         $$PWD/../include/handler_templates/draupnir/handlers/settings_menu/StartHiddenEntryHandler.h \
         $$PWD/../include/handler_templates/draupnir/utils/FileManagerValidator.h \
         $$PWD/../include/handler_templates/draupnir/utils/SettingTraitForEntry.h
-
 }
