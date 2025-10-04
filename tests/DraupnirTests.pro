@@ -1,6 +1,7 @@
 TEMPLATE = subdirs
 
 SUBDIRS += \
+    loptr/LoptrTests.pro \
     containers/ContainersTests.pro \
     proxy_helper/ProxyHelperTests.pro \
     settings_registry/SettingsRegistryTests.pro \
