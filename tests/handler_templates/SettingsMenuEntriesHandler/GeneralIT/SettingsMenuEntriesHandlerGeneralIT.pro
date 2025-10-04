@@ -1,5 +1,5 @@
 QT += testlib
-QT += gui
+QT += gui widgets
 CONFIG += qt warn_on depend_includepath testcase
 
 TEMPLATE = app
@@ -11,7 +11,6 @@ include(../../../../modules/SettingsRegistry.pri)
 include(../../../../modules/MenuTemplates.pri)
 include(../../../../modules/HandlerTemplates.pri)
 
-c
 include(../../../common/SomeRandomHandlers.pri)
 
 SOURCES +=  \

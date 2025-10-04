@@ -22,8 +22,8 @@
  *
  */
 
-#ifndef WINDOWSIZESETTING_H
-#define WINDOWSIZESETTING_H
+#ifndef MAINWINDOWSIZESETTING_H
+#define MAINWINDOWSIZESETTING_H
 
 #include <QSize>
 #include <QString>
@@ -38,29 +38,24 @@ namespace Draupnir::Settings
  *
  *           Provides:
  *           - using Value = QSize (the stored C++ type);
- *           - static QString key() — returns the persistent key string ("windowSize");
+ *           - static QString key() — returns the persistent key string ("main_window/size");
  *           - static Value defaultValue() — returns the default QSize (empty size).
  *
- *           Example:
- *           @code
- *           SettingsRegistryTemplate<WindowSize> registry;
- *           registry.loadSettings();
- *
- *           QSize sz = registry.template get<WindowSize>();
- *           @endcode */
+ * @see SettingsRegistryTemplate, SettingsBundleTemplate */
 
-struct WindowSizeSetting
+struct MainWindowSizeSetting
 {
     /*! @brief Underlying value type. */
     using Value = QSize;
 
-    /*! @brief Return the persistent storage key ("windowSize"). */
-    static QString key() { return "windowSize"; }
+    /*! @brief Return the persistent storage key ("main_window/size"). */
+    static QString key() { return "main_window/size"; }
 
-    /*! @brief Return the default value (empty QSize). */
+    /*! @brief Return the default value (empty QSize).
+     * @todo Add #define to reconfigure this. */
     static QSize defaultValue() { return QSize{}; }
 };
 
 };
 
-#endif // WINDOWSIZESETTING_H
+#endif // MAINWINDOWSIZESETTING_H

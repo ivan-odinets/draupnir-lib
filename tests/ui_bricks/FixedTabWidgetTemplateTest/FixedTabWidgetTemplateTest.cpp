@@ -27,7 +27,7 @@
 
 #include "draupnir/SettingsBundleTemplate.h"
 #include "draupnir/SettingsRegistryTemplate.h"
-#include "draupnir/traits/settings/ActiveWidgetIndexSetting.h"
+#include "draupnir/traits/settings/CentralWidgetIndexSetting.h"
 #include "draupnir/ui/widgets/FixedCentralTabWidgetTemplate.h"
 #include "draupnir/ui/widgets/FixedTabWidgetTemplate.h"
 
@@ -44,12 +44,12 @@ class FixedTabWidgetTemplateTest : public QObject
 
 public:
     using MockBackend = MockSettingsTemplate<
-        Draupnir::Settings::ActiveWidgetIndexSetting,
+        Draupnir::Settings::CentralWidgetIndexSetting,
         SomeRandomWidgetIndexSetting
     >;
 
     using SettingsRegistry = Draupnir::Settings::SettingsRegistryTemplate<
-        Draupnir::Settings::ActiveWidgetIndexSetting,
+        Draupnir::Settings::CentralWidgetIndexSetting,
         SomeRandomWidgetIndexSetting
     >;
 
@@ -95,7 +95,7 @@ private slots:
     void test_settings_loading() {
         TabWidgetOne* oneMoreWidget = new TabWidgetOne;
         // Test 0
-        registry.set<Draupnir::Settings::ActiveWidgetIndexSetting>(0);
+        registry.set<Draupnir::Settings::CentralWidgetIndexSetting>(0);
         oneMoreWidget->loadSettings<SettingsRegistry>(&registry);
         QCOMPARE(oneMoreWidget->currentIndex(), 0);
 
@@ -104,7 +104,7 @@ private slots:
         oneMoreWidget = new TabWidgetOne;
 
         // Test 1
-        registry.set<Draupnir::Settings::ActiveWidgetIndexSetting>(1);
+        registry.set<Draupnir::Settings::CentralWidgetIndexSetting>(1);
         oneMoreWidget->loadSettings<SettingsRegistry>(&registry);
         QCOMPARE(oneMoreWidget->currentIndex(), 1);
 
@@ -113,9 +113,9 @@ private slots:
         oneMoreWidget = new TabWidgetOne;
 
         // Test invalid thing.
-        registry.set<Draupnir::Settings::ActiveWidgetIndexSetting>(42);
+        registry.set<Draupnir::Settings::CentralWidgetIndexSetting>(42);
         oneMoreWidget->loadSettings<SettingsRegistry>(&registry);
-        QCOMPARE(oneMoreWidget->currentIndex(), Draupnir::Settings::ActiveWidgetIndexSetting::defaultValue());
+        QCOMPARE(oneMoreWidget->currentIndex(), Draupnir::Settings::CentralWidgetIndexSetting::defaultValue());
     }
 
     void test_widget_injecting() {

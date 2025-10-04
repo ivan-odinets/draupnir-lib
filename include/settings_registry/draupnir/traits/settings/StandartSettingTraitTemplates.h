@@ -83,7 +83,7 @@ struct SettingTraitTemplate
  *  @tparam settingsKey     Pointer to a global constexpr string key.
  *  @tparam defaultWidth    Default width.
  *  @tparam defaultHeight   Default height.
-
+ *
  *  @see SettingTraitForEntry, SettingsRegistry, SettingsEntriesHandlerContext */
 
 template<const char* settingsKey,int defaultWidth, int defaultHeight = defaultWidth>

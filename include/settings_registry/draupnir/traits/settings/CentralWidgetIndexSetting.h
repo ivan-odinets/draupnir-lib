@@ -22,44 +22,38 @@
  *
  */
 
-#ifndef ACTIVEWIDGETINDEXSETTING_H
-#define ACTIVEWIDGETINDEXSETTING_H
+#ifndef CENTRALWIDGETINDEXSETTING_H
+#define CENTRALWIDGETINDEXSETTING_H
 
 #include <QString>
 
 namespace Draupnir::Settings
 {
 
-/*! @struct ActiveWidgetIndexSetting draupnir/traits/settings/ActiveWidgetIndexSetting.h
- *  @brief Setting trait describing the index of currently active widget (e.g. within QTabWidget)
+/*! @struct CentralWidgetIndexSetting draupnir/traits/settings/CentralWidgetIndexSetting.h
+ *  @brief Setting trait describing the index of currently active widget within the central widget of the main window
+ *         (e.g. within QTabWidget or FixedCentralTabWidgetTemplate)
  *  @details This trait defines a setting that stores and retrieves the active widget index as int.
- *
  *           Provides:
  *           - using Value = int (the stored C++ type);
- *           - static QString key() — returns the persistent key string ("activeWidgetIndex");
+ *           - static QString key() — returns the persistent key string ("central_widget/active_widget_index");
  *           - static int defaultValue() — returns the default index = 0.
  *
- *           Example:
- *           @code
- *           SettingsRegistryTemplate<ActiveWidgetIndex> registry;
- *           registry.loadSettings();
- *
- *           int index = registry.template get<ActiveWidgetIndex>();
- *           @endcode */
+ * @see SettingsRegistryTemplate, SettingsBundleTemplate */
 
-struct ActiveWidgetIndexSetting
+struct CentralWidgetIndexSetting
 {
     /*! @brief Underlying value type. */
     using Value = int;
 
-    /*! @brief Return the persistent storage key ("activeWidgetIndex").
-     * @todo Add normal prefix for this setting. */
-    static QString key() { return "activeWidgetIndex"; }
+    /*! @brief Return the persistent storage key ("central_widget/active_widget_index"). */
+    static QString key() { return "central_widget/active_widget_index"; }
 
-    /*! @brief Return the default value - 0. */
+    /*! @brief Return the default value - 0.
+     * @todo Allow to configure results of this method with some define. */
     static int defaultValue() { return 0; }
 };
 
 };
 
-#endif // ACTIVEWIDGETINDEXSETTING_H
+#endif // CENTRALWIDGETINDEXSETTING_H

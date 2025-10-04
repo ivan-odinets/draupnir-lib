@@ -30,8 +30,8 @@
 
 // SettingsRegistry
 #include "draupnir/SettingsRegistryTemplate.h"
-#include "draupnir/traits/settings/MinimizeOnCloseSetting.h"
-#include "draupnir/traits/settings/MinimizeToTraySetting.h"
+#include "draupnir/traits/settings/MainWindowMinimizeOnCloseSetting.h"
+#include "draupnir/traits/settings/MainWindowMinimizeToTraySetting.h"
 
 // SettingsMenu
 #include "draupnir/traits/entries/SettingsMenuEntries.h"
@@ -59,25 +59,29 @@ class SettingsMenuEntriesHandlerGeneralIT : public QObject
 public:
     MockSettingsTemplate<
         SomeCustomBoolSetting,
-        Draupnir::Settings::MinimizeOnCloseSetting, Draupnir::Settings::MinimizeToTraySetting
+        Draupnir::Settings::MainWindowMinimizeOnCloseSetting,
+        Draupnir::Settings::MainWindowMinimizeToTraySetting
     > dummySettingsSource;
 
     using SettingsRegistry = Draupnir::Settings::SettingsRegistryTemplate<
         SomeCustomBoolSetting,
-        Draupnir::Settings::MinimizeOnCloseSetting, Draupnir::Settings::MinimizeToTraySetting
+        Draupnir::Settings::MainWindowMinimizeOnCloseSetting,
+        Draupnir::Settings::MainWindowMinimizeToTraySetting
     >;
     SettingsRegistry registry;
 
     using SettingsMenu = Draupnir::Menus::MenuTemplate<
         SomeCustomCheckableMenuEntry,
-        Draupnir::Menus::MinimizeOnCloseEntry, Draupnir::Menus::MinimizeToTrayEntry
+        Draupnir::Menus::MinimizeOnCloseEntry,
+        Draupnir::Menus::MinimizeToTrayEntry
     >;
     SettingsMenu menu;
 
     using SettingsMenuHandler = Draupnir::Handlers::SettingsMenuEntriesHandler<
         SettingsRegistry,
         SomeCustomCheckableMenuEntry,
-        Draupnir::Menus::MinimizeOnCloseEntry, Draupnir::Menus::MinimizeToTrayEntry
+        Draupnir::Menus::MinimizeOnCloseEntry,
+        Draupnir::Menus::MinimizeToTrayEntry
     >;
     SettingsMenuHandler handler;
 
@@ -103,13 +107,13 @@ private slots:
 
     void test_actionTriggering() {
         QAction* minimizeOnCloseAction = menu.get<Draupnir::Menus::MinimizeOnCloseEntry>();
-        QVERIFY(minimizeOnCloseAction->isChecked() == registry.template get<Draupnir::Settings::MinimizeOnCloseSetting>());
+        QVERIFY(minimizeOnCloseAction->isChecked() == registry.template get<Draupnir::Settings::MainWindowMinimizeOnCloseSetting>());
 
         minimizeOnCloseAction->triggered(true);
-        QVERIFY(registry.template get<Draupnir::Settings::MinimizeOnCloseSetting>() == true);
+        QVERIFY(registry.template get<Draupnir::Settings::MainWindowMinimizeOnCloseSetting>() == true);
 
         minimizeOnCloseAction->triggered(false);
-        QVERIFY(registry.template get<Draupnir::Settings::MinimizeOnCloseSetting>() == false);
+        QVERIFY(registry.template get<Draupnir::Settings::MainWindowMinimizeOnCloseSetting>() == false);
     }
 
 };

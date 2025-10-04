@@ -38,11 +38,11 @@ struct RecentFileListSetting
     /*! @brief Underlying value type. */
     using Value = QStringList;
 
-    /*! @brief Return the persistent storage key ("recentFiles").
-     * @todo Add normal prefix for this setting. */
-    static QString key() { return "files/recentFiles"; }
+    /*! @brief Return the persistent storage key ("files/recent_files"). */
+    static QString key() { return "files/recent_files"; }
 
-    /*! @brief Return the default value - empty QStringList. */
+    /*! @brief Return the default value - empty QStringList.
+     * @todo Add #define to reconfigure this. */
     static QStringList defaultValue() { return QStringList{}; }
 };
 

@@ -27,7 +27,7 @@
 
 #include "draupnir/ui/widgets/FixedTabWidgetTemplate.h"
 
-#include "draupnir/traits/settings/ActiveWidgetIndexSetting.h"
+#include "draupnir/traits/settings/CentralWidgetIndexSetting.h"
 
 namespace Draupnir::Ui
 {
@@ -41,7 +41,7 @@ namespace Draupnir::Ui
 
 template<class... TabTraits>
 using FixedCentralTabWidgetTemplate = FixedTabWidgetTemplate<
-    Draupnir::Settings::ActiveWidgetIndexSetting,
+    Draupnir::Settings::CentralWidgetIndexSetting,
     TabTraits...
 >;
 

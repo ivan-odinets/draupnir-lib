@@ -36,7 +36,7 @@ namespace Draupnir::Settings
  *  @details This trait defines how the "last used directory" setting is stored and retrieved.
  *           It provides:
  *           - The value type (`QString`);
- *           - A unique storage key ("lastUsedDirectory");
+ *           - A unique storage key ("files/last_used_directory");
  *           - A default value (the user's home directory).
  *
  * @see SettingsRegistryTemplate, SettingsBundleTemplate */
@@ -46,11 +46,11 @@ struct LastUsedDirectorySetting
     /*! @brief Underlying value type. */
     using Value = QString;
 
-    /*! @brief Return the persistent storage key ("lastUsedDirectory").
-     * @todo Add normal prefix for this setting. */
-    static QString key() { return "lastUsedDirectory"; }
+    /*! @brief Return the persistent storage key ("files/last_used_directory"). */
+    static QString key() { return "files/last_used_directory"; }
 
-    /*! @brief Return the default value - home directory of the user. */
+    /*! @brief Return the default value - home directory of the user.
+     * @todo Allow to configure results of this method with some define. */
     static QString defaultValue() { return QDir::homePath(); }
 };
 

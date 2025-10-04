@@ -26,7 +26,7 @@
 #include <QCoreApplication>
 
 #include "draupnir/SettingsRegistryTemplate.h"
-#include "draupnir/traits/settings/ActiveWidgetIndexSetting.h"
+#include "draupnir/traits/settings/CentralWidgetIndexSetting.h"
 #include "draupnir/traits/settings/LastUsedDirectorySetting.h"
 #include "draupnir/traits/settings/RecentFilesListSetting.h"
 
@@ -47,21 +47,21 @@ public:
     }
 
     MockSettingsTemplate<
-        Draupnir::Settings::ActiveWidgetIndexSetting,
+        Draupnir::Settings::CentralWidgetIndexSetting,
         Draupnir::Settings::LastUsedDirectorySetting,
         SomeCustomDoubleSetting,
         SomeCustomBoolSetting
     > dummySettingsSource;
 
     Draupnir::Settings::SettingsRegistryTemplate<
-        Draupnir::Settings::ActiveWidgetIndexSetting,
+        Draupnir::Settings::CentralWidgetIndexSetting,
         Draupnir::Settings::LastUsedDirectorySetting,
         SomeCustomDoubleSetting,
         SomeCustomBoolSetting
     > testedRegistry;
 
     using RandomPoplatableBundle = Draupnir::Settings::SettingsBundleTemplate<
-        SomeCustomDoubleSetting, Draupnir::Settings::ActiveWidgetIndexSetting
+        SomeCustomDoubleSetting, Draupnir::Settings::CentralWidgetIndexSetting
     >;
     using RandomUnpoplatableBundle = Draupnir::Settings::SettingsBundleTemplate<
         SomeCustomBoolSetting, Draupnir::Settings::RecentFileListSetting
@@ -70,40 +70,41 @@ public:
 private slots:
     void test_compileTimeCorrectness() {
         // Initial state of backend
-        QVERIFY(testedRegistry.settings() == static_cast<Draupnir::Settings::SettingsBackendInterface*>(&dummySettingsSource));
-        QVERIFY(testedRegistry.isLoaded() == true);
+        QCOMPARE(testedRegistry.settings(),static_cast<Draupnir::Settings::SettingsBackendInterface*>(&dummySettingsSource));
+        QVERIFY(testedRegistry.isLoaded());
 
         // Contains
-        QVERIFY(decltype(testedRegistry)::template contains<SomeCustomDoubleSetting>() == true);
-        QVERIFY(decltype(testedRegistry)::template contains<Draupnir::Settings::RecentFileListSetting>() == false);
+        QCOMPARE(decltype(testedRegistry)::template contains<SomeCustomDoubleSetting>(), true);
+        QCOMPARE(decltype(testedRegistry)::template contains<Draupnir::Settings::RecentFileListSetting>(), false);
 
         // If stuff is empry or not?
-        QVERIFY(decltype(testedRegistry)::isEmpty() == false);
-        QVERIFY(Draupnir::Settings::SettingsRegistryTemplate<>::isEmpty() == true);
+        QCOMPARE(decltype(testedRegistry)::isEmpty(), false);
+        QCOMPARE(Draupnir::Settings::SettingsRegistryTemplate<>::isEmpty(), true);
 
         // If bundle can be populated from SettingsRegistryTemplate
-        QVERIFY(RandomPoplatableBundle::template canBeFullyPopulatedFrom<decltype(testedRegistry)>() == true);
-        QVERIFY(RandomUnpoplatableBundle::template canBeFullyPopulatedFrom<decltype(testedRegistry)>() == false);
+        QCOMPARE(RandomPoplatableBundle::template canBeFullyPopulatedFrom<decltype(testedRegistry)>(), true);
+        QCOMPARE(RandomUnpoplatableBundle::template canBeFullyPopulatedFrom<decltype(testedRegistry)>(), false);
     }
 
     void test_initialization() {
-        QVERIFY(testedRegistry.get<Draupnir::Settings::ActiveWidgetIndexSetting>() == Draupnir::Settings::ActiveWidgetIndexSetting::defaultValue());
-        QVERIFY(testedRegistry.get<SomeCustomDoubleSetting>() == SomeCustomDoubleSetting::defaultValue());
+        QCOMPARE(testedRegistry.get<Draupnir::Settings::CentralWidgetIndexSetting>(),
+                 Draupnir::Settings::CentralWidgetIndexSetting::defaultValue());
+        QCOMPARE(testedRegistry.get<SomeCustomDoubleSetting>(),
+                 SomeCustomDoubleSetting::defaultValue());
     }
 
     void test_readingWriting() {
-
         double testDouble = M_E;
         int testInteger = 42;
 
-        testedRegistry.template set<Draupnir::Settings::ActiveWidgetIndexSetting>(testInteger);
+        testedRegistry.template set<Draupnir::Settings::CentralWidgetIndexSetting>(testInteger);
         testedRegistry.template set<SomeCustomDoubleSetting>(testDouble);
 
-        QVERIFY(testedRegistry.template get<Draupnir::Settings::ActiveWidgetIndexSetting>() == testInteger);
-        QVERIFY(testedRegistry.template get<SomeCustomDoubleSetting>() == testDouble);
+        QCOMPARE(testedRegistry.template get<Draupnir::Settings::CentralWidgetIndexSetting>(), testInteger);
+        QCOMPARE(testedRegistry.template get<SomeCustomDoubleSetting>(), testDouble);
 
-        QVERIFY(dummySettingsSource.template get<Draupnir::Settings::ActiveWidgetIndexSetting>() == testInteger);
-        QVERIFY(dummySettingsSource.template get<SomeCustomDoubleSetting>() == testDouble);
+        QCOMPARE(dummySettingsSource.template get<Draupnir::Settings::CentralWidgetIndexSetting>(), testInteger);
+        QCOMPARE(dummySettingsSource.template get<SomeCustomDoubleSetting>(), testDouble);
     }
 
     void test_bundles() {
@@ -112,10 +113,10 @@ private slots:
         >();
 
         // Check if bundle reports the same as registry
-        QVERIFY(bundleByTrait.template get<Draupnir::Settings::LastUsedDirectorySetting>() ==
-                testedRegistry.template get<Draupnir::Settings::LastUsedDirectorySetting>());
-        QVERIFY(bundleByTrait.template get<SomeCustomDoubleSetting>() ==
-                testedRegistry.template get<SomeCustomDoubleSetting>());
+        QCOMPARE(bundleByTrait.template get<Draupnir::Settings::LastUsedDirectorySetting>(),
+                 testedRegistry.template get<Draupnir::Settings::LastUsedDirectorySetting>());
+        QCOMPARE(bundleByTrait.template get<SomeCustomDoubleSetting>(),
+                 testedRegistry.template get<SomeCustomDoubleSetting>());
 
 
         // Check if by any magic within bundle / registry wrong value is present
@@ -125,8 +126,9 @@ private slots:
 
         // write to bundle and check again
         bundleByTrait.template set<Draupnir::Settings::LastUsedDirectorySetting>(writtenToBundle);
-        QVERIFY(bundleByTrait.get<Draupnir::Settings::LastUsedDirectorySetting>() == writtenToBundle);
-        QVERIFY(testedRegistry.template get<Draupnir::Settings::LastUsedDirectorySetting>() == writtenToBundle);
+        QCOMPARE(bundleByTrait.get<Draupnir::Settings::LastUsedDirectorySetting>(),
+                 writtenToBundle);
+        QCOMPARE(testedRegistry.template get<Draupnir::Settings::LastUsedDirectorySetting>(), writtenToBundle);
 
         // Check if by any magic within bundle / resgistry wrong value is present
         double writtenToRegistry = M_PI * M_E;
@@ -135,8 +137,8 @@ private slots:
 
         // write to registry and check again
         testedRegistry.template set<SomeCustomDoubleSetting>(writtenToRegistry);
-        QVERIFY(bundleByTrait.template get<SomeCustomDoubleSetting>() == writtenToRegistry);
-        QVERIFY(testedRegistry.template get<SomeCustomDoubleSetting>() == writtenToRegistry);
+        QCOMPARE(bundleByTrait.template get<SomeCustomDoubleSetting>(), writtenToRegistry);
+        QCOMPARE(testedRegistry.template get<SomeCustomDoubleSetting>(), writtenToRegistry);
     }
 };
 

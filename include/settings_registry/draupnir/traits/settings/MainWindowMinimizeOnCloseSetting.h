@@ -22,33 +22,30 @@
  *
  */
 
-#ifndef STARTHIDDENSETTING_H
-#define STARTHIDDENSETTING_H
+#ifndef MAINWINDOWMINIMIZEONCLOSESETTING_H
+#define MAINWINDOWMINIMIZEONCLOSESETTING_H
 
-#include <QString>
+#include "StandartSettingTraitTemplates.h"
 
 namespace Draupnir::Settings
 {
 
-/*! @struct StartHiddenSetting draupnir/traits/settings/StartHiddenSetting.h
- *  @brief Concrete setting trait describing the "Start Hidden" option.
- *  @details This struct provides StartHiddenSetting trait with:
+/*! @struct MainWindowMinimizeOnCloseSetting draupnir/traits/settings/MainWindowMinimizeOnCloseSetting.h
+ *  @brief Concrete setting trait describing the "Minimize on Close" option for the application main window.
+ *  @details This struct provides MainWindowMinimizeOnCloseSetting trait with:
  *           - using Value = bool;
  *           - static QString key();
  *           - static bool defaultValue();
  *
- *           It can be used in SettingsRegistryTemplate or any template expecting a SettingTrait.
- *
- * @see SettingsRegistry, SettingsBundle */
+ * @see SettingsRegistryTemplate, SettingsBundleTemplate */
 
-struct StartHiddenSetting
+struct MainWindowMinimizeOnCloseSetting
 {
     /*! @brief Underlying value type. */
     using Value = bool;
 
-    /*! @brief Return the persistent storage key ("startHidden").
-     * @todo Add normal prefix for this setting. */
-    static QString key() { return "startHidden"; }
+    /*! @brief Return the persistent storage key ("main_window/minimize_on_close"). */
+    static QString key() { return "minimizeOnClose"; }
 
     /*! @brief Return the default value - home directory of the user.
      * @todo Add #define to reconfigure this. */
@@ -57,4 +54,4 @@ struct StartHiddenSetting
 
 };
 
-#endif // STARTHIDDENSETTING_H
+#endif // MAINWINDOWMINIMIZEONCLOSESETTING_H

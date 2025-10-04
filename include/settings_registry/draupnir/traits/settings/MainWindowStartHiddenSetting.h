@@ -22,39 +22,38 @@
  *
  */
 
-#ifndef MINIMIZETOTRAYSETTING_H
-#define MINIMIZETOTRAYSETTING_H
+#ifndef MAINWINDOWSTARTHIDDENSETTING_H
+#define MAINWINDOWSTARTHIDDENSETTING_H
 
-#include "StandartSettingTraitTemplates.h"
+#include <QString>
 
 namespace Draupnir::Settings
 {
 
-/*! @struct MinimizeToTraySetting draupnir/traits/settings/MinimizeToTraySetting.h
- *  @brief Concrete setting trait describing the "Minimize to Tray" option.
- *  @details This struct provides MinimizeToTraySetting trait with:
+/*! @struct MainWindowStartHiddenSetting draupnir/traits/settings/MainWindowStartHiddenSetting.h
+ *  @brief Concrete setting trait describing the "Start Hidden" option for the application main window.
+ *  @details This struct provides StartHiddenSetting trait with:
  *           - using Value = bool;
  *           - static QString key();
  *           - static bool defaultValue();
  *
  *           It can be used in SettingsRegistryTemplate or any template expecting a SettingTrait.
  *
- * @see SettingsRegistryTemplate, SettingsBundleTemplate */
+ * @see SettingsRegistry, SettingsBundle */
 
-struct MinimizeToTraySetting
+struct StartHiddenSetting
 {
     /*! @brief Underlying value type. */
     using Value = bool;
 
-    /*! @brief Return the persistent storage key ("minimizeToTray").
-     * @todo Add normal prefix for this setting. */
-    static QString key() { return "minimizeToTray"; }
+    /*! @brief Return the persistent storage key ("main_window/start_hidden"). */
+    static QString key() { return "main_window/start_hidden"; }
 
-    /*! @brief Return the default value - home directory of the user.
+    /*! @brief Return the default value - false.
      * @todo Add #define to reconfigure this. */
     static bool defaultValue() { return false; }
 };
 
 };
 
-#endif // MINIMIZETOTRAYSETTING_H
+#endif // MAINWINDOWSTARTHIDDENSETTING_H

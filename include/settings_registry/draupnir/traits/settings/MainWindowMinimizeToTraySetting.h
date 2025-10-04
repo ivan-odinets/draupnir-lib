@@ -22,39 +22,36 @@
  *
  */
 
-#ifndef MINIMIZEONCLOSESETTING_H
-#define MINIMIZEONCLOSESETTING_H
+#ifndef MAINWINDOWMINIMIZETOTRAYSETTING_H
+#define MAINWINDOWMINIMIZETOTRAYSETTING_H
 
 #include "StandartSettingTraitTemplates.h"
 
 namespace Draupnir::Settings
 {
 
-/*! @struct MinimizeOnCloseSetting
- *  @brief Concrete setting trait describing the "Minimize on Close" option.
- *  @details This struct provides MinimizeOnCloseSetting trait with:
+/*! @struct MainWindowMinimizeToTraySetting draupnir/traits/settings/MainWindowMinimizeToTraySetting.h
+ *  @brief Concrete setting trait describing the "Minimize to Tray" option for the application main window.
+ *  @details This struct provides MinimizeToTraySetting trait with:
  *           - using Value = bool;
  *           - static QString key();
  *           - static bool defaultValue();
  *
- *           It can be used in SettingsRegistryTemplate or any template expecting a SettingTrait.
- *
  * @see SettingsRegistryTemplate, SettingsBundleTemplate */
 
-struct MinimizeOnCloseSetting
+struct MainWindowMinimizeToTraySetting
 {
     /*! @brief Underlying value type. */
     using Value = bool;
 
-    /*! @brief Return the persistent storage key ("minimizeOnClose").
-     * @todo Add normal prefix for this setting. */
-    static QString key() { return "minimizeOnClose"; }
+    /*! @brief Return the persistent storage key ("main_window/minimize_to_tray"). */
+    static QString key() { return "main_window/minimize_to_tray"; }
 
-    /*! @brief Return the default value - home directory of the user.
+    /*! @brief Return the default value - false
      * @todo Add #define to reconfigure this. */
     static bool defaultValue() { return false; }
 };
 
 };
 
-#endif // MINIMIZEONCLOSESETTING_H
+#endif // MAINWINDOWMINIMIZETOTRAYSETTING_H
