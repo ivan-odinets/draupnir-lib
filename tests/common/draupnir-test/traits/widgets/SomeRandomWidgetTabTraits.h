@@ -22,41 +22,33 @@
  *
  */
 
-#include "draupnir/ui/TrayIcon.h"
+#ifndef SOMERANDOMWIDGETTABTRAITS_H
+#define SOMERANDOMWIDGETTABTRAITS_H
 
-#include <QApplication>
-#include <QDebug>
-#include <QEvent>
-#include <QMenu>
+#include <QLineEdit>
 
-namespace Draupnir::Ui
+struct LineEditTrait
 {
+    using Widget = QLineEdit;
 
-TrayIcon::TrayIcon(QObject *parent) :
-    QSystemTrayIcon{parent},
-    w_trayMenu{new QMenu{QString(),nullptr}}
+    static QString displayName() {
+        return QString{"LineEdit"};
+    }
+};
+
+#include <QPushButton>
+
+struct PushButtonTrait
 {
-    if (!QSystemTrayIcon::isSystemTrayAvailable() || QSystemTrayIcon::supportsMessages()) {
-        qWarning() << "System tray is not avaialble.";
+    using Widget = QPushButton;
+
+    static QString displayName() {
+        return QString{"Button"};
     }
 
-    QSystemTrayIcon::setIcon(qApp->windowIcon());
-    QSystemTrayIcon::setContextMenu(w_trayMenu);
-}
-
-TrayIcon::~TrayIcon()
-{
-    w_trayMenu->deleteLater();
-}
-
-void TrayIcon::addAction(QAction* action)
-{
-    w_trayMenu->addAction(action);
-}
-
-void TrayIcon::addMenu(QMenu* menu)
-{
-    w_trayMenu->addMenu(menu);
-}
-
+    static QString tooltip() {
+        return QString{"tooltip"};
+    }
 };
+
+#endif // SOMERANDOMWIDGETTABTRAITS_H

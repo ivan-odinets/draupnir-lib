@@ -94,4 +94,19 @@ struct is_type_in_tuple<T, std::tuple<Ts...>> : std::disjunction<std::is_same<T,
 template<typename T, typename Tuple>
 inline constexpr bool is_type_in_tuple_v = is_type_in_tuple<T, Tuple>::value;
 
+/*! @brief This is a struct.
+ * @todo DocumentMe. */
+template<typename T, typename... Ts>
+struct index_of;
+
+/*! @brief This is a struct.
+ * @todo DocumentMe. */
+template<typename T, typename... Ts>
+struct index_of<T, T, Ts...> : std::integral_constant<std::size_t, 0> {};
+
+/*! @brief This is a struct.
+ * @todo DocumentMe. */
+template<typename T, typename U, typename... Ts>
+struct index_of<T, U, Ts...> : std::integral_constant<std::size_t, 1 + index_of<T, Ts...>::value> {};
+
 #endif // COMMON_H

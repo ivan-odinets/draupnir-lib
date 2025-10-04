@@ -22,41 +22,20 @@
  *
  */
 
-#include "draupnir/ui/TrayIcon.h"
+#ifndef SOMERANDOMWIDGETINDEXSETTING_H
+#define SOMERANDOMWIDGETINDEXSETTING_H
 
-#include <QApplication>
-#include <QDebug>
-#include <QEvent>
-#include <QMenu>
+#include <QString>
 
-namespace Draupnir::Ui
+/*! @class SomeRandomWidgetIndexSetting draupnir-test/traits/settings/SomeRandomWidgetIndexSetting.h
+ *  @brief This is a test setting trait for storing a int variable which is a active widget index. */
+
+class SomeRandomWidgetIndexSetting
 {
-
-TrayIcon::TrayIcon(QObject *parent) :
-    QSystemTrayIcon{parent},
-    w_trayMenu{new QMenu{QString(),nullptr}}
-{
-    if (!QSystemTrayIcon::isSystemTrayAvailable() || QSystemTrayIcon::supportsMessages()) {
-        qWarning() << "System tray is not avaialble.";
-    }
-
-    QSystemTrayIcon::setIcon(qApp->windowIcon());
-    QSystemTrayIcon::setContextMenu(w_trayMenu);
-}
-
-TrayIcon::~TrayIcon()
-{
-    w_trayMenu->deleteLater();
-}
-
-void TrayIcon::addAction(QAction* action)
-{
-    w_trayMenu->addAction(action);
-}
-
-void TrayIcon::addMenu(QMenu* menu)
-{
-    w_trayMenu->addMenu(menu);
-}
-
+public:
+    using Value = int;
+    static QString key() { return "widgetIndex"; }
+    static int defaultValue() { return 0; }
 };
+
+#endif // SOMERANDOMWIDGETINDEXSETTING_H

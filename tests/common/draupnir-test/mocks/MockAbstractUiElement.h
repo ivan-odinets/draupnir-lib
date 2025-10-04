@@ -22,41 +22,22 @@
  *
  */
 
-#include "draupnir/ui/TrayIcon.h"
+#ifndef MOCKABSTRACTUIELEMENT_H
+#define MOCKABSTRACTUIELEMENT_H
 
-#include <QApplication>
-#include <QDebug>
-#include <QEvent>
-#include <QMenu>
-
-namespace Draupnir::Ui
+class MockAbstractUiElement
 {
+public:
+    MockAbstractUiElement() :
+        m_isShown{false}
+    {}
 
-TrayIcon::TrayIcon(QObject *parent) :
-    QSystemTrayIcon{parent},
-    w_trayMenu{new QMenu{QString(),nullptr}}
-{
-    if (!QSystemTrayIcon::isSystemTrayAvailable() || QSystemTrayIcon::supportsMessages()) {
-        qWarning() << "System tray is not avaialble.";
-    }
+    void show() { m_isShown = true; }
+    void hide() { m_isShown = false; }
+    bool isShown() { return m_isShown; }
 
-    QSystemTrayIcon::setIcon(qApp->windowIcon());
-    QSystemTrayIcon::setContextMenu(w_trayMenu);
-}
-
-TrayIcon::~TrayIcon()
-{
-    w_trayMenu->deleteLater();
-}
-
-void TrayIcon::addAction(QAction* action)
-{
-    w_trayMenu->addAction(action);
-}
-
-void TrayIcon::addMenu(QMenu* menu)
-{
-    w_trayMenu->addMenu(menu);
-}
-
+private:
+    bool m_isShown;
 };
+
+#endif // MOCKABSTRACTUIELEMENT_H

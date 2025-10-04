@@ -69,19 +69,8 @@ public:
      *  @param menu Pointer to a QMenu to be added. */
     void addMenu(QMenu* menu);
 
-protected:
-    /*! @brief Handles Qt events, in particular `LanguageChange` events for dynamic retranslation.
-     *  @details When a `LanguageChange` event is received, the tray menu labels are updated.
-     *  @param event The event being processed.
-     *  @return true if the event was handled; otherwise passes it to the base class. */
-    bool event(QEvent* event) final;
-
 private:
-    /*! @brief Updates UI elements with translated strings.
-     *  @details Currently re-translates the text for the "Exit" menu action. */
-    void _retranslateUi();
     QMenu* w_trayMenu;
-    QAction* w_exitTrayAction;
 };
 
 }; // namespace Draupnir::Ui

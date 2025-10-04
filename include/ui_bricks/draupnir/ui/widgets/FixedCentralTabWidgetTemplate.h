@@ -22,41 +22,29 @@
  *
  */
 
-#include "draupnir/ui/TrayIcon.h"
+#ifndef FIXEDCENTRALTABWIDGETTEMPLATE_H
+#define FIXEDCENTRALTABWIDGETTEMPLATE_H
 
-#include <QApplication>
-#include <QDebug>
-#include <QEvent>
-#include <QMenu>
+#include "draupnir/ui/widgets/FixedTabWidgetTemplate.h"
+
+#include "draupnir/traits/settings/ActiveWidgetIndexSetting.h"
 
 namespace Draupnir::Ui
 {
 
-TrayIcon::TrayIcon(QObject *parent) :
-    QSystemTrayIcon{parent},
-    w_trayMenu{new QMenu{QString(),nullptr}}
-{
-    if (!QSystemTrayIcon::isSystemTrayAvailable() || QSystemTrayIcon::supportsMessages()) {
-        qWarning() << "System tray is not avaialble.";
-    }
+/*! @typedef FixedCentralTabWidgetTemplate
+ *  @brief Preconfigured FixedTabWidgetTemplate using ActiveWidgetIndexSetting.
+ *  @details This is a convenience alias for FixedTabWidgetTemplate where the stored tab index is bound to
+ *           Draupnir::Settings::ActiveWidgetIndexSetting. Useful for central tab areas where tab state
+ *           persistence is desired without redefining the setting every time.
+ *  @tparam TabTraits List of tab trait types describing each tab. */
 
-    QSystemTrayIcon::setIcon(qApp->windowIcon());
-    QSystemTrayIcon::setContextMenu(w_trayMenu);
-}
-
-TrayIcon::~TrayIcon()
-{
-    w_trayMenu->deleteLater();
-}
-
-void TrayIcon::addAction(QAction* action)
-{
-    w_trayMenu->addAction(action);
-}
-
-void TrayIcon::addMenu(QMenu* menu)
-{
-    w_trayMenu->addMenu(menu);
-}
+template<class... TabTraits>
+using FixedCentralTabWidgetTemplate = FixedTabWidgetTemplate<
+    Draupnir::Settings::ActiveWidgetIndexSetting,
+    TabTraits...
+>;
 
 };
+
+#endif // FIXEDCENTRALTABWIDGETTEMPLATE_H
