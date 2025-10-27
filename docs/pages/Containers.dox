@@ -1,0 +1,55 @@
+/*! @defgroup Containers
+ *  @brief This module contains various containers used in the draupnir-lib
+ *
+ *  @details Classes within this module are located in the namespace draupnir::containers. These classes are using pure
+ *           C++ and can be reused in the projects without Qt.
+ *           ### Overview
+ *           The following containers are available:
+ *           - draupnir::containers::fixed_map: Provides a std::map/QMap-like interface for accesing values of specified
+ *             type. List of keys is specified on compiletime. Include: @ref draupnir/containers/fixed_map.h
+ *           - draupnir::containers::fixed_tuple_map: Extends fixed_map, associating each key with a tuple containing one
+ *             value of each specified type. Include: @ref draupnir/containers/fixed_tuple_map.h
+ *
+ *           ### Dependencies & Requirements
+ *           This module is using @ref Utils module from the draupnir-lib, which is included automatically if not yet
+ *           included. In addition `DraupnirVersion.pri` file is included to enable define DRAUPNIR_LIB_VERSION with
+ *           current version of the draupnir-lib.
+ *
+ *           Option c++20 is added to the CONFIG if not enabled yet.
+ *
+ *           ### Usage
+ *           In your *.pro file add the following:
+ *           @code{.pri}
+ *           # This includes Containers module from the draupnir-lib.
+ *           # Utils module is added witith the Containers.pri
+ *           include(draupnir-lib/modules/Containers.pri)
+ *           @endcode
+ *           It is safe to include the Containers.pri file more than one time to *.pro.
+ *
+ *           Include required headers and use the avaialble containers. Example:
+ *           @code{.cpp}
+ *           #include "draupnir/containers/fixed_map.h"
+ *           #include "draupnit/containers/fixed_tuple_map.h"
+ *
+ *           // Define constexpr static array to be used as keys.
+ *           static constexpr int keys[] = {1, 2, 3};
+ *
+ *           // Each value from keys[] array here has an associated int value
+ *           fixed_map<keys,int> integer_map;
+ *           // Each value from keys[] array here has an accociated double and int values
+ *           fixed_tuple_map<keys,double,int> number_map;
+ *
+ *           integer_map[1] = 42;
+ *           number_map.template <double>set(1, 3.14);
+ *           number_map.template <int>set(1, 42);
+ *           @endcode
+ *
+ * @note Snake-case is used for naming of classes and namespaces within this module to emphasise that these classes are
+ *       pure-C++ and can be used without Qt. */
+
+/*! @namespace draupnir::containers
+ *  @ingroup Containers
+ *  @brief Namespace containing classes from the Containers module.
+ *
+ * @note Snake-case is used for naming of classes within this namespace to emphasise that these classes are pure-C++ and can
+ *       be used without Qt. */

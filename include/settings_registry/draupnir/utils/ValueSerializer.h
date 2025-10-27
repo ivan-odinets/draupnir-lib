@@ -31,7 +31,11 @@ namespace Draupnir::Settings
 {
 
 /*! @class ValueSerializer draupnir-lib/incldue/settings/utils/ValueSerializer.h
+ *  @ingroup SettingsRegistry
  *  @brief Provides type-safe serialization and deserialization of values using a specified backend.
+ *  @tparam Backend Type of the backend providing key-value storage interface (e.g., AppSettings, QSettings).
+ *  @tparam Value   Type of the value being stored and retrieved (e.g., int, QString, custom enum...).
+ *
  *  @details This class provides static `get()` and `set()` methods for reading/writing a value to a settings backend using
  *           a string key. It performs runtime type conversion via `QVariant` and supports a fallback to the default value
  *           if the key is not present or conversion fails.
@@ -45,13 +49,12 @@ namespace Draupnir::Settings
  *           ValueSerializer<QSettings, QString>::set(settings, "app/logPath", path);
  *           @endcode
  *
- *  @tparam Backend Type of the backend providing key-value storage interface (e.g., AppSettings, QSettings).
- *  @tparam Value   Type of the value being stored and retrieved (e.g., int, QString, custom enum...).
- *
  * @note The backend is expected to provide:
- *       - bool contains(const QString&) const
- *       - QVariant value(const QString&) const
- *       - void setValue(const QString&, const QVariant&) */
+ *       - bool contains(const QString&) const;
+ *       - QVariant value(const QString&) const;
+ *       - void setValue(const QString&, const QVariant&);
+ *
+ * @todo Add test for this class. */
 
 template<class Backend, class Value>
 class ValueSerializer

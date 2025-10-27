@@ -33,6 +33,7 @@ namespace Draupnir::Messages
 {
 
 /*! @class MessageTraitsHelper draupnir/utils/MessageTraitsHelper.h
+ *  @ingroup MessageSystem
  *  @brief This class is a helper class to work with MessageTraits... template packs.
  *  @tparam Args... A pack of MessageTraits. */
 
@@ -69,6 +70,7 @@ public:
         return true;
     }
 
+    /*! @brief Returns true if the specified MessageType is present within the traits provided. */
     static bool isTypeKnown(MessageType type) {
         return _staticIsTypeKnownImpl<Args...>(type);
     }

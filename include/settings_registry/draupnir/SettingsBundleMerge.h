@@ -30,8 +30,11 @@
 #include "SettingsBundleTemplate.h"
 
 /*! @file draupnir/SettingsBundleMerge.h
+ *  @ingroup SettingsRegistry
  *  @brief This file contains the SettingsBundleMerge utility capable of merging multiple SettingsBundleTemplate types
- *         into one without possible duplicates. */
+ *         into one without possible duplicates.
+ *
+ * @todo Add test for utils within this file. */
 
 namespace Draupnir::Settings
 {

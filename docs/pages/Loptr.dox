@@ -1,0 +1,34 @@
+/*! @defgroup Loptr
+ *  @brief This module contains some random things which were added for fun. May be used within reasonable applications
+ *         as well. Or better not?
+ *
+ *  @details Classes within this module are located in the namespace Draupnir::Loptr.
+ *           ### Overview
+ *           The following things are available:
+ *           - `Draupnir::Loptr::Terminate`: Provides some more ways how you can terminate your application.
+ *
+ *           ### Dependencies & Requirements
+ *           This module is **NOT** included by any other draupnir-lib module. And by now it is not including any of the
+ *           other draupnir-lib modules.
+ *
+ *           Option c++20 is added to the CONFIG if not enabled yet.
+ *
+ *           ### Usage
+ *           To be included manually in the *.pro file like:
+ *           @code{.pri}
+ *           # This includes Loptr module from the draupnir-lib.
+ *           include(draupnir-lib/modules/Loptr.pri)
+ *           @endcode
+ *
+ * @warning Things from this module were added to the draupnir-lib for fun. Reasonable usage may be possible, but not
+ *          guaranteed.
+ *
+ * @todo Add bool maybeTrue(bool val) method, which should change reasonable bool input to some random value.
+ * @todo Add void random_sort(...) method, which should sort container in a unoptimal way. */
+
+/*! @namespace Draupnir::Loptr
+ *  @ingroup Loptr
+ *  @brief Namespace containing classes from the Loptr module.
+ *
+ * @warning Things from this module were added to the draupnir-lib for fun. Reasonable usage may be possible, but not
+ *          guaranteed. */

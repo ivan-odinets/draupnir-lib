@@ -33,7 +33,10 @@
 #include "draupnir-test/mocks/MockSomeTrayIcon.h"
 
 /*! @class ViewManagerTest tests/ui_bricks/ViewManagerTest/ViewManagerTest.cpp
- *  @brief This test class tests basic functionality of the ViewManager. */
+ *  @brief This test class tests basic functionality of the ViewManager.
+ *
+ * @todo Refractor this test so that it will have better readability.
+ * @todo Add some script to execute this test in the context of CI. */
 
 class ViewManagerTest : public QObject
 {
@@ -42,13 +45,13 @@ class ViewManagerTest : public QObject
 public:
     // Settings, mocked
     using MockSettingsBackend = MockSettingsTemplate<
-        Draupnir::Settings::StartHiddenSetting
+        Draupnir::Settings::MainWindow::StartHiddenSetting
     >;
     MockSettingsBackend mockedSettings;
 
     // We will need SettingsResitryTemplate as well
     using SettingsRegistry = Draupnir::Settings::SettingsRegistryTemplate<
-        Draupnir::Settings::StartHiddenSetting
+        Draupnir::Settings::MainWindow::StartHiddenSetting
     >;
     SettingsRegistry registry;
 
@@ -79,14 +82,14 @@ private slots:
     }
 
     void test_settingsLoading() {
-        QCOMPARE(viewManager.startHidden(), mockedSettings.get<Draupnir::Settings::StartHiddenSetting>());
+        QCOMPARE(viewManager.startHidden(), mockedSettings.get<Draupnir::Settings::MainWindow::StartHiddenSetting>());
 
         viewManager.setStartHidden(true);
-        QCOMPARE(viewManager.startHidden(), mockedSettings.get<Draupnir::Settings::StartHiddenSetting>());
+        QCOMPARE(viewManager.startHidden(), mockedSettings.get<Draupnir::Settings::MainWindow::StartHiddenSetting>());
         QCOMPARE(viewManager.startHidden(), true);
 
-        registry.set<Draupnir::Settings::StartHiddenSetting>(false);
-        QCOMPARE(viewManager.startHidden(), mockedSettings.get<Draupnir::Settings::StartHiddenSetting>());
+        registry.set<Draupnir::Settings::MainWindow::StartHiddenSetting>(false);
+        QCOMPARE(viewManager.startHidden(), mockedSettings.get<Draupnir::Settings::MainWindow::StartHiddenSetting>());
         QCOMPARE(viewManager.startHidden(), false);
     }
 

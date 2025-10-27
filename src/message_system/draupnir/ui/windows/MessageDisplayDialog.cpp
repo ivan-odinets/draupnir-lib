@@ -74,8 +74,8 @@ void MessageDisplayDialog::addMessage(Message* message)
     MessageDisplayWidget* widget = new MessageDisplayWidget;
     widget->showMessage(message);
 
-    w_scrollableLayout->insertWidget(w_scrollableLayout->count()-1,widget); // w_scrollableLayout has stretch in the end.
-                                                                            // So we need insert widget at one before last position
+    // w_scrollableLayout has stretch in the end. So we need insert widget at one before last position
+    w_scrollableLayout->insertWidget(w_scrollableLayout->count()-1,widget);
 }
 
 void MessageDisplayDialog::addMessageList(const QList<Message*>& messages)

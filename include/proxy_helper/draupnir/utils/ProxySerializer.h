@@ -31,7 +31,9 @@ namespace Draupnir::Proxy
 {
 
 /*! @class ProxySerializer draupnir/utils/ProxySerializer.h
+ *  @ingroup ProxyHelper
  *  @brief Static utility class for conversion between QNetworkProxy objects and their QString representations.
+ *
  *  @details Supports parsing and formatting of HTTP and SOCKS5 proxy URLs in string form.
  *           Proxy authentication is not currently supported. */
 
@@ -39,24 +41,23 @@ class ProxySerializer
 {
 public:
     /*! @brief Checks if the given string is a valid proxy specification.
-     *  @details Recognizes strings of the form: "<protocol>://host:port" where host is a non-empty hostname or IP address
-     *           and port is in the range 1-65535.
      *  @param input - proxy string to validate.
-     *  @return True - if the string is a valid, supported proxy URL; false otherwise. */
+     *  @return True - if the string is a valid, supported proxy URL; false otherwise.
+     *  @details Recognizes strings of the form: "<protocol>://host:port" where host is a non-empty hostname or IP address
+     *           and port is in the range 1-65535. */
     static bool isValidProxy(const QString& input);
 
-    /*! @brief This method returns QNetworkProxy object represented by specified QString. */
     /*! @brief Parses a string and returns the corresponding QNetworkProxy object.
-     *  @details Supports HTTP and SOCKS5 proxies. If the input string is invalid or an unsupported protocol is given,
-     *           returns a default-constructed (invalid) QNetworkProxy.
      *  @param input - proxy string in the format "protocol://host:port".
-     *  @return QNetworkProxy - object corresponding to the input string, or an invalid proxy on error. */
+     *  @return QNetworkProxy - object corresponding to the input string, or an invalid proxy on error.
+     *  @details Supports HTTP and SOCKS5 proxies. If the input string is invalid or an unsupported protocol is given,
+     *           returns a default-constructed (invalid) QNetworkProxy. */
     static QNetworkProxy proxyFromString(QString input);
 
     /*! @brief Converts supported proxies (HTTP, SOCKS5) into the form "protocol://host:port".
-     *  @details Returns an empty string for unsupported proxy types or if the proxy is invalid.
      *  @param proxy - QNetworkProxy object to serialize.
-     *  @return QString representation of the proxy, or an empty string if not supported. */
+     *  @return QString representation of the proxy, or an empty string if not supported.
+     *  @details Returns an empty string for unsupported proxy types or if the proxy is invalid. */
     static QString stringFromProxy(const QNetworkProxy& proxy);
 };
 

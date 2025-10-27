@@ -42,7 +42,10 @@ namespace Draupnir::Messages
  *           - Use selectedNotificationType() to get the currently selected value.
  * @note Only supports notification types included in Notification::displayedValues.
  * @note When building without systray support (macro QT_NO_SYSTEMTRAYICON defined) entry responsible for
- *       Notification::Type::Systemtray will be absent. */
+ *       Notification::Type::Systemtray will be absent.
+ *
+ * @todo Seperate this class into seperate file.
+ * @todo Maybe make this class template-based? */
 
 class NotificationTypeComboBox final : public QComboBox
 {

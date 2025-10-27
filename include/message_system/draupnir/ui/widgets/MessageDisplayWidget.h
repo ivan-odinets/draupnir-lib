@@ -36,18 +36,18 @@ namespace Draupnir::Messages
 {
 
 /*! @class MessageDisplayWidget draupnir/ui/widgets/MessageDisplayWidget.h
- *  @brief A lightweight QWidget used to visually display the contents of a single Message.
- *  @details This widget is designed to present a `Message` object in a user-friendly form using labels for the brief description,
- *           detailed explanation, timestamp, and an icon.
+ *  @ingroup MessageSystem
+ *  @brief A lightweight QWidget used to visually display the contents of a single @ref Message object.
+ *
+ *  @details This widget is designed to present a @ref Message object in a user-friendly form using labels for the brief
+ *           description, detailed explanation, timestamp, and an icon.
  *
  *           The layout consists of:
  *           - A left-aligned icon
  *           - A right-aligned `QFormLayout` with labels for each field
  *
  *           This widget supports dynamic retranslation via `QEvent::LanguageChange` and allows programmatic clearing or updating
- *           of the displayed content.
- *
- * @see Message. */
+ *           of the displayed content. */
 
 class MessageDisplayWidget final : public QWidget
 {
@@ -75,13 +75,13 @@ private:
 
     QSize m_iconSize;
 
-    QLabel*   w_messageBriefNameLabel;
-    QLabel*   w_messageBriefLabel;
-    QLabel*   w_messageWhatNameLabel;
-    QLabel*   w_messageWhatLabel;
-    QLabel*   w_messageDateTimeNameLabel;
-    QLabel*   w_messageDateTimeLabel;
-    QLabel*   w_messageIconLabel;
+    QLabel* w_messageBriefNameLabel;
+    QLabel* w_messageBriefLabel;
+    QLabel* w_messageWhatNameLabel;
+    QLabel* w_messageWhatLabel;
+    QLabel* w_messageDateTimeNameLabel;
+    QLabel* w_messageDateTimeLabel;
+    QLabel* w_messageIconLabel;
 };
 
 }; // namespace Draupnir::Messages

@@ -29,19 +29,24 @@
 
 #include <QNetworkProxy>
 
-namespace Draupnir::Proxy { class ProxyEditWidget; }
-
 namespace Draupnir::Proxy {
 
+class ProxyEditWidget;
+
 /*! @class ProxyEditDialog draupnir/ui/windows/ProxyEditDialog.h
+ *  @ingroup ProxyHelper
  *  @brief Modal dialog for editing and viewing QNetworkProxy objects.
+ *
  *  @details Provides a user-friendly dialog window for configuring proxy settings using a ProxyEditWidget. Typically used to
  *           let the user create or edit proxy settings and confirm/cancel their changes.
  *
  *           Usage:
  *           - Use ProxyEditDialog::setProxy() to display an existing proxy.
  *           - After ProxyEditDialog::exec(), call ProxyEditDialog::proxy() to retrieve user edits if accepted.
- * @note Proxy authentication is not supported. */
+ *
+ * @note This dialog does not support proxies with authentication.
+ *
+ * @todo Maybe add some unit test for this widget? */
 
 class ProxyEditDialog final : public QDialog
 {
@@ -61,9 +66,6 @@ public:
     /*! @brief Updates the dialog UI to display the specified proxy.
      *  @param proxy QNetworkProxy to show in the editor. */
     void setProxy(const QNetworkProxy& proxy);
-
-//protected:
-//    No calls to the QObject::tr within this dialog, so no need to reimplement the changeEvent method,
 
 private:
     ProxyEditWidget* w_proxyEditWidget;

@@ -1,0 +1,29 @@
+/*! @defgroup UiBricks
+ *  @brief This module contains various components which can be used to build gui
+ *
+ *  @details Classes within this module are located in the namespace Draupnir::UiBricks.
+ *           ### Dependencies & Requirements
+ *           This module is using @ref SettingsRegistry module from the draupnir-lib, which is included automatically if
+ *           not yet included. In addition `DraupnirVersion.pri` file is included to enable define DRAUPNIR_LIB_VERSION
+ *           with current version of the draupnir-lib.
+ *
+ *           Option c++20 is added to the CONFIG if not enabled yet.
+ *
+ *           Qt gui and widgets modules are added to QT config if not enabled yet.
+ *
+ *           ### Usage
+ *           In your *.pro file add the following:
+ *           @code{.pri}
+ *           # This includes UiBricks module from the draupnir-lib.
+ *           # SettingsRegistry module is added witith the UiBricks.pri
+ *           include(draupnir-lib/modules/UiBricks.pri)
+ *           @endcode
+ *           It is safe to include the UiBricks.pri file more than one time to *.pro.
+ *
+ * @todo Extend documentation.
+ * @todo Make *.pri file smarter. If required QT things are not enabled - show reasonable error.
+ * @todo Add templated MainWindow class / classes. */
+
+/*! @namespace Draupnir::Ui
+ *  @ingroup UiBricks
+ *  @brief Namespace containing classes from the UiBricks module. */

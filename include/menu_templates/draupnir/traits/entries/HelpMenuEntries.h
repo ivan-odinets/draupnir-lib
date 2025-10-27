@@ -26,20 +26,23 @@
 #define HELPMENUENTRIES_H
 
 /*! @file draupnir/traits/entries/HelpMenuEntries.h
- *  @brief Menu action and menu entry trait classes for the draupnir UI framework.
+ *  @ingroup MenuTemplates
+ *  @brief Menu action and menu entry trait classes for the standart help menu actions.
+ *
  *  @details This file contains trait classes describing standard help menu actions.
- *           All menu trait classes must provide:
- *           - using Type = QAction (or QMenu, or thier child classes)
- *           - static Type* createElement(QWidget* parent = nullptr)
- *           - static QString displayName() */
+ *
+ * @todo Split this file into multiple subfiles and include these new files by using this file. */
 
 #include <QApplication>
 #include <QAction>
 #include <QIcon>
 
+#include "draupnir/utils/ResourceHelper.h"
+
 namespace Draupnir::Menus {
 
 /*! @var helpMenuName draupnir/traits/entries/HelpMenuEntries.h
+ *  @ingroup MenuTemplates
  *  @brief Inline constexpr lambda returning the localized display name for the "Help" menu. */
 
 inline constexpr auto helpMenuName = []() -> QString {
@@ -47,6 +50,7 @@ inline constexpr auto helpMenuName = []() -> QString {
 };
 
 /*! @class HelpEntryMenuTrait draupnir/traits/entries/HelpMenuEntries.h
+ *  @ingroup MenuTemplates
  *  @brief Trait for the "Help" menu action (application help). Provides a QAction with the main application icon and
  *         localized name. */
 
@@ -57,20 +61,18 @@ public:
 
     /*! @brief Creates a QAction for the "About" action, with app icon.
      *  @param parent Optional parent object.
-     *  @return Newly allocated QAction pointer.
-     *
-     * @note Uses the application's window icon as the action icon. Should only be called after QApplication is created. */
+     *  @return Newly allocated QAction pointer. */
     static QAction* createElement(QWidget* parent = nullptr) {
         QAction* result = new QAction{displayName(), parent};
         return result;
     }
 
-    /*! @brief Returns the localized display name ("Help").
-     *  @return QString. */
+    /*! @brief Returns the localized display name ("Help"). */
     static QString displayName() { return QObject::tr("Help"); }
 };
 
 /*! @class AboutAppMenuTrait draupnir/traits/entries/HelpMenuEntries.h
+ *  @ingroup MenuTemplates
  *  @brief Trait for the "About" menu action (application about box). Provides a QAction with the main application icon and
  *         localized name. */
 
@@ -89,12 +91,12 @@ public:
         return result;
     }
 
-    /*! @brief Returns the localized display name ("About").
-     *  @return QString. */
+    /*! @brief Returns the localized display name ("About"). */
     static QString displayName() { return QObject::tr("About"); }
 };
 
 /*! @class AboutDraupnirLibMenuTrait draupnir/traits/entries/HelpMenuEntries.h
+ *  @ingroup MenuTemplates
  *  @brief Trait for the "About DraupnirLib" menu action. Provides a QAction with localized name. */
 
 class AboutDraupnirLibMenuTrait
@@ -107,15 +109,16 @@ public:
      *  @return Newly allocated QAction pointer. */
     static QAction* createElement(QWidget* parent = nullptr) {
         QAction* result = new QAction{displayName(), parent};
+        result->setIcon(Resources::ResourceHelper::get().draupnirIcon());
         return result;
     }
 
-    /*! @brief Returns the localized display name ("About Qt").
-     *  @return QString. */
+    /*! @brief Returns the localized display name ("About Qt"). */
     static QString displayName() { return QObject::tr("About DraupnirLib"); }
 };
 
 /*! @class AboutQtMenuTrait draupnir/traits/entries/HelpMenuEntries.h
+ *  @ingroup MenuTemplates
  *  @brief Trait for the "About Qt" menu action. Provides a QAction with localized name (for the standard Qt about dialog). */
 
 class AboutQtMenuTrait
@@ -131,8 +134,7 @@ public:
         return result;
     }
 
-    /*! @brief Returns the localized display name ("About Qt").
-     *  @return QString. */
+    /*! @brief Returns the localized display name ("About Qt"). */
     static QString displayName() { return QObject::tr("About Qt"); }
 };
 

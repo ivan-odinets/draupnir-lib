@@ -37,11 +37,12 @@ class GenericMenuEntryHandler;
 
 /*! @class GenericHelpMenuEntryHandler<HelpContext, Draupnir::Menus::AboutQtMenuTrait>
  *  @headerfile draupnir/handlers/help_menu/AboutQtEntryHandler.h
+ *  @tparam HelpContext Any type representing the help/“About” handling context (unused in this specialization).
  *  @brief Partial specialization that wires a QAction to the standard QApplication::aboutQt dialog.
+ *
  *  @details This specialization handles the AboutQtMenuTrait entry by connecting its QAction::triggered() signal directly to
  *           QApplication::aboutQt. It ignores the provided - HelpContext because no contextual data is required to show
  *           the standard Qt “About” dialog.
- *  @tparam HelpContext Any type representing the help/“About” handling context (unused in this specialization).
  *
  * @note The connection is made without an explicit QObject context; lifetime of aboutQtAction must be managed externally.
  *       If you need automatic disconnection on destruction, connect with a suitable QObject context or manage the connection handle.

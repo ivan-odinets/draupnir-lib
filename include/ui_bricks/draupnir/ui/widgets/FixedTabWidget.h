@@ -33,6 +33,7 @@ namespace Draupnir::Ui
 {
 
 /*! @class FixedTabWidget draupnir/ui/widgets/FixedTabWidget.h
+ *  @ingroup UiBricks
  *  @brief Abstract base class for a widget composed of fixed amount of tabs. Handles tab title retranslation. */
 
 class FixedTabWidget : public QTabWidget

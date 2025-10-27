@@ -1,0 +1,33 @@
+/*! @defgroup Utils
+ *  @brief This module contains various utilities used in the draupnir-lib
+ *
+ *  @details Classes within this module are located in the namespace draupnir::utils. These classes are using pure C++
+ *           and can be reused in the projects without Qt.
+ *
+ *           ### Dependencies & Requirements
+ *           `DraupnirVersion.pri` file is included to enable define DRAUPNIR_LIB_VERSION with current version of the
+ *           draupnir-lib.
+ *
+ *           Option c++20 is added to the CONFIG if not enabled yet.
+ *
+ *           ### Usage
+ *           In your *.pro file add the following:
+ *           @code{.pri}
+ *           # This includes Utils module from the draupnir-lib.
+ *           include(draupnir-lib/modules/Utils.pri)
+ *           @endcode
+ *           It is safe to include the Utils.pri file more than one time to *.pro.
+ *
+ * @note Snake-case is used for naming of classes and namespaces within this module to emphasise that these classes are
+ *       pure-C++ and can be used without Qt.
+ *
+ * @todo Add to the documentation list of available entites within this module.
+ * @todo Add to the documentation usage examples.
+ * @todo Add tests for the Utils module. */
+
+/*! @namespace draupnir::utils
+ *  @ingroup Utils
+ *  @brief Namespace containing classes from the Utils module.
+ *
+ * @note Snake-case is used for naming of classes within this namespace to emphasise that these classes are pure-C++ and can
+ *       be used without Qt. */

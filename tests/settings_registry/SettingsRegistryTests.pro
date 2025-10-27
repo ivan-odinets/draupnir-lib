@@ -1,4 +1,5 @@
- TEMPLATE = subdirs
+TEMPLATE = subdirs
 
 SUBDIRS += \
-    GeneralIT/SettingsRegistryGeneralIT.pro
+    integration/SettingsRegistryIT \
+    unit/SettingTraitSerializerTest

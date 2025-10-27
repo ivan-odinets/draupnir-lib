@@ -1,0 +1,18 @@
+/*! @defgroup DraupnirResources
+ *  @brief This module contains utilities to work with resources.
+ *
+ *  @details Classes within this module are located in the namespace Draupnir::Resources. By now this module is containing
+ *           helper classes to work with the resources.
+ *
+ *           ### Dependencies & Requirements
+ *           `DraupnirVersion.pri` file is included to enable define DRAUPNIR_LIB_VERSION with current version of the
+ *           draupnir-lib.
+ *
+ *           Option c++20 is added to the CONFIG if not enabled yet.
+ *
+ * @todo Extend the documentation for this module.
+ * @todo Make *.pri file a bit smarter so that it will abort the compilation if required qt things are not enabled. */
+
+/*! @namespace Draupnir::Resources
+ *  @ingroup DraupnirResources
+ *  @brief Namespace containing classes from the DraupnirResources module. */

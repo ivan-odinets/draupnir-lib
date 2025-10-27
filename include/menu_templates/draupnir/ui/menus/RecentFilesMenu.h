@@ -31,10 +31,13 @@
 
 class QActionGroup;
 
-namespace Draupnir::Menus {
+namespace Draupnir::Menus
+{
 
 /*! @class RecentFilesMenu draupnir/ui/menus/RecentFilesMenu.h
+ *  @ingroup MenuTemplates
  *  @brief A dynamic menu for displaying, managing, and interacting with a list of recently opened files.
+ *
  *  @details This class provides a convenient interface for creating a menu with entries for recently used files. It supports
  *           adding, updating, removing, and clearing recent files; selecting files via QAction; and emits signals when a file
  *           is selected or the menu is cleared.
@@ -130,15 +133,15 @@ protected:
 
 private slots:
     /*! @brief Internal slot triggered when a file action is selected.
-     *  @param action Pointer to the QAction triggered.
-     *  @internal */
+     *  @param action Pointer to the QAction triggered. */
     void _onRecentFileSelected(QAction* action);
 
-    /*! @brief Internal slot triggered when "Clear" action is selected.
-     *  @internal */
+    /*! @brief Internal slot triggered when "Clear" action is selected. */
     void _onRecentClearRequested();
 
 private:
+    friend class RecentFilesMenuTest;
+
     QList<QFileInfo> m_recentFiles;
 
     /*! @brief Initializes the menu structure, connects signals/slots, and sets up actions. */

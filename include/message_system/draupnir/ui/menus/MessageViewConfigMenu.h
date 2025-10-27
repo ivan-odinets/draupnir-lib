@@ -34,9 +34,13 @@ namespace Draupnir::Messages
 {
 
 /*! @class MessageViewConfigMenu draupnir/ui/menus/MessageViewConfigMenu.h
+ *  @ingroup MessageSystem
  *  @brief An QMenu-based menu capable of displaying/editing settings of the MessageListView widget.
  *  @details As many other things within this MessageSystem - this menu consists of two parts: a MessageViewConfigMenu - interface
- *           to the Qt-world and MessageViewConfigMenuTemplate - class implementing template part of this interface. */
+ *           to the Qt-world and MessageViewConfigMenuTemplate - class implementing template part of this interface.
+ *
+ * @todo Write a test for this class.
+ * @todo Support selecting specific message parts (brief, icon, date, text) to be displayed. */
 
 class MessageViewConfigMenu : public QMenu
 {
@@ -83,7 +87,11 @@ private:
 #include "draupnir/containers/fixed_map.h" // IWYU pragma: keep
 
 /*! @class MessageViewConfigMenuTemplate draupnir/ui/MessageViewConfigMenu.h
- *  @brief This template class implements message-type-list dependant functionality of the MessageViewConfigMenu. */
+ *  @brief This template class implements message-type-list dependant functionality of the MessageViewConfigMenu.
+ *
+ * @todo Seperate this class into seperate file.
+ * @todo Write a test for this class.
+ * @todo Support selecting specific message parts (brief, icon, date, text) to be displayed. */
 
 namespace Draupnir::Messages {
 
@@ -134,7 +142,7 @@ public:
 private:
     static constexpr MessageType supportedMessageIds[] = { MessageTraits::type... };
 
-    fixed_map<
+    draupnir::containers::fixed_map<
         supportedMessageIds,
         QAction*
     > m_actionMap;

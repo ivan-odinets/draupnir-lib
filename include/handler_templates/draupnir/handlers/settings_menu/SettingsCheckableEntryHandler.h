@@ -25,7 +25,7 @@
 #ifndef SETTINGSCHECKABLEENTRYHANDLER_H
 #define SETTINGSCHECKABLEENTRYHANDLER_H
 
-#include "draupnir/handlers/AbstractHandlers.h"
+#include "draupnir/handlers/templates/CheckableActionHandler.h"
 
 #include "draupnir/SettingsBundleTemplate.h"
 #include "draupnir/utils/SettingTraitForEntry.h"
@@ -34,7 +34,10 @@ namespace Draupnir::Handlers
 {
 
 /*! @class SettingsCheckableEntryHandler
- *  @brief This is a base class for checkable settings entries. */
+ *  @brief This is a base class for checkable settings entries.
+ *
+ * @todo Write reasonable documentation for this class.
+ * @todo Write a test for this class. */
 
 template<class SettingsContext,class MenuEntry>
 class SettingsCheckableEntryHandler :

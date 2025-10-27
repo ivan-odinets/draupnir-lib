@@ -30,13 +30,17 @@
 #include "draupnir/ui/widgets/FixedTabWidget.h"
 
 #include "draupnir/SettingsBundleTemplate.h"
-#include "draupnir/utils/common.h"
+#include "draupnir/utils/index_of.h"
 
 namespace Draupnir::Ui
 {
 
 /*! @class FixedTabWidgetTemplate draupnir/ui/widgets/FixedTabWidgetTemplate.h
+ *  @ingroup UiBricks
  *  @brief Templated tab widget implementation using tab traits.
+ *  @tparam WidgetIndexSetting A setting trait used to store and restore the selected tab index.
+ *  @tparam TabTraits Variadic list of tab traits describing each tab (type, label, optional tooltip).
+ *
  *  @details This class provides a customizable `QTabWidget` based on a variadic list of tab traits. Each tab is defined
  *           by a trait struct that specifies:
  *           - a widget type via `using Widget = ...;`
@@ -58,8 +62,7 @@ namespace Draupnir::Ui
  *           };
  *           @endcode
  *
- *  @tparam WidgetIndexSetting A setting trait used to store and restore the selected tab index.
- *  @tparam TabTraits Variadic list of tab traits describing each tab (type, label, optional tooltip). */
+ * @todo Add possibility to aggregate settings from TabTraits (or in particular - nested widget). */
 
 template<class WidgetIndexSetting, class... TabTraits>
 class FixedTabWidgetTemplate final : public FixedTabWidget
@@ -139,9 +142,9 @@ public:
      *           label (and tooltip, if supported). Can be used for dynamic replacement of tab content. */
     template<class TabTrait>
     void setWidget(typename TabTrait::Widget* widget) {
-        static_assert(is_one_of_v<TabTrait,TabTraits...>,
+        static_assert(draupnir::utils::is_one_of_v<TabTrait,TabTraits...>,
                 "TabTrait specified is not present within the TabTraits... pack");
-        constexpr int Index = index_of<TabTrait,TabTraits...>::value;
+        constexpr int Index = draupnir::utils::index_of<TabTrait,TabTraits...>::value;
 
         if (std::get<Index>(m_widgets) != nullptr) {
             QTabWidget::removeTab(Index);

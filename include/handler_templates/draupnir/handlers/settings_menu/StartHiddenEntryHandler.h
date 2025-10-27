@@ -28,10 +28,19 @@
 #include "SettingsCheckableEntryHandler.h"
 
 #include "draupnir/traits/entries/SettingsMenuEntries.h"
-#include "draupnir/traits/settings/StartHiddenSetting.h"
+#include "draupnir/traits/settings/main_window/StartHiddenSetting.h"
 
 namespace Draupnir::Handlers
 {
+
+template<class Context,class MenuEntry>
+class GenericMenuEntryHandler;
+
+/*! @class GenericMenuEntryHandler<SettingsContext,Draupnir::Menus::StartHiddenMenuEntry>
+ *  @brief This is a class.
+ *
+ * @todo Maybe this class needs to be placed in other file?
+ * @todo Write reasonable documentation for this class. */
 
 template<class SettingsContext>
 class GenericMenuEntryHandler<SettingsContext,Draupnir::Menus::StartHiddenMenuEntry> :
@@ -47,10 +56,13 @@ public:
  *  @brief Specialization mapping the "Start Hidden" menu entry to its setting trait.
  *  @details Associates the menu entry trait Draupnir::Menus::StartHidden with the corresponding StartHiddenSetting
  *           setting trait. This mapping allows SettingsMenuEntriesHandler and to resolve the correct value type and key
- *           at compile time. */
+ *           at compile time.
+ *
+ * @todo Maybe this class needs to be placed in other file?
+ * @todo Maybe include this mapping into the menu entry trait class? */
 
 template<> struct SettingTraitForEntry<Draupnir::Menus::StartHiddenMenuEntry> {
-    using type = Settings::StartHiddenSetting;
+    using type = Settings::MainWindow::StartHiddenSetting;
 };
 
 }; // namespace Draupnir::Menus

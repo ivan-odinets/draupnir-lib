@@ -25,17 +25,20 @@
 #ifndef FILEOPENENTRYHANDLER_H
 #define FILEOPENENTRYHANDLER_H
 
-#include "draupnir/handlers/AbstractHandlers.h"
+#include "draupnir/handlers/templates/ActionHandler.h"
 
 #include <QDir>
 #include <QMessageBox>
 
 #include "draupnir/SettingsBundleTemplate.h"
 #include "draupnir/traits/entries/FileMenuEntries.h"
-#include "draupnir/traits/settings/LastUsedDirectorySetting.h"
+#include "draupnir/traits/settings/files/LastUsedDirectorySetting.h"
 #include "draupnir/utils/FileManagerValidator.h"
 
 namespace Draupnir::Handlers {
+
+template<class Context, class Entry>
+class GenericMenuEntryHandler;
 
 /*! @class GenericMenuEntryHandler<FileContext,Draupnir::Menus::FileOpenEntry>
  *  @headerfile draupnir/handlers/file_menu/FileOpenEntryHandler.h
@@ -63,11 +66,11 @@ namespace Draupnir::Handlers {
  *       - bool hasNothingOpened();
  *       - bool isCurrentFileSaved();
  *
- * @see ActionHandler */
+ * @todo Write a test for this class. */
 
 template<class FileContext>
 class GenericMenuEntryHandler<FileContext,Draupnir::Menus::FileOpenEntry> :
-        public ActionHandler<GenericMenuEntryHandler<FileContext,Draupnir::Menus::FileOpenEntry>,Draupnir::Menus::FileOpenEntry>
+        public ActionHandler<GenericMenuEntryHandler<FileContext,Draupnir::Menus::FileOpenEntry>>
 {
 public:
     using SettingsBundle = Settings::SettingsBundleTemplate<Settings::LastUsedDirectorySetting>;

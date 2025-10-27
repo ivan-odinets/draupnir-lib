@@ -44,21 +44,14 @@ class Message;
  *           Supported roles: Qt::DisplayRole, Qt::DecorationRole, Qt::ToolTipRole.
  *
  * @note MessageListModel is responsible for deleting Message objects. This happens in the destructor of MessageListModel and
- *       in the MessageListModel::clear method. */
+ *       in the MessageListModel::clear method.
+ *
+ * @todo Write a test for this class. */
 
 class MessageListModel final : public QAbstractItemModel
 {
     Q_OBJECT
 public:
-    /*! @brief This enum holds flag for fields of Message objects, which can be displayed by this model. */
-    enum DisplayedContent {
-        Brief      = 0b00000001,  /*!< @brief Brief summary of Message (Message::brief). */
-        What       = 0b00000010,  /*!< @brief Details what happened (Message::what). */
-        DateTime   = 0b00000100,  /*!< @brief DateTime of Message (Message::dateTime). */
-        Icon       = 0b00001000,  /*!< @brief Icon of Message (Message::icon). */
-        All        = Brief | What | DateTime | Icon,  /*!< @brief All of the above. */
-    };
-
     /*! @brief Default constructor. */
     explicit MessageListModel(QObject *parent = nullptr);
 
@@ -76,30 +69,6 @@ public:
      * @note All Message objects are deleted upon calling this method. */
     void clear();
 
-    /*! @brief Returns true if this model will display content of Message::brief. */
-    bool isBriefDisplayed() const      { return m_displayedContent & Brief; }
-
-    /*! @brief Allows setting if this model will display content of Message::brief. */
-    void setBriefDisplayed(bool state);
-
-    /*! @brief Returns true if this model will display content of Message::what. */
-    bool isWhatDisplayed() const       { return m_displayedContent & What; }
-
-    /*! @brief Allows setting if this model will display content of Message::what. */
-    void setWhatDisplayed(bool state);
-
-    /*! @brief Returns true if this model will display content of Message::dateTime. */
-    bool isDateTimeDisplayed() const   { return m_displayedContent & DateTime; }
-
-    /*! @brief Allows setting if this model will display content of Message::dateTime. */
-    void setDateTimeDisplayed(bool state);
-
-    /*! @brief Returns true if this model will display content of Message::icon. */
-    bool isIconDisplayed() const       { return m_displayedContent & Icon; }
-
-    /*! @brief Allows setting if this model will display content of Message::icon. */
-    void setIconDisplayed(bool state);
-
 ///@name This methods required for inheriting from QAbstractItemModel
 ///@{
     QModelIndex    index(int row, int column, const QModelIndex &parent = QModelIndex()) const final;
@@ -110,8 +79,6 @@ public:
 ///@}
 
 private:
-    quint8 m_displayedContent;
-    void _setDisplayedContentBit(DisplayedContent content, bool state);
     QList<Message*> m_data;
 };
 

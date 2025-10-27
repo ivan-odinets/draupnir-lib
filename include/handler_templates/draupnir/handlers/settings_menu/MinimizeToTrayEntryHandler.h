@@ -28,10 +28,19 @@
 #include "SettingsCheckableEntryHandler.h"
 
 #include "draupnir/traits/entries/SettingsMenuEntries.h"
-#include "draupnir/traits/settings/MinimizeToTraySetting.h"
+#include "draupnir/traits/settings/main_window/MinimizeToTraySetting.h"
 
 namespace Draupnir::Handlers
 {
+
+template<class Context, class MenuEntry>
+class GenericMenuEntryHandler;
+
+/*! @class GenericMenuEntryHandler<SettingsContext,Draupnir::Menus::MinimizeToTrayEntry>
+ *  @brief This is a class.
+ *
+ * @todo Maybe this class needs to be placed in other file?
+ * @todo Write reasonable documentation for this class. */
 
 template<class SettingsContext>
 class GenericMenuEntryHandler<SettingsContext,Draupnir::Menus::MinimizeToTrayEntry> :
@@ -45,12 +54,16 @@ public:
 
 /*! @struct SettingTraitForEntry<Draupnir::Menus::MinimizeToTrayEntry>
  *  @brief Specialization mapping the "Minimize to Tray" menu entry to its setting trait.
+ *
  *  @details Associates the menu entry trait Draupnir::Menus::MinimizeToTrayEntry with the corresponding MinimizeToTray
  *           setting trait. This mapping allows SettingsMenuEntriesHandler to resolve the correct value type and key at
- *           compile time. */
+ *           compile time.
+ *
+ * @todo Maybe this class needs to be placed in other file?
+ * @todo Maybe include this mapping into the menu entry trait class? */
 
 template<> struct SettingTraitForEntry<Draupnir::Menus::MinimizeToTrayEntry> {
-    using type = Settings::MinimizeToTraySetting;
+    using type = Settings::MainWindow::MinimizeToTraySetting;
 };
 
 };

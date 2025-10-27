@@ -31,7 +31,9 @@
 #include <QVariant>
 
 /*! @class AppSettings draupnir/core/AppSettings.h
+ *  @ingroup SettingsRegistry
  *  @brief Wrapper class around QSettings providing sectioned access, optional config preservation, and enum support.
+ *
  *  @details AppSettings simplifies work with application configuration stored via QSettings:
  *           - Provides access by section (Core, Network, Files, GUI, Global);
  *           - Allows "preserve mode" (if enabled, settings are never written to disk);
@@ -42,8 +44,8 @@
  *           - enum Type;
  *           - static Type fromConfigString(const QString&);
  *           - static QString toConfigString(Type);
- * @todo Make enum AppSettings::Section define-dependant. Only sections for enabled draupnir-lib modules should be used.
- * @todo Make QSettings backend of this class mockable (for testing purposes). */
+ *
+ * @todo Remove unused things from this class. Or at least make possible to disable them using macros. */
 
 class AppSettings
 {
@@ -59,13 +61,16 @@ public:
         GUI,       /*!< @brief This corresponds to the [gui] section of config file. */
     };
 
-    AppSettings(QSettings* settings) :
-        p_settings{settings}
-    {}
-
     /*! @brief Default constructor.
      *  @details Initializes QSettings and sets preserveConfig to false. */
     AppSettings();
+
+    /*! @brief Construct AppSettings object on base of provided QSettings.
+     *  @param settings - pointer to QSettings object.
+     * @note AppSettings will take ownership on the provided QSettings and will try to delete it within destructor. */
+    AppSettings(QSettings* settings) :
+        p_settings{settings}
+    {}
 
     /*! @brief Destructor.
      *  @details Synchronizes (flushes) changes and deletes internal QSettings instance. */
@@ -120,13 +125,11 @@ public:
      *  @return The value (or defaultValue if missing). */
     QVariant value(Section section, const QString& key,const QVariant& defaultValue = QVariant()) const;
 
-    /*! @brief Saves value represented by key in opened QSettings object. If preserveConfig == true, this method does nothing.
-     * @note If the provided key has no section specified (e.g. gui/mainWindowSize) - this method writes keys to the Global
-     *       section of config file. */
-
     /*! @brief Writes a QVariant value to config by key (if not preserving). Does nothing if AppSettings::preserveConfig() is true.
      *  @param key - key to write.
-     *  @param value - value to store. */
+     *  @param value - value to store.
+     * @note If the provided key has no section specified (e.g. gui/mainWindowSize) - this method writes keys to the Global
+     *       section of config file. */
     void setValue(const QString& key,const QVariant& value);
 
     /*! @brief Writes a QVariant value to config in a specific section (if not preserving). Does nothing if AppSettings::preserveConfig()

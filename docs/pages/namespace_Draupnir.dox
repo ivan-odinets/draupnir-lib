@@ -1,0 +1,5 @@
+/*! @namespace Draupnir
+ *  @brief Contains classes and namespaces from the Draupnir lib which are dependant on the Qt.
+ *
+ * @todo Will put this here for now. Document versioning of the library.
+ * @todo Maybe it will make sense to add global static constexpr variables with library version and version string? */

@@ -36,7 +36,10 @@
 #include "draupnir-test/traits/widgets/SomeRandomWidgetTabTraits.h"
 
 /*! @class FixedTabWidgetTemplateTest tests/ui_bricks/FixedTabWidgetTemplateTest/FixedTabWidgetTemplateTest.cpp
- *  @brief This test class tests basic functionality of the FixedTabWidgetTemplate. */
+ *  @brief This test class tests basic functionality of the FixedTabWidgetTemplate.
+ *
+ * @todo Refractor this test so that it will have better readability.
+ * @todo Add some script to execute this test in the context of CI. */
 
 class FixedTabWidgetTemplateTest : public QObject
 {

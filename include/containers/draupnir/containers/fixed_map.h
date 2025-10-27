@@ -31,8 +31,14 @@
 
 #include "draupnir/utils/template_constructors.h"
 
+namespace draupnir::containers {
+
 /*! @class fixed_map draupnir/containers/fixed_map.h
+ *  @ingroup Containers
  *  @brief Compile-time associative container for key-to-type value mapping.
+ *  @tparam keys_array - static constexpr С-style array of the key values.
+ *  @tparam value_type - type to store.
+ *
  *  @details Object of this type provides a std::map/QMap-like interface for accesing values of specified type. Compared
  *           to std::map / QMap amount of keys within fixed_map is specified during compile-time as an argument. Some details:
  *           - The container holds an std::array of std::pair objects, each pair storing a key from the provided array
@@ -43,9 +49,12 @@
  *           - By default value_type objects are initialized as follows: numbers to 0, pointers to nullptr and other types
  *             via their default constructor.
  *
- *  @tparam keys_array - static constexpr С-style array of the key values.
- *  @tparam value_type - type to store.
- * @note The container size and key set are defined at compile-time. */
+ * @note The container size and key set are defined at compile-time.
+ *
+ * @todo Improve container performance for cases when: keys array specified consists of integer sequence (or enum with
+ *       increment of the values); array specified is list of boolean flags.
+ * @todo Extend documentation for this class usage. And maybe add simple example program to the specific examples directory.
+ * @todo Add constexpr variable versions of static constexpr methods. */
 
 template<const auto& keys_array, class value_type>
 class fixed_map
@@ -90,6 +99,7 @@ public:
     /*! @brief Returns last value of the provided keys_array. */
     static constexpr key_type last_key() { return keys_array[keys_size-1]; }
 
+    /*! @brief Typedef of the iterator which can be used to iterate over the content of fixed_map. */
     using iterator = typename std::array<std::pair<const key_type,value_type>, keys_size>::iterator;
 
     /*! @brief Returns begin iterator of the internal std::array of std::pair objects. */
@@ -141,14 +151,15 @@ public:
     }
 
     /*! @brief Returns reference to the value_type object associated with the given key.
-    *  @note If the key is not available in the keys_array template argument, undefined behaviour will occur. */
+     * @warning If the key is not available in the keys_array template argument - assert statement will be executed. */
     [[nodiscard]] constexpr value_type& get(key_type key) { return _get_impl<0>(key); }
 
     /*! @brief Returns reference to the value_type object associated with the given key.
-         *  @note If the key is not available in the keys_array template argument, undefined behaviour will occur. */
+     * @warning If the key is not available in the keys_array template argument - assert statement will be executed. */
     [[nodiscard]] constexpr value_type& operator[](key_type key) { return _get_impl<0>(key); }
 
-     /*! @brief Returns reference to the value_type object for a specific index. */
+    /*! @brief Returns reference to the value_type object for a specific index.
+     * @warning If the specified index is larger than size of fixed_map - out of bounds access to the array will happen. */
     [[nodiscard]] constexpr value_type& value_by_index(int index) { return m_data[index].second; }
 
     /*! @brief Clears the fixed_map container. Values associated with all keys are reset to default ones. This means: numbers
@@ -165,7 +176,7 @@ private:
     template<std::size_t... I>
     static constexpr std::array<std::pair<const key_type,value_type>, keys_size> _create_pairs_array(std::index_sequence<I...>) {
         return std::array<std::pair<const key_type,value_type>, keys_size>{
-            { std::pair<const key_type,value_type>{keys_array[I], make_zero_value<value_type>()} ... }
+            { std::pair<const key_type,value_type>{keys_array[I], draupnir::utils::make_zero_value<value_type>()} ... }
         };
     }
 
@@ -208,10 +219,12 @@ private:
     template<std::size_t Index>
     inline void _clear_impl() {
         if constexpr (Index < keys_size) {
-            m_data[Index].second = make_zero_value<value_type>();
+            m_data[Index].second = draupnir::utils::make_zero_value<value_type>();
             _clear_impl<Index+1>();
         }
     }
+};
+
 };
 
 #endif // FIXED_MAP_H

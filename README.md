@@ -1,42 +1,56 @@
+# DraupnirLib
 
-## Important
+Reusable building blocks for C++ and Qt applications.
 
-Disclaimer:
-This is not a “classic” standalone library, but a collection of reusable C++ and Qt code used across my projects.
-APIs and implementations may change over time as the codebase evolves and is refactored.
+## Overview
 
-This repository is under continuous development — expect changes!
-Feel free to open issues or pull requests if you have suggestions or spot bugs.
+Started as attempt to collect reusable code in one place and ended with a mini-library containing utility classes, widgets, and modules that may be used in many applications. The code base is intentionally modular: you can pull in just the pieces you need or reuse the entire set as the foundation for a Qt application.
 
-## Description
+The project is named after Odin’s legendary ring Draupnir - a symbol of endless replication - to reflect the goal of creating components that can be shared and extended as the surrounding applications evolve.
 
-Draupnir-lib is a growing set of utility classes, containers, and widgets for C++ and Qt projects. The name is inspired by Odin’s legendary ring Draupnir — a symbol of endless growth and replication.
+## Project status
 
-## Contents
+This repository is actively developed and refactored. APIs are not frozen, and backwards-incompatible changes may (and will) appear without notice until v1.0.0 will be tagged and released.
 
-- Pure C++
-    - fixed_map: Compile-time associative container for key-to-type value mapping.
-    - fixed_tuple_map: Compile-time associative container for key-to-multiple-types mapping. Effectively fixed_map<keys, std::tuple<Args...>> with extra convenience methods.
+## Highlights
 
-- C++ / Qt
-    - AppSettings: Helper for working with persistent application settings (QSettings-based).
-    - MessageSystem: Infrastructure to display notifications to user about the events within the application.
-    - ProxyHelper: Consists of: ProxyHelper itself (static utility for converting QNetworkProxy objects to and from QString representation); ProxyEditDialog (dialog window for editing QNetworkProxy settings); ProxyEditWidget (widget for editing and displaying QNetworkProxy objects)
+- **Header-only containers** – e.g. `fixed_map` and `fixed_tuple_map` for compile-time associative data.
+- **Application settings infrastructure** – thin wrappers around `QSettings` to keep persistent configuration in sync.
+- **Templates for menus and menu handlers** - creating menus using templates and create handlers to this templte menus using another templates.
+- **Message system** – templates and widgets to surface notifications to the end user.
+- **Proxy helper utilities** – reusable dialogs and widgets for configuring `QNetworkProxy` instances.
+- **UI bricks and utilities** – small components to reduce boilerplate when building Qt interfaces.
 
-### Message System Architecture
+## Repository layout
 
-The MessageSystem is composed of several template-based classes:
+| Path / module         | Description |
+|-----------------------|-------------|
+| `include/containers`  | Header-only utilities such as `fixed_map` and supporting traits. |
+| `include/handler_templates` | Template implementations of menu handlers and supporting policies. |
+| `include/message_system` | Glue code that combines handlers, UI builders, and message traits. |
+| `include/proxy_helper` | Proxy helper utilities and Qt widgets. |
+| `include/settings_registry` | Helpers for registering and validating application settings. |
+| `include/ui_bricks` | Small reusable Qt UI components. |
+| `modules/*.pri` | Qt project include (`.pri`) files to import individual modules into a `.pro` project. |
+| `tests/` | Qt Test projects covering containers, handlers, message system, proxy helper, and more. |
 
-- **MessageHandler / MessageHandlerTemplate** – `MessageHandler` exposes the runtime API for processing messages. `MessageHandlerTemplate` implements it and keeps a policy map specifying how each message type should be displayed. The `Logger` forwards log entries to the handler which consults this map and stores settings via `AppSettings` or a custom `MessageSettingsInterface`.
-- **MessageUiBuilder / MessageUiBuilderTemplate** – responsible for creating widgets (log views, notification menus, settings) that work with the same `MessageHandlerTemplate` instance.
-- **MessageSystemTemplate** – ties the handler and UI builder together for a fixed set of message traits and exposes them through `MessageSystemInterface`.
+### Requirements
 
+- A C++17-capable compiler (tested with GCC)
+- Qt 5.15 or newer (Qt 6 is supported by most modules, but specific widgets may still rely on Qt 5 APIs).
+- CMake or qmake, depending on how you prefer to integrate the modules.
 
-## Odin’s Ring
+### Integration options
 
-Draupnir — Odin’s magical ring, which every ninth night would create eight new rings of equal power and value.
+1. **Qt projects** – include the desired `.pri` file from `modules/` in your `.pro` file.
+2. **CMake projects** – add the `include/` directory to your include path and link against Qt modules required by the classes you
+   use.
+
+## Additional resources
+
+- [LGPL v3.0 license](https://choosealicense.com/licenses/lgpl-3.0/)
+- [Qt documentation](https://doc.qt.io/) – background for Qt concepts used throughout the library.
 
 ## License
-[GNU Lesser General Public License v3.0](https://choosealicense.com/licenses/lgpl-3.0/)
 
-
+This project is licensed under the [GNU Lesser General Public License v3.0](https://choosealicense.com/licenses/lgpl-3.0/).

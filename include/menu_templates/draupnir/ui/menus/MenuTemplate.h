@@ -33,14 +33,17 @@
 
 namespace Draupnir::Menus {
 
-/*! @class MenuTemplate draupnir/ui/MenuTemplate.h
+/*! @class MenuTemplate draupnir/ui/menus/MenuTemplate.h
+ *  @ingroup MenuTemplates
  *  @brief Strongly-typed, compile-time generic menu class for Qt applications.
+ *  @tparam Entries... Variadic parameter pack of menu entry traits/classes, each describing a QMenu/QAction type.
+ *
  *  @details MenuTemplate is a variadic-template class designed to automate and unify creation, translation, and access of complex
  *           menu structures in Qt. It aggregates menu entries (QMenu, QAction, or descendants) defined by Entry traits, manages
  *           their lifecycle, and provides strongly-typed API for convenient compile-time and runtime access. Typically used in
  *           conjunction with MenuEntriesContainer and menu trait system.
  *
- * @tparam Entries... Variadic parameter pack of menu entry traits/classes, each describing a QMenu/QAction type. */
+ * @todo Add constexpr variable versions of static constexpr methods. */
 
 template<class... Entries>
 class MenuTemplate final : public QMenu
@@ -71,6 +74,8 @@ public:
      *  @return Number of entries (always equals staticCount()). */
     constexpr int count() const { return staticCount(); }
 
+    /*! @brief Method to check if this MenuTemplate instance contains the specified Entry.
+     *  @tparam Entry - entry trait to be checked. */
     template<class Entry>
     static constexpr bool contains() { return MenuEntriesContainer<Entries...>::template contains<Entry>(); }
 
@@ -106,8 +111,7 @@ public:
     }
 
 protected:
-    template<class Implementation, class Menu>
-    friend class MenuHandlerTemplate;
+    friend class MenuTemplateTest;
 
     MenuEntriesContainer<Entries...> m_container;
 

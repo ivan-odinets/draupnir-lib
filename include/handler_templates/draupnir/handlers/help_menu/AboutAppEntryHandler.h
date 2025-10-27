@@ -25,7 +25,7 @@
 #ifndef ABOUTAPPENTRYHANDLER_H
 #define ABOUTAPPENTRYHANDLER_H
 
-#include "../AbstractHandlers.h"
+#include "draupnir/handlers/templates/ActionHandler.h"
 
 #include <QMessageBox>
 
@@ -34,10 +34,15 @@
 namespace Draupnir::Handlers
 {
 
+template<class HelpContext,class MenuEntry>
+class GenericMenuEntryHandler;
+
 /*! @class GenericHelpMenuEntryHandler<HelpContext, Draupnir::MenusAboutAppMenuTrait>
  *  @headerfile draupnir/handlers/help_menu/AboutAppEntryHandler.h
- *
+ *  @ingroup HandlerTemplates
  *  @brief Specialization of the menu entry handler for the "About Application" menu entry.
+ *  @tparam HelpContext A class providing static information for the help/about menu (must define static QString aboutAppText()).
+ *
  *  @details This template specialization handles the "About App" action in a help menu. It inherits the QAction connection
  *           logic from ActionHandler, and provides a concrete slot (`onTriggered()`) that displays an about dialog with
  *           information taken from the given HelpContext.
@@ -46,13 +51,11 @@ namespace Draupnir::Handlers
  *           containing a rich-text description of the application.
  *
  *           The handler sets the dialog’s parent to the active window, applies the current application icon, and expands
- *           the dialog for better readability.
- * @tparam HelpContext A class providing static information for the help/about menu (must define static QString aboutAppText()).
- * @see ActionHandler */
+ *           the dialog for better readability. */
 
 template<class HelpContext>
 class GenericMenuEntryHandler<HelpContext,Draupnir::Menus::AboutAppMenuTrait> :
-        public ActionHandler<GenericMenuEntryHandler<HelpContext,Draupnir::Menus::AboutAppMenuTrait>,Draupnir::Menus::AboutAppMenuTrait>
+        public ActionHandler<GenericMenuEntryHandler<HelpContext,Draupnir::Menus::AboutAppMenuTrait>>
 {
 private:
     /*! @struct has_aboutAppText
@@ -79,7 +82,8 @@ public:
     };
 
     /*! @brief Slot called when the "About" menu entry is triggered. Shows a QMessageBox with application info. The message text
-     *         is taken from HelpContext::aboutAppText(). The dialog uses rich text formatting and adapts its size for readability. */
+     *         is taken from HelpContext::aboutAppText(). The dialog uses rich text formatting and adapts its size for readability.
+     * @todo Make the About App dialog window non-blocking and show only one window per trigger. */
     void onTriggered() {
         QMessageBox msgBox;
         msgBox.setWindowTitle(    QObject::tr("About %1").arg(qApp->applicationName()));

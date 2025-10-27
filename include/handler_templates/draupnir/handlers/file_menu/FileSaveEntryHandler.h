@@ -25,13 +25,16 @@
 #ifndef FILESAVEENTRYHANDLER_H
 #define FILESAVEENTRYHANDLER_H
 
-#include "draupnir/handlers/AbstractHandlers.h"
+#include "draupnir/handlers/templates/ActionHandler.h"
 
 #include "draupnir/traits/entries/FileMenuEntries.h"
 #include "draupnir/utils/FileManagerValidator.h"
 
 namespace Draupnir::Handlers
 {
+
+template<class Context, class Entry>
+class GenericMenuEntryHandler;
 
 /*! @class GenericMenuEntryHandler<FileContext,Draupnir::Menus::FileSaveEntry>
  *  @headerfile draupnir/handlers/file_menu/FileSaveEntryHandler.h
@@ -55,11 +58,11 @@ namespace Draupnir::Handlers
  *   - `onSaveFileAs()`: Initiates the "Save As" flow.
  *   - FileManager must implement `saveCurrentFile()` and `currentFileHasName()`.
  *
- * @see ActionHandler, FileManagerValidator */
+ * @todo Write a test for this class. */
 
 template<class FileContext>
 class GenericMenuEntryHandler<FileContext,Draupnir::Menus::FileSaveEntry> :
-        public ActionHandler<GenericMenuEntryHandler<FileContext,Draupnir::Menus::FileSaveEntry>,Draupnir::Menus::FileSaveEntry>
+        public ActionHandler<GenericMenuEntryHandler<FileContext,Draupnir::Menus::FileSaveEntry>>
 {
 public:
     /*! @brief Constructs the handler, statically asserting FileManager interface compliance.

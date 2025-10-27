@@ -32,6 +32,7 @@ namespace Draupnir::Messages
 {
 
 /*! @struct MessageTypeSettingsTrait draupnir/traits/settings/MessageTypeSettingsTrait.h
+ *  @ingroup MessageSystem
  *  @brief This template allows creation of setting traits for each message type. */
 
 template<class MsgType>
@@ -40,7 +41,8 @@ struct MessageTypeSettingsTrait
     using Entry = void;
     using Value = Notification::Type;
 
-    /*! @brief Return the persistent key as a QString. */
+    /*! @brief Return the persistent key as a QString.
+     * @note This method prepends notifications/ prefix to the value returned by the MsgType::settingsKey variable. */
     static QString key() { return QString{"notifications/"} + QString{MsgType::settingsKey}; }
 
     /*! @brief Return the compile-time default value. */
@@ -52,6 +54,25 @@ struct MessageTypeSettingsTrait
 namespace Draupnir::Settings
 {
 
+/*! @class SettingTraitSerializer<Backend, Draupnir::Messages::MessageTypeSettingsTrait<MsgTrait>>
+ *  @ingroup MessageSystem
+ *  @brief Specialized serializer for message-type setting traits.
+ *  @tparam Backend   The settings backend type (e.g. QSettings, AppSettings).
+ *  @tparam MsgTrait  The message-trait type (e.g. DebugMessageTrait, InfoMessageTrait).
+ *
+ *  @details This specialization of `SettingTraitSerializer` defines how settings of message notifications represented by
+ *           `Draupnir::Messages::MessageTypeSettingsTrait<MsgTrait>` are read from and written to a specific backend (such
+ *           as QSettings or AppSettings).
+ *
+ *           The serializer performs conversion between the backend-stored string representation and the strongly-typed
+ *           `Draupnir::Messages::Notification::Type` enum used in the message system.
+ *
+ *           ### Behavior
+ *           - get() — retrieves a value from the backend using the trait key. If the key does not exist, returns
+ *             `SettingTrait::defaultValue()`.
+ *           - If the stored string cannot be parsed to a valid message type, also returns the default value.
+ *           - set() — writes the message type to the backend as-is. */
+
 template<class Backend, class MsgTrait>
 class SettingTraitSerializer<Backend,Draupnir::Messages::MessageTypeSettingsTrait<MsgTrait> >
 {
@@ -59,19 +80,28 @@ public:
     using SettingTrait = Draupnir::Messages::MessageTypeSettingsTrait<MsgTrait>;
     using Value = typename SettingTrait::Value;
 
+    /*! @brief Retrieves a message-type value from the backend.
+     *  @param settings Pointer to the settings backend.
+     *  @return Parsed `Draupnir::Messages::Notification::Type` value.
+     *  @details If the key is not present in the backend, the default value is returned. If the stored string cannot be
+     *           converted to a valid message type, the default value is returned instead. */
     inline static Draupnir::Messages::Notification::Type get(Backend* settings) {
         if (!settings->contains(SettingTrait::key())) {
             return SettingTrait::defaultValue();
         }
 
-        const Draupnir::Messages::Notification::Type value = Draupnir::Messages::Notification::fromConfigString(settings->value(SettingTrait::key()).toString());
+        const Draupnir::Messages::Notification::Type value =
+                Draupnir::Messages::Notification::fromConfigString(settings->value(SettingTrait::key()).toString());
         return (value != Draupnir::Messages::Notification::UnknownType) ?
                     value :
                     SettingTrait::defaultValue();
     }
 
+    /*! @brief Persists a message-type value into the backend.
+     *  @param backend Pointer to the settings backend.
+     *  @param value `Draupnir::Messages::Notification::Type` value to store. */
     inline static void set(Backend* backend, const Value& value) {
-        backend->setValue(SettingTrait::key(),value);
+        backend->setValue(SettingTrait::key(),Draupnir::Messages::Notification::toConfigString(value));
     }
 };
 

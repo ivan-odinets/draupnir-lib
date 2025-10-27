@@ -1,0 +1,12 @@
+<RCC>
+    <qresource prefix="/"/>
+    <qresource prefix="/draupnir">
+        <file>icons/16x16/draupnir-icon-no-code.png</file>
+        <file>icons/24x24/draupnir-icon-no-code.png</file>
+        <file>icons/32x32/draupnir-icon-no-code.png</file>
+        <file>icons/64x64/draupnir-icon-no-code.png</file>
+        <file>icons/128x128/draupnir-icon-no-code.png</file>
+        <file>icons/256x256/draupnir-icon-no-code.png</file>
+        <file>icons/512x512/draupnir-icon-no-code.png</file>
+    </qresource>
+</RCC>

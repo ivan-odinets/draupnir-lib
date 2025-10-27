@@ -34,7 +34,9 @@ namespace Draupnir::Handlers
 {
 
 /*! @class FileManagerValidator draupnir/utils/FileManagerValidator.h
+ *  @ingroup HandlerTemplates
  *  @brief SFINAE-based trait collection for checking file manager interface compliance.
+ *
  *  @details Provides a set of compile-time traits (via SFINAE and std::void_t) to verify that a candidate file manager class
  *           implements all required methods for integration with the file menu system. This allows template code to enforce
  *           interface contracts, producing clear compile-time errors when methods are missing or have the wrong signature.
@@ -43,7 +45,9 @@ namespace Draupnir::Handlers
  *           - Each trait checks for the *presence* and *signature* of the required method.
  *           - Traits are grouped by logical functionality: file management, status reporting, UI helpers.
  *
- * @note This class is intended to be used only at compile time; it contains no data or runtime logic. */
+ * @note This class is intended to be used only at compile time; it contains no data or runtime logic.
+ *
+ * @todo Maybe it make sense to convert this class to a namespace? */
 
 class FileManagerValidator
 {

@@ -24,6 +24,7 @@
 
 #include "draupnir/ui/menus/RecentFilesMenu.h"
 
+#include <QDebug>
 #include <QEvent>
 
 namespace Draupnir::Menus {
@@ -86,11 +87,13 @@ void RecentFilesMenu::loadRecentFiles(QList<QFileInfo>&& fileInfoList)
 
 void RecentFilesMenu::reset()
 {
-    for (auto action : w_recentFilesActions->actions()) {
+    const QList<QAction*> actions = w_recentFilesActions->actions();
+    for (auto action : actions) {
         removeAction(action);
+        w_recentFilesActions->removeAction(action);
         action->deleteLater();
     }
-    w_recentFilesActions->actions().clear();
+
     m_recentFiles.clear();
 }
 

@@ -1,6 +1,10 @@
 !contains(DEFINES, DRAUPNIR_MESSAGE_SYSTEM_ENABLED) {
     DEFINES += DRAUPNIR_MESSAGE_SYSTEM_ENABLED
 
+    !contains(CONFIG, c++20) { CONFIG += c++20 }
+    !contains(QT, gui) { QT += gui }
+    !contains(QT, widgets) { QT += widgets }
+
     include(Containers.pri)
     include(DraupnirVersion.pri)
     include(SettingsRegistry.pri)
@@ -30,11 +34,10 @@
         $$PWD/../include/message_system/draupnir/MessageSystemInterface.h \
         $$PWD/../include/message_system/draupnir/MessageSystemTemplate.h \
         $$PWD/../include/message_system/draupnir/core/Message.h \
-        $$PWD/../include/message_system/draupnir/core/MessageHandler.h \
+        $$PWD/../include/message_system/draupnir/core/MessageHandlerInterface.h \
         $$PWD/../include/message_system/draupnir/core/MessageHandlerTemplate.h \
-        $$PWD/../include/message_system/draupnir/core/MessageTemplate.h \
         $$PWD/../include/message_system/draupnir/core/MessageType.h \
-        $$PWD/../include/message_system/draupnir/core/MessageUiBuilder.h \
+    $$PWD/../include/message_system/draupnir/core/MessageUiBuilderInterface.h \
         $$PWD/../include/message_system/draupnir/core/MessageUiBuilderTemplate.h \
         $$PWD/../include/message_system/draupnir/core/Notification.h \
         $$PWD/../include/message_system/draupnir/models/MessageListModel.h \
@@ -52,4 +55,10 @@
         $$PWD/../include/message_system/draupnir/ui/windows/MessageDisplayDialog.h \
         $$PWD/../include/message_system/draupnir/ui/windows/MessageViewConfigDialog.h \
         $$PWD/../include/message_system/draupnir/utils/MessageTraitsHelper.h
+
+    DISTFILES += \
+        $$PWD/../docs/pages/MessageSystem.dox
 }
+
+HEADERS += \
+    $$PWD/../include/message_system/draupnir/ui/windows/MessageViewConfigDialogTemplate.h

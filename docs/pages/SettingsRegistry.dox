@@ -1,0 +1,99 @@
+/*! @defgroup SettingsRegistry
+ *  @brief This module contains a compile-time, type-safe system for defining, managing, and persisting application settings.
+ *
+ *  @details Classes within this module are located in the namespace Draupnir::Settings.
+ *           ### Overview
+ *           The SettingsRegistry is a component of the draupnir-lib that provides a flexible and strongly-typed mechanism
+ *           for defining and managing persistent application settings. It offers:
+ *           - Compile-time registration of all settings via traits and bundles;
+ *           - Type-safe getters and setters for accessing individual settings;
+ *           - Automatic persistence of values via backend serializers;
+ *           - Convenient construction of scoped views (bundles) over subsets of settings;
+ *           - Extensibility for custom storage backends.
+ *
+ *           The design focuses on compile-time validation and runtime efficiency:
+ *           - Each setting is described by a simple *SettingTrait* structure that defines its type, persistent key,
+ *             and default value.
+ *           - All traits and bundles are aggregated in a single SettingsRegistryTemplate, which flattens and stores
+ *             them in a tuple.
+ *           - Bundles (SettingsBundleTemplate) provide lightweight, non-owning access to a subset of registry-managed
+ *             settings.
+ *
+ *           ### Dependencies & Requirements
+ *           This module is using @ref Utils module from the draupnir-lib, which is included automatically if not yet
+ *           included. In addition `DraupnirVersion.pri` file is included to enable define DRAUPNIR_LIB_VERSION with
+ *           current version of the draupnir-lib.
+ *
+ *           Option c++20 is added to the CONFIG if not enabled yet.
+ *
+ *           ### Usage
+ *           In your *.pro file add the following:
+ *           @code{.pri}
+ *           # This includes SettingsRegistry module from the draupnir-lib.
+ *           # Utils module is added within the SettingsRegistry.pri
+ *           include(draupnir-lib/modules/SettingsRegistry.pri)
+ *           @endcode
+ *           It is safe to include the SettingsRegistry.pri file more than one time to *.pro.
+ *
+ *           Select the backend to be used by the SettingsRegistry. This is chosen at compile-time via macros:
+ *           - `DRAUPNIR_SETTINGS_USE_QSETTINGS` — use Qt’s native QSettings. QSettings can be configured in standart
+ *              Qt-way by using static methods available within the QCoreApplication: QCoreApplication::setOrganizationName,
+ *              QCoreApplication::setOrganizationDomain and QCoreApplication::setApplicationName. After this initialize
+ *              QSettings within the SettingsRegistryTemplate by calling SettingsRegistryTemplate::loadSettings
+ *           - `DRAUPNIR_SETTINGS_USE_APPSETTINGS` — use AppSettings (a wrapper around QSettings with extra features).
+ *              Configuration is the same as for QSettings. Main difference that when using AppSettings instead of the
+ *              QSettings - SettingsRegistryTemplate::setPreserveConfig and SettingsRegistryTemplate::preserveConfig methods
+ *              are available. These methods allow keeping the comfig file on disk without changes made by writing to the
+ *              registry.
+ *           - `DRAUPNIR_SETTINGS_USE_CUSTOM` — use user-defined backend. Implement the interface specified by the
+ *              Draupnir::Settings::SettingsBackendInterface class and provide object with this interface to the
+ *              SettingsRegistryTemplate by using SettingsRegistryTemplate::setBackend method. Note that SettingsRegistryTemplate
+ *              **WILL NOT** take ownership on the provided object, so deletion of this thing - is on end developer.
+ *
+ *           @code{.cpp}
+ *           #define DRAUPNIR_SETTINGS_USE_QSETTINGS
+ *           #include "draupnir/SettingsRegistryTemplate.h"
+ *
+ *           // Define individual setting traits
+ *           struct CacheDirectorySetting {
+ *               using Value = QString;
+ *               static QString key() { return "cache/some_cache_directory"; }
+ *               static QString defaultValue() { return "/var/cache"; }
+ *           };
+ *
+ *           // Instantiate a registry
+ *           using AppSettingsRegistry = Draupnir::Settings::SettingsRegistryTemplate<
+ *               CacheDirectorySetting,
+ *               WindowSizeSetting,
+ *               MinimizeToTraySetting
+ *           >;
+ *
+ *           int main(int argc, char* argv[]) {
+ *               // While using AppSettings / QSettings backend - we need to confifgure QCoreApplication as well
+ *               // as QSettings / AppSettings used within SettingsRegistry will use data from QCoreApplication
+ *               QCoreApplication::setApplicationName("My App");
+ *               QCoreApplication::setOrganizationName("My Organization");
+ *
+ *               AppSettingsRegistry registry;
+ *               registry.loadSettings();
+ *
+ *               // Access and modify settings
+ *               auto lastDir = registry.get<CacheDirectorySetting>();
+ *               registry.set<WindowSizeSetting>(QSize{800, 600});
+ *
+ *               // Work with bundles
+ *               auto bundle = registry.getSettingBundleForTraits<
+ *                   CacheDirectorySetting
+ *               >();
+ *
+ *               qDebug() << bundle.get<CacheDirectorySetting>();
+ *               @endcode
+ *
+ * @todo Restructure the sources within include and src dirs.
+ * @todo Add to the documentation list of the available entitities.
+ * @todo Add to the documentation how to override the default setting values. And make a test covering this feature.
+ * @todo Make *.pri file smarter. If required QT things are not enabled - show reasonable error. */
+
+/*! @namespace Draupnir::Settings
+ *  @ingroup SettingsRegistry
+ *  @brief Namespace containing classes from the ProxyHelper module. */

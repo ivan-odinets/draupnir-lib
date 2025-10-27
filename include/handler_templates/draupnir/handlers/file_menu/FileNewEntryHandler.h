@@ -25,7 +25,7 @@
 #ifndef FILENEWENTRYHANDLER_H
 #define FILENEWENTRYHANDLER_H
 
-#include "draupnir/handlers/AbstractHandlers.h"
+#include "draupnir/handlers/templates/ActionHandler.h"
 
 #include <QDebug>
 #include <QMessageBox>
@@ -36,9 +36,15 @@
 namespace Draupnir::Handlers
 {
 
+template<class FileContext,class MenuEntry>
+class GenericMenuEntryHandler;
+
 /*! @class GenericMenuEntryHandler<FileContext,Draupnir::Menus::FileNewEntry>
  *  @headerfile draupnir/handlers/file_menu/FileNewEntryHandler.h
+ *  @ingroup HandlerTemplates
  *  @brief Specialization for handling the "File → New" menu action.
+ *  @tparam FileContext The context class providing access to the FileManager and UI helpers (such as askUser).
+ *
  *  @details This handler implements the logic for creating a new file based on the capabilities of the associated FileManager.
  *           It respects both single-file and multi-file workflows by querying FileManager::canHaveMultipleFilesOpened() at
  *           compile time.
@@ -52,18 +58,17 @@ namespace Draupnir::Handlers
  *             - If the opened file has unsaved changes: prompts user to save, discard, or cancel, and acts accordingly.
  *           - All user interactions are handled via FileContext::askUser.
  *
- *  @tparam FileContext The context class providing access to the FileManager and UI helpers (such as askUser).
  * @note FileManager must provide the following API:
  *       - static constexpr bool canHaveMultipleFilesOpened();
  *       - void newFile();
  *       - bool hasNothingOpened();
  *       - bool isCurrentFileSaved();
  *
- * @see ActionHandler, FileManagerValidator, FileEntriesHandlersContext */
+ * @todo Write a test for this class. */
 
 template<class FileContext>
 class GenericMenuEntryHandler<FileContext,Draupnir::Menus::FileNewEntry> :
-        public ActionHandler<GenericMenuEntryHandler<FileContext,Draupnir::Menus::FileNewEntry>,Draupnir::Menus::FileNewEntry>
+        public ActionHandler<GenericMenuEntryHandler<FileContext,Draupnir::Menus::FileNewEntry>>
 {
 public:
     /*! @brief Constructs the handler.

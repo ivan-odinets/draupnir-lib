@@ -34,14 +34,18 @@ namespace Draupnir::Messages
 {
 
 /*! @file DefaultMessageTraits.h draupnir/traits/messages/DefaultMessageTraits.h
+ *  @ingroup MessageSystem
  *  @brief Contains default message trait definitions used by the logging and messaging subsystem.
+ *
  *  @details This file defines a set of default traits used to classify and style messages in the system. Each trait encapsulates
  *           compile-time metadata such as type, settings keys, and icon rendering, and is used to instantiate strongly-typed
  *           Message objects.
- * @todo Standartize SettingsKey prefixes. */
+ * @todo Split this file into several files. */
 
 /*! @class DebugMessageTrait draupnir/traits/messages/DefaultMessageTraits.h
+ *  @ingroup MessageSystem
  *  @brief Defines metadata for debug-level messages.
+ *
  *  @details This trait is intended for internal diagnostic messages. */
 
 class DebugMessageTrait
@@ -50,7 +54,9 @@ public:
     /*! @brief Unique bit-flag identifier for this trait. */
     static constexpr MessageType type{MessageType::Debug};
 
-    /*! @brief Key used for accessing settings related to this message type. */
+    /*! @brief Key used for accessing settings related to this message type.
+     * @note Within Draupnir::Messages::MessageTypeSettingsTrait template to this string a notifications/ prefix will
+     *       be prepended. Actual storage key: notifications/debug. */
     static constexpr const char* settingsKey = "debug";
 
     /*! @brief Default notification level associated with this message type. */
@@ -64,7 +70,9 @@ public:
 };
 
 /*! @class InfoMessageTrait draupnir/traits/messages/DefaultMessageTraits.h
+ *  @ingroup MessageSystem
  *  @brief Defines metadata for informational messages.
+ *
  *  @details Messages using this trait are intended to inform the user of successful or neutral operations. */
 
 class InfoMessageTrait
@@ -73,7 +81,9 @@ public:
     /*! @brief Unique bit-flag identifier for this trait. */
     static constexpr MessageType type{MessageType::Info};
 
-    /*! @brief Key used for accessing settings related to this message type. */
+    /*! @brief Key used for accessing settings related to this message type.
+     * @note Within Draupnir::Messages::MessageTypeSettingsTrait template to this string a notifications/ prefix will
+     *       be prepended. Actual storage key: notifications/info. */
     static constexpr const char* settingsKey = "info";
 
     /*! @brief Default notification level associated with this message type. */
@@ -87,7 +97,9 @@ public:
 };
 
 /*! @class WarningMessageTrait draupnir/traits/messages/DefaultMessageTraits.h
+ *  @ingroup MessageSystem
  *  @brief Defines metadata for warning messages.
+ *
  *  @details Messages with this trait indicate that something might be wrong, but is not necessarily an error. */
 
 class WarningMessageTrait
@@ -96,7 +108,9 @@ public:
     /*! @brief Unique bit-flag identifier for this trait. */
     static constexpr MessageType type{MessageType::Warning};
 
-    /*! @brief Key used for accessing settings related to this message type. */
+    /*! @brief Key used for accessing settings related to this message type.
+     * @note Within Draupnir::Messages::MessageTypeSettingsTrait template to this string a notifications/ prefix will
+     *       be prepended. Actual storage key: notifications/warning. */
     static constexpr const char* settingsKey = "warning";
 
     /*! @brief Default notification level associated with this message type. */
@@ -110,7 +124,9 @@ public:
 };
 
 /*! @class ErrorMessageTrait draupnir/traits/messages/DefaultMessageTraits.h
+ *  @ingroup MessageSystem
  *  @brief Defines metadata for error messages.
+ *
  *  @details This trait represents critical issues or failures in the application. */
 
 class ErrorMessageTrait
@@ -119,7 +135,9 @@ public:
     /*! @brief Unique bit-flag identifier for this trait. */
     static constexpr MessageType type{MessageType::Error};
 
-    /*! @brief Key used for accessing settings related to this message type. */
+    /*! @brief Key used for accessing settings related to this message type.
+     * @note Within Draupnir::Messages::MessageTypeSettingsTrait template to this string a notifications/ prefix will
+     *       be prepended. Actual storage key: notifications/error. */
     static constexpr const char* settingsKey = "error";
 
     /*! @brief Default notification level associated with this message type. */

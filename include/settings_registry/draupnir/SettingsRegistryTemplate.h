@@ -37,13 +37,16 @@
 #include "utils/SettingTraitValidator.h"
 #include "utils/SettingTraitSerializer.h"
 
-#include "draupnir/utils/common.h"
+#include "draupnir/utils/type_presense.h"
 
 namespace Draupnir::Settings
 {
 
 /*! @class SettingsRegistryTemplate draupnir/SettingsRegistryTemplate.h
+ *  @ingroup SettingsRegistry
  *  @brief Strongly-typed, compile-time registry of application settings.
+ *  @tparam Traits A variadic list of SettingTraits or SettingsBundle<Ts...>.
+ *
  *  @details This class aggregates all specified setting traits (either individually or via SettingsBundle), flattens them
  *           into a single tuple of SettingTemplate<Trait>, and provides:
  *           - Bulk loading of all settings from a backend (either QSettings or AppSettings). Backend selection is done by
@@ -57,11 +60,26 @@ namespace Draupnir::Settings
  *           - `static QString key()` — persistent key in the backend;
  *           - `static Value defaultValue()` — default value when no stored value exists.
  *
- *  @tparam Traits A variadic list of SettingTraits or SettingsBundle<Ts...>.
+ *           SettingsRegistryTemplate can work with the following backends:
+ *           - QSettings. To enable QSettings - define somewhere in the *.pro file DRAUPNIR_SETTINGS_USE_QSETTINGS macro.
+ *             Next QSettings can be configured in standart Qt-way by using static methods available within the QCoreApplication:
+ *             QCoreApplication::setOrganizationName, QCoreApplication::setOrganizationDomain and QCoreApplication::setApplicationName.
+ *             After this initialize QSettings within the SettingsRegistryTemplate by calling SettingsRegistryTemplate::loadSettings
+ *           - AppSettings. To enable AppSettings - define DRAUPNIR_SETTINGS_USE_APPSETTINGS macro. Other configuration is the same as
+ *             for QSettings, because AppSettings is a wrapper around QSettings. Main difference that when using AppSettings instead
+ *             of the QSettings - SettingsRegistryTemplate::setPreserveConfig and SettingsRegistryTemplate::preserveConfig methods
+ *             are available. These methods allow keeping the comfig file on disk without changes made by writing to the registry.
+ *             - configuration of it is the same as for QSettings backend.
+ *           - Custom. To use your own custom backend - define DRAUPNIR_SETTINGS_USE_CUSTOM macro. Implement the interface specified
+ *             by the Draupnir::Settings::SettingsBackendInterface class and provide object with this interface to the
+ *             SettingsRegistryTemplate by using SettingsRegistryTemplate::setBackend method. Note that SettingsRegistryTemplate
+ *             **WILL NOT** take ownership on the provided object, so deletion of this thing - is on end developer.
  *
  * @note Internally, all traits and bundles are flattened to a single tuple of SettingTemplate<T>.
- * @see SettingTraitForEntry, SettingTemplate, SettingsSerializer, SettingsBundle
+ * @note One of the marcos: DRAUPNIR_SETTINGS_USE_QSETTINGS, DRAUPNIR_SETTINGS_USE_APPSETTINGS, DRAUPNIR_SETTINGS_USE_CUSTOM
+ *       **MUST** be defined. Or compilation will fail.
  *
+ * @todo Add constexpr variable versions of static constexpr methods.
  * @todo Introduce settings UI categories.
  * @todo Create templated settings widget / dialog.
  * @todo Add interface for partial updating of the settings. E.g. when the setting has sth like QStringList type - not replace
@@ -87,13 +105,13 @@ public:
     /*! @brief Checks at compile time whether a specific SettingTrait is part of this registry.
      *  @tparam SettingTrait A trait to check for. */
     template<class SettingTrait>
-    static constexpr bool contains() { return is_type_in_tuple_v<SettingTemplate<SettingTrait>,AbstractSettingsTuple>; }
+    static constexpr bool contains() { return draupnir::utils::is_type_in_tuple_v<SettingTemplate<SettingTrait>,AbstractSettingsTuple>; }
 
     /*! @brief Checks at compile time whether a specific SettingTrait is part of this registry.
      *  @tparam SettingTrait A trait to check for. */
     template<class SettingTrait>
     [[deprecated]] static constexpr bool containsSetting() {
-        return is_type_in_tuple_v<SettingTemplate<SettingTrait>,AbstractSettingsTuple>;
+        return draupnir::utils::is_type_in_tuple_v<SettingTemplate<SettingTrait>,AbstractSettingsTuple>;
     }
 
     /*! @brief Returns whether the SettingsRegistry is empty.
@@ -105,6 +123,8 @@ public:
         p_backend{nullptr}
     {}
 
+    /*! @brief Destructor. When using QSettings or AppSettings as backend - will delete internally created backend. When
+     *         using DRAUPNIR_SETTINGS_USE_CUSTOM - will do nothing. */
     ~SettingsRegistryTemplate() {
 #if !defined(DRAUPNIR_SETTINGS_USE_CUSTOM)
         delete p_backend;
@@ -112,7 +132,9 @@ public:
     }
 
 #if defined(DRAUPNIR_SETTINGS_USE_QSETTINGS) || defined(DRAUPNIR_SETTINGS_USE_APPSETTINGS)
-    /*! @brief Creates Backend object and loads all registered settings from the Backend. */
+    /*! @brief Creates Backend object and loads all registered settings from the Backend.
+     * @note This method is available only when either DRAUPNIR_SETTINGS_USE_QSETTINGS or DRAUPNIR_SETTINGS_USE_APPSETTINGS
+     *       macro is defined. */
     void loadSettings() {
         QSettings::setDefaultFormat(QSettings::NativeFormat);
         p_backend = new Backend;
@@ -122,6 +144,12 @@ public:
 #endif
 
 #if defined(DRAUPNIR_SETTINGS_USE_CUSTOM)
+    /*! @brief This method allows specifying custom backend which will be used by this SettingsRegistry and all bundles
+     *         created by it.
+     * @note This method is only available when DRAUPNIR_SETTINGS_USE_CUSTOM macro was specified.
+     * @note SettingsRegistryTemplate will not take ownership on the provided backend. Lifetime of this object should be
+     *       more than of SettingsRegistryTemplate. If the specified backend will be deleted - interacting with methods
+     *       of SettingsRegistryTemplate which was using most probably will cause UB. */
     void setBackend(SettingsBackendInterface* backend) {
         Q_ASSERT_X(backend, "SettingsRegistryTemplate::setBackend",
                    "Specified backend pointer is nullptr.");

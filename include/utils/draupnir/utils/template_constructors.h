@@ -26,23 +26,35 @@
 #define TEMPLATE_CONSTRUCTORS_H
 
 /*! @file draupnir/utils/template_constructors.h
+ *  @ingroup Utils
  *  @brief Utilities for generic, zero-initializing and dynamic construction of objects and tuples.
+ *
  *  @details Provides templates to recursively zero-initialize pairs, tuples, pointers, and arithmetic types, as well as
- *           utilities to dynamically allocate tuples of objects by type. */
+ *           utilities to dynamically allocate tuples of objects by type.
+ *
+ * @todo Document usage of entities within this file. Add some examples to the documentation.
+ * @todo Add some test to check if this works as expected. */
 
 #include <type_traits>
 
-#include "common.h"
+#include "template_detectors.h"
 
-/*! @brief Returns a "zero" value for the given type T.
- *  @details This is done in the following way:
- *           - If T == pointer -> nullptr;
- *           - If T == arithmetic type -> 0;
- *           - If T == std::pair - initizlizes both fields of pair with make_zero_value<T>();
- *           - If T == std::tuple - initializes each element of the tuple with make_zero_value<T>();
- *         - If T == other object -> default constructor is called WITHOUT any arguments;
- *  @tparam T - the type to initialize.
- *  @return A "zero" value for the specified type.*/
+namespace draupnir::utils
+{
+
+/*! @brief Constructs a "zero" value for the given type `T`.
+ *  @ingroup Utils
+ *  @tparam T The type to initialize.
+ *  @return A "zero" value of type `T`, constructed as described above.
+ *
+ *  @details This utility returns a compile‑time–generated default/zero value appropriate for type `T`. The returned value
+ *           depends on the type category:
+ *           - **Pointer types** -> `nullptr`;
+ *           - **Arithmetic types** -> `T{0}`;
+ *           - **std::pair** -> both `.first` and `.second` initialized with `make_zero_value<>()`;
+ *           - **std::tuple** -> all elements initialized recursively with `make_zero_value<>()`;
+ *           - **Other types** → default‑constructed via `T{}`; */
+
 template<class T>
 constexpr T make_zero_value() {
     if constexpr (std::is_pointer_v<T>) {
@@ -50,28 +62,34 @@ constexpr T make_zero_value() {
     } else if constexpr (std::is_arithmetic_v<T>) {
         return T{0};
     } else if constexpr (is_pair_v<T>) {
-        return []<typename First,typename Second>(std::__type_identity<std::pair<First,Second>>){
-            return std::pair{make_zero_value<First>(),make_zero_value<Second>()};
+        return []<typename First, typename Second>(std::__type_identity<std::pair<First, Second>>) {
+            return std::pair{make_zero_value<First>(), make_zero_value<Second>()};
         }(std::__type_identity<T>{});
     } else if constexpr (is_tuple_v<T>) {
-        return []<typename... Ts>(std::__type_identity<std::tuple<Ts...>>){
-                    return std::tuple{make_zero_value<Ts>()...};
-                }(std::__type_identity<T>{});
+        return []<typename... Ts>(std::__type_identity<std::tuple<Ts...>>) {
+            return std::tuple{make_zero_value<Ts>()...};
+        }(std::__type_identity<T>{});
     } else {
         return T{};
     }
 }
 
-/*! @brief Creates and returns a tuple of dynamically allocated objects.
- *  @details For a tuple type of pointers (e.g., std::tuple<int*, double*>), this function uses `new` to allocate
- *           a default-initialized object for each tuple element and returns a tuple of pointers to these objects.
- *  @tparam Tuple - a std::tuple type where each element is a pointer type.
- *  @return Tuple of pointers, each pointing to a newly allocated, default-constructed object of the corresponding type.
- * @note The caller is responsible for deleting the allocated objects to avoid memory leaks.
- * @throws static_assert if Tuple is not a std::tuple type. */
+/*! @brief Creates a tuple of dynamically allocated default-initialized objects.
+ *  @ingroup Utils
+ *  @tparam Tuple A tuple type whose elements are all pointer types.
+ *  @return A tuple of dynamically allocated, default-initialized objects.
+ *
+ *  @details Given a tuple type where each element is a pointer type (e.g., `std::tuple<int*, double*>`), this function
+ *           returns a tuple of pointers, where each pointer points to a new default-constructed instance of the pointed-to
+ *           type.
+ *
+ *           Memory is allocated using `new`, and it is the caller's responsibility to delete the objects afterwards.
+ *
+ * @warning static_assert if `Tuple` is not a `std::tuple`. */
+
 template<class Tuple>
 static Tuple create_tuple_new() {
-    static_assert(is_tuple_v<Tuple>,"Provided type is not a tuple!");
+    static_assert(is_tuple_v<Tuple>, "Provided type is not a tuple!");
 
     static constexpr auto tupleSize = std::tuple_size_v<Tuple>;
     return [&]<std::size_t... I>(std::index_sequence<I...>) {
@@ -81,6 +99,8 @@ static Tuple create_tuple_new() {
             >()...
         };
     }(std::make_index_sequence<tupleSize>{});
-};
+}
+
+}; // draupnir::utils
 
 #endif // TEMPLATE_CONSTRUCTORS_H

@@ -1,0 +1,4 @@
+/*! @namespace draupnir
+ *  @brief Contains classes and namespaces from the draupnir lib which can be used without Qt.
+ * @note Snake-case is used for naming of classes and namespaces within this namespace to ephasise that these classes are
+ *       pure-C++ and can be used without Qt. */

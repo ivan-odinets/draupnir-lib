@@ -39,6 +39,8 @@ namespace Draupnir::Messages
 
 /*! @class MessageSystemTemplate draupnir/MessageSystemTemplate.h
  *  @brief Template-based implementation of the MessageSystemInterface that defines message types at compile-time.
+ *  @tparam MessageTraits Variadic list of message traits defining custom message types.
+ *
  *  @details This class provides compile-time registration of message types via variadic template parameters. It serves as the
  *           central access point for both message processing (MessageHandler and MessageHandlerTemplate) and message GUI
  *           (MessageUiBuilder and MessageUiBuilderTemplate).
@@ -63,11 +65,7 @@ namespace Draupnir::Messages
  *           - static constexpr Notification::Type defaultNotification - value from enum Notification::Type
  *           - static QString displayName() - method returning the QString with user-friendly representation of this message type.
  *           - static const QIcon& icon() - method returning const reference to the QIcon to be used while displaying messages of this
- *             type to user. Can return reference to the empty icon.
- *
- *  @tparam MessageTraits Variadic list of message traits defining custom message types.
- *
- * @see MessageSystemInterface, MessageHandler, MessageHandlerTemplate, MessageUiBuilder, MessageUiBuilderTemplate, MessageType */
+ *             type to user. Can return reference to the empty icon. */
 
 template<class... MessageTraits>
 class MessageSystemTemplate final : public Draupnir::Messages::MessageSystemInterface

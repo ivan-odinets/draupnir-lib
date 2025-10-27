@@ -33,14 +33,19 @@ namespace Draupnir::Settings
 {
 
 /*! @class SettingTraitValidator draupnir-lib/incldue/settings/utils/SettingTraitValidator.h
+ *  @ingroup SettingsRegistry
  *  @brief Compile-time validator for SettingTrait requirements.
+ *
  *  @details This helper performs SFINAE-based checks to ensure a given SettingTrait provides expected interface:
  *           - Defines nested type Value;
  *           - Provides static QString key();
  *           - Provides static Value defaultValue().
  *
  * @note The detection utilities (has_valueType, has_key, has_defaultValue) are implemented via std::void_t. They evaluate
- *       to std::true_type if and only if the corresponding expression is well-formed. */
+ *       to std::true_type if and only if the corresponding expression is well-formed.
+ *
+ * @todo Maybe this class can be transformed into namespace? Or even to pure utility functions.
+ * @todo Add test for this functionality. */
 
 class SettingTraitValidator
 {

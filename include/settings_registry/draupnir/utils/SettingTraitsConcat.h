@@ -34,12 +34,14 @@ namespace Draupnir::Settings
 {
 
 /*! @struct Flatten draupnir/utils/SettingTraitsConcat.h
+ *  @ingroup SettingsRegistry
  *  @brief Primary template for Flatten, converts a single SettingTrait into a tuple of SettingTemplate.
+ *  @tparam Trait A single setting trait.
+ *
  *  @details This struct is used to normalize all setting-related types into a uniform representation (i.e. a tuple of
  *           SettingTemplate<Trait>), whether they are standalone or bundled.
  *
- *  @tparam Trait A single setting trait.
- * @see SettingsBundleTemplate, SettingTemplate */
+ * @todo Add test checking this feature. */
 
 template<class Trait>
 struct Flatten {
@@ -47,12 +49,12 @@ struct Flatten {
 };
 
 /*! @struct Flatten draupnir/utils/SettingTraitsConcat.h
+ *  @ingroup SettingsRegistry
  *  @brief Specialization of Flatten for SettingsBundleTemplate.
- *  @details If the provided type is a SettingsBundleTemplate containing multiple SettingTraits, this specialization will
- *           expand them into a tuple of SettingTemplate<T> for each trait.
- *
  *  @tparam SettingTraits Variadic list of setting traits contained in the bundle.
- * @see SettingsBundleTemplate, SettingTemplate */
+ *
+ *  @details If the provided type is a SettingsBundleTemplate containing multiple SettingTraits, this specialization will
+ *           expand them into a tuple of SettingTemplate<T> for each trait. */
 
 template<class... SettingTraits>
 struct Flatten<SettingsBundleTemplate<SettingTraits...>> {
@@ -60,17 +62,19 @@ struct Flatten<SettingsBundleTemplate<SettingTraits...>> {
 };
 
 /*! @struct TupleConcat draupnir/utils/SettingTraitsConcat.h
+ *  @ingroup SettingsRegistry
  *  @brief TupleConcat helper: base case.
- *  @details Concatenates multiple std::tuple types into a single std::tuple. This is the base case (no tuples) resulting
- *           in an empty tuple.
  *
- * @see TupleConcat<std::tuple<Ts...>> */
+ *  @details Concatenates multiple std::tuple types into a single std::tuple. This is the base case (no tuples) resulting
+ *           in an empty tuple. */
 
 template<class... Tuples>
 struct TupleConcat;
 
 /*! @struct TupleConcat draupnir/utils/SettingTraitsConcat.h
+ *  @ingroup SettingsRegistry
  *  @brief TupleConcat specialization: empty case.
+ *
  *  @details This specialization handles the zero-argument case by returning an empty std::tuple. */
 
 template<>
@@ -79,10 +83,11 @@ struct TupleConcat<> {
 };
 
 /*! @struct TupleConcat draupnir/utils/SettingTraitsConcat.h
+ *  @ingroup SettingsRegistry
  *  @brief TupleConcat specialization: single tuple case.
- *  @details This specialization returns the same tuple if only one is passed.
+ *  @tparam Ts The types inside the std::tuple.
  *
- *  @tparam Ts The types inside the std::tuple. */
+ *  @details This specialization returns the same tuple if only one is passed. */
 
 template<class... Ts>
 struct TupleConcat<std::tuple<Ts...>> {
@@ -90,12 +95,13 @@ struct TupleConcat<std::tuple<Ts...>> {
 };
 
 /*! @struct TupleConcat draupnir/utils/SettingTraitsConcat.h
+ *  @ingroup SettingsRegistry
  *  @brief TupleConcat specialization: recursive case.
- *  @details Recursively flattens and concatenates multiple std::tuple types into a single one.
- *
  *  @tparam Ts Elements from the first tuple.
  *  @tparam Us Elements from the second tuple.
- *  @tparam Rest Remaining tuple types to concatenate. */
+ *  @tparam Rest Remaining tuple types to concatenate.
+ *
+ *  @details Recursively flattens and concatenates multiple std::tuple types into a single one. */
 
 template<class... Ts, class... Us, class... Rest>
 struct TupleConcat<std::tuple<Ts...>, std::tuple<Us...>, Rest...> {

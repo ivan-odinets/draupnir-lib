@@ -26,14 +26,24 @@
 #define ADVANCE_ENUM_H
 
 /*! @file draupnir/utils/advance_enum.h
+ *  @ingroup Utils
  *  @brief Compile-time helpers for implementing cyclic operator++ on enums.
- *  @details Provides templates for generic enum value iteration and wrap-around logic, intended for use in operator++ overloads. */
+ *
+ *  @details Provides templates for generic enum value iteration and wrap-around logic, intended for use in operator++ overloads.
+ *
+ * @todo Document usage of entities within this file. Add some examples to the documentation.
+ * @todo Add some test to check if this works as expected. */
+
+namespace draupnir::utils
+{
 
 /*! @brief Advances enum value v to the next in the parameter pack; wraps around to first at the end (base case).
+ *  @ingroup Utils
  *  @tparam E - enum type.
  *  @tparam first - first enum value (wrap-around target).
  *  @tparam head - current enum value being compared.
  *  @param v - vnum value to advance. */
+
 template<typename E, E first, E head>
 void advance_enum(E& v) {
     if (v == head)
@@ -41,13 +51,16 @@ void advance_enum(E& v) {
 }
 
 /*! @brief Advances enum value v to the next in the parameter pack; recursive case.
- *  @details Compares v to head; if equal, assigns next; otherwise, recurses.
+ *  @ingroup Utils
  *  @tparam E - enum type.
  *  @tparam first - first enum value (wrap-around target).
  *  @tparam head - current enum value being compared.
  *  @tparam next - next enum value in the sequence.
  *  @tparam tail - remaining enum values.
- *  @param v - enum value to advance. */
+ *  @param v - enum value to advance.
+ *
+ *  @details Compares v to head; if equal, assigns next; otherwise, recurses. */
+
 template<typename E, E first, E head, E next, E... tail>
 void advance_enum(E& v) {
     if(v == head)
@@ -57,10 +70,13 @@ void advance_enum(E& v) {
 }
 
 /*! @brief Utility for iterating over enum values with cyclic increment.
- *  @details Provides a static method advance() to cycle an enum variable v through a specified list of enum values.
+ *  @ingroup Utils
  *  @tparam E - enum type.
  *  @tparam first - first enum value (used for wrap-around).
- *  @tparam values... - remaining enum values in the desired iteration order. */
+ *  @tparam values... - remaining enum values in the desired iteration order.
+ *
+ *  @details Provides a static method advance() to cycle an enum variable v through a specified list of enum values. */
+
 template<typename E, E first, E... values>
 struct enum_values
 {
@@ -68,5 +84,7 @@ struct enum_values
         advance_enum<E, first, first, values...>(v);
     }
 };
+
+}; // draupnir::utils
 
 #endif // ADVANCE_ENUM_H

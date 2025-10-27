@@ -25,8 +25,7 @@
 #ifndef SETTINGSMENUENTRIESHANDLER_H
 #define SETTINGSMENUENTRIESHANDLER_H
 
-#include "../GenericMenuEntriesHandler.h"
-#include "draupnir/traits/entries/HelperEntries.h"
+#include "draupnir/handlers/templates/GenericMenuEntriesHandler.h"
 #include "draupnir/utils/SettingTraitForEntry.h"
 
 namespace Draupnir::Handlers
@@ -34,7 +33,9 @@ namespace Draupnir::Handlers
 
 /*! @class SettingsMenuEntriesHandler
  *  @headerfile draupnir/handlers/settings_menu/SettingsMenuEntriesHandler.h
- *  @brief This class is for handling Settings menu entries */
+ *  @brief This class is for handling Settings menu entries.
+ *
+ * @todo Write detailed documentation for this class. */
 
 template<class Registry, class... Entries>
 class SettingsMenuEntriesHandler :

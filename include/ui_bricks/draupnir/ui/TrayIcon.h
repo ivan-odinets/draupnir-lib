@@ -34,7 +34,9 @@ namespace Draupnir::Ui
 {
 
 /*! @class TrayIcon draupnir/ui/TrayIcon.h
+ *  @ingroup UiBricks
  *  @brief Provides system tray integration for the application, including message popups and localized tray menu.
+ *
  *  @details This class extends `QSystemTrayIcon` to offer:
  *           - Support for showing localized messages or message summaries.
  *           - A customizable context menu (`QMenu`) with support for dynamic translation.
@@ -49,9 +51,9 @@ class TrayIcon : public QSystemTrayIcon
     Q_OBJECT
 public:
     /*! @brief Constructs the tray icon and initializes the context menu.
+     *  @param parent Optional QObject parent.
      *  @details If the system tray is not available, a warning is logged. The tray icon will reuse the main application's
-     *           window icon (`qApp->windowIcon()`).
-     *  @param parent Optional QObject parent. */
+     *           window icon (`qApp->windowIcon()`). */
     explicit TrayIcon(QObject *parent = nullptr);
 
     /*! @brief Destructor. Cleans up the tray menu and its actions. */
@@ -60,13 +62,13 @@ public:
     using QSystemTrayIcon::showMessage;
 
     /*! @brief Adds an action to the tray context menu.
-     *  @details The action will appear as an item in the context menu shown when right-clicking the tray icon.
-     *  @param action Pointer to a QAction to be added. */
+     *  @param action Pointer to a QAction to be added.
+     *  @details The action will appear as an item in the context menu shown when right-clicking the tray icon. */
     void addAction(QAction* action);
 
     /*! @brief Adds a submenu to the tray context menu.
-     *  @details The menu will appear as a nested item inside the tray icon’s context menu.
-     *  @param menu Pointer to a QMenu to be added. */
+     *  @param menu Pointer to a QMenu to be added.
+     *  @details The menu will appear as a nested item inside the tray icon’s context menu. */
     void addMenu(QMenu* menu);
 
 private:

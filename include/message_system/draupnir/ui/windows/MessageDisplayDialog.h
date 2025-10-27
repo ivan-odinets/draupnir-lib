@@ -37,17 +37,17 @@ namespace Draupnir::Messages
 class Message;
 
 /*! @class MessageDisplayDialog draupnir/ui/windows/MessageDisplayDialog.h
+ *  @ingroup MessageSystem
  *  @brief Dialog window used for displaying one or more messages in a scrollable view.
- *  @details This class provides a scrollable dialog for showing multiple `Message` instances using `MessageDisplayWidget`. It is
- *           designed for dynamic addition of messages.
+ *
+ *  @details This class provides a scrollable dialog for showing multiple @ref Message instances using @ref MessageDisplayWidget.
+ *           It is designed for dynamic addition of messages.
  *
  *           Internally, the dialog consists of:
  *           - A `QScrollArea` containing a vertical layout with `MessageDisplayWidget` instances
  *           - A `QDialogButtonBox` with an "OK" button
  *
- *          Each message is wrapped in its own widget and inserted above a final stretch item for correct alignment.
- *
- * @see Message, MessageDisplayWidget */
+ *          Each message is wrapped in its own widget and inserted above a final stretch item for correct alignment. */
 
 class MessageDisplayDialog final : public QDialog
 {
@@ -61,21 +61,21 @@ public:
     ~MessageDisplayDialog() final;
 
     /*! @brief Adds a single Message to the dialog.
-     *  @details A new `MessageDisplayWidget` is created for the message and inserted into the scrollable layout.
-     *  @param message Pointer to a valid Message object. Must not be nullptr. */
+     *  @param message Pointer to a valid Message object. Must not be nullptr.
+     *
+     *  @details A new `MessageDisplayWidget` is created for the message and inserted into the scrollable layout. */
     void addMessage(Message* message);
 
     /*! @brief Adds multiple messages to the dialog.
-     *  @details Convenience method for batch-adding messages.
-     *  @param messages List of `Message*` objects. Null entries are not allowed. */
+     *  @param messages List of `Message*` objects. Null entries are not allowed.
+     *
+     *  @details Convenience method for batch-adding messages. */
     void addMessageList(const QList<Message*>& message);
 
     /*! @brief Removes all displayed messages from the dialog.
+     *
      *  @details Deletes all child widgets from the scrollable layout. */
     void clear();
-
-//protected:
-//    void changeEvent(QEvent* event) final;
 
 private:
     void _retranslateUi();

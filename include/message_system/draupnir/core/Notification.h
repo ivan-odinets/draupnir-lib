@@ -30,10 +30,15 @@
 #include "draupnir/utils/advance_enum.h"
 
 /*! @class Notification draupnir/core/Notification.h
+ *  @ingroup MessageSystem
  *  @brief Encapsulates all supported notification types in the application.
+ *
  *  @details Provides a typed enum for describing where and how notifications should appear (e.g., tray, message box), and
  *           utility functions for conversion between enum values and string representations for config and UI.
- * @note When having QT_NO_SYSTEMTRAYICON macro enabled - tray notification type will be not available. */
+ * @note When having QT_NO_SYSTEMTRAYICON macro enabled - tray notification type will be not available.
+ *
+ * @todo Add support of the telegram notifications (using QtTelegramBot)
+ * @todo Add a way so that user can add its own notification types, or at least disable ones being already present. */
 
 namespace Draupnir::Messages
 {
@@ -72,27 +77,27 @@ public:
     };
 
     /*! @brief Converts a config QString into a Notification::Type.
-     *  @details Recognizes specific string keys for each notification type. Returns UnknownType if conversion is not possible.
      *  @param QString - string representation of notification type (e.g., "none", "msg", "tray").
-     *  @return Notification::Type corresponding to the given string, or UnknownType if invalid. */
+     *  @return Notification::Type corresponding to the given string, or UnknownType if invalid.
+     *  @details Recognizes specific string keys for each notification type. Returns UnknownType if conversion is not possible. */
     static Type fromConfigString(const QString& string);
 
     /*! @brief Converts a Notification::Type to its config QString representation.
-     *  @details Provides a string suitable for serialization/config file usage.
      *  @param type - Notification::Type value to convert.
      *  @return QString key for this type (e.g., "none", "msg", "tray").
+     *  @details Provides a string suitable for serialization/config file usage.
      * @note If Notification::Type::UnknownType is passed here - Q_ASSERT will happen. */
     static QString toConfigString(Type type);
 
     /*! @brief Returns a user-friendly string for display in UI based on Notification::Type.
-     *  @details Provides a localized, human-readable name for each supported notification type.
      *  @param type - Notification::Type value to display.
      *  @return Translated QString for UI display.
+     *  @details Provides a localized, human-readable name for each supported notification type.
      * @note If Notification::Type::UnknownType is passed here - Q_ASSERT will happen. */
     static QString toDisplayString(Type type);
 
 private:
-    typedef enum_values<Notification::Type,
+    typedef draupnir::utils::enum_values<Notification::Type,
             Notification::None,
             Notification::MessageBoxType,
 #ifndef QT_NO_SYSTEMTRAYICON
@@ -105,9 +110,9 @@ private:
 };
 
 /*! @brief Increments a Notification::Type value (postfix operator++).
- *  @details Advances the enum to the next value in Type_values; wraps around at the end.
  *  @param type - reference to Notification::Type to increment.
- *  @return Reference to the updated Notification::Type. */
+ *  @return Reference to the updated Notification::Type.
+ *  @details Advances the enum to the next value in Type_values; wraps around at the end. */
 inline Notification::Type& operator++(Notification::Type& type,int)
 {
     Notification::Type_values::advance(type);

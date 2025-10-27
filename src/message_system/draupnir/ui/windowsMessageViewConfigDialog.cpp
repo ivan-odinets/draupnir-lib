@@ -25,6 +25,7 @@
 #include "draupnir/ui/windows/MessageViewConfigDialog.h"
 
 #include <QDialogButtonBox>
+#include <QCheckBox>
 #include <QVBoxLayout>
 
 namespace Draupnir::Messages

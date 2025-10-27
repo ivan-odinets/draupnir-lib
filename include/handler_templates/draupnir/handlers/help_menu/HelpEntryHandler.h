@@ -25,7 +25,7 @@
 #ifndef HELPENTRYHANDLER_H
 #define HELPENTRYHANDLER_H
 
-#include "draupnir/handlers/AbstractHandlers.h"
+#include "draupnir/handlers/templates/ActionHandler.h"
 
 #include <QDialog>
 #include <QPointer>
@@ -38,24 +38,28 @@ namespace Draupnir::Handlers
 template<class Context,class HandledEntry>
 class GenericMenuEntryHandler;
 
+
+
 /*! @class GenericHelpMenuEntryHandler<HelpContext, Draupnir::Menus::HelpEntryMenuTrait>
  *  @headerfile draupnir/handlers/help_menu/HelpEntryHandler.h
+ *  @ingroup HandlerTemplates
  *  @brief Specialization of the menu entry handler for HelpEntryMenuTrait
- *  @details This specialization handles help menu entry that should open a custom dialog. It inherits QAction connection logic
- *           from ActionHandler, and defines the slot (`onTriggered()`) which creates and shows the dialog using a static factory
- *           method on the provided HelpContext.
+ *  @tparam HelpContext A class providing a static method `createHelpDialog()` that returns either a QDialog* or a type
+ *          derived from QDialog.
  *
- *           Only one instance of the dialog is created and reused on subsequent triggers. The handler uses QPointer to safely
- *           manage the dialog lifetime, even if the dialog is closed externally.
- * @tparam HelpContext A class providing a static method `createHelpDialog()` that returns either a QDialog* or a type derived from QDialog.
+ *  @details This specialization handles help menu entry that should open a custom dialog. It inherits QAction connection
+ *           logic from ActionHandler, and defines the slot (`onTriggered()`) which creates and shows the dialog using a
+ *           static factory method on the provided HelpContext.
  *
- * @see ActionHandler
+ *           Only one instance of the dialog is created and reused on subsequent triggers. The handler uses QPointer to
+ *           safely manage the dialog lifetime, even if the dialog is closed externally.
+ *
  * @todo Make GenericMenuEntryHandler for the Help Menu: CRTP with user override. static_assert if sth is wrong.
  * @todo Is this should be contextless? */
 
 template<class HelpContext>
 class GenericMenuEntryHandler<HelpContext,Draupnir::Menus::HelpEntryMenuTrait> :
-        public ActionHandler<GenericMenuEntryHandler<HelpContext,Draupnir::Menus::HelpEntryMenuTrait>,Draupnir::Menus::HelpEntryMenuTrait>
+        public ActionHandler<GenericMenuEntryHandler<HelpContext,Draupnir::Menus::HelpEntryMenuTrait>>
 {
 private:
     /*! @struct has_createHelpDialog
@@ -74,7 +78,7 @@ private:
 
 public:
     /*! @brief Constructs the handler. Performs a static_assert to ensure that HelpContext provides a valid createHelpDialog method.
-     * @param Unused Reference to the help context (required for interface compatibility). */
+     *  @param Unused Reference to the help context (required for interface compatibility). */
     GenericMenuEntryHandler(HelpContext&) :
         p_helpDialog{nullptr}
     {

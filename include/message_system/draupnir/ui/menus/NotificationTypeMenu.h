@@ -33,6 +33,7 @@ namespace Draupnir::Messages
 {
 
 /*! @class NotificationTypeMenu draupnir/ui/menus/NotificationTypeMenu.h
+ *  @ingroup MessageSystem
  *  @brief Menu widget for selecting a Notification::Type at runtime.
  *  @details Provides a QMenu-based UI for choosing the desired notification type (e.g., message box, tray). Automatically
  *           adapts available options depending on build settings (QT_NO_SYSTEMTRAYICON). Emits a signal when the user
@@ -45,7 +46,10 @@ namespace Draupnir::Messages
  *
  * @note Only supports notification types included in Notification::displayedValues.
  * @note When building without systray support (macro QT_NO_SYSTEMTRAYICON defined) menu entry responsible for
- *       Notification::Type::Systemtray will be absent. */
+ *       Notification::Type::Systemtray will be absent.
+ *
+ * @todo Maybe it should be possible to make this QMenu-based thing templated - which will accept only enum class as
+ *       parameter? */
 
 class NotificationTypeMenu final : public QMenu
 {
@@ -64,8 +68,8 @@ public:
     ~NotificationTypeMenu() final = default;
 
     /*! @brief Sets the selected Notification::Type in the menu.
-     *  @details Marks the specified type as checked. Does not emit signals.
-     *  @param newStatus - Notification::Type to mark as selected. */
+     *  @param newStatus - Notification::Type to mark as selected.
+     *  @details Marks the specified type as checked. Does not emit signals. */
     void setNotificationType(Notification::Type newStatus);
 
     /*! @brief Returns the currently selected Notification::Type.

@@ -74,50 +74,42 @@ MessageType MessageListView::messageTypeFilter() const
 
 bool MessageListView::isBriefDisplayed() const
 {
-    Q_ASSERT_X(p_messageList,"MessageListView::isBriefDisplayed", "Model must be set before.");
-    return p_messageList->isBriefDisplayed();
+    return p_messageListProxyModel->isBriefDisplayed();
 }
 
 void MessageListView::setBriefDisplayed(bool state)
 {
-    Q_ASSERT_X(p_messageList,"MessageListView::setBriefDisplayed", "Model must be set before.");
-    p_messageList->setBriefDisplayed(state);
+    p_messageListProxyModel->setBriefDisplayed(state);
 }
 
 bool MessageListView::isWhatDisplayed() const
 {
-    Q_ASSERT_X(p_messageList,"MessageListView::isWhatDisplayed", "Model must be set before.");
-    return p_messageList->isWhatDisplayed();
+    return p_messageListProxyModel->isWhatDisplayed();
 }
 
 void MessageListView::setWhatDisplayed(bool state)
 {
-    Q_ASSERT_X(p_messageList,"MessageListView::setWhatDisplayed", "Model must be set before.");
-    p_messageList->setWhatDisplayed(state);
+    p_messageListProxyModel->setWhatDisplayed(state);
 }
 
 bool MessageListView::isDateTimeDisplayed() const
 {
-    Q_ASSERT_X(p_messageList,"MessageListView::isDateTimeDisplayed", "Model must be set before.");
-    return p_messageList->isDateTimeDisplayed();
+    return p_messageListProxyModel->isDateTimeDisplayed();
 }
 
 void MessageListView::setDateTimeDisplayed(bool state)
 {
-    Q_ASSERT_X(p_messageList,"MessageListView::setDateTimeDisplayed", "Model must be set before.");
-    p_messageList->setDateTimeDisplayed(state);
+    p_messageListProxyModel->setDateTimeDisplayed(state);
 }
 
 bool MessageListView::isIconDisplayed() const
 {
-    Q_ASSERT_X(p_messageList,"MessageListView::isIconDisplayed", "Model must be set before.");
-    return p_messageList->isIconDisplayed();
+    return p_messageListProxyModel->isIconDisplayed();
 }
 
 void MessageListView::setIconDisplayed(bool state)
 {
-    Q_ASSERT_X(p_messageList,"MessageListView::setIconDisplayed", "Model must be set before.");
-    p_messageList->setIconDisplayed(state);
+    p_messageListProxyModel->setIconDisplayed(state);
 }
 
 void MessageListView::setMessageTypeDisplayed(MessageType type, bool displayed)

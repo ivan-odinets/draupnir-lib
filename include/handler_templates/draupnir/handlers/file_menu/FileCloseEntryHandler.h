@@ -25,7 +25,7 @@
 #ifndef FILECLOSEENTRYHANDLER_H
 #define FILECLOSEENTRYHANDLER_H
 
-#include "draupnir/handlers/AbstractHandlers.h"
+#include "draupnir/handlers/templates/ActionHandler.h"
 
 #include <QApplication>
 #include <QMessageBox>
@@ -35,6 +35,9 @@
 
 namespace Draupnir::Handlers
 {
+
+template<class Context, class Entry>
+class GenericMenuEntryHandler;
 
 /*! @class GenericMenuEntryHandler<FileContext,Draupnir::Menus::FileCloseEntry>
  *  @headerfile draupnir/handlers/file_menu/FileCloseEntryHandler.h
@@ -56,11 +59,11 @@ namespace Draupnir::Handlers
  *          - int askUser(const QString& title, const QString& message, QMessageBox::StandardButtons buttons);
  *          - void onSaveFile(); (Check FileEntriesHandlersContext)
  *
- * @see ActionHandler, FileEntriesHandlersContext */
+ * @todo Write a test for this class. */
 
 template<class FileContext>
 class GenericMenuEntryHandler<FileContext,Draupnir::Menus::FileCloseEntry> :
-    public ActionHandler<GenericMenuEntryHandler<FileContext,Draupnir::Menus::FileCloseEntry>,Draupnir::Menus::FileCloseEntry>
+    public ActionHandler<GenericMenuEntryHandler<FileContext,Draupnir::Menus::FileCloseEntry>>
 {
 public:
     /*! @brief Constructs the handler, enforcing interface compliance for FileManager. Static assertions ensure the FileManager

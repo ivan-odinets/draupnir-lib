@@ -31,18 +31,22 @@
 #include <QDebug>
 #include <QObject>
 
-#include "draupnir/utils/common.h"
+#include "draupnir/utils/type_presense.h"
 
 class QMenu;
 
 namespace Draupnir::Menus {
 
 /*! @class MenuEntriesContainer draupnir/core/MenuEntriesContainer.h
+ *  @ingroup MenuTemplates
  *  @brief Template-based container for GUI menu entries such as QMenu and QAction.
+ *  @tparam Entries Variadic template parameter pack describing traits/classes for menu entries.
+ *
  *  @details MenuEntriesContainer is a generic compile-time container that manages the creation, access, translation, and
  *           destruction of menu entry elements (QMenu/QAction or their descendants). It is designed to be used within
  *           MenuTemplate, MenuBarTemplate, or similar classes to provide DRY logic for nested menu structures.
- *  @tparam Entries Variadic template parameter pack describing traits/classes for menu entries. */
+ *
+ * @todo Add constexpr variable versions of static constexpr methods. */
 
 template<class... Entries>
 class MenuEntriesContainer
@@ -69,8 +73,10 @@ public:
      *  @return Number of elements as constexpr int (always equals staticCount()). */
     constexpr int count() const { return staticCount(); }
 
+    /*! @brief This is a method.
+     * @todo Write documentation. */
     template<class Entry>
-    static constexpr bool contains() { return is_one_of_v<Entry,Entries...>; }
+    static constexpr bool contains() { return draupnir::utils::is_one_of_v<Entry,Entries...>; }
 
     /*! @brief Returns a pointer to the element at the specified compile-time index.
      *  @tparam Index Index of the element to access (0-based).
@@ -89,6 +95,7 @@ public:
         return std::get<_getEntryIndex<0, Entry, Entries...>()>(m_elements);
     }
 
+    /*! @brief Allows connecting to the QAction-based Entry triggered signal. */
     template<class Entry, class... Args>
     QMetaObject::Connection on(Args... args) {
         auto entry = get<Entry>();
@@ -118,11 +125,10 @@ public:
     }
 
 private:
+    friend class MenuEntriesContainerTest;
     std::tuple<
         std::add_pointer_t<typename Entries::Type>...
     > m_elements;
-
-    // --- Implementation details below ---
 
     template<std::size_t Index, class First, class... Rest>
     inline void _initEntriesImpl() {

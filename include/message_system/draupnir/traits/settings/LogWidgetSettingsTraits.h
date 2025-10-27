@@ -25,24 +25,28 @@
 #ifndef LOGWIDGETSETTINGSTRAITS_H
 #define LOGWIDGETSETTINGSTRAITS_H
 
-#include "draupnir/traits/settings/StandartSettingTraitTemplates.h"
+#include "draupnir/traits/settings/templates/SizeSettingTraitTemplate.h"
+#include "draupnir/traits/settings/templates/SettingTraitTemplate.h"
 
 #include "draupnir/core/MessageType.h"
 
 /*! @file LogWidgetSettingsTraits.h
- *  @brief This file contains setting traits for LoGWidget to be passed to the SettingsRegistryTemplate  */
+ *  @ingroup MessageSystem
+ *  @brief This file contains setting traits for LogWidget to be passed to the SettingsRegistryTemplate.
+ *
+ * @todo Document entities within this file. */
 
 namespace Draupnir::Messages
 {
 
-inline constexpr const char logWidgetIconSize_settingsKey[] = "ui/messagesIconSize";
+inline constexpr const char logWidgetIconSize_settingsKey[] = "log_widget/message_icon_size";
 
 using MessageIconSizeSetting = Draupnir::Settings::SizeSettingTraitTemplate<
     logWidgetIconSize_settingsKey,
     64
 >;
 
-inline constexpr const char logWidgetMessagesShown_settingsKey[] = "ui/messagesShown";
+inline constexpr const char logWidgetMessagesShown_settingsKey[] = "log_widget/messages_shown";
 
 using MessagesShown = Draupnir::Settings::SettingTraitTemplate<
     uint64_t,

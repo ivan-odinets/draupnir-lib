@@ -25,16 +25,19 @@
 #ifndef FILERECENTENTRYHANDLER_H
 #define FILERECENTENTRYHANDLER_H
 
-#include "draupnir/handlers/AbstractHandlers.h"
+#include "draupnir/handlers/templates/ActionHandler.h"
 
 #include <QMessageBox>
 
 #include "draupnir/SettingsBundleTemplate.h"
 #include "draupnir/traits/entries/FileMenuEntries.h"
-#include "draupnir/traits/settings/RecentFilesListSetting.h"
+#include "draupnir/traits/settings/files/RecentFilesListSetting.h"
 #include "draupnir/utils/FileManagerValidator.h"
 
 namespace Draupnir::Handlers {
+
+template<class Context, class Entry>
+class GenericMenuEntryHandler;
 
 /*! @class GenericMenuEntryHandler<FileContext, Draupnir::Menus::RecentFileEntry>
  *  @headerfile draupnir/handlers/file_menu/FileRecentEntryHandler.h
@@ -64,11 +67,11 @@ namespace Draupnir::Handlers {
  *       - `isCurrentFileSaved()`
  *       - Static method `canHaveMultipleFilesOpened()`.
  *
- * @see CustomMenuHandler, RecentFilesMenu */
+ * @todo Write a test for this class. *//
 
 template<class FileContext>
 class GenericMenuEntryHandler<FileContext,Draupnir::Menus::RecentFileEntry> :
-        public CustomMenuHandler<GenericMenuEntryHandler<FileContext,Draupnir::Menus::RecentFileEntry>,Draupnir::Menus::RecentFileEntry>
+        public CustomMenuHandler<GenericMenuEntryHandler<FileContext,Draupnir::Menus::RecentFileEntry>>
 {
 public:
     using SettingsBundle = Settings::SettingsBundleTemplate<Settings::RecentFileListSetting>;

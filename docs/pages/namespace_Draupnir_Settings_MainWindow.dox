@@ -1,0 +1,2 @@
+/*! @namespace Draupnir::Settings::MainWindow
+ *  @brief Contains traits for default settings which are connected to the application main window. */

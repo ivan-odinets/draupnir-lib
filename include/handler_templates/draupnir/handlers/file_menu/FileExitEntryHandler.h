@@ -25,7 +25,7 @@
 #ifndef FILEEXITENTRYHANDLER_H
 #define FILEEXITENTRYHANDLER_H
 
-#include "draupnir/handlers/AbstractHandlers.h"
+#include "draupnir/handlers/templates/ActionHandler.h"
 
 #include <QApplication>
 
@@ -34,20 +34,22 @@
 namespace Draupnir::Handlers
 {
 
+template<class FileContext,class MenuEntry>
+class GenericMenuEntryHandler;
+
 /*! @class GenericMenuEntryHandler<FileContext, Draupnir::Menus::ExitApplicationEntry>
  *  @headerfile draupnir/handlers/file_menu/FileExitEntryHandler.h
+ *  @ingroup HandlerTemplates
  *  @brief Specialization of the menu entry handler for "Exit Application" actions.
- *  @details This template specialization handles the "Exit Application" action in a file menu or similar context. It inherits
- *           QAction connection logic from ActionHandler, and provides a concrete slot (`onTriggered()`) that, when called,
- *           simply terminates the application by invoking `qApp->quit()`.
- *
  *  @tparam FileContext A context class that provides access to file management and application state.
  *
- * @see ActionHandler */
+ *  @details This template specialization handles the "Exit Application" action in a file menu or similar context. It inherits
+ *           QAction connection logic from ActionHandler, and provides a concrete slot (`onTriggered()`) that, when called,
+ *           simply terminates the application by invoking `qApp->quit()`. */
 
 template<class FileContext>
 class GenericMenuEntryHandler<FileContext,Draupnir::Menus::ExitApplicationEntry> :
-        public ActionHandler<GenericMenuEntryHandler<FileContext,Draupnir::Menus::ExitApplicationEntry>,Draupnir::Menus::ExitApplicationEntry>
+        public ActionHandler<GenericMenuEntryHandler<FileContext,Draupnir::Menus::ExitApplicationEntry>>
 {
 public:
     /*! @brief Constructs the handler. Context is required by interface but not used directly.

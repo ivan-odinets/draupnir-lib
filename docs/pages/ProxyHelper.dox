@@ -1,0 +1,13 @@
+/*! @defgroup ProxyHelper
+ *  @brief This module contains some utils and UI elements to simplify usage of QNetworkProxy objects
+ *
+ *  @details Classes within this module are located in the namespace Draupnir::ProxyHelper.
+ *
+ * @todo Write documentation for this module.
+ * @todo Integrate QNetworkProxy into SettingsRegistryTemplate class and SettingsRegistry module.
+ * @todo Allow partial enabling of this module: if parent project has gui / widgets enabled - add widget includes. If not
+ *       - only core. If network is disabled in Qt - abort compilation. The same if core is not enabled. */
+
+/*! @namespace Draupnir::Proxy
+ *  @ingroup ProxyHelper
+ *  @brief Namespace containing classes from the ProxyHelper module. */

@@ -33,11 +33,13 @@ namespace Draupnir::Ui
 {
 
 /*! @typedef FixedCentralTabWidgetTemplate
+ *  @ingroup UiBricks
  *  @brief Preconfigured FixedTabWidgetTemplate using ActiveWidgetIndexSetting.
+ *  @tparam TabTraits List of tab trait types describing each tab.
+ *
  *  @details This is a convenience alias for FixedTabWidgetTemplate where the stored tab index is bound to
  *           Draupnir::Settings::ActiveWidgetIndexSetting. Useful for central tab areas where tab state
- *           persistence is desired without redefining the setting every time.
- *  @tparam TabTraits List of tab trait types describing each tab. */
+ *           persistence is desired without redefining the setting every time. */
 
 template<class... TabTraits>
 using FixedCentralTabWidgetTemplate = FixedTabWidgetTemplate<

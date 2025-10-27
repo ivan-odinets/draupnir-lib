@@ -26,13 +26,18 @@
 #define VIEWMANAGER_H
 
 #include "draupnir/SettingsBundleTemplate.h"
-#include "draupnir/traits/settings/MainWindowStartHiddenSetting.h"
+#include "draupnir/traits/settings/main_window/StartHiddenSetting.h"
 
 namespace Draupnir::Ui
 {
 
 /*! @class ViewManager draupnir/core/ViewManager.h
+ *  @ingroup UiBricks
  *  @brief Manages the main UI components such as MainWindow and TrayIcon.
+ *  @tparam MainWindowClass QWidget-derived class representing the main application window. Must be constructible without
+ *          arguments and accept a TrayIconClass* via setTrayIcon().
+ *  @tparam TrayIconClass QSystemTrayIcon-compatible class representing the tray icon UI.
+ *
  *  @details This templated class is responsible for creating, showing, and cleaning up the primary user interface components:
  *           the main window and tray icon. It supports both automatic instantiation via `createUi()` and manual injection via
  *           `setMainWindow()` / `setTrayIcon()`. It also handles UI-related settings, such as whether the main window starts
@@ -45,9 +50,7 @@ namespace Draupnir::Ui
  *           - TrayIconClass must provide:
  *              - void show();
  *
- *  @tparam MainWindowClass QWidget-derived class representing the main application window. Must be constructible without
- *          arguments and accept a TrayIconClass* via setTrayIcon().
- *  @tparam TrayIconClass QSystemTrayIcon-compatible class representing the tray icon UI. */
+ * @todo Add possibility to aggregate settings from MainWindowClass and TrayIconClass. */
 
 template<class MainWindowClass, class TrayIconClass>
 class ViewManager
@@ -78,7 +81,7 @@ class ViewManager
 
 public:
     using SettingsBundle = Draupnir::Settings::SettingsBundleTemplate<
-        Draupnir::Settings::StartHiddenSetting
+        Draupnir::Settings::MainWindow::StartHiddenSetting
     >;
 
     /*! @brief Constructs an empty ViewManager with null-initialized elements.
@@ -103,9 +106,9 @@ public:
 
     /*! @brief Loads UI-related settings from a settings registry.
      *  @param settings Pointer to a SettingsRegistry instance.
-     *  @details This must be called exactly once before calling showUi() method. Will assert if called more than once.
      *  @tparam SettingsRegistry - type of specific SettingsRegistry. The povided SettingsRegistryMust be capable to
-     *          populate SettingsBundle of the ViewManager object (should have StartHiddenSetting trait present. */
+     *          populate SettingsBundle of the ViewManager object (should have StartHiddenSetting trait present.
+     *  @details This must be called exactly once before calling showUi() method. Will assert if called more than once. */
     template<class SettingsRegistry>
     void loadSettings(SettingsRegistry* settings) {
         static_assert(SettingsBundle::canBeFullyPopulatedFrom<SettingsRegistry>(),
@@ -127,7 +130,7 @@ public:
         if (startHidden() == state)
             return;
 
-        m_settings.template set<Draupnir::Settings::StartHiddenSetting>(state);
+        m_settings.template set<Draupnir::Settings::MainWindow::StartHiddenSetting>(state);
     }
 
     /*! @brief Checks whether the main window is configured to start hidden.
@@ -137,7 +140,7 @@ public:
         Q_ASSERT_X(m_settings.isValid(),"ViewManager::startHidden",
                    "This method must be called after UiManager::loadSettings method.");
 
-        return m_settings.template get<Draupnir::Settings::StartHiddenSetting>();
+        return m_settings.template get<Draupnir::Settings::MainWindow::StartHiddenSetting>();
     }
 
     /*! @brief Creates instances of MainWindowClass and TrayIconClass, and connects them together.

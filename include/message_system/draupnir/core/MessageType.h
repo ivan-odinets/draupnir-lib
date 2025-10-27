@@ -27,8 +27,13 @@
 
 #include <cstdint>
 
-/*! @class MessageType.h draupnir/core/MessageType.h
+namespace Draupnir::Messages
+{
+
+/*! @class MessageType draupnir/core/MessageType.h
+ *  @ingroup MessageSystem
  *  @brief Defines the MessageType class used to represent and manipulate message type identifiers.
+ *
  *  @details MessageType is a lightweight wrapper over a 64-bit integer that provides type-safe, constexpr-friendly message
  *           identifiers. It's used to distinguish between various message categories such as Debug, Info, Warning, Error,
  *           and custom types.
@@ -36,10 +41,7 @@
  *           While adding custom message types the best would be to use MessageType::nextType method and start these types
  *           from DefaultMessageTypes::FirstCustomType enum key.
  *
- *  @note This class is designed to work efficiently in compile-time contexts. */
-
-namespace Draupnir::Messages
-{
+ * @note This class is designed to work efficiently in compile-time contexts. */
 
 class MessageType
 {

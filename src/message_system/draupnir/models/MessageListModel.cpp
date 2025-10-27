@@ -30,8 +30,7 @@ namespace Draupnir::Messages
 {
 
 MessageListModel::MessageListModel(QObject *parent) :
-    QAbstractItemModel{parent},
-    m_displayedContent{All}
+    QAbstractItemModel{parent}
 {}
 
 MessageListModel::~MessageListModel()
@@ -79,58 +78,6 @@ void MessageListModel::clear()
     endResetModel();
 }
 
-void MessageListModel::setBriefDisplayed(bool state)
-{
-    if (state == isBriefDisplayed())
-        return;
-
-    _setDisplayedContentBit(Brief,state);
-    emit dataChanged(
-        index(0,0),
-        index(m_data.size() - 1,0),
-        {Qt::DisplayRole}
-    );
-}
-
-void MessageListModel::setWhatDisplayed(bool state)
-{
-    if (state == isWhatDisplayed())
-        return;
-
-    _setDisplayedContentBit(What,state);
-    emit dataChanged(
-        index(0,0),
-        index(m_data.size() - 1,0),
-        {Qt::DisplayRole}
-    );
-}
-
-void MessageListModel::setDateTimeDisplayed(bool state)
-{
-    if (state == isDateTimeDisplayed())
-        return;
-
-    _setDisplayedContentBit(DateTime,state);
-    emit dataChanged(
-        index(0,0),
-        index(m_data.size() - 1,0),
-        {Qt::DisplayRole}
-    );
-}
-
-void MessageListModel::setIconDisplayed(bool state)
-{
-    if (state == isIconDisplayed())
-        return;
-
-    _setDisplayedContentBit(Icon,state);
-    emit dataChanged(
-        index(0,0),
-        index(m_data.size() - 1,0),
-        {Qt::DecorationRole}
-    );
-}
-
 QModelIndex MessageListModel::index(int row, int column, const QModelIndex &parent) const
 {
     if (!hasIndex(row, column, parent) || parent.isValid()) {
@@ -170,9 +117,9 @@ QVariant MessageListModel::data(const QModelIndex& index, int role) const
     switch (role) {
         case Qt::DisplayRole:{
             QString result;
-            if (isBriefDisplayed())     result += message->brief();
-            if (isWhatDisplayed())      result += (result.isEmpty() ? "" : "\n") + message->what();
-            if (isDateTimeDisplayed())  result += (result.isEmpty() ? "" : "\n") + message->dateTime().toString();
+            result += message->brief();
+            result += (result.isEmpty() ? "" : "\n") + message->what();
+            result += (result.isEmpty() ? "" : "\n") + message->dateTime().toString();
             return result;
         }
         case Qt::DecorationRole:{
@@ -184,14 +131,6 @@ QVariant MessageListModel::data(const QModelIndex& index, int role) const
     }
 
     return QVariant();
-}
-
-void MessageListModel::_setDisplayedContentBit(DisplayedContent content, bool state)
-{
-    if (state)
-        m_displayedContent |= content;
-    else
-        m_displayedContent &= ~content;
 }
 
 }; // namespace Draupnir::Messages

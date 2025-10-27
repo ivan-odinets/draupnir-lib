@@ -32,7 +32,11 @@ namespace Draupnir::Settings
 {
 
 /*! @class SettingTraitSerializer draupnir-lib/incldue/settings/utils/SettingTraitSerializer.h
+ *  @ingroup SettingsRegistry
  *  @brief Type-safe bridge for serializing and deserializing a specific SettingTrait using a backend.
+ *  @tparam Backend       Type of the backend used for persistence (e.g., AppSettings, QSettings).
+ *  @tparam SettingTrait  A trait that describes a setting, including its value type, key, and default value.
+ *
  *  @details This class defines the default serialization logic for settings represented by a specific `SettingTrait`. It
  *           delegates low-level reading/writing to `ValueSerializer`, and extracts metadata (key, type, default) from the
  *           trait.
@@ -52,12 +56,7 @@ namespace Draupnir::Settings
  *           For complex types or multi-key settings, specialize this template. A specialization must implement the same static
  *           interface:
  *           - `static Value get(Backend* settings);`
- *           - `static void set(Backend* settings, const Value& value);`
- *
- *  @tparam Backend       Type of the backend used for persistence (e.g., AppSettings, QSettings).
- *  @tparam SettingTrait  A trait that describes a setting, including its value type, key, and default value.
- *
- * @see ValueSerializer, SettingsRegistry, SettingTemplate, SettingTraitValidator */
+ *           - `static void set(Backend* settings, const Value& value);` */
 
 template<class Backend, class SettingTrait>
 class SettingTraitSerializer

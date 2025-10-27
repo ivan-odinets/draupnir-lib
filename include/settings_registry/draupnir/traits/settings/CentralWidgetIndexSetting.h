@@ -31,6 +31,7 @@ namespace Draupnir::Settings
 {
 
 /*! @struct CentralWidgetIndexSetting draupnir/traits/settings/CentralWidgetIndexSetting.h
+ *  @ingroup SettingsRegistry
  *  @brief Setting trait describing the index of currently active widget within the central widget of the main window
  *         (e.g. within QTabWidget or FixedCentralTabWidgetTemplate)
  *  @details This trait defines a setting that stores and retrieves the active widget index as int.
@@ -39,7 +40,11 @@ namespace Draupnir::Settings
  *           - static QString key() — returns the persistent key string ("central_widget/active_widget_index");
  *           - static int defaultValue() — returns the default index = 0.
  *
- * @see SettingsRegistryTemplate, SettingsBundleTemplate */
+ * @todo Finalize naming, file and directory (which will contain such traits) as this. Maybe split it to
+ *       seperate namespace?.
+ * @todo Allow changing of the defaultValue behaviour using preprocessor.
+ * @todo Test changing of the default value by using macro defines.
+ * @todo Update documentation to include this feature. */
 
 struct CentralWidgetIndexSetting
 {
@@ -49,8 +54,7 @@ struct CentralWidgetIndexSetting
     /*! @brief Return the persistent storage key ("central_widget/active_widget_index"). */
     static QString key() { return "central_widget/active_widget_index"; }
 
-    /*! @brief Return the default value - 0.
-     * @todo Allow to configure results of this method with some define. */
+    /*! @brief Return the default value - 0. */
     static int defaultValue() { return 0; }
 };
 

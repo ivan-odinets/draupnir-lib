@@ -46,7 +46,8 @@ class MessageListProxyModel;
  * @note A valid MessageListModel must be set before calling any of the display configuration methods, otherwise assertions will
  *       be triggered in debug builds or UB will happen in release.
  *
- * @see MessageListModel, MessageListProxyModel, MessageDisplayDialog */
+ * @todo Write test for this class.
+ * @todo Add support of selecting message parts to be displayed. */
 
 class MessageListView final : public QListView
 {

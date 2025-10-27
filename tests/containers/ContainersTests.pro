@@ -1,5 +1,5 @@
 TEMPLATE = subdirs
 
 SUBDIRS += \
-    fixed_map_test \
-    fixed_tuple_map_test
+    unit/fixed_map_test \
+    unit/fixed_tuple_map_test

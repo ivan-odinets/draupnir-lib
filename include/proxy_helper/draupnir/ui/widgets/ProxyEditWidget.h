@@ -38,16 +38,20 @@ namespace Draupnir::Proxy
 {
 
 /*! @class ProxyEditWidget draupnir/ui/widgets/ProxyEditWidget.h
+ *  @ingroup ProxyHelper
  *  @brief QWidget-based editor for QNetworkProxy objects.
+ *
  *  @details Provides a user interface for editing and viewing QNetworkProxy settings, such as proxy type, host, and port. Does
  *           not support authentication proxies.
- *
  *           Typical usage:
  *           - Call ProxyEditWidget::setProxy() to display an existing QNetworkProxy.
  *           - User edits fields in the widget.
  *           - Call ProxyEditWidget::proxy() to retrieve the updated proxy object.
+ *
  * @note This widget does not support proxies with authentication.
- * @note Supports translation via changeEvent/retranslateUi(). */
+ *
+ * @todo Extend configurable things to allow full configuration of the QNetworkProxy objects.
+ * @todo Maybe add some unit test for this widget? */
 
 class ProxyEditWidget final : public QWidget
 {
@@ -74,8 +78,8 @@ protected:
     void changeEvent(QEvent* event) final;
 
 private:
-    /*! @brief Sets translated text for all labels and repopulates the proxy type selector.
-     *  @details Called on construction and on language change. */
+    /*! @brief Sets translated text for all labels and repopulates the proxy type selector. Called on construction and
+     *         on language change. */
     void _retranslateUi();
 
     QLabel*        w_proxyTypeLabel;

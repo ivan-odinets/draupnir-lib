@@ -41,7 +41,11 @@ namespace Draupnir::Messages
 {
 
 /*! @class MessageViewConfigDialog draupnir/ui/windows/MessageViewConfigDialog.h
- *  @brief An dialog capable of displaying/editing settings of the MessageListView widget. */
+ *  @brief An dialog capable of displaying/editing settings of the MessageListView widget.
+ *
+ * @todo Write test for this class.
+ * @todo Write extended docs for this class.
+ * @todo Add support of selecting message parts to be displayed. */
 
 class MessageViewConfigDialog : public QDialog
 {
@@ -71,60 +75,6 @@ protected:
 private:
     QVBoxLayout* p_typeSelectorLayout;
     QDialogButtonBox* p_buttons;
-};
-
-}; // namespace Draupnir::Messages
-
-#include <QCheckBox>
-#include <QLabel>
-
-#include "draupnir/containers/fixed_map.h"
-
-namespace Draupnir::Messages
-{
-
-template<class... MessageTypes>
-class MessageViewConfigDialogTemplate : public MessageViewConfigDialog
-{
-public:
-    explicit MessageViewConfigDialogTemplate(QWidget* parent = nullptr) :
-        MessageViewConfigDialog{parent}
-    {
-        _setupUi<MessageTypes...>();
-    }
-
-    void displayTypeSelected(MessageType type, bool isSelected) {
-        m_widgetMap[type]->setChecked(isSelected);
-    }
-
-    void displayFilterConfig(MessageType config) {
-        m_widgetMap.for_each_pair([config](auto& pair){
-            pair.second->setChecked(pair.first & config);
-        });
-    }
-
-private:
-
-    static constexpr MessageType types[] = {MessageTypes::type...};
-
-    fixed_map<
-        types,
-        QCheckBox*
-    > m_widgetMap;
-
-    template<class First,class... Other>
-    void _setupUi() {
-        constexpr auto type = First::type;
-        QCheckBox* checkBox = new QCheckBox{First::displayName()};
-        m_widgetMap[type] = checkBox;
-        addTypeVisibilityCheckBox(checkBox);
-        connect(checkBox, &QCheckBox::clicked,[this,type](bool state){
-            this->messageTypeViewChanged(type,state);
-        });
-
-        if constexpr (sizeof...(Other) > 0)
-            _setupUi<Other...>();
-    };
 };
 
 }; // namespace Draupnir::Messages

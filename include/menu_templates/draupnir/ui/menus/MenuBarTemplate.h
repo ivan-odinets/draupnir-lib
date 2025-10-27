@@ -33,13 +33,15 @@
 namespace Draupnir::Menus {
 
 /*! @class MenuBarTemplate draupnir/ui/menus/MenuBarTemplate.h
+ *  @ingroup MenuTemplates
  *  @brief Strongly-typed, compile-time generic menu bar for Qt applications.
  *  @details MenuBarTemplate is a variadic-template class designed to automate, unify, and strongly-type the creation, translation,
  *           and access of complex menu bar structures in Qt. It aggregates menu entries (QMenu, QAction, or their descendants),
  *           manages their lifecycle, and provides convenient API for compile-time and runtime access to all entries.
  *  @tparam Entries... Variadic parameter pack of menu entry traits/classes, each describing a QMenu, QAction, or descendant type.
  *
- * @see MenuEntriesContainer, MenuTemplate */
+ * @todo Add test for this class.
+ * @todo Add constexpr variable versions of static constexpr methods. */
 
 template<class... Entries>
 class MenuBarTemplate final : public QMenuBar
@@ -64,6 +66,8 @@ public:
      *  @return Number of entries (always equals staticCount()). */
     constexpr int count() const { return staticCount(); }
 
+    /*! @brief Method to check if this MenuTemplate instance contains the specified Entry.
+     *  @tparam Entry - entry trait to be checked. */
     template<class Entry>
     static constexpr bool contains() { return MenuEntriesContainer<Entries...>::template contains<Entry>(); }
 
@@ -75,7 +79,6 @@ public:
     auto get() {
         return m_container.template get<Index>();
     }
-
     template<std::size_t Index>
     auto get() const {
         return m_container.template get<Index>();
@@ -95,9 +98,6 @@ public:
     }
 
 protected:
-    template<class Implementation, class Menu>
-    friend class MenuHandlerTemplate;
-
     MenuEntriesContainer<Entries...> m_container;
 
     /*! @brief Qt event handler, automatically retranslates all entry texts when language changes.

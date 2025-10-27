@@ -25,14 +25,17 @@
 #ifndef FILESAVEASENTRYHANDLER_H
 #define FILESAVEASENTRYHANDLER_H
 
-#include "../AbstractHandlers.h"
+#include "draupnir/handlers/templates/ActionHandler.h"
 #include "draupnir/traits/entries/FileMenuEntries.h"
 
 #include "draupnir/SettingsBundleTemplate.h"
-#include "draupnir/traits/settings/LastUsedDirectorySetting.h"
+#include "draupnir/traits/settings/files/LastUsedDirectorySetting.h"
 
 namespace Draupnir::Handlers
 {
+
+template<class Context, class Entry>
+class GenericMenuEntryHandler;
 
 /*! @class GenericMenuEntryHandler<FileContext, Draupnir::Menus::FileSaveAsEntry>
  *  @headerfile draupnir/handlers/file_menu/FileSaveAsEntryHandler.h
@@ -53,11 +56,12 @@ namespace Draupnir::Handlers
  *   - `fileManager()`: Returns a pointer to the FileManager.
  *   - `getSaveFileName()`: Opens a QFileDialog to get a filename from the user.
  *   - FileManager must implement `hasNothingOpened()` and `saveCurrentFileAs(const QString&)`.
- * @see ActionHandler */
+ *
+ * @todo Write a test for this class. */
 
 template<class FileContext>
 class GenericMenuEntryHandler<FileContext,Draupnir::Menus::FileSaveAsEntry> :
-        public ActionHandler<GenericMenuEntryHandler<FileContext,Draupnir::Menus::FileSaveAsEntry>,Draupnir::Menus::FileSaveAsEntry>
+        public ActionHandler<GenericMenuEntryHandler<FileContext,Draupnir::Menus::FileSaveAsEntry>>
 {
 public:
     using SettingsBundle = Settings::SettingsBundleTemplate<Settings::LastUsedDirectorySetting>;

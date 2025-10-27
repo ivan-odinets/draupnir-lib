@@ -27,11 +27,20 @@
 
 #include "SettingsCheckableEntryHandler.h"
 
-#include "draupnir/traits/settings/MinimizeOnCloseSetting.h"
+#include "draupnir/traits/settings/main_window/MinimizeOnCloseSetting.h"
 #include "draupnir/traits/entries/SettingsMenuEntries.h"
 
 namespace Draupnir::Handlers
 {
+
+template<class Context, class Entry>
+class GenericMenuEntryHandler;
+
+/*! @class GenericMenuEntryHandler<SettingsContext,Draupnir::Menus::MinimizeOnCloseEntry>
+ *  @brief This is a class.
+ *
+ * @todo Maybe this class needs to be placed in other file?
+ * @todo Write reasonable documentation for this class. */
 
 template<class SettingsContext>
 class GenericMenuEntryHandler<SettingsContext,Draupnir::Menus::MinimizeOnCloseEntry> :
@@ -45,12 +54,16 @@ public:
 
 /*! @struct SettingTraitForEntry<Draupnir::Menus::MinimizeOnCloseEntry>
  *  @brief Specialization mapping a menu entry to its setting trait.
+ *
  *  @details Provides a compile-time association between the menu entry trait Draupnir::Menus::MinimizeOnCloseEntry and
  *           the corresponding MinimizeOnClose setting trait. This mapping is required by SettingsMenuEntriesHandler to
- *           resolve the correct value type and persistence key. */
+ *           resolve the correct value type and persistence key.
+ *
+ * @todo Maybe this class needs to be placed in other file?
+ * @todo Maybe include this mapping into the menu entry trait class? */
 
 template<> struct SettingTraitForEntry<Draupnir::Menus::MinimizeOnCloseEntry> {
-    using type = Settings::MinimizeOnCloseSetting;
+    using type = Settings::MainWindow::MinimizeOnCloseSetting;
 };
 
 }; // namespace Draupnir::Menus

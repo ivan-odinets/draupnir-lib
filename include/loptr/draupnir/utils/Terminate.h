@@ -26,7 +26,6 @@
 #define TERMINATE_H
 
 #include <chrono>
-#include <exception>
 #include <iostream>
 #include <random>
 
@@ -35,6 +34,7 @@ namespace Draupnir::Loptr
 
 /*! @class Terminate draupnir/utils/Terminate.h
  *  @brief This class contains static methods to terminate your application in various ways.
+ *
  * @note This class is part of Loptr module, which is mostly for fun. However feel free to use code from this module in
  *       reasonable places. */
 
@@ -43,6 +43,7 @@ class Terminate
 public:
     /*! @brief Generates random number. If generated number is even - will call std::abort. If number is odd - will
      *         exit.
+     *
      * @note This method is part of Loptr module, which is mostly for fun. However feel free to use this in reasonable
      *       places:) */
     static void terminateIfEven() {

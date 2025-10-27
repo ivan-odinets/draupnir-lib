@@ -32,7 +32,7 @@
 #include "draupnir/core/SettingTemplate.h"
 #include "draupnir/utils/SettingTraitSerializer.h"
 
-#include "draupnir/utils/common.h"
+#include "draupnir/utils/type_presense.h"
 
 #if defined(DRAUPNIR_SETTINGS_USE_QSETTINGS)
     #include <QSettings>
@@ -46,7 +46,10 @@ namespace Draupnir::Settings
 {
 
 /*! @class SettingsBundleTemplate draupnir/SettingsBundleTemplate.h
+ *  @ingroup SettingsRegistry
  *  @brief Lightweight non-owning view over a subset of settings managed by a SettingsRegistryTemplate.
+ *  @tparam SettingTraits Variadic list of SettingTrait types included in this bundle.
+ *
  *  @details A SettingsBundleTemplate represents a scoped subset of SettingTraits collected from a SettingsRegistryTemplate.
  *           It provides:
  *           - Type-safe access to settings values (get/set);
@@ -62,14 +65,16 @@ namespace Draupnir::Settings
  *           SettingsRegistryTemplate (using SettingsRegistryTemplate::getSettingBundle() or
  *           SettingsRegistryTemplate::getSettingBundleForTraits() methods)
  *
- *  @tparam SettingTraits Variadic list of SettingTrait types included in this bundle.
  *
  *  @note Bundles can represent arbitrary subsets of traits. Compile-time utilities (contains, canBePopulatedFrom)
  *        allow verifying whether a bundle matches a given registry.
- * @see SettingsRegistryTemplate, SettingTraitSerializer, SettingTraitForEntry, SettingTemplate
+ *
+ *  @see SettingsRegistryTemplate, SettingTraitSerializer, SettingTraitForEntry, SettingTemplate
  *
  * @todo Add interface for partial updating of the settings. E.g. when the setting has sth like QStringList type - not replace
- *       the variable, but use append method and than write to the backend. */
+ *       the variable, but use append method and than write to the backend.
+ * @todo Add test for this class.
+ * @todo Add constexpr variable versions of static constexpr methods. */
 
 template<class... SettingTraits>
 class SettingsBundleTemplate
@@ -90,7 +95,7 @@ public:
      *  @tparam Trait A trait to check.
      *  @return true If Trait is in SettingTraits... and false Otherwise */
     template<class Trait>
-    static constexpr bool contains() { return is_one_of_v<Trait, SettingTraits...>; }
+    static constexpr bool contains() { return draupnir::utils::is_one_of_v<Trait, SettingTraits...>; }
 
     /*! @brief Returns whether the bundle is empty.
      *  @return Always false for this general template. Specialization SettingsBundle<> returns true. */
@@ -164,7 +169,7 @@ public:
      *  @return Const reference to the setting's value. */
     template<class Trait>
     const typename Trait::Value& get() const {
-        static_assert(is_one_of_v<Trait,SettingTraits...>,
+        static_assert(draupnir::utils::is_one_of_v<Trait,SettingTraits...>,
                 "Specified Trait is not a member of SettingTraits... pack.");
         Q_ASSERT_X(p_backend, "SettingBundle<SettingTraits...>::get<Trait>",
                    "Backend pointer was not set.");
@@ -177,7 +182,7 @@ public:
      *  @param value New value to store. */
     template<class Trait>
     void set(const typename Trait::Value& value) {
-        static_assert(is_one_of_v<Trait,SettingTraits...>,
+        static_assert(draupnir::utils::is_one_of_v<Trait,SettingTraits...>,
                 "Specified Trait is not a member of SettingTraits... pack.");
         Q_ASSERT_X(p_backend, "SettingBundle<SettingTraits...>::set<Trait>",
                    "Backend pointer was not set.");

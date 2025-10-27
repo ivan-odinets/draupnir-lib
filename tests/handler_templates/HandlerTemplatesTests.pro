@@ -1,6 +1,8 @@
 TEMPLATE = subdirs
 
 SUBDIRS += \
-    SettingsMenuEntriesHandler/SettingsMenuEntriesHandlerTests.pro
+    integration/FileMenuEntriesHandlerIT \
+    integration/HelpMenuEntriesHandlerIT \
+    integration/SettingsMenuEntriesHandlerIT
 
 

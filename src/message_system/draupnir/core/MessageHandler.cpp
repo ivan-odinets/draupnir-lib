@@ -22,46 +22,44 @@
  *
  */
 
-#include "draupnir/core/MessageHandler.h"
+#include "draupnir/core/MessageHandlerInterface.h"
 
 #include <QApplication>
 #include <QSystemTrayIcon>
 
 #include "draupnir/traits/messages/DefaultMessageTraits.h"
-#include "draupnir/core/MessageTemplate.h"
 #include "draupnir/models/MessageListModel.h"
 #include "draupnir/ui/windows/MessageDisplayDialog.h"
 
 namespace Draupnir::Messages
 {
 
-MessageHandler::MessageHandler(QObject* parent) :
+MessageHandlerInterface::MessageHandlerInterface(QObject* parent) :
     QObject{parent},
     w_trayIcon{nullptr},
-    p_dummy{new MessageTemplate<InfoMessageTrait>(tr("Test message"))},
+    p_dummy{Message::fromTrait<InfoMessageTrait>(tr("Test message"))},
     p_messageListModel{new MessageListModel}
 {}
 
-MessageHandler::~MessageHandler()
+MessageHandlerInterface::~MessageHandlerInterface()
 {
     p_messageListModel->deleteLater();
     delete p_dummy;
 }
 
-MessageGroup MessageHandler::beginMessageGroup()
+MessageGroup MessageHandlerInterface::beginMessageGroup()
 {
     const MessageGroup newGroup = MessageGroup::generateUniqueGroup();
 
     if (m_messageGroupsMap.contains(newGroup)) {
-        qDebug() << "Group is existing? O_o";
-        return MessageHandler::beginMessageGroup();
+        return MessageHandlerInterface::beginMessageGroup();
     }
 
     m_messageGroupsMap.insert(newGroup, QList<Message*>{});
     return newGroup;
 }
 
-void MessageHandler::flush(MessageGroup group)
+void MessageHandlerInterface::flush(MessageGroup group)
 {
     if (!m_messageGroupsMap.contains(group)) {
         qDebug() << "MessageHandler::flush - trying to flush non-existant group.";
@@ -73,7 +71,7 @@ void MessageHandler::flush(MessageGroup group)
     m_messageGroupsMap[group].clear();
 }
 
-void MessageHandler::endMessageGroup(MessageGroup group)
+void MessageHandlerInterface::endMessageGroup(MessageGroup group)
 {
     if (!m_messageGroupsMap.contains(group)) {
         qDebug() << "MessageHandler::endMessageGroup - trying to close non-existant group.";
@@ -85,7 +83,7 @@ void MessageHandler::endMessageGroup(MessageGroup group)
     m_messageGroupsMap.remove(group);
 }
 
-void MessageHandler::showDummy(Notification::Type type)
+void MessageHandlerInterface::showDummy(Notification::Type type)
 {
     switch (type) {
     case Notification::None:
@@ -104,13 +102,13 @@ void MessageHandler::showDummy(Notification::Type type)
     }
 }
 
-void MessageHandler::processMessage(Message* message)
+void MessageHandlerInterface::processMessage(Message* message)
 {
     p_messageListModel->append(message);
     showMessage(message);
 }
 
-void MessageHandler::processMessage(Message* message, MessageGroup group)
+void MessageHandlerInterface::processMessage(Message* message, MessageGroup group)
 {
     p_messageListModel->append(message);
 
@@ -122,18 +120,18 @@ void MessageHandler::processMessage(Message* message, MessageGroup group)
     m_messageGroupsMap[group].append(message);
 }
 
-void MessageHandler::processMessageList(const QList<Message*>& messageList)
+void MessageHandlerInterface::processMessageList(const QList<Message*>& messageList)
 {
     p_messageListModel->append(messageList);
     showMessageList(messageList);
 }
 
-void MessageHandler::showMessage(Message* message)
+void MessageHandlerInterface::showMessage(Message* message)
 {
     showMessage(message,notification(message->type()));
 }
 
-void MessageHandler::showMessage(Message* message, Notification::Type type)
+void MessageHandlerInterface::showMessage(Message* message, Notification::Type type)
 {
     switch (type) {
     case Notification::None:
@@ -152,7 +150,7 @@ void MessageHandler::showMessage(Message* message, Notification::Type type)
     }
 }
 
-void MessageHandler::showMessageList(const QList<Message*>& messageList)
+void MessageHandlerInterface::showMessageList(const QList<Message*>& messageList)
 {
     // Temp containers for different Message types
 #ifndef QT_NO_SYSTEMTRAYICON
@@ -183,7 +181,7 @@ void MessageHandler::showMessageList(const QList<Message*>& messageList)
         _showMessageBox(messageBoxMessages);
 }
 
-void MessageHandler::showMessageList(const QList<Message*>& messageList, Notification::Type type)
+void MessageHandlerInterface::showMessageList(const QList<Message*>& messageList, Notification::Type type)
 {
     switch (type) {
     case Notification::None:
@@ -204,7 +202,7 @@ void MessageHandler::showMessageList(const QList<Message*>& messageList, Notific
 
 #ifndef QT_NO_SYSTEMTRAYICON
 
-void MessageHandler::_showMessageInSystray(Message* message)
+void MessageHandlerInterface::_showMessageInSystray(Message* message)
 {
     Q_ASSERT_X(w_trayIcon, "MessageHandler::_showMessageInSystray", "Tray icon is null");
     w_trayIcon->showMessage(
@@ -214,7 +212,7 @@ void MessageHandler::_showMessageInSystray(Message* message)
     );
 }
 
-void MessageHandler::_showMessageListTray(const QList<Message*>& messageList)
+void MessageHandlerInterface::_showMessageListTray(const QList<Message*>& messageList)
 {
     Q_ASSERT_X(w_trayIcon, "MessageHandler::_showMessageListTray", "Tray icon is null");
     w_trayIcon->showMessage(
@@ -226,7 +224,7 @@ void MessageHandler::_showMessageListTray(const QList<Message*>& messageList)
 
 #endif // QT_NO_SYSTEMTRAYICON
 
-void MessageHandler::_showMessageBox(Message* message)
+void MessageHandlerInterface::_showMessageBox(Message* message)
 {
     MessageDisplayDialog dialog;
     dialog.setWindowIcon(qApp->windowIcon());
@@ -235,7 +233,7 @@ void MessageHandler::_showMessageBox(Message* message)
     dialog.exec();
 }
 
-void MessageHandler::_showMessageBox(const QList<Message*>& messageList)
+void MessageHandlerInterface::_showMessageBox(const QList<Message*>& messageList)
 {
     MessageDisplayDialog dialog;
     dialog.setWindowIcon(qApp->windowIcon());

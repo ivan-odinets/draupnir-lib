@@ -25,7 +25,7 @@
 #ifndef MESSAGEHANDLERTEMPLATE_H
 #define MESSAGEHANDLERTEMPLATE_H
 
-#include "draupnir/core/MessageHandler.h"
+#include "draupnir/core/MessageHandlerInterface.h"
 
 #include "draupnir/traits/settings/MessageTypeSettingsTrait.h"
 
@@ -34,8 +34,11 @@
 namespace Draupnir::Messages
 {
 
-/*! @class MessageHandlerTemplate draupnir/core/MessageHandlerTemplate.h
+/*! @class MessageHandlerTemplate<class... MessageTraits> draupnir/core/MessageHandlerTemplate.h
+ *  @ingroup MessageSystem
+ *  @tparam MessageTraits... List of message types supported by this handler.
  *  @brief Templated implementation of MessageHandler based on statically known message types.
+ *
  *  @details It extends MessageHandler and therefore can be used wherever a MessageHandler pointer is expected. Policies for each
  *           message type are defined at compile time through MessageTraits... and can be persisted via AppSettings or a custom
  *           MessageSettingsInterface.
@@ -43,11 +46,12 @@ namespace Draupnir::Messages
  *           MessageSystemTemplate creates a single instance of this class and shares it with MessageUiBuilderTemplate so that UI
  *           elements reflect and modify the same notification policy map.
  *
- * @tparam MessageTraits... List of message types supported by this handler.
- * @see MessageHandler, Logger, fixed_map */
+ * @todo Either this class + MessageHandlerInterface or Logger class needs to be made thread-safe.
+ * @todo Write a reasonable test for this class. */
+
 
 template<class... MessageTraits>
-class MessageHandlerTemplate final : public MessageHandler
+class MessageHandlerTemplate final : public MessageHandlerInterface
 {
 public:
     using SettingsBundle = Draupnir::Settings::SettingsBundleTemplate<
@@ -55,7 +59,7 @@ public:
     >;
 
     template<class MessageTrait>
-    static constexpr bool contains() { return is_one_of_v<MessageTrait,MessageTraits...>; }
+    static constexpr bool contains() { return draupnir::utils::is_one_of_v<MessageTrait,MessageTraits...>; }
 
     /*! @brief Default constructor. */
     MessageHandlerTemplate() :

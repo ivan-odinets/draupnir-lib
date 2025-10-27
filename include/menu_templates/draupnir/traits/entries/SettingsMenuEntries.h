@@ -26,18 +26,22 @@
 #define SETTINGSMENUENTRIES_H
 
 /*! @file draupnir/traits/entries/SettingsMenuEntries.h
+ *  @ingroup MenuTemplates
  *  @brief Menu action and menu entry trait classes for the draupnir UI framework.
+ *
  *  @details This file contains trait classes describing standard settings menu actions.
- *           All menu trait classes must provide:
- *           - using Type = QAction (or QMenu, or thier child classes)
- *           - static Type* createElement(QWidget* parent = nullptr)
- *           - static QString displayName() */
+ *
+ * @todo Finalize naming, file (which will contain these traits) for settings within the  namespace @ref
+ *       Draupnir::Settings::MainWindow
+ *
+ * @todo Split this file into multiple subfiles and include these new files by using this file. */
 
 #include <QAction>
 
 namespace Draupnir::Menus {
 
 /*! @var settingsMenuName draupnir/traits/entries/SettingsMenuEntries.h
+ *  @ingroup MenuTemplates
  *  @brief Inline constexpr lambda returning the localized display name for the "Settings" menu. */
 
 inline constexpr auto settingsMenuName = []() -> QString {
@@ -45,6 +49,7 @@ inline constexpr auto settingsMenuName = []() -> QString {
 };
 
 /*! @class OpenSettingsEntry draupnir/traits/entries/SettingsMenuEntries.h
+ *  @ingroup MenuTemplates
  *  @brief Trait for "Open Settings" action. Provides a non-checkable action for opening the settings dialog or window. */
 
 class OpenSettingsEntry
@@ -65,6 +70,7 @@ public:
 };
 
 /*! @class MinimizeOnCloseEntry draupnir/traits/entries/SettingsMenuEntries.h
+ *  @ingroup MenuTemplates
  *  @brief Trait for "Minimize on close" checkable action. Provides a checkable action for toggling "minimize on close"
  *         behavior. */
 
@@ -90,6 +96,7 @@ public:
 #ifndef QT_NO_SYSTEMTRAYICON
 
 /*! @class MinimizeToTrayEntry draupnir/traits/entries/SettingsMenuEntries.h
+ *  @ingroup MenuTemplates
  *  @brief Trait for "Minimize to tray" checkable action. Provides a checkable action for toggling "minimize to tray" behavior.
  * @note Available only when building without the QT_NO_SYSTEMTRAYICON macro. */
 
@@ -115,6 +122,7 @@ public:
 #endif // QT_NO_SYSTEMTRAYICON
 
 /*! @class StartHiddenMenuEntry draupnir/traits/entries/SettingsMenuEntries.h
+ *  @ingroup MenuTemplates
  *  @brief Trait for "Start Hidden" checkable action. Provides a checkable action for toggling "start hidden" behavior on
  *         application launch. */
 

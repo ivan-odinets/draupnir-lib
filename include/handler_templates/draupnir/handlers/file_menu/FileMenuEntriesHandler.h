@@ -25,7 +25,7 @@
 #ifndef FILEMENUENTRIESHANDLER_H
 #define FILEMENUENTRIESHANDLER_H
 
-#include "draupnir/handlers/GenericMenuEntriesHandler.h"
+#include "draupnir/handlers/templates/GenericMenuEntriesHandler.h"
 
 #include <QFileDialog>
 #include <QMessageBox>
@@ -42,7 +42,12 @@ namespace Draupnir::Handlers {
 
 /*! @class FileMenuEntriesHandler
  *  @headerfile draupnir/handlers/file_menu/FileMenuEntriesHandler.h
+ *  @ingroup HandlerTemplates
  *  @brief Handler for File menu entries, managing their interaction with a specific FileManager.
+ *  @tparam FileManager The concrete file manager type used in this menu handler. Must provide the expected interface
+ *          (see FileManagerValidator for requirements).
+ *  @tparam HandledEntries Variadic parameter pack of all file menu entry trait types that this handler should manage.
+ *
  *  @details This template aggregates handlers for all specified file-related menu entries (such as "New", "Open", "Save",
  *           "Close", etc.) and delegates context and state management to FileEntriesHandlersContext. It inherits from
  *           GenericMenuEntriesHandler, instantiating one handler per HandledEntry type, and manages their lifecycle.
@@ -53,13 +58,10 @@ namespace Draupnir::Handlers {
  *           - Provides a convenient setter to assign the FileManager instance at runtime.
  *           - All actual file menu logic and state is handled by the base context class and its handlers.
  *
- * @tparam FileManager The concrete file manager type used in this menu handler. Must provide the expected interface
- *         (see FileManagerValidator for requirements).
- * @tparam HandledEntries Variadic parameter pack of all file menu entry trait types that this handler should manage.
  *
  * @note Before using this handler, you **must** call setFileManager() to assign a valid FileManager instance.
  *
- * @see FileManagerValidator, FileEntriesHandlersContext, GenericMenuEntriesHandler */
+ * @todo Write a test for this class. */
 
 template<class FileManagerClass, class... HandledEntries>
 class FileMenuEntriesHandler :

@@ -29,7 +29,9 @@ namespace Draupnir::Handlers
 {
 
 /*! @struct SettingTraitForEntry draupnir/utils/SettingTraitForEntry.h
+ *  @ingroup HandlerTemplates
  *  @brief This is a base case of SettingTraitForEntry structure which is mapping a menu entry to its setting trait.
+ *
  *  @details Used to provides a compile-time association between the menu entry trait and the corresponding setting
  *           trait. This mapping is required by SettingsMenuEntriesHandler to resolve the correct value type and
  *           persistence key. */

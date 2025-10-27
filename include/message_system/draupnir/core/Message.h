@@ -34,13 +34,35 @@ namespace Draupnir::Messages
 {
 
 /*! @class Message draupnir/core/Message.h
+ *  @ingroup MessageSystem
  *  @brief This class represents some Message from the App about some event happened. This includes errors, balance changes,
  *         etc. */
 
-class Message
+class Message final
 {
     Q_DISABLE_COPY(Message);
 public:
+    /*! @brief Static template method to create Message objects from specified MessageTrait.
+     *  @tparam MessageTrait trait representing a Message to be created.
+     *  @param text text of a Message.
+     * @note Memory is allocated by using new operator. Caller to be responsible for propper memory handling.
+     * @todo static_assert to verify MessageTrait. */
+    template<class MessageTrait>
+    static Message* fromTrait(const QString& text) {
+        return new Message{MessageTrait::type, MessageTrait::icon(), MessageTrait::displayName(), text};
+    }
+
+    /*! @brief Static template method to create Message objects from specified MessageTrait.
+     *  @tparam MessageTrait trait representing a Message to be created.
+     *  @param brief brief of a Message.
+     *  @param text text of a Message.
+     * @note Memory is allocated by using new operator. Caller to be responsible for propper memory handling.
+     * @todo static_assert to verify MessageTrait. */
+    template<class MessageTrait>
+    static Message* fromTrait(const QString& brief, const QString& text) {
+        return new Message{MessageTrait::type, MessageTrait::icon(), brief, text};
+    }
+
     /*! @brief Returns type of this Message object. */
     uint64_t type() const { return m_type; };
 
@@ -57,7 +79,6 @@ public:
     const QIcon& icon() const { return m_icon; }
 
 protected:
-
     Message(const uint64_t newType, const QIcon& icon, const QString& brief, const QString& what) :
         m_type{newType},
         m_icon{icon},

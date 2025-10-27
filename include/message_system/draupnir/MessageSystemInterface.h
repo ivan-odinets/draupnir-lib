@@ -30,15 +30,14 @@
 namespace Draupnir::Messages
 {
 
-class MessageHandler;
-class MessageUiBuilder;
+class MessageHandlerInterface;
+class MessageUiBuilderInterface;
 
 /*! @class MessageSystemInterface draupnir/MessageSystemInterface.h
  *  @brief This is an interface class for a MessageSystemTemplate template class.
- *  @details This interface is used to simplify passing the objects of specific MessageSystemTemplate implementations at
- *           runtime.
  *
- * @see MessageSystemTemplate, MessageHandler, MessageHandlerTemplate, MessageUiBuilder, MessageUiBuilderTemplate, Logger. */
+ *  @details This interface is used to simplify passing the objects of specific MessageSystemTemplate implementations at
+ *           runtime. */
 
 class MessageSystemInterface
 {
@@ -47,10 +46,10 @@ public:
     virtual ~MessageSystemInterface() = default;
 
     /*! @brief This method should return pointer to MessageHandler interface of this MessageSystem implementation. */
-    virtual MessageHandler* handler() = 0;
+    virtual MessageHandlerInterface* handler() = 0;
 
     /*! @brief This method should return pointer to MessageUiBuilder interface of this MessageSystem implementation. */
-    virtual MessageUiBuilder* uiBuilder() = 0;
+    virtual MessageUiBuilderInterface* uiBuilder() = 0;
 
     /*! @brief This method should return true if the specified type is known to this MessageSystem implementation. */
     virtual bool isTypeKnown(MessageType type) = 0;

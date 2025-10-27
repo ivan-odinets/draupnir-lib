@@ -25,14 +25,18 @@
 #ifndef HELPMENUENTRIESHANDLER_H
 #define HELPMENUENTRIESHANDLER_H
 
-#include "draupnir/handlers/GenericMenuEntriesHandler.h"
+#include "draupnir/handlers/templates/GenericMenuEntriesHandler.h"
 #include "draupnir/traits/entries/HelpMenuEntries.h"
 
 namespace Draupnir::Handlers {
 
 /*! @class HelpMenuEntriesHandler
  *  @headerfile draupnir/handlers/help_menu/HelpMenuEntriesHandler.h
+ *  @ingroup HandlerTemplates
  *  @brief Composite handler for help-related menu entries.
+ *  @tparam HelpSource - The context type providing data and methods needed by help menu entry handlers.
+ *  @tparam HandledEntries - Variadic parameter pack listing all handled help menu entry trait types (e.g., AboutAppMenuTrait).
+ *
  *  @details Inherits from GenericMenuEntriesHandler and aggregates handlers for all specified help menu entries. This class
  *           acts as a convenience alias to group together various help-related actions (e.g., "About App", "About Qt", "Help
  *           Entry") under a common context.
@@ -40,11 +44,8 @@ namespace Draupnir::Handlers {
  *           Inherits all behavior from GenericMenuEntriesHandler (instantiates a handler for each HandledEntry). You are
  *           expected to specify as HandledEntries the traits corresponding to all help menu entries you want to handle.
  *
- *  @tparam HelpSource - The context type providing data and methods needed by help menu entry handlers.
- *  @tparam HandledEntries - Variadic parameter pack listing all handled help menu entry trait types (e.g., AboutAppMenuTrait).
- *
- * @see GenericMenuEntriesHandler, AboutAppEntryHandler, AboutQtEntryHandler, HelpEntryHandler
- * @todo Add static_asserts to verify the Help source. */
+ * @todo Add static_asserts to verify the Help source.
+ * @todo Add at least compilation test. */
 
 template<class HelpSource, class... HandledEntries>
 class HelpMenuEntriesHandler :
@@ -69,13 +70,13 @@ public:
         GenericMenuEntriesHandler<HelpMenuEntriesHandler<HelpSource,HandledEntries...>,HandledEntries...>()
     {}
 
-    template<bool cond = is_one_of_v<Draupnir::Menus::AboutAppMenuTrait,HandledEntries...>>
+    template<bool cond = draupnir::utils::is_one_of_v<Draupnir::Menus::AboutAppMenuTrait,HandledEntries...>>
     static std::enable_if_t<cond,QString>
     aboutAppText() {
         return HelpSource::aboutAppText();
     }
 
-    template<bool cond = is_one_of_v<Draupnir::Menus::HelpEntryMenuTrait,HandledEntries...>>
+    template<bool cond = draupnir::utils::is_one_of_v<Draupnir::Menus::HelpEntryMenuTrait,HandledEntries...>>
     static std::enable_if_t<cond,QDialog*>
     createHelpDialog() {
         return HelpSource::createHelpDialog();

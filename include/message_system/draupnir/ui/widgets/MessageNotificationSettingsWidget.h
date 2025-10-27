@@ -39,7 +39,7 @@ class QPushButton;
 namespace Draupnir::Messages
 {
 
-class MessageHandler;
+class MessageHandlerInterface;
 
 /*! @class MessageNotificationSettingsWidget draupnir/ui/widgets/MessageNotificationSettingsWidget.h
  *  @brief Abstract base widget for configuring notification settings for the MessageHandler / MessageHandlerTemplate.
@@ -49,7 +49,9 @@ class MessageHandler;
  *
  *           The widget includes a test row (label + combo box + button) and a layout for dynamic rows generated per
  *           message type.
- * @see MessageNotificationSettingsWidgetTemplate */
+ *
+ * @todo Write test for this class.
+ * @todo Add support of selecting message parts to be displayed. */
 
 class MessageNotificationSettingsWidget : public QWidget
 {
@@ -104,10 +106,13 @@ namespace Draupnir::Messages
 
 /*! @class MessageNotificationSettingsWidgetTemplate draupnir/ui/widgets/MessageNotificationSettingsWidget.h
  *  @brief Concrete implementation of `MessageNotificationSettingsWidget` for a fixed set of message traits.
+ *  @tparam MessageTraits... A parameter pack of message trait types (e.g., DebugMessageTrait, InfoMessageTrait).
+ *
  *  @details This templated class initializes the UI rows for each message trait and handles interactions with a
  *           `MessageHandlerTemplate`. It maps each message type to a pair of widgets (label + combo box) using `fixed_tuple_map`.
  *
- * @tparam MessageTraits... A parameter pack of message trait types (e.g., DebugMessageTrait, InfoMessageTrait). */
+ * @todo Seperate this class into seperate file.
+ * @todo Write test for this class. */
 
 
 template<class... MessageTraits>
@@ -155,7 +160,7 @@ protected:
 private:
     MessageHandler* p_handler;
 
-    fixed_tuple_map<
+    draupnir::containers::fixed_tuple_map<
         supportedMessageIds,
         QLabel*,
         NotificationTypeComboBox*

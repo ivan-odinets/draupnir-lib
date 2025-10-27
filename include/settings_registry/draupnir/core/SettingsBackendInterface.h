@@ -32,7 +32,15 @@ namespace Draupnir::Settings
 {
 
 /*! @class SettingsBackendInterface draupnir/core/SettingsBackendInterface.h
- *  @brief This is a base interface class for a custom backends which can be used by the SettingsRegistryTemplate */
+ *  @ingroup SettingsRegistry
+ *  @brief This is a base interface class for a custom backends which can be used by the SettingsRegistryTemplate.
+ *
+ *  @details This class needs to be inherited when using SettingsRegistryTemplate with custom settings backend. By default
+ *           SettingsRegistryTemplate can work with QSettings and with AppSettings (slightly extended version of the QSettings).
+ *           If some more custom settings storage is required - inherit this class and pass it to the SettingsRegistryTemplate
+ *           by using SettingsRegistryTemplate::setBackend method.
+ *
+ * @note This class is included only when DRAUPNIR_SETTINGS_USE_CUSTOM macro is defined. */
 
 class SettingsBackendInterface
 {

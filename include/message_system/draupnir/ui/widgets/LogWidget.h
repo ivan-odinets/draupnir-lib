@@ -38,7 +38,7 @@ class QToolButton;
 
 #include "draupnir/traits/settings/LogWidgetSettingsTraits.h"
 #include "draupnir/ui/menus/MessageViewConfigMenu.h"
-#include "draupnir/ui/windows/MessageViewConfigDialog.h"
+#include "draupnir/ui/windows/MessageViewConfigDialogTemplate.h"
 
 #include "draupnir/SettingsBundleTemplate.h"
 
@@ -49,12 +49,13 @@ namespace Draupnir::Messages
 
 class MessageListModel;
 class MessageListView;
-class MessageHandler;
+class MessageHandlerInterface;
 class MessageSettingsInterface;
 class MessageViewConfigDialog;
 class MessageViewConfigMenu;
 
 /*! @class LogWidget draupnir/messages/widgets/LogWidget.h
+ *  @ingroup MessageSystem
  *  @brief A composite QWidget used for displaying and managing logged Message objects in a GUI.
  *  @details This widget provides a complete GUI for viewing and filtering `Message` objects in the application. Internally it
  *           uses a `MessageListView` to display messages stored within MessageListModel of MessageHandler, and exposes controls
@@ -71,7 +72,8 @@ class MessageViewConfigMenu;
  *
  * @note Before use, `loadSettings()` should be called to configure the widget.
  *
- * @see MessageHandler, Message, MessageListModel, MessageListProxyModel, MessageListView. */
+ * @todo Write test for this class.
+ * @todo Add support of selecting message parts to be displayed. */
 
 class LogWidget : public QWidget
 {
@@ -140,9 +142,13 @@ namespace Draupnir::Messages
 {
 
 /*! @class LogWidgetTemplate draupnir/ui/widgets/LogWidget.h
+ *  @ingroup MessageSystem
  *  @brief This template class is used to receive information about supported message types from MessageUiBuilderTemplate and
  *         implements message-type-specific functionality of the LogWidget.
- * @see LogWidget, MessageUiBuilder */
+ *
+ * @todo Seperate this class into seperate file.
+ * @todo Write test for this class.
+ * @todo Add support of selecting message parts to be displayed. */
 
 template<class... MessageTraits>
 class LogWidgetTemplate final : public LogWidget

@@ -30,7 +30,10 @@
 namespace Draupnir::Settings {
 
 /*! @class SettingTemplate draupnir/core/SettingTemplate.h
+ *  @ingroup SettingsRegistry
  *  @brief Lightweight wrapper for a single setting trait.
+ *  @tparam SettingTrait The trait type describing this setting.
+ *
  *  @details SettingTemplate<SettingTrait> provides storage and basic accessors for a setting defined by SettingTrait. It is
  *           not responsible for persistence itself — loading/saving is handled by SettingsRegistryTemplate in combination with
  *           SettingsSerializer.
@@ -39,11 +42,7 @@ namespace Draupnir::Settings {
  *           - using Value — the underlying C++ type of the setting (e.g. bool, int, QString);
  *           - static Value defaultValue() — the default value if no entry is found in storage.
  *
- *           The wrapper stores the actual value as a public data member.
- *
- *  @tparam SettingTrait The trait type describing this setting.
- *
- *  @see SettingsRegistryTemplate, SettingsSerializer */
+ *           The wrapper stores the actual value as a public data member. */
 
 template<class SettingTrait>
 class SettingTemplate

@@ -25,7 +25,7 @@
 #ifndef MESSAGEUIBUILDERTEMPLATE_H
 #define MESSAGEUIBUILDERTEMPLATE_H
 
-#include "draupnir/core/MessageUiBuilder.h"
+#include "draupnir/core/MessageUiBuilderInterface.h"
 #include "draupnir/core/MessageHandlerTemplate.h"
 
 #include "draupnir/ui/menus/NotificationTypeMenu.h"
@@ -38,16 +38,21 @@ namespace Draupnir::Messages
 {
 
 /*! @class MessageUiBuilderTemplate draupnir/core/MessageUiBuilderTemplate.h
+ *  @ingroup MessageSystem
  *  @brief Default template-based implementation of MessageUiBuilder for a given list of message types.
+ *  @tparam MessageTypes List of message type traits defining messages handled by this builder.
+ *
  *  @details This class creates a LogWidget and binds it to the message handler and settings. The template parameters define the
  *           supported message types.
  *
- * @tparam MessageTypes List of message type traits defining messages handled by this builder.
- *
- * @see MessageSystemTemplate, MessageUiBuilder, LogWidget */
+ * @todo Add method to get @ref LogWidgetInterface instance.
+ * @todo Add method to get @ref LogWidgetTemplate instance.
+ * @todo Add method to get @ref MessageNotificationSettingsWidget.
+ * @todo Add method(s) to get not QMenu, but NotificationTypeMenu instead.
+ * @todo Cover this class (together with MessageUiBuilderInterface) with tests. */
 
 template<class... MessageTypes>
-class MessageUiBuilderTemplate final : public MessageUiBuilder
+class MessageUiBuilderTemplate final : public MessageUiBuilderInterface
 {
 public:
     using SettingsBundle = Draupnir::Settings::bundle_merge_all_t<
@@ -55,9 +60,10 @@ public:
     >;
 
     /*! @brief Creates and returns a LogWidget configured with the current handler and settings.
-     *  @details This method is intended to be used by GUI code that needs a message log viewer.
      *  @param parent Optional parent widget for the created LogWidget.
-     *  @return QWidget* Pointer to the fully configured LogWidget. */
+     *  @return QWidget* Pointer to the fully configured LogWidget.
+     *
+     *  @details This method is intended to be used by GUI code that needs a message log viewer. */
     QWidget* createConfiguredLogWidget(QWidget* parent = nullptr) final {
         Q_ASSERT_X(m_settings.isValid(),"MessageUiBuilderTemplate<MessageTraits...>::createConfiguredLogWidget",
                    "Method MessageUiBuilderTemplate<MessageTraits...>::loadSettings must have been called before.");
@@ -92,7 +98,7 @@ public:
         // ONE specific type of messages - we use a lambda to catch signal from MessageHandler and IF it is related to this particular
         // notificationTypeMenu and IF this menu was not deleted - we can process this.
         QPointer<NotificationTypeMenu> targetMenu{result};
-        QObject::connect(static_cast<MessageHandler*>(p_handler),&MessageHandler::notificationTypeChanged,[targetMenu,messageType](MessageType changedMsgType,Notification::Type notification){
+        QObject::connect(static_cast<MessageHandlerInterface*>(p_handler),&MessageHandlerInterface::notificationTypeChanged,[targetMenu,messageType](MessageType changedMsgType,Notification::Type notification){
             if (changedMsgType != messageType)
                 return;
 
@@ -102,7 +108,7 @@ public:
             targetMenu->setNotificationType(notification);
         });
 
-        QPointer<MessageHandler> handlerPtr{static_cast<MessageHandler*>(p_handler)};
+        QPointer<MessageHandlerInterface> handlerPtr{static_cast<MessageHandlerInterface*>(p_handler)};
         QObject::connect(result, &NotificationTypeMenu::notificationTypeChanged,[handlerPtr,messageType](Notification::Type notification){
             if (handlerPtr.isNull())
                 return;
@@ -133,8 +139,8 @@ protected:
     {}
 
     /*! @brief Associates a specific MessageHandlerTemplate with this UI builder.
-     *  @details This is required before any UI widgets can be created. The handler is used to feed messages into the UI.
-     *  @param handler Pointer to a MessageHandlerTemplate. */
+     *  @param handler Pointer to a MessageHandlerTemplate.
+     *  @details This is required before any UI widgets can be created. The handler is used to feed messages into the UI. */
     void setMessageHandlerTemplate(MessageHandlerTemplate<MessageTypes...>* handler) {
         Q_ASSERT_X(handler, "MessageUiBuilderTemplate::setMessageHandlerTemplate",
                    "Provided handler is nullptr.");
@@ -160,7 +166,7 @@ private:
         dest->addMenu(menu);
 
         if constexpr (sizeof...(Rest) > 0)
-            return _populateGlobalNotificationsMenu<Rest...>(dest);
+            _populateGlobalNotificationsMenu<Rest...>(dest);
     }
 };
 
