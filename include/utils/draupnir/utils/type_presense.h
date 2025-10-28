@@ -26,10 +26,8 @@
 #define TYPE_PRESENSE_H
 
 /*! @file draupnir/utils/type_presense.h
- *  @brief This is a file.
- *
- * @todo Document usage of entities within this file. Add some examples to the documentation.
- * @todo Add some test to check if this works as expected. */
+ *  @ingroup Utils
+ *  @brief This file contains utilities to check if specified type is present within some list / container of types. */
 
 #include <tuple>
 #include <type_traits>
@@ -49,11 +47,9 @@ namespace draupnir::utils
 template<typename T, typename... Args>
 struct is_one_of : std::disjunction<std::is_same<T, Args>...> {};
 
-/*! @var is_one_of_v draupnir/utils/type_presense.h
- *  @ingroup Utils
- *  @brief Convenience constexpr variable template for @ref is_one_of.
- *
- *  @details Evaluates to `true` if `T` is present in `Args...`, `false` otherwise. */
+/*! @ingroup Utils
+ *  @brief Convenience constexpr variable template for @ref draupnir::utils::is_one_of. Evaluates to `true` if `T` is present
+ *         in `Args...`, `false` otherwise. */
 
 template<typename T, typename... Args>
 constexpr bool is_one_of_v = is_one_of<T, Args...>::value;
@@ -81,11 +77,9 @@ template<typename T, typename... Ts>
 struct is_type_in_tuple<T, std::tuple<Ts...>>
     : std::disjunction<std::is_same<T, Ts>...> { };
 
-/*! @var is_one_of_v draupnir/utils/type_presense.h
- *  @ingroup Utils
- *  @brief Convenience constexpr variable template for @ref is_type_in_tuple.
- *
- *  @details Evaluates to `true` if `T` is present in the element types of `Tuple`, `false` otherwise. */
+/*! @ingroup Utils
+ *  @brief Convenience constexpr variable template for @ref draupnir::utils::is_type_in_tuple. Evaluates to `true` if `T` is
+ *         present in the element types of `Tuple`, `false` otherwise. */
 
 template<typename T, typename Tuple>
 inline constexpr bool is_type_in_tuple_v = is_type_in_tuple<T, Tuple>::value;

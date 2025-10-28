@@ -43,8 +43,7 @@ namespace draupnir::utils
  *           This can be used in template metaprogramming to determine the position of a type in a pack or to access the
  *           corresponding element in a tuple‑like type.
  *
- * @todo Document usage of entities within this file. Add some examples to the documentation.
- * @todo Add some test to check if this works as expected. */
+ * @todo Add support for the case when T is not present within Ts.. pack. */
 
 template<typename T, typename... Ts>
 struct index_of;
@@ -54,6 +53,7 @@ struct index_of;
  *  @brief Specialization for the case when the head of the list matches `T`.
  *
  *  @details Yields `std::integral_constant<std::size_t, 0>`, i.e. the index is 0. */
+
 template<typename T, typename... Ts>
 struct index_of<T, T, Ts...> : std::integral_constant<std::size_t, 0> {};
 
@@ -62,9 +62,16 @@ struct index_of<T, T, Ts...> : std::integral_constant<std::size_t, 0> {};
  *  @brief Recursive specialization for the case when the head of the list does not match `T`.
  *
  *  @details Increments the index by one and recurses on the remaining types. */
+
 template<typename T, typename U, typename... Ts>
 struct index_of<T, U, Ts...>
     : std::integral_constant<std::size_t, 1 + index_of<T, Ts...>::value> {};
+
+/*! @ingroup Utils
+ *  @brief Helper template variable to access results of @ref draupnir::utils::index_of evaluation. */
+
+template<typename T, typename... Ts>
+inline constexpr std::size_t index_of_v = index_of<T,Ts...>::value;
 
 };
 

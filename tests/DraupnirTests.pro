@@ -9,7 +9,8 @@ SUBDIRS += \
     menu_templates/MenuTemplatesTests.pro \
     message_system/MessageSystemTests.pro \
     settings_registry/SettingsRegistryTests.pro \
-    ui_bricks/UiBricksTests.pro
+    ui_bricks/UiBricksTests.pro \
+    utils/UtilsTests.pro
 
 
 

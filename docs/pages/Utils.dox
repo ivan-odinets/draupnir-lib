@@ -3,6 +3,40 @@
  *
  *  @details Classes within this module are located in the namespace draupnir::utils. These classes are using pure C++
  *           and can be reused in the projects without Qt.
+ *           ### Overview
+ *           The following things are available:
+ *           - @ref draupnir::utils::create_tuple_new<typename Tuple> - for a tuple type `Tuple` where each element is a
+ *             pointer type, this function returns a tuple, where each pointer points to a new default-constructed instance
+ *             of the pointed-to type. Memory is allocated using `new`, and it is the caller's responsibility to delete the
+ *             objects afterwards. Defined in header @ref draupnir/utils/template_constructors.h.
+ *           - @ref draupnir::utils::enum_values<typename E, E first, E... values> - provides static method advance which is
+ *             accepring enum key of type `E` and increments it through the pack of specified `E... values`. If the key is
+ *             the last - the first is returened. Can be used for example while implementing operator++ for the enum types.
+ *             Defined in header @ref draupnir/utils/advance_enum.h.
+ *           - @ref draupnir::utils::make_zero_value<typename T> - This utility returns a compile‑time–generated default/zero
+ *             value appropriate for type `T`. The returned value depends on the type category: Pointer types -> `nullptr`,
+ *             Arithmetic types -> `T{0}`, std::pair -> both `.first` and `.second` are initialized with `make_zero_value<>()`,
+ *             std::tuple -> all elements initialized recursively with `make_zero_value<>()`, Other types → default‑constructed
+ *             via `T{}`. Defined in header @ref draupnir/utils/template_constructors.h.
+ *           - @ref draupnir::utils::index_of<typename T, typename... Ts> - if the `T` is present within the variadic pack
+ *             `Ts...` provides the member constant `value` with index of type T within the pack. **Note:** if the `T` is
+ *             not present within the pack `Ts...` - compilation will fail (may be improved). Helper variable template @ref
+ *             draupnir::utils::index_of_v<typename T, typename... Ts> is available as well. Both are defined in header @ref
+ *             draupnir/utils/index_of.h.
+ *           - @ref draupnir::utils::is_one_of<typename T, typename... Args> - if the `T` is present within the variadic
+ *             pack `Args...` provides the member constant `value` equals to `true`. Otherwise `value` is `false`. Helper
+ *             variable template is available as well - @ref draupnir::utils::is_one_of_v<typename T, typename... Args>.
+ *             Both are defined in header @ref draupnir/utils/type_presense.h.
+ *           - @ref draupnir::utils::is_pair<typename Pair> - if the `Pair` is `std::pair` provides the member constant
+ *             `value` equals to `true`. Otherwise `value` is `false`. Helper variable template is available as well - @ref
+ *             draupnir::utils::is_pair_v. Both are defined in header @ref draupnir/utils/template_detectors.h.
+ *           - @ref draupnir::utils::is_tuple<typename Tuple> - if the `Tuple` is `std::tuple` provides the member constant
+ *             `value` equals to `true`. Otherwise `value` is `false`. Helper variable template is available as well - @ref
+ *             draupnir::utils::is_tuple_v. Both are defined in header @ref draupnir/utils/template_detectors.h.
+ *           - @ref draupnir::utils::is_type_in_tuple<typename T, typename Tuple> - if the `Tuple` is `std::tuple` and `T`
+ *             is present within its arguments - provides the member constant `value` equals to `true`. Otherwise `value`
+ *             is `false`. Helper variable template is available as well - @ref draupnir::utils::is_type_in_tuple_v. Both
+ *             are defined in header @ref draupnir/utils/type_presense.h.
  *
  *           ### Dependencies & Requirements
  *           `DraupnirVersion.pri` file is included to enable define DRAUPNIR_LIB_VERSION with current version of the
@@ -19,11 +53,7 @@
  *           It is safe to include the Utils.pri file more than one time to *.pro.
  *
  * @note Snake-case is used for naming of classes and namespaces within this module to emphasise that these classes are
- *       pure-C++ and can be used without Qt.
- *
- * @todo Add to the documentation list of available entites within this module.
- * @todo Add to the documentation usage examples.
- * @todo Add tests for the Utils module. */
+ *       pure-C++ and can be used without Qt. */
 
 /*! @namespace draupnir::utils
  *  @ingroup Utils

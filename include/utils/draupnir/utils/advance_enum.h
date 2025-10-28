@@ -29,10 +29,9 @@
  *  @ingroup Utils
  *  @brief Compile-time helpers for implementing cyclic operator++ on enums.
  *
- *  @details Provides templates for generic enum value iteration and wrap-around logic, intended for use in operator++ overloads.
- *
- * @todo Document usage of entities within this file. Add some examples to the documentation.
- * @todo Add some test to check if this works as expected. */
+ *  @details Provides templates for generic enum value iteration and wrap-around logic, intended for use in operator++ overloads. */
+
+#include <type_traits>
 
 namespace draupnir::utils
 {
@@ -45,7 +44,10 @@ namespace draupnir::utils
  *  @param v - vnum value to advance. */
 
 template<typename E, E first, E head>
-void advance_enum(E& v) {
+void advance_enum(E& v)
+{
+    static_assert(std::is_enum_v<E>,
+            "Provided E key is not an enum type.");
     if (v == head)
         v = first;
 }
@@ -62,8 +64,11 @@ void advance_enum(E& v) {
  *  @details Compares v to head; if equal, assigns next; otherwise, recurses. */
 
 template<typename E, E first, E head, E next, E... tail>
-void advance_enum(E& v) {
-    if(v == head)
+void advance_enum(E& v)
+{
+    static_assert(std::is_enum_v<E>,
+            "Provided E key is not an enum type.");
+    if (v == head)
         v = next;
     else
         advance_enum<E,first,next,tail...>(v);
@@ -81,6 +86,8 @@ template<typename E, E first, E... values>
 struct enum_values
 {
     static void advance(E& v) {
+        static_assert(std::is_enum_v<E>,
+                "Provided E key is not an enum type.");
         advance_enum<E, first, first, values...>(v);
     }
 };

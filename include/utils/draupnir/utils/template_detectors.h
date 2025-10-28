@@ -26,10 +26,7 @@
 #define TEMPLATE_DETECTORS_H
 
 /*! @file draupnir/utils/template_detectors.h
- *  @brief This is a file.
- *
- * @todo Document usage of entities within this file. Add some examples to the documentation.
- * @todo Add some test to check if this works as expected. */
+ *  @brief This file contains utilities to check if specified type is one of template instanciations. */
 
 #include <tuple>
 #include <type_traits>
@@ -57,14 +54,12 @@ struct is_pair : std::false_type {};
 template<typename First, typename Second>
 struct is_pair<std::pair<First, Second>> : std::true_type {};
 
-/*! @var is_pair_v draupnir/utils/template_detectors.h
- *  @ingroup Utils
- *  @brief Convenience constexpr variable for @ref is_pair.
- *
- *  @details Evaluates to `true` if `T` is a `std::pair`, `false` otherwise. */
+/*! @ingroup Utils
+ *  @brief Convenience constexpr variable for @ref draupnir::utils::is_pair. Evaluates to `true` if `T` is a `std::pair`,
+ *         `false` otherwise. */
 
 template<typename T>
-constexpr bool is_pair_v = is_pair<T>::value;
+inline constexpr bool is_pair_v = is_pair<T>::value;
 
 /*! @struct is_tuple draupnir/utils/template_detectors.h
  *  @ingroup Utils
@@ -86,15 +81,12 @@ struct is_tuple : std::false_type {};
 template<typename... Args>
 struct is_tuple<std::tuple<Args...>> : std::true_type {};
 
-/*! @var is_tuple_v draupnir/utils/template_detectors.h
- *  @ingroup Utils
- *  @brief Convenience constexpr variable for @ref is_tuple.
- *
- *  @details Evaluates to `true` if `T` is a `std::tuple`, `false` otherwise. */
+/*! @ingroup Utils
+ *  @brief Convenience constexpr variable for @ref draupnir::utils::is_tuple. Evaluates to `true` if `T` is a `std::tuple`,
+ *         `false` otherwise. */
 
 template<typename T>
-constexpr bool is_tuple_v = is_tuple<T>::value;
-
+inline constexpr bool is_tuple_v = is_tuple<T>::value;
 
 }; // namespace draupnir::utils
 

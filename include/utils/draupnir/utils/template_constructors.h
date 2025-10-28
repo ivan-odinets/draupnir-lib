@@ -30,13 +30,9 @@
  *  @brief Utilities for generic, zero-initializing and dynamic construction of objects and tuples.
  *
  *  @details Provides templates to recursively zero-initialize pairs, tuples, pointers, and arithmetic types, as well as
- *           utilities to dynamically allocate tuples of objects by type.
- *
- * @todo Document usage of entities within this file. Add some examples to the documentation.
- * @todo Add some test to check if this works as expected. */
+ *           utilities to dynamically allocate tuples of objects by type. */
 
 #include <type_traits>
-
 #include "template_detectors.h"
 
 namespace draupnir::utils
@@ -55,8 +51,8 @@ namespace draupnir::utils
  *           - **std::tuple** -> all elements initialized recursively with `make_zero_value<>()`;
  *           - **Other types** → default‑constructed via `T{}`; */
 
-template<class T>
-constexpr T make_zero_value() {
+template<typename T>
+inline constexpr T make_zero_value() {
     if constexpr (std::is_pointer_v<T>) {
         return nullptr;
     } else if constexpr (std::is_arithmetic_v<T>) {
@@ -85,10 +81,12 @@ constexpr T make_zero_value() {
  *
  *           Memory is allocated using `new`, and it is the caller's responsibility to delete the objects afterwards.
  *
- * @warning static_assert if `Tuple` is not a `std::tuple`. */
+ * @warning static_assert if `Tuple` is not a `std::tuple`.
+ *
+ * @todo static_assert when Tuple contains non-pointer types. */
 
-template<class Tuple>
-static Tuple create_tuple_new() {
+template<typename Tuple>
+inline Tuple create_tuple_new() {
     static_assert(is_tuple_v<Tuple>, "Provided type is not a tuple!");
 
     static constexpr auto tupleSize = std::tuple_size_v<Tuple>;
