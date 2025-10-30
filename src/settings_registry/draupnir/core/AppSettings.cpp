@@ -27,6 +27,9 @@
 #include <QDebug>
 #include <QSettings>
 
+namespace Draupnir::Settings
+{
+
 static const QLatin1String globalSection_settingsKey{ ""        };
 static const QLatin1String coreSection_settingsKey{   "core/"   };
 static const QLatin1String networkSection_settingsKey{"network/"};
@@ -111,3 +114,5 @@ QString AppSettings::_sectionToString(AppSettings::Section section)
                "All values from the AppSettings::Section enum must be handled within this method.");
     return QString();
 }
+
+}; // namespace Draupnir::Settings

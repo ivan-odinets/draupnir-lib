@@ -30,6 +30,9 @@
 #include <QString>
 #include <QVariant>
 
+namespace Draupnir::Settings
+{
+
 /*! @class AppSettings draupnir/core/AppSettings.h
  *  @ingroup SettingsRegistry
  *  @brief Wrapper class around QSettings providing sectioned access, optional config preservation, and enum support.
@@ -223,5 +226,7 @@ private:
      *  @return QString prefix for the section. */
     static QString _sectionToString(Section section);
 };
+
+}; // namespace Draupnir::Settings
 
 #endif // APPSETTINGS_H

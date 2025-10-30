@@ -86,7 +86,7 @@ public:
         Q_ASSERT_X(backend, "ValueSerializer<Backend,Value>::set",
                    "Provided Backend* pointer is nullptr");
 
-        backend->setValue(key,value);
+        backend->setValue(key,QVariant::fromValue(value));
     }
 
 };
