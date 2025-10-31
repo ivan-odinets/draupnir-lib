@@ -41,9 +41,7 @@ namespace Draupnir::Menus {
  *  @details MenuTemplate is a variadic-template class designed to automate and unify creation, translation, and access of complex
  *           menu structures in Qt. It aggregates menu entries (QMenu, QAction, or descendants) defined by Entry traits, manages
  *           their lifecycle, and provides strongly-typed API for convenient compile-time and runtime access. Typically used in
- *           conjunction with MenuEntriesContainer and menu trait system.
- *
- * @todo Add constexpr variable versions of static constexpr methods. */
+ *           conjunction with MenuEntriesContainer and menu trait system. */
 
 template<class... Entries>
 class MenuTemplate final : public QMenu
@@ -66,18 +64,32 @@ public:
         m_container.populateUiElement(this);
     }
 
-    /*! @brief Static method returning number of elements in the menu.
-     *  @return Number of entries as constexpr int. */
-    static constexpr int staticCount() { return MenuEntriesContainer<Entries...>::staticCount(); }
+    /*! @brief Static method which returns the number of traits within this @ref MenuTemplate instantiation.
+     *  @return Number of elements as constexpr int. */
+    static constexpr int count() { return MenuEntriesContainer<Entries...>::count(); }
 
-    /*! @brief Runtime method which returns the number of elements in the menu.
-     *  @return Number of entries (always equals staticCount()). */
-    constexpr int count() const { return staticCount(); }
+    /*! @brief Static constexpr field containing the number of traits within this @ref MenuTemplate instantiation. */
+    static constexpr int count_v = count();
 
-    /*! @brief Method to check if this MenuTemplate instance contains the specified Entry.
-     *  @tparam Entry - entry trait to be checked. */
+    /*! @brief Runtime method which returns the number of traits within this @ref MenuTemplate instantiation.
+     *  @return Number of elements as constexpr int (always equals count()). */
+    constexpr int instanceCount() const { return count(); }
+
+    /*! @brief Returns true if specified entry is present within this @ref MenuTemplate instantiation.
+     *  @tparam Entry - menu entry trait to be checked. */
     template<class Entry>
     static constexpr bool contains() { return MenuEntriesContainer<Entries...>::template contains<Entry>(); }
+
+    /*! @brief Static constexpr template variable containing `true` if this @ref MenuTemplate instantiation contains
+     *         the specified Entry.
+     *  @tparam Entry - menu entry trait to be checked. */
+    template<class Entry>
+    static constexpr bool contains_v = contains<Entry>();
+
+    /*! @brief Runtime method which returns `true` if the specified Entry is present within this @ref MenuTemplate.
+     *  @tparam Entry - menu entry trait to be checked. */
+    template<class Entry>
+    constexpr bool instanceContains() { return contains<Entry>(); }
 
     /*! @brief Provides access to the entry at a specific compile-time index.
      *  @tparam Index Compile-time index (0-based).
@@ -85,10 +97,12 @@ public:
      * @note Throws static_assert if Index is out of bounds. */
     template<std::size_t Index>
     auto get() {
+        static_assert(Index < sizeof...(Entries), "Index is out of bounds in MenuTemplate.");
         return m_container.template get<Index>();
     }
     template<std::size_t Index>
     auto get() const {
+        static_assert(Index < sizeof...(Entries), "Index is out of bounds in MenuTemplate.");
         return m_container.template get<Index>();
     }
 
@@ -98,15 +112,19 @@ public:
      * @note Throws static_assert if Entry is not present in Entries... */
     template<class Entry>
     auto get() {
+        static_assert(contains<Entry>(), "Entry specified is not present within this MenuTemplate.");
         return m_container.template get<Entry>();
     }
     template<class Entry>
     auto get() const {
+        static_assert(contains<Entry>(), "Entry specified is not present within this MenuTemplate.");
         return m_container.template get<Entry>();
     }
 
+    /*! @brief Allows connecting to the QAction-based Entry triggered signal. */
     template<class Entry, class... Args>
     QMetaObject::Connection on(Args... args) {
+        static_assert(contains<Entry>(), "Entry specified is not present within this MenuTemplate.");
         return m_container.template on<Entry,Args...>(args...);
     }
 
@@ -123,9 +141,6 @@ protected:
         }
         QMenu::changeEvent(event);
     }
-
-private:
-
 };
 
 } // namespace Draupnir::Menus

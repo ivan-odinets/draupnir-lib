@@ -25,51 +25,45 @@
 #include <QtTest>
 #include <QCoreApplication>
 
-#include "draupnir/ui/menus/MenuTemplate.h"
+#include "draupnir/ui/menus/MenuBarTemplate.h"
 #include "draupnir/traits/entries/FileMenuEntries.h"
 #include "draupnir/traits/entries/decoration/SeparatorEntry.h"
 
 namespace Draupnir::Menus {
 
-/*! @class MenuTemplateTest tests/menu_templates/unit/MenuTemplateTest/MenuTemplate.cpp
- *  @brief Test class for the MenuTemplate.
+/*! @class MenuBarTemplateTest tests/menu_templates/unit/MenuBarTemplateTest/MenuBarTemplateTest.cpp
+ *  @brief Test class for the MenuBarTemplate.
  *
  * @todo Refractor this test so that it will have better readability.
  * @todo Add some script to execute this test in the context of CI. */
 
-class MenuTemplateTest final : public QObject
+class MenuBarTemplateTest final : public QObject
 {
     Q_OBJECT
 public:
-    MenuTemplateTest() = default;
-    ~MenuTemplateTest() = default;
+    MenuBarTemplateTest() = default;
+    ~MenuBarTemplateTest() = default;
 
 private slots:
     void test_initialization() {
-        MenuTemplate<
+        MenuBarTemplate<
             FileNewEntry,
             FileOpenEntry,
             SeparatorEntry,
             ExitApplicationEntry
-        > testMenu;
+        > testMenuBar;
 
-        QCOMPARE(testMenu.count(), 4);
-        QVERIFY(testMenu.contains<FileNewEntry>());
-        QVERIFY(testMenu.contains<FileOpenEntry>());
-        QVERIFY(testMenu.contains<SeparatorEntry>());
-        QVERIFY(testMenu.contains<ExitApplicationEntry>());
-        QVERIFY(!testMenu.contains<FileSaveEntry>());
-    }
-
-    void test_connectionViaOnMethod() {
-    }
-
-    void test_populateUiElement() {
+        QCOMPARE(testMenuBar.count(), 4);
+        QVERIFY(testMenuBar.contains<FileNewEntry>());
+        QVERIFY(testMenuBar.contains<FileOpenEntry>());
+        QVERIFY(testMenuBar.contains<SeparatorEntry>());
+        QVERIFY(testMenuBar.contains<ExitApplicationEntry>());
+        QVERIFY(!testMenuBar.contains<FileSaveEntry>());
     }
 };
 
 } // namespace Draupnir::Menus
 
-QTEST_MAIN(Draupnir::Menus::MenuTemplateTest)
+QTEST_MAIN(Draupnir::Menus::MenuBarTemplateTest)
 
-#include "MenuTemplateTest.moc"
+#include "MenuBarTemplateTest.moc"

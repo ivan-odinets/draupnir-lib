@@ -44,9 +44,7 @@ namespace Draupnir::Menus {
  *
  *  @details MenuEntriesContainer is a generic compile-time container that manages the creation, access, translation, and
  *           destruction of menu entry elements (QMenu/QAction or their descendants). It is designed to be used within
- *           MenuTemplate, MenuBarTemplate, or similar classes to provide DRY logic for nested menu structures.
- *
- * @todo Add constexpr variable versions of static constexpr methods. */
+ *           MenuTemplate, MenuBarTemplate, or similar classes to provide DRY logic for nested menu structures. */
 
 template<class... Entries>
 class MenuEntriesContainer
@@ -65,18 +63,32 @@ public:
         }, m_elements);
     }
 
-    /*! @brief Static method which returns the number of elements in the container.
+    /*! @brief Static method which returns the number of traits within this @ref MenuEntriesContainer instantiation.
      *  @return Number of elements as constexpr int. */
-    static constexpr int staticCount() { return sizeof...(Entries); }
+    static constexpr int count() { return sizeof...(Entries); }
 
-    /*! @brief Runtime method which returns the runtime number of elements in the container.
-     *  @return Number of elements as constexpr int (always equals staticCount()). */
-    constexpr int count() const { return staticCount(); }
+    /*! @brief Static constexpr field containing the number of traits within this @ref MenuEntriesContainer instantiation. */
+    static constexpr int count_v = count();
 
-    /*! @brief This is a method.
-     * @todo Write documentation. */
+    /*! @brief Runtime method which returns the number of traits within this @ref MenuEntriesContainer instantiation.
+     *  @return Number of elements as constexpr int (always equals count()). */
+    constexpr int instanceCount() const { return count(); }
+
+    /*! @brief Returns true if specified entry is present within this @ref MenuEntriesContainer instantiation.
+     *  @tparam Entry - menu entry trait to be checked. */
     template<class Entry>
     static constexpr bool contains() { return draupnir::utils::is_one_of_v<Entry,Entries...>; }
+
+    /*! @brief Static constexpr template variable containing `true` if this @ref MenuEntriesContainer instantiation contains
+     *         the specified Entry.
+     *  @tparam Entry - menu entry trait to be checked. */
+    template<class Entry>
+    static constexpr bool contains_v = contains<Entry>();
+
+    /*! @brief Runtime method which returns `true` if the specified Entry is present within this @ref MenuEntriesContainer.
+     *  @tparam Entry - menu entry trait to be checked. */
+    template<class Entry>
+    constexpr bool instanceContains() { return contains<Entry>(); }
 
     /*! @brief Returns a pointer to the element at the specified compile-time index.
      *  @tparam Index Index of the element to access (0-based).
@@ -92,6 +104,7 @@ public:
      *  @return Pointer to the stored element. */
     template<class Entry>
     auto get() {
+        static_assert(contains<Entry>(), "Entry specified is not present within this MenuEntriesContainer.");
         return std::get<_getEntryIndex<0, Entry, Entries...>()>(m_elements);
     }
 
@@ -125,7 +138,6 @@ public:
     }
 
 private:
-    friend class MenuEntriesContainerTest;
     std::tuple<
         std::add_pointer_t<typename Entries::Type>...
     > m_elements;

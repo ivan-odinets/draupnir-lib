@@ -34,8 +34,6 @@ namespace Draupnir::Menus {
 /*! @class MenuEntriesContainerTest tests/menu_templates/unit/MenuEntriesContainerTest/MenuEntriesContainerTest.cpp
  *  @brief Test class for the MenuEntriesContainer.
  *
- * @note This class needs to be in namespace Draupnir::Menus in order to have access to internals of the MenuEntriesContainerTest.
- *
  * @todo Refractor this test so that it will have better readability.
  * @todo Add some script to execute this test in the context of CI. */
 
