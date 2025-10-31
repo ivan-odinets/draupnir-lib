@@ -46,13 +46,6 @@ public:
         result->setSeparator(true);
         return result;
     }
-
-    /*! @brief Returns an empty display name for separator.
-     *  @return Empty QString.
-     * @todo Remove this method & update templated menus not to use it when we are dealing with the separator. */
-    static QString displayName() {
-        return QString{};
-    }
 };
 
 }; // namespace Draupnir::Menus
