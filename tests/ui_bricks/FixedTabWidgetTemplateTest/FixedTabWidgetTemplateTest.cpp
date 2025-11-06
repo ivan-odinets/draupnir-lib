@@ -41,7 +41,7 @@
  * @todo Refractor this test so that it will have better readability.
  * @todo Add some script to execute this test in the context of CI. */
 
-class FixedTabWidgetTemplateTest : public QObject
+class FixedTabWidgetTemplateTest final : public QObject
 {
     Q_OBJECT
 
@@ -67,22 +67,28 @@ public:
         PushButtonTrait
     >;
 
+    using TabWidgetWithoutSetting =Draupnir::Ui::FixedTabWidgetTemplate<
+        void,
+        LineEditTrait,
+        PushButtonTrait
+    >;
+
     MockBackend backend;
     SettingsRegistry registry;
 
-    TabWidgetOne* tabWidgetOne = nullptr;
-
     // Init internal fields
-    FixedTabWidgetTemplateTest() :
-        tabWidgetOne{new TabWidgetOne}
-    {
+    FixedTabWidgetTemplateTest() {
         registry.setBackend(&backend);
     }
 
-    ~FixedTabWidgetTemplateTest() = default;
+    ~FixedTabWidgetTemplateTest() final = default;
 
 private slots:
+
     void test_initialization() {
+        auto tabWidgetOne = new TabWidgetOne;
+        tabWidgetOne->template loadSettings<SettingsRegistry>(&registry);
+
         QCOMPARE(tabWidgetOne->count(), 2);
 
         QVERIFY(tabWidgetOne->getWidgetByIndex<QLineEdit>(0) != nullptr);
@@ -93,6 +99,8 @@ private slots:
 
         QCOMPARE(tabWidgetOne->tabToolTip(0), QString{});
         QCOMPARE(tabWidgetOne->tabToolTip(1), PushButtonTrait::tooltip());
+
+        delete tabWidgetOne;
     };
 
     void test_settings_loading() {
@@ -119,6 +127,8 @@ private slots:
         registry.set<Draupnir::Settings::CentralWidgetIndexSetting>(42);
         oneMoreWidget->loadSettings<SettingsRegistry>(&registry);
         QCOMPARE(oneMoreWidget->currentIndex(), Draupnir::Settings::CentralWidgetIndexSetting::defaultValue());
+
+        delete oneMoreWidget;
     }
 
     void test_widget_injecting() {
@@ -165,6 +175,14 @@ private slots:
         QCOMPARE(oneMoreWidget->tabToolTip(0), QString{});
         QCOMPARE(oneMoreWidget->tabText(1), PushButtonTrait::displayName());
         QCOMPARE(oneMoreWidget->tabToolTip(1),PushButtonTrait::tooltip());
+    }
+
+    void test_widget_wtithout_settings() {
+        auto tabWidgetWithoutSettings = new TabWidgetWithoutSetting;
+
+        QCOMPARE(tabWidgetWithoutSettings->currentIndex(), 0);
+
+        delete tabWidgetWithoutSettings;
     }
 };
 

@@ -68,7 +68,11 @@ template<class WidgetIndexSetting, class... TabTraits>
 class FixedTabWidgetTemplate final : public FixedTabWidget
 {
 public:
-    using SettingsBundle = Draupnir::Settings::SettingsBundleTemplate<WidgetIndexSetting>;
+    using SettingsBundle = std::conditional_t<
+        std::is_same_v<WidgetIndexSetting,void>,
+        Settings::SettingsBundleTemplate<>,
+        Draupnir::Settings::SettingsBundleTemplate<WidgetIndexSetting>
+    >;
 
     /*! @brief Constructs tab widgets from default constructors.
      *  @param parent Optional parent widget. */
@@ -97,17 +101,19 @@ public:
     /*! @brief Destructor. Saves the active tab index to settings (if loaded).
      *  @details The index is written via WidgetIndexSetting into the SettingsBundle.*/
     virtual ~FixedTabWidgetTemplate() override final {
-        Q_ASSERT_X(m_settings.isValid(),"FixedTabWidgetTemplate::~FixedTabWidgetTemplate",
-                   "FixedTabWidgetTemplate::loadSettings method must have been called before.");
-        m_settings.template set<WidgetIndexSetting>(this->currentIndex());
+        if constexpr (!SettingsBundle::isEmpty()) {
+            Q_ASSERT_X(m_settings.isValid(),"FixedTabWidgetTemplate::~FixedTabWidgetTemplate",
+                       "FixedTabWidgetTemplate::loadSettings method must have been called before.");
+            m_settings.template set<WidgetIndexSetting>(this->currentIndex());
+        }
     }
 
     /*! @brief Loads UI state from SettingsRegistry.
      *  @param registry Pointer to the settings registry instance.
      *  @details Loads the saved active tab index using WidgetIndexSetting and applies it to the tab widget. Must be called
      *           once after construction, before user interaction. */
-    template<class SettingsRegistry>
-    void loadSettings(SettingsRegistry* registry) {
+    template<class SettingsRegistry, bool isEnabled = !SettingsBundle::isEmpty()>
+    std::enable_if_t<isEnabled,void> loadSettings(SettingsRegistry* registry) {
         static_assert(SettingsBundle::template canBeFullyPopulatedFrom<SettingsRegistry>(),
         "Provided SettingsRegistry can not populate the SettingsBundle (missing WidgetIndexSetting).");
         Q_ASSERT_X(registry,"FixedTabWidget::loadSettings",
