@@ -66,6 +66,9 @@ public:
     /*! @brief Element type of the provided array. */
     using key_type = decltype(keys_array[0]);
 
+    /*! @brief Type of pairs within array. */
+    using pair_type = std::pair<const key_type,value_type>;
+
     /*! @brief Store provided keys_array for building this fixed_map as static constexpr member. */
     static constexpr auto keys = keys_array;
 
@@ -85,13 +88,27 @@ public:
                     _same_keys_impl<other_map>();
     };
 
+    /*! @brief Static constexpr template variable containing `true` if this @ref draupnir::container::fixed_map instantiation
+     *         is using the same keys as other_map provided. */
+    template<class other_map>
+    static constexpr bool same_keys_v = same_keys<other_map>();
+
     /*! @brief Method which checks if the object of other instantiation of a fixed_map template is using the same keys_array as this
      *         object. */
     template<class other_map>
     bool same_keys(const other_map&) const { return same_keys<other_map>(); }
 
+    /*! @brief Static constexpt method which checks if the key specified is present within the keys array used by this fixed_map. */
+    template<const auto key>
+    static constexpr bool contains() { return _contains_impl<0,key>(); }
+
+    /*! @brief Static constexpr template variable containing `true` if this @ref draupnir::container::fixed_map instantiation
+     *         contains key provided. */
+    template<const auto key>
+    static constexpr bool contains_v = contains<key>();
+
     /*! @brief This method returns true if the provided key cotained within the keys_array. */
-    static constexpr bool contains(key_type key) { return _contains_impl<0>(key); }
+    static constexpr bool contains(key_type key) { return _contains_impl<0>(key); }    
 
     /*! @brief Returns first value of the provided keys_array. */
     static constexpr key_type first_key() { return keys_array[0]; }
@@ -188,6 +205,17 @@ private:
                         _same_keys_impl<other_map,Index+1>();
         } else {
             return true;
+        }
+    }
+
+    template<std::size_t Index = 0, const auto key>
+    static constexpr bool _contains_impl() {
+        if constexpr (Index < keys_size) {
+            return (keys[Index] == key) ?
+                        true :
+                        _contains_impl<Index+1>(key);
+        } else {
+            return false;
         }
     }
 

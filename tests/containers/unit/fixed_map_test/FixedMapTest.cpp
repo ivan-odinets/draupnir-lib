@@ -276,6 +276,17 @@ private slots:
             QVERIFY(value == 42);
         });
     }
+
+    void test_contains() {
+        using MapType = decltype(integerIntegerMap);
+
+        //static constexpr int integerValuesArray[] = { 0, 1, 5, 10 };
+        QCOMPARE(MapType::template contains<5>(), true);
+        QCOMPARE(MapType::contains(5), true);
+
+        QCOMPARE(MapType::template contains<6>(), false);
+        QCOMPARE(MapType::contains(6), false);
+    }
 };
 
 QTEST_APPLESS_MAIN(FixedMapTest)
