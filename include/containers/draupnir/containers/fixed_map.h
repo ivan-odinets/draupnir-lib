@@ -53,8 +53,7 @@ namespace draupnir::containers {
  *
  * @todo Improve container performance for cases when: keys array specified consists of integer sequence (or enum with
  *       increment of the values); array specified is list of boolean flags.
- * @todo Extend documentation for this class usage. And maybe add simple example program to the specific examples directory.
- * @todo Add constexpr variable versions of static constexpr methods. */
+ * @todo Extend documentation for this class usage. And maybe add simple example program to the specific examples directory. */
 
 template<const auto& keys_array, class value_type>
 class fixed_map
@@ -173,11 +172,23 @@ public:
 
     /*! @brief Returns reference to the value_type object associated with the given key.
      * @warning If the key is not available in the keys_array template argument - assert statement will be executed. */
+    [[nodiscard]] constexpr const value_type& get(key_type key) const { return _get_impl<0>(key); }
+
+    /*! @brief Returns reference to the value_type object associated with the given key.
+     * @warning If the key is not available in the keys_array template argument - assert statement will be executed. */
     [[nodiscard]] constexpr value_type& operator[](key_type key) { return _get_impl<0>(key); }
+
+    /*! @brief Returns reference to the value_type object associated with the given key.
+     * @warning If the key is not available in the keys_array template argument - assert statement will be executed. */
+    [[nodiscard]] constexpr const value_type& operator[](key_type key) const { return _get_const_impl<0>(key); }
 
     /*! @brief Returns reference to the value_type object for a specific index.
      * @warning If the specified index is larger than size of fixed_map - out of bounds access to the array will happen. */
     [[nodiscard]] constexpr value_type& value_by_index(int index) { return m_data[index].second; }
+
+    /*! @brief Returns reference to the value_type object for a specific index.
+     * @warning If the specified index is larger than size of fixed_map - out of bounds access to the array will happen. */
+    [[nodiscard]] constexpr const value_type& value_by_index(int index) const { return m_data[index].second; }
 
     /*! @brief Clears the fixed_map container. Values associated with all keys are reset to default ones. This means: numbers
      *         as 0, pointers as nullptr and other types as their default constructor. */
@@ -236,6 +247,20 @@ private:
             return (m_data[I].first == key) ?
                 m_data[I].second :
                 _get_impl<I+1>(key);
+        } else {
+            assert(false && "Provided key is not known by this fixed_map.");
+            // This should not be executed. But can be executed if the logic is bad.
+            // To suppress compiler warnings about "No Return"
+            return *reinterpret_cast<value_type*>(0xDEADBEEF);
+        }
+    };
+
+    template<std::size_t I>
+    inline const value_type& _get_const_impl(key_type key) const {
+        if constexpr (I < keys_size) {
+            return (m_data[I].first == key) ?
+                m_data[I].second :
+                _get_const_impl<I+1>(key);
         } else {
             assert(false && "Provided key is not known by this fixed_map.");
             // This should not be executed. But can be executed if the logic is bad.
