@@ -30,6 +30,8 @@
 #include "draupnir/core/SettingTemplate.h"
 #include "draupnir/SettingsBundleTemplate.h"
 
+#include "draupnir/SettingsBundleMerge.h"
+
 namespace Draupnir::Settings
 {
 
@@ -41,6 +43,8 @@ namespace Draupnir::Settings
  *  @details This struct is used to normalize all setting-related types into a uniform representation (i.e. a tuple of
  *           SettingTemplate<Trait>), whether they are standalone or bundled.
  *
+ * @todo Somehow make this thing work so that all Traits will be included only once.
+ * @todo Unify the Settings thingy merging thing.
  * @todo Add test checking this feature. */
 
 template<class Trait>
@@ -108,6 +112,10 @@ struct TupleConcat<std::tuple<Ts...>, std::tuple<Us...>, Rest...> {
     using type = typename TupleConcat<std::tuple<Ts..., Us...>, Rest...>::type;
 };
 
-};
+template<class... Traits>
+using SettingsTraitConcat = typename TupleConcat<typename Flatten<Traits>::type...>::type;
+
+
+}; // namespace Draupnir::Settings
 
 #endif // SETTINGTRAITSCONCAT_H

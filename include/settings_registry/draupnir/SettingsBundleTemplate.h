@@ -72,9 +72,7 @@ namespace Draupnir::Settings
  *  @see SettingsRegistryTemplate, SettingTraitSerializer, SettingTraitForEntry, SettingTemplate
  *
  * @todo Add interface for partial updating of the settings. E.g. when the setting has sth like QStringList type - not replace
- *       the variable, but use append method and than write to the backend.
- * @todo Add test for this class.
- * @todo Add constexpr variable versions of static constexpr methods. */
+ *       the variable, but use append method and than write to the backend. */
 
 template<class... SettingTraits>
 class SettingsBundleTemplate
@@ -97,17 +95,31 @@ public:
     template<class Trait>
     static constexpr bool contains() { return draupnir::utils::is_one_of_v<Trait, SettingTraits...>; }
 
+    /*! @brief Static template constexpr variable containing `true` if this instantiation of the @ref Draupnir::Settings::SettingsBundle
+     *         template contains the specified Trait. */
+    template<class Trait>
+    static constexpr bool contains_v = contains<Trait>();
+
     /*! @brief Returns whether the bundle is empty.
      *  @return Always false for this general template. Specialization SettingsBundle<> returns true. */
     static constexpr bool isEmpty() { return false; }
 
-    /*! @brief Compile-time check: can this bundle be fully populated from the given SettingsRegistry?
-     *  @tparam SettingsRegistry A registry type to check against.
+    /*! @brief Static template constexpr variable containing `true` if this instantiation of the @ref Draupnir::Settings::SettingsBundle
+     *         template is empty. Always `false` for general case and always `true` for SettingsBundle<> specialization. */
+    static constexpr bool isEmpty_v = isEmpty();
+
+    /*! @brief Compile-time check: can this bundle be fully populated from the given SettingsSource?
+     *  @tparam SettingsSource A registry type to check against.
      *  @return true if all SettingTraits in this bundle are present in the registry, false otherwise. */
-    template<class SettingsRegistry>
+    template<class SettingsSource>
     static constexpr bool canBeFullyPopulatedFrom() {
-        return _canBePopulatedFromImpl<SettingsRegistry,SettingTraits...>();
+        return _canBePopulatedFromImpl<SettingsSource,SettingTraits...>();
     }
+
+    /*! @brief Static template constexpr variable containing `true` if this instantiation of the @ref Draupnir::Settings::SettingsBundle
+     *         template can be fully populated from the given SettingsSource. */
+    template<class SettingsSource>
+    static constexpr bool canBeFullyPopulatedFrom_v = canBeFullyPopulatedFrom<SettingsSource>();
 
     /*! @brief Default constructor. Creates an uninitialized (invalid) bundle. Internally, all pointers are set to nullptr.
      * @note Backend pointer is nullptr and working with such bundle will result in Q_ASSERT in Debug or UB in release. */
@@ -193,6 +205,9 @@ public:
 
 protected:
     template<class...>
+    friend class SettingsBundleTemplate;
+
+    template<class...>
     friend class SettingsRegistryTemplate;
 
     /*! @brief Internal constructor. Called by SettingsRegistry when initializing the bundle.
@@ -217,6 +232,8 @@ protected:
     }
 
 private:
+    friend class SettingsBundleTemplateTest;
+
     Backend* p_backend;             ///< Pointer to the backend settings store.
 
     std::tuple<
@@ -236,7 +253,6 @@ private:
      *  @tparam Bundle Target bundle type. */
     template<class Bundle,class First, class... Rest>
     inline void _populateSettingBundle(Bundle& bundle) {
-
         if constexpr (Bundle::template contains<First>()) {
             bundle.registerSetting(std::get<SettingTemplate<First>*>(m_settingTemplatePtrTuple));
         }
@@ -289,24 +305,34 @@ public:
     /*! @brief Checks at compile time whether the bundle contains the given trait.
      *  @tparam Trait A trait to check.
      *  @return always returns false for the empty specialization. */
-    template<class>
+    template<class Trait>
     static constexpr bool contains() { return false; }
 
+    /*! @brief Static constexpr variable containing `true` if this instantiation of @ref Draupnir::Settings::SettingsBundleRegistry
+     *         contains the specified trait. For empty specialization - contains `false` always. */
+    template<class Trait>
+    static constexpr bool contains_v = false;
+
     /*! @brief Returns whether the bundle is empty.
-     *  @return Always false for this general template. Specialization SettingsBundle<> returns true. */
+     *  @return Always false for general template. Specialization SettingsBundle<> returns true. */
     static constexpr bool isEmpty() { return true; }
+
+    static constexpr bool isEmpty_v = true;
 
     SettingsBundleTemplate() = default;
 
     /*! @brief Compile-time check: can this bundle be populated from the given SettingsRegistry?
      *  @tparam ignored. Empty bundles can not be populated.
      *  @return false always. */
-    template<class>
-    static constexpr bool canBeFullyPopulatedFrom() {
-        return false;
-    }
+    template<class SettingsSource>
+    static constexpr bool canBeFullyPopulatedFrom() { return false; }
+
+    template<class SettingsSource>
+    static constexpr bool canBeFullyPopulatedFrom_v = false;
 
 protected:
+    friend class SettingsBundleTemplateTest;
+
     template<class...>
     friend class SettingsRegistryTemplate;
 

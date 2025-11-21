@@ -79,7 +79,6 @@ namespace Draupnir::Settings
  * @note One of the marcos: DRAUPNIR_SETTINGS_USE_QSETTINGS, DRAUPNIR_SETTINGS_USE_APPSETTINGS, DRAUPNIR_SETTINGS_USE_CUSTOM
  *       **MUST** be defined. Or compilation will fail.
  *
- * @todo Add constexpr variable versions of static constexpr methods.
  * @todo Introduce settings UI categories.
  * @todo Create templated settings widget / dialog.
  * @todo Add interface for partial updating of the settings. E.g. when the setting has sth like QStringList type - not replace
@@ -99,13 +98,19 @@ class SettingsRegistryTemplate
            "DRAUPNIR_SETTINGS_USE_APPSETTINGS macro must be defined.")
 #endif
 
-    using AbstractSettingsTuple = typename TupleConcat<typename Flatten<Traits>::type...>::type;
+    using AbstractSettingsTuple = SettingsTraitConcat<Traits...>;
 
 public:
     /*! @brief Checks at compile time whether a specific SettingTrait is part of this registry.
      *  @tparam SettingTrait A trait to check for. */
     template<class SettingTrait>
     static constexpr bool contains() { return draupnir::utils::is_type_in_tuple_v<SettingTemplate<SettingTrait>,AbstractSettingsTuple>; }
+
+    /*! @brief Static constexpr template variable containing `true` if this @ref SettingsRegistryTemplate instantiation contains
+     *         the specified SettingTrait.
+     *  @tparam SettingTrait - trait to be checked. */
+    template<class SettingTrait>
+    static constexpr bool contains_v = contains<SettingTrait>();
 
     /*! @brief Checks at compile time whether a specific SettingTrait is part of this registry.
      *  @tparam SettingTrait A trait to check for. */
@@ -117,6 +122,9 @@ public:
     /*! @brief Returns whether the SettingsRegistry is empty.
      *  @return False if sizeof...(Traits> != 0. */
     static constexpr bool isEmpty() { return sizeof...(Traits) == 0; }
+
+    /*! @brief Static constexpr variable containing `true` if this @ref SettingsRegistryTemplate instantiation is empty. */
+    static constexpr bool isEmpty_v = isEmpty();
 
     /*! @brief Default constructor. Initializes internal Backend pointer to nullptr. */
     SettingsRegistryTemplate() :
