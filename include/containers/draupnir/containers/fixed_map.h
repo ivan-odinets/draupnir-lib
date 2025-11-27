@@ -40,13 +40,14 @@ namespace draupnir::containers {
  *  @tparam value_type - type to store.
  *
  *  @details Object of this type provides a std::map/QMap-like interface for accesing values of specified type. Compared
- *           to std::map / QMap amount of keys within fixed_map is specified during compile-time as an argument. Some details:
- *           - The container holds an std::array of std::pair objects, each pair storing a key from the provided array
+ *           to `std::map` / `QMap` amount of keys within `fixed_map` is specified during compile-time as an argument.
+ *           Some details:
+ *           - The container holds an `std::array` of `std::pair` objects, each pair storing a key from the provided array
  *             and a value object of the specified type.
- *           - These pairs can be accessed via standard iterators exported through fixed_map::begin, ::cbegin,
- *             ::end and ::cend.
+ *           - These pairs can be accessed via standard iterators exported through fixed_map::begin, fixed_map::cbegin,
+ *             fixed_map::end and fixed_map::cend.
  *           - Values can be retrieved using fixed_map::get or the operator[].
- *           - By default value_type objects are initialized as follows: numbers to 0, pointers to nullptr and other types
+ *           - By default `value_type` objects are initialized as follows: numbers to `0`, pointers to `nullptr` and other types
  *             via their default constructor.
  *
  * @note The container size and key set are defined at compile-time.

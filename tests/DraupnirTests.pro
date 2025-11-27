@@ -11,12 +11,3 @@ SUBDIRS += \
     settings_registry/SettingsRegistryTests.pro \
     ui_bricks/UiBricksTests.pro \
     utils/UtilsTests.pro
-
-
-
-
-
-
-
-
-

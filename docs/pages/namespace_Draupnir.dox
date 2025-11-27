@@ -1,5 +1,9 @@
 /*! @namespace Draupnir
  *  @brief Contains classes and namespaces from the Draupnir lib which are dependant on the Qt.
  *
- * @todo Will put this here for now. Document versioning of the library.
- * @todo Maybe it will make sense to add global static constexpr variables with library version and version string? */
+ * @todo Establish final version of public interface. This includes: directory structure, headers (what are "public"
+ *       and what are "private"), API to be called.
+ * @todo Establish & implement final scheme for *.pri files. What should be there? What should not?
+ * @todo Establish & implement rules for the tests. Naming of classes / methods, location, etc.
+ * @todo Setup GitHub Actions CI test execution (or some other way to automate tests).
+ * @todo Finalize and document library versioning. */

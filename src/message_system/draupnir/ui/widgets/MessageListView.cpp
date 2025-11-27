@@ -62,60 +62,34 @@ void MessageListView::setModel(QAbstractItemModel* model)
     p_messageList = static_cast<MessageListModel*>(model);
 }
 
-void MessageListView::applyMessageTypeFilter(MessageType type)
+void MessageListView::setDisplayedMessageTypesMask(MessageType type)
 {
-    p_messageListProxyModel->setMessageTypeFilter(type);
+    p_messageListProxyModel->setDisplayedMessageTypesMask(type);
 }
 
-MessageType MessageListView::messageTypeFilter() const
+MessageType MessageListView::displayedMessageTypesMask() const
 {
-    return p_messageListProxyModel->messageTypeFilter();
+    return p_messageListProxyModel->displayedMessageTypesMask();
 }
 
-bool MessageListView::isBriefDisplayed() const
+bool MessageListView::isMessageTypeDisplayed(MessageType messageType)
 {
-    return p_messageListProxyModel->isBriefDisplayed();
+    return p_messageListProxyModel->isMessageTypeDisplayed(messageType);
 }
 
-void MessageListView::setBriefDisplayed(bool state)
+void MessageListView::setDisplayedMessageFieldsMask(std::underlying_type_t<Message::Fields> fields)
 {
-    p_messageListProxyModel->setBriefDisplayed(state);
+    p_messageListProxyModel->setDisplayedMessageFieldsMask(fields);
 }
 
-bool MessageListView::isWhatDisplayed() const
+std::underlying_type_t<Message::Fields> MessageListView::displayedMessageFieldsMask() const
 {
-    return p_messageListProxyModel->isWhatDisplayed();
+    return p_messageListProxyModel->displayedMessageFieldsMask();
 }
 
-void MessageListView::setWhatDisplayed(bool state)
+bool MessageListView::isMessageFieldDisplayed(Message::Fields field) const
 {
-    p_messageListProxyModel->setWhatDisplayed(state);
-}
-
-bool MessageListView::isDateTimeDisplayed() const
-{
-    return p_messageListProxyModel->isDateTimeDisplayed();
-}
-
-void MessageListView::setDateTimeDisplayed(bool state)
-{
-    p_messageListProxyModel->setDateTimeDisplayed(state);
-}
-
-bool MessageListView::isIconDisplayed() const
-{
-    return p_messageListProxyModel->isIconDisplayed();
-}
-
-void MessageListView::setIconDisplayed(bool state)
-{
-    p_messageListProxyModel->setIconDisplayed(state);
-}
-
-void MessageListView::setMessageTypeDisplayed(MessageType type, bool displayed)
-{
-    p_messageListProxyModel->setMessageTypeAllowed(type,displayed);
-    emit messageTypeVisibilityChanged(type,displayed);
+    return p_messageListProxyModel->isMessageFieldDisplayed(field);
 }
 
 void MessageListView::mouseDoubleClickEvent(QMouseEvent *event)
@@ -139,6 +113,18 @@ void MessageListView::mouseDoubleClickEvent(QMouseEvent *event)
     dialog->setAttribute(Qt::WA_DeleteOnClose);
     dialog->addMessageList(messagesList);
     dialog->show();
+}
+
+void MessageListView::setMessageTypeDisplayed(MessageType type, bool displayed)
+{
+    p_messageListProxyModel->setMessageTypeDisplayed(type,displayed);
+    emit messageTypeVisibilityChanged(type,displayed);
+}
+
+void MessageListView::setMessageFieldDisplayed(Message::Fields field, bool isVisible)
+{
+    p_messageListProxyModel->setMessageFieldDisplayed(field, isVisible);
+    emit messageFieldVisibilityChanged(field, isVisible);
 }
 
 }; // namespace Draupnir::Messages

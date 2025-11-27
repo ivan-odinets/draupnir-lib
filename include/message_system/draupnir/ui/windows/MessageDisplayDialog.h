@@ -25,6 +25,7 @@
 #ifndef MESSAGEDISPLAYDIALOG_H
 #define MESSAGEDISPLAYDIALOG_H
 
+#include <QDebug>
 #include <QDialog>
 
 class QDialogButtonBox;
@@ -38,10 +39,10 @@ class Message;
 
 /*! @class MessageDisplayDialog draupnir/ui/windows/MessageDisplayDialog.h
  *  @ingroup MessageSystem
- *  @brief Dialog window used for displaying one or more messages in a scrollable view.
+ *  @brief Dialog window used for displaying one or more @ref Draupnir::Messages::Message objects in a scrollable view.
  *
- *  @details This class provides a scrollable dialog for showing multiple @ref Message instances using @ref MessageDisplayWidget.
- *           It is designed for dynamic addition of messages.
+ *  @details This class provides a scrollable dialog for showing one ore several @ref Draupnir::Messages::Message instances
+ *           using @ref Draupnir::Messages::MessageDisplayWidget.
  *
  *           Internally, the dialog consists of:
  *           - A `QScrollArea` containing a vertical layout with `MessageDisplayWidget` instances
@@ -53,27 +54,26 @@ class MessageDisplayDialog final : public QDialog
 {
     Q_OBJECT
 public:
-    /*! @brief Constructs a MessageDisplayDialog with optional parent. Initializes internal layout, scroll area and OK button.
+    /*! @brief Constructs a @ref Draupnir::Messages::MessageDisplayDialog with optional parent. Initializes internal layout,
+     *         scroll area and OK button.
      *  @param parent The parent widget, or nullptr if none. */
     explicit MessageDisplayDialog(QWidget* parent = nullptr);
 
     /*! @brief Destructor. No manual cleanup required. */
-    ~MessageDisplayDialog() final;
+    ~MessageDisplayDialog() final = default;
 
-    /*! @brief Adds a single Message to the dialog.
-     *  @param message Pointer to a valid Message object. Must not be nullptr.
-     *
-     *  @details A new `MessageDisplayWidget` is created for the message and inserted into the scrollable layout. */
+    /*! @brief Adds a single @ref Draupnir::Messages::Message to the dialog.
+     *  @param message Pointer to a valid @ref Draupnir::Messages::Message object. Must not be nullptr.
+     *  @details A new @ref Draupnir::Messages::MessageDisplayWidget is created for the message and inserted into the
+     *           scrollable layout. */
     void addMessage(Message* message);
 
-    /*! @brief Adds multiple messages to the dialog.
-     *  @param messages List of `Message*` objects. Null entries are not allowed.
-     *
+    /*! @brief Adds multiple @ref Draupnir::Messages::Message objects to the dialog.
+     *  @param messages List of pointers to the @ref Draupnir::Messages::Message objects. Null entries are not allowed.
      *  @details Convenience method for batch-adding messages. */
     void addMessageList(const QList<Message*>& message);
 
     /*! @brief Removes all displayed messages from the dialog.
-     *
      *  @details Deletes all child widgets from the scrollable layout. */
     void clear();
 

@@ -28,6 +28,7 @@
 #include <QListView>
 
 #include "draupnir/core/MessageType.h"
+#include "draupnir/core/Message.h"
 
 namespace Draupnir::Messages
 {
@@ -36,88 +37,77 @@ class MessageListModel;
 class MessageListProxyModel;
 
 /*! @class MessageListView draupnir/ui/widgets/MessageListView.h
- *  @brief QListView subclass tailored for displaying `MessageListModel` with filtering and display options.
- *  @details This class extends `QListView` to provide specialized support for displaying `MessageListModel` contents. Internally,
- *           it uses a `MessageListProxyModel` for filtering messages by category (type). Additionally, it allows fine-grained
- *           control over which fields of each `Message` (e.g., `brief`, `what`, `icon`, `dateTime`) should be visible.
+ *  @ingroup MessageSystem
+ *  @brief `QListView` subclass used for displaying @ref Draupnir::Messages::MessageListModel with filtering and display
+ *         options.
  *
- *           The widget is also interactive: double-clicking a message opens a `MessageDisplayDialog` containing selected messages.
+ *  @details This class extends `QListView` to provide specialized options for displaying @ref Draupnir::Messages::MessageListModel
+ *           contents. Internally, it uses a @ref Draupnir::Messages::MessageListProxyModel for filtering messages by category
+ *           (type). Additionally, it allows control over which fields of each @ref Draupnir::Messages::Message (e.g., `brief`,
+ *           `what`, `icon`, `dateTime`) should be visible.
  *
- * @note A valid MessageListModel must be set before calling any of the display configuration methods, otherwise assertions will
- *       be triggered in debug builds or UB will happen in release.
- *
- * @todo Write test for this class.
- * @todo Add support of selecting message parts to be displayed. */
+ *           The widget is also interactive: double-clicking a message opens a @ref Draupnir::Messages::MessageDisplayDialog
+ *           containing selected messages. */
 
 class MessageListView final : public QListView
 {
     Q_OBJECT
 public:
-    /*! @brief Default constructor. */
+    /*! @brief Default constructor. Initializes internal @ref Draupnir::Messages::MessageListProxyModel, context menu policies,
+     *         etc. */
     explicit MessageListView(QWidget* parent = nullptr);
 
-    /*! @brief Destructor. Delete internal MessageListProxyModel. */
+    /*! @brief Destructor. Delete internal @ref Draupnir::Messages::MessageListProxyModel. */
     ~MessageListView() final;
 
-    /*! @brief Pass MessageListModel* here to display.
+    /*! @brief Pass @ref Draupnir::Messages::MessageListModel here to display.
      * @note Passing any other QAbstractItemModel-derivative - will result in UB (or crash in debug). */
     void setModel(QAbstractItemModel* model) override final;
 
-    /*! @brief Sets what type of Message objects should be displayed within this MessageListView.
+    /*! @brief Sets what type of @ref Draupnir::Messages::Message objects should be displayed within this widget.
      * @note No signals are emitted while calling this method. */
-    void applyMessageTypeFilter(MessageType type);
+    void setDisplayedMessageTypesMask(MessageType type);
 
-    /*! @brief Returns what type of Message objects are displayed within this MessageListView. */
-    MessageType messageTypeFilter() const;
+    /*! @brief This method returns mask of message types which are displayed by this @ref Draupnir::Messages::MessageListView
+     *         widget. */
+    MessageType displayedMessageTypesMask() const;
 
-    /*! @brief Returns true if this widget will display content of Message::brief.
-     * @note Calling this method before specifying model - will result in UB (or crash in debug). */
-    bool isBriefDisplayed() const;
+    /*! @brief Returns whether the specified @ref Draupnir::Messages::MessageType is currently selected for display. */
+    bool isMessageTypeDisplayed(MessageType messageType);
 
-    /*! @brief Allows setting if this widget will display content of Message::brief.
-     * @note Calling this method before specifying model - will result in UB (or crash in debug).*/
-    void setBriefDisplayed(bool state);
+    /*! @brief Sets what fields of the @ref Draupnir::Messages::Message objects should be displayed within this widget. */
+    void setDisplayedMessageFieldsMask(std::underlying_type_t<Message::Fields> fields);
 
-    /*! @brief Returns true if this widget will display content of Message::what.
-     * @note Calling this method before specifying model - will result in UB (or crash in debug).*/
-    bool isWhatDisplayed() const;
+    /*! @brief This method returns mask of the parts of the @ref Draupnir::Messages::Message object which are marked as
+     *         displayed within the @ref Draupnir::Messages::MessageListView widget. */
+    std::underlying_type_t<Message::Fields> displayedMessageFieldsMask() const;
 
-    /*! @brief Allows setting if this widget will display content of Message::what.
-     * @note Calling this method before specifying model - will result in UB (or crash in debug).*/
-    void setWhatDisplayed(bool state);
-
-    /*! @brief Returns true if this widget will display content of Message::dateTime.
-     * @note Calling this method before specifying model - will result in UB (or crash in debug).*/
-    bool isDateTimeDisplayed() const;
-
-    /*! @brief Allows setting if this widget will display content of Message::dateTime.
-     * @note Calling this method before specifying model - will result in UB (or crash in debug).*/
-    void setDateTimeDisplayed(bool state);
-
-    /*! @brief Returns true if this widget will display content of Message::icon.
-     * @note Calling this method before specifying model - will result in UB (or crash in debug).*/
-    bool isIconDisplayed() const;
-
-    /*! @brief Allows setting if this widget will display content of Message::icon.
-     * @note Calling this method before specifying model - will result in UB (or crash in debug).*/
-    void setIconDisplayed(bool state);
+    /*! @brief Returns true if specified field of the @ref Draupnir::Messages::Message object is displayed. */
+    bool isMessageFieldDisplayed(Message::Fields field) const;
 
 signals:
-    /*! @brief This signal is emitted when a visibility of specific MessageType has changed. */
-    void messageTypeVisibilityChanged(MessageType messageType, bool isVisible);
+    /*! @brief This signal is emitted when a visibility of specific @ref Draupnir::Messages::MessageType has changed. */
+    void messageTypeVisibilityChanged(Draupnir::Messages::MessageType messageType, bool isVisible);
 
-public slots:
-    /*! @todo This method is used to enable / disable viewing of the individual message types.
-     * @note After triggering - signal messageTypeVisibilityChanged is emited. */
-    void setMessageTypeDisplayed(MessageType type, bool displayed);
+    /*! @brief This signal is emitted when a visibility of specific field of @ref Draupnir::Messages::Message object
+     *         has changed. */
+    void messageFieldVisibilityChanged(Draupnir::Messages::Message::Fields field, bool isVisible);
 
 protected:
     /*! @brief Override this to show MessageDisplayDialog by double click. */
     void mouseDoubleClickEvent(QMouseEvent *event) final;
 
-private:
-    void _retranslateUi();
+public slots:
+    /*! @todo This method is used to enable / disable viewing of the individual message types.
+     * @note After triggering - signal @ref Draupnir::Messages::MessageListView::messageTypeVisibilityChanged is emited. */
+    void setMessageTypeDisplayed(Draupnir::Messages::MessageType type, bool displayed);
 
+    /*! @todo This method is used to toggle visibility of the different fields of of the @ref Draupnir::Message::Message
+     *        objects.
+     * @note After triggering - signal @ref Draupnir::Messages::MessageListView::messageFieldVisibilityChanged is emited. */
+    void setMessageFieldDisplayed(Message::Fields field, bool isVisible);
+
+private:
     MessageListModel* p_messageList;
     MessageListProxyModel* p_messageListProxyModel;
 };

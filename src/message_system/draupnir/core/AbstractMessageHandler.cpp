@@ -22,117 +22,73 @@
  *
  */
 
-#include "draupnir/core/MessageHandlerInterface.h"
+#include "draupnir/core/AbstractMessageHandler.h"
 
 #include <QApplication>
 #include <QSystemTrayIcon>
 
-#include "draupnir/traits/messages/DefaultMessageTraits.h"
 #include "draupnir/models/MessageListModel.h"
+#include "draupnir/traits/messages/InfoMessageTrait.h"
 #include "draupnir/ui/windows/MessageDisplayDialog.h"
 
 namespace Draupnir::Messages
 {
 
-MessageHandlerInterface::MessageHandlerInterface(QObject* parent) :
+AbstractMessageHandler::~AbstractMessageHandler()
+{
+    p_messageListModel->deleteLater();
+    delete p_dummy;
+}
+
+AbstractMessageHandler::AbstractMessageHandler(QObject* parent) :
     QObject{parent},
     w_trayIcon{nullptr},
     p_dummy{Message::fromTrait<InfoMessageTrait>(tr("Test message"))},
     p_messageListModel{new MessageListModel}
 {}
 
-MessageHandlerInterface::~MessageHandlerInterface()
+void AbstractMessageHandler::showDummy(Notification::Type type)
 {
-    p_messageListModel->deleteLater();
-    delete p_dummy;
+    Q_ASSERT_X(type != Notification::UnknownType, "AbstractMessageHandler::showDummy",
+               "Notification::UnknownType is not supposed to be shown to a user.");
+    showMessage(p_dummy, type);
 }
 
-MessageGroup MessageHandlerInterface::beginMessageGroup()
+void AbstractMessageHandler::handleMessage(Message* message)
 {
-    const MessageGroup newGroup = MessageGroup::generateUniqueGroup();
-
-    if (m_messageGroupsMap.contains(newGroup)) {
-        return MessageHandlerInterface::beginMessageGroup();
-    }
-
-    m_messageGroupsMap.insert(newGroup, QList<Message*>{});
-    return newGroup;
-}
-
-void MessageHandlerInterface::flush(MessageGroup group)
-{
-    if (!m_messageGroupsMap.contains(group)) {
-        qDebug() << "MessageHandler::flush - trying to flush non-existant group.";
-        return;
-    }
-
-    const QList<Message*>& messages = m_messageGroupsMap[group];
-    showMessageList(messages);
-    m_messageGroupsMap[group].clear();
-}
-
-void MessageHandlerInterface::endMessageGroup(MessageGroup group)
-{
-    if (!m_messageGroupsMap.contains(group)) {
-        qDebug() << "MessageHandler::endMessageGroup - trying to close non-existant group.";
-        return;
-    }
-
-    const QList<Message*>& messages = m_messageGroupsMap[group];
-    showMessageList(messages);
-    m_messageGroupsMap.remove(group);
-}
-
-void MessageHandlerInterface::showDummy(Notification::Type type)
-{
-    switch (type) {
-    case Notification::None:
-        return;
-#ifndef QT_NO_SYSTEMTRAYICON
-    case Notification::Systemtray:
-        _showMessageInSystray(p_dummy);
-        return;
-#endif // QT_NO_SYSTEMTRAYICON
-    case Notification::MessageBoxType:
-        _showMessageBox(p_dummy);
-        return;
-    case Notification::UnknownType:
-        Q_ASSERT_X(false, "MessageHandler::showDummy", "Unknown notification type");
-        return;
-    }
-}
-
-void MessageHandlerInterface::processMessage(Message* message)
-{
+    Q_ASSERT_X(message, "AbstractMessageHandler::handleMessage",
+               "Specified message pointer is nullptr. ");
     p_messageListModel->append(message);
     showMessage(message);
 }
 
-void MessageHandlerInterface::processMessage(Message* message, MessageGroup group)
+void AbstractMessageHandler::handleMessageList(const QList<Message*>& messageList)
 {
-    p_messageListModel->append(message);
-
-    if (!m_messageGroupsMap.contains(group)) {
-        qDebug() << "MessageHandler::processMessage - trying to use non-existant group.";
-        return;
+#ifndef QT_NO_DEBUG
+    // Just to be sure that no nullptrs are here
+    for (Message* message : messageList) {
+        Q_ASSERT_X(message, "AbstractMessageHandler::handleMessageList", "One of the provided Message* is nullptr!");
     }
+#endif // QT_NO_DEBUG
 
-    m_messageGroupsMap[group].append(message);
-}
-
-void MessageHandlerInterface::processMessageList(const QList<Message*>& messageList)
-{
     p_messageListModel->append(messageList);
     showMessageList(messageList);
 }
 
-void MessageHandlerInterface::showMessage(Message* message)
+void AbstractMessageHandler::showMessage(Message* message)
 {
+    Q_ASSERT_X(message, "AbstractMessageHandler::showMessage",
+               "Specified message pointer is nullptr. ");
     showMessage(message,notification(message->type()));
 }
 
-void MessageHandlerInterface::showMessage(Message* message, Notification::Type type)
+void AbstractMessageHandler::showMessage(Message* message, Notification::Type type)
 {
+    Q_ASSERT_X(message, "AbstractMessageHandler::showMessage",
+               "Specified message pointer is nullptr. ");
+    Q_ASSERT_X(type != Notification::UnknownType, "AbstractMessageHandler::showMessage",
+               "Notification::UnknownType is not supposed to be shown to a user.");
+
     switch (type) {
     case Notification::None:
         return;
@@ -145,13 +101,19 @@ void MessageHandlerInterface::showMessage(Message* message, Notification::Type t
         _showMessageBox(message);
         return;
     case Notification::UnknownType:
-        Q_ASSERT_X(false, "MessageHandler::showMessage", "Unknown notification type");
-        return;
+        Q_ASSERT(false);
     }
 }
 
-void MessageHandlerInterface::showMessageList(const QList<Message*>& messageList)
+void AbstractMessageHandler::showMessageList(const QList<Message*>& messageList)
 {
+#ifndef QT_NO_DEBUG
+    // Just to be sure that no nullptrs are here
+    for (Message* message : messageList) {
+        Q_ASSERT_X(message, "AbstractMessageHandler::showMessageList", "One of the provided Message* is nullptr!");
+    }
+#endif // QT_NO_DEBUG
+
     // Temp containers for different Message types
 #ifndef QT_NO_SYSTEMTRAYICON
     QList<Message*> trayMessages;
@@ -181,8 +143,17 @@ void MessageHandlerInterface::showMessageList(const QList<Message*>& messageList
         _showMessageBox(messageBoxMessages);
 }
 
-void MessageHandlerInterface::showMessageList(const QList<Message*>& messageList, Notification::Type type)
+void AbstractMessageHandler::showMessageList(const QList<Message*>& messageList, Notification::Type type)
 {
+#ifndef QT_NO_DEBUG
+    // Just to be sure that no nullptrs are here
+    for (Message* message : messageList) {
+        Q_ASSERT_X(message, "AbstractMessageHandler::showMessageList", "One of the provided Message* is nullptr!");
+    }
+#endif // QT_NO_DEBUG
+    Q_ASSERT_X(type != Notification::UnknownType, "AbstractMessageHandler::showMessageList",
+               "Notification::UnknownType is not supposed to be shown to a user.");
+
     switch (type) {
     case Notification::None:
         return;
@@ -202,9 +173,13 @@ void MessageHandlerInterface::showMessageList(const QList<Message*>& messageList
 
 #ifndef QT_NO_SYSTEMTRAYICON
 
-void MessageHandlerInterface::_showMessageInSystray(Message* message)
+void AbstractMessageHandler::_showMessageInSystray(Message* message)
 {
-    Q_ASSERT_X(w_trayIcon, "MessageHandler::_showMessageInSystray", "Tray icon is null");
+    Q_ASSERT_X(w_trayIcon, "MessageHandler::_showMessageInSystray",
+               "Tray icon is null");
+    Q_ASSERT_X(message, "AbstractMessageHandler::_showMessageInSystray",
+               "Specified message pointer is nullptr. ");
+
     w_trayIcon->showMessage(
         message->brief(),
         message->what(),
@@ -212,9 +187,16 @@ void MessageHandlerInterface::_showMessageInSystray(Message* message)
     );
 }
 
-void MessageHandlerInterface::_showMessageListTray(const QList<Message*>& messageList)
+void AbstractMessageHandler::_showMessageListTray(const QList<Message*>& messageList)
 {
     Q_ASSERT_X(w_trayIcon, "MessageHandler::_showMessageListTray", "Tray icon is null");
+#ifndef QT_NO_DEBUG
+    // Just to be sure that no nullptrs are here
+    for (Message* message : messageList) {
+        Q_ASSERT_X(message, "AbstractMessageHandler::_showMessageListTray", "One of the provided Message* is nullptr!");
+    }
+#endif // QT_NO_DEBUG
+
     w_trayIcon->showMessage(
         qApp->applicationName(),
         tr("%1 new messages received. Check log for details.").arg(messageList.count()),
@@ -224,22 +206,37 @@ void MessageHandlerInterface::_showMessageListTray(const QList<Message*>& messag
 
 #endif // QT_NO_SYSTEMTRAYICON
 
-void MessageHandlerInterface::_showMessageBox(Message* message)
+MessageDisplayDialog* AbstractMessageHandler::createMessageDialog(const QString& title)
 {
-    MessageDisplayDialog dialog;
-    dialog.setWindowIcon(qApp->windowIcon());
-    dialog.setWindowTitle(message->brief() + QLatin1String{" - "} + qApp->applicationName());
-    dialog.addMessage(message);
-    dialog.exec();
+    MessageDisplayDialog* result = new MessageDisplayDialog;
+    result->setAttribute(Qt::WA_DeleteOnClose);
+    result->setWindowIcon(qApp->windowIcon());
+    result->setWindowTitle(title);
+    return result;
 }
 
-void MessageHandlerInterface::_showMessageBox(const QList<Message*>& messageList)
+void AbstractMessageHandler::_showMessageBox(Message* message)
 {
-    MessageDisplayDialog dialog;
-    dialog.setWindowIcon(qApp->windowIcon());
-    dialog.setWindowTitle(qApp->applicationName());
-    dialog.addMessageList(messageList);
-    dialog.exec();
+    Q_ASSERT_X(message, "AbstractMessageHandler::_showMessageBox",
+               "Specified message pointer is nullptr. ");
+
+    auto dialog = createMessageDialog(message->brief() + QLatin1String{" - "} + qApp->applicationName());
+    dialog->addMessage(message);
+    dialog->show();
+}
+
+void AbstractMessageHandler::_showMessageBox(const QList<Message*>& messageList)
+{
+#ifndef QT_NO_DEBUG
+    // Just to be sure that no nullptrs are here
+    for (Message* message : messageList) {
+        Q_ASSERT_X(message, "AbstractMessageHandler::_showMessageBox", "One of the provided Message* is nullptr!");
+    }
+#endif // QT_NO_DEBUG
+
+    auto dialog = createMessageDialog(qApp->applicationName());
+    dialog->addMessageList(messageList);
+    dialog->show();
 }
 
 }; // namespace Draupnir::Messages

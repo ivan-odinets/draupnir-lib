@@ -25,12 +25,15 @@
 #ifndef MESSAGEUIBUILDERTEMPLATE_H
 #define MESSAGEUIBUILDERTEMPLATE_H
 
-#include "draupnir/core/MessageUiBuilderInterface.h"
+#include "draupnir/core/AbstractMessageUiBuilder.h"
 #include "draupnir/core/MessageHandlerTemplate.h"
 
 #include "draupnir/ui/menus/NotificationTypeMenu.h"
 #include "draupnir/ui/widgets/LogWidget.h"
-#include "draupnir/ui/widgets/MessageNotificationSettingsWidget.h"
+#include "draupnir/ui/widgets/NotificationSettingsWidgetTemplate.h"
+#include "draupnir/ui/windows/MessageSystemConfigDialog.h"
+#include "draupnir/ui/widgets/MessageTypesSelectorWidgetTemplate.h"
+#include "draupnir/ui/menus/MessageListViewConfigMenuTemplate.h"
 
 #include "draupnir/SettingsBundleMerge.h"
 
@@ -43,53 +46,52 @@ namespace Draupnir::Messages
  *  @tparam MessageTypes List of message type traits defining messages handled by this builder.
  *
  *  @details This class creates a LogWidget and binds it to the message handler and settings. The template parameters define the
- *           supported message types.
- *
- * @todo Add method to get @ref LogWidgetInterface instance.
- * @todo Add method to get @ref LogWidgetTemplate instance.
- * @todo Add method to get @ref MessageNotificationSettingsWidget.
- * @todo Add method(s) to get not QMenu, but NotificationTypeMenu instead.
- * @todo Cover this class (together with MessageUiBuilderInterface) with tests. */
+ *           supported message types. */
 
 template<class... MessageTypes>
-class MessageUiBuilderTemplate final : public MessageUiBuilderInterface
+class MessageUiBuilderTemplate final : public AbstractMessageUiBuilder
 {
 public:
+    /*! @brief Defines @ref Draupnir::Settings::SettingsBundleTemplate template instantiation containing all settings which
+     *         are required by this @ref Draupnir::Messages::MessageUiBuilderTemplate to work properly. To be used as one of
+     *         the template arguments of the @ref SettingsRegistryTemplate. */
     using SettingsBundle = Draupnir::Settings::bundle_merge_all_t<
-        typename LogWidgetTemplate<MessageTypes...>::SettingsBundle
+        typename LogWidget::SettingsBundle
     >;
 
-    /*! @brief Creates and returns a LogWidget configured with the current handler and settings.
-     *  @param parent Optional parent widget for the created LogWidget.
-     *  @return QWidget* Pointer to the fully configured LogWidget.
-     *
-     *  @details This method is intended to be used by GUI code that needs a message log viewer. */
-    QWidget* createConfiguredLogWidget(QWidget* parent = nullptr) final {
-        Q_ASSERT_X(m_settings.isValid(),"MessageUiBuilderTemplate<MessageTraits...>::createConfiguredLogWidget",
-                   "Method MessageUiBuilderTemplate<MessageTraits...>::loadSettings must have been called before.");
-
-        auto* result = new LogWidgetTemplate<MessageTypes...>{parent};
-
-        result->setMessageListModel(p_handler->messages());
-        result->template loadSettings<SettingsBundle>(&m_settings);
-
-        return result;
-    }
-
-    /*! @brief Returns a QMenu containing NotificationTypeMenu entries for all available MessageType
+    /*! @brief Returns a created and ready-to-use @ref LogWidget. This widget is capable of displaying messages from @ref
+     *         MessageSystemTemplate to which this @ref MessageUiBuilderTemplate instantiation is belonging.
      *  @param parent Optional parent widget.
      * @note It is the caller's responsibility to manage memory properly. */
-    QMenu* createConfiguredGlobalNotificationsMenu(QWidget* parent = nullptr) final {
-        QMenu* result = new QMenu{parent};
-        _populateGlobalNotificationsMenu<MessageTypes...>(result);
+    LogWidget* createLogWidget(QWidget* parent = nullptr) final {
+        Q_ASSERT_X(m_settings.isValid(),"MessageUiBuilderTemplate<MessageTraits...>::createLogWidget",
+                   "Method MessageUiBuilderTemplate<MessageTraits...>::loadSettings must have been called before.");
+
+        LogWidget* result = new LogWidget{this,parent};
+        result->template loadSettings<SettingsBundle>(&m_settings);
+        result->setMessageListModel(p_handler->messages());
         return result;
     };
 
-    /*! @brief Creates and returns NotificationTypeMenu (as a pointer to QMenu) which is ready-to-use for changing the type of
-     *         notification for specified MessageType.
+    /*! @brief Returns a @ref LogWidget as a pointer to `QWidget`. This widget is ready to use and is capable to display
+     *         messages from @ref MessageSystemTemplate to which this @ref MessageUiBuilderTemplate instantiation is
+     *         belonging.
+     *  @param parent Optional parent widget.
+     * @note It is the caller's responsibility to manage memory properly. */
+    QWidget* createLogWidgetAsQWidget(QWidget* parent = nullptr) final {
+        Q_ASSERT_X(m_settings.isValid(),"MessageUiBuilderTemplate<MessageTraits...>::createLogWidgetAsQWidget",
+                   "Method MessageUiBuilderTemplate<MessageTraits...>::loadSettings must have been called before.");
+        return createLogWidget(parent);
+    };
+
+    /*! @brief Returns @ref NotificationTypeMenu which is ready-to-use for changing the type of notification for specified
+     *         @ref MessageType.
      *  @param messageType Type of message notification for which will be configured by this NotificationTypeMenu.
-     *  @param parent Optional parent widget. */
-    QMenu* createConfiguredNotificationMenu(MessageType messageType, QWidget* parent = nullptr) const final {
+     *  @param parent Optional parent widget.
+     * @note It is the caller's responsibility to manage memory properly. */
+    NotificationTypeMenu* createNotificationSettingsMenu(MessageType messageType, QWidget* parent = nullptr) final {
+        Q_ASSERT_X(p_handler, "MessageUiBuilderTemplate<MessageTraits...>::createNotificationSettingsMenu",
+                   "p_handler was not set.");
         NotificationTypeMenu* result = new NotificationTypeMenu{parent};
         result->setNotificationType(p_handler->notification(messageType));
 
@@ -98,7 +100,8 @@ public:
         // ONE specific type of messages - we use a lambda to catch signal from MessageHandler and IF it is related to this particular
         // notificationTypeMenu and IF this menu was not deleted - we can process this.
         QPointer<NotificationTypeMenu> targetMenu{result};
-        QObject::connect(static_cast<MessageHandlerInterface*>(p_handler),&MessageHandlerInterface::notificationTypeChanged,[targetMenu,messageType](MessageType changedMsgType,Notification::Type notification){
+        QObject::connect(static_cast<AbstractMessageHandler*>(p_handler),&AbstractMessageHandler::notificationTypeChanged,
+            [targetMenu,messageType](MessageType changedMsgType,Notification::Type notification) {
             if (changedMsgType != messageType)
                 return;
 
@@ -108,8 +111,8 @@ public:
             targetMenu->setNotificationType(notification);
         });
 
-        QPointer<MessageHandlerInterface> handlerPtr{static_cast<MessageHandlerInterface*>(p_handler)};
-        QObject::connect(result, &NotificationTypeMenu::notificationTypeChanged,[handlerPtr,messageType](Notification::Type notification){
+        QPointer<AbstractMessageHandler> handlerPtr{static_cast<AbstractMessageHandler*>(p_handler)};
+        QObject::connect(result, &NotificationTypeMenu::notificationTypeChanged,[handlerPtr,messageType](Notification::Type notification) {
             if (handlerPtr.isNull())
                 return;
 
@@ -119,20 +122,28 @@ public:
         return result;
     };
 
-    /*! @brief Return a ready-to-use widget for configuring notification settings within this MessageSystem.
+    /*! @brief Returns a QMenu containing @ref NotificationTypeMenu entries for specified @ref MessageType entries. @ref MessageType
+     *         entries must be specified as combination of the flags passed as variable of type @ref MessageType.
+     *  @param messageType Optional type of messages which notifications will be handled by this menu.
      *  @param parent Optional parent widget.
-     * @note Its caller responsibility to manage memory properly. */
-    QWidget* createConfiguredNotificationSettingsWidget(QWidget* parent = nullptr) const final {
-        MessageNotificationSettingsWidgetTemplate<MessageTypes...>* result =
-                new MessageNotificationSettingsWidgetTemplate<MessageTypes...>(parent);
-
-        result->showNotificationSettings(p_handler);
+     * @note It is the caller's responsibility to manage memory properly.
+     * @todo Switch from QMenu to the other class in order to enable retranslation. */
+    QMenu* createNotificationSettingsMenuForTypes(MessageType messageType = MessageType::AllMessages, QWidget* parent = nullptr) final {
+        Q_ASSERT(p_handler);
+        QMenu* result = new QMenu{parent};
+        _populateNotificationSettingsMenuForTypes<MessageTypes...>(result,messageType);
         return result;
     };
 
 protected:
+    /*! @brief Defines @ref NotificationSettingsWidgetTemplate instantiation containing notification settings of all
+     *         message types which are handled by @ref MessageSystemTemplate instantiation to which this @ref MessageUiBuilderTemplate
+     *         is belonging. */
+    using NotificationSettingsWidget = NotificationSettingsWidgetTemplate<MessageTypes...>;
+
     template<class... Args>
     friend class MessageSystemTemplate;
+    friend class MessageUiBuilderTemplateIT;
 
     MessageUiBuilderTemplate() :
         p_handler{nullptr}
@@ -140,7 +151,7 @@ protected:
 
     /*! @brief Associates a specific MessageHandlerTemplate with this UI builder.
      *  @param handler Pointer to a MessageHandlerTemplate.
-     *  @details This is required before any UI widgets can be created. The handler is used to feed messages into the UI. */
+     *  @details This is required before any UI widgets can be created. */
     void setMessageHandlerTemplate(MessageHandlerTemplate<MessageTypes...>* handler) {
         Q_ASSERT_X(handler, "MessageUiBuilderTemplate::setMessageHandlerTemplate",
                    "Provided handler is nullptr.");
@@ -150,24 +161,61 @@ protected:
         p_handler = handler;
     }
 
-    template<class SettingsRegistry>
-    void loadSettings(SettingsRegistry* settings) {
-        m_settings = settings->template getSettingsBundle<SettingsBundle>();
+    /*! @brief Loads settings for this @ref MessageUiBuilderTemplate from the specified source. */
+    template<class SettingsSource>
+    void loadSettings(SettingsSource* source) {
+        static_assert(SettingsBundle::canBeFullyPopulatedFrom<SettingsSource>(),
+                "Provided SettingsSource can not populate the settings bundle required by this MessageUiBuilderTemplate");
+        m_settings = source->template getSettingsBundle<SettingsBundle>();
+    }
+
+    /*! @brief This method returns the @ref Draupnir::Messages::MessageListViewConfigMenuTemplate as a pointer to the @ref
+     *         Draupnir::Messages::AbstractMessageListViewConfigMenu, which can be used to configure different parameters
+     *         of @ref Draupnir::Messages::MessageListView widget.
+     *  @details This method is used by the @ref Draupnir::Messages::LogWidget internally to allow user configuration of MessageListView. */
+    AbstractMessageListViewConfigMenu* createAbstractMessageListViewConfigMenu(QWidget* parent = nullptr) final {
+        return new MessageListViewConfigMenuTemplate<MessageTypes...>{parent};
+    };
+
+    /*! @brief Return a widget for configuring notification settings within this MessageSystem. */
+    AbstractNotificationSettingsWidget* createNotificationSettingsWidgetAsInterface(QWidget* parent = nullptr) final {
+        return createNotificationSettingsWidget(parent);
+    };
+
+    NotificationSettingsWidget* createNotificationSettingsWidget(QWidget* parent = nullptr) {
+        NotificationSettingsWidgetTemplate<MessageTypes...>* result =
+                new NotificationSettingsWidgetTemplate<MessageTypes...>(parent);
+
+        result->showNotificationSettings(p_handler);
+        return result;
+    }
+
+    /*! @brief Returns a widget for selecting specific MessageTypes. */
+    AbstractMessageTypesSelectorWidget* createAbstractMessageTypesSelectorWidget(QWidget* parent = nullptr) final {
+        return new MessageTypesSelectorWidgetTemplate<MessageTypes...>{parent};
+    };
+
+    /*! @brief Returns MessageSystemConfigDialog capable of editing some of the settings within the MessageSystem. */
+    MessageSystemConfigDialog* createAbstractMessageSystemConfigDialog(QWidget* parent = nullptr) final {
+        MessageSystemConfigDialog* result = new MessageSystemConfigDialog{this,parent};
+        return result;
     }
 
 private:
-    SettingsBundle m_settings;
-    MessageHandlerTemplate<MessageTypes...>* p_handler;
-
     template<class First, class... Rest>
-    inline void _populateGlobalNotificationsMenu(QMenu* dest) {
-        auto menu = createConfiguredNotificationMenu(First::type);
-        menu->setTitle(First::displayName());
-        dest->addMenu(menu);
+    inline void _populateNotificationSettingsMenuForTypes(QMenu* dest, MessageType messageTypes) {
+        if (messageTypes & First::type) {
+            auto menu = createNotificationSettingsMenu(First::type);
+            menu->setTitle(First::displayName());
+            dest->addMenu(menu);
+        }
 
         if constexpr (sizeof...(Rest) > 0)
-            _populateGlobalNotificationsMenu<Rest...>(dest);
+            _populateNotificationSettingsMenuForTypes<Rest...>(dest,messageTypes);
     }
+
+    SettingsBundle m_settings;
+    MessageHandlerTemplate<MessageTypes...>* p_handler;
 };
 
 }; // namespace Draupnir::Messages

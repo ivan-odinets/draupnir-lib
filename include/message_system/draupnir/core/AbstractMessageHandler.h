@@ -22,8 +22,8 @@
  *
  */
 
-#ifndef MESSAGEHANDLERINTERFACE_H
-#define MESSAGEHANDLERINTERFACE_H
+#ifndef ABSTRACTMESSAGEHANDLER_H
+#define ABSTRACTMESSAGEHANDLER_H
 
 #include <QObject>
 
@@ -31,7 +31,6 @@
 
 #include "draupnir/core/Message.h"
 #include "draupnir/core/MessageType.h"
-#include "draupnir/MessageGroup.h"
 #include "draupnir/core/Notification.h"
 
 class QSystemTrayIcon;
@@ -39,36 +38,30 @@ class QSystemTrayIcon;
 namespace Draupnir::Messages
 {
 
+class MessageDisplayDialog;
 class MessageListModel;
 
-/*! @class MessageHandlerInterface draupnir/core/MessageHandlerInterface.h
+/*! @class AbstractMessageHandler draupnir/core/AbstractMessageHandler.h
  *  @ingroup MessageSystem
  *  @brief Abstract base class for processing and displaying application messages.
  *
  *  @details This class provides an interface for managing how messages are processed, stored, and displayed to the user. Messages
  *           can be handled immediately or in grouped batches via MessageGroup.
  *
- *           Interaction with MessageHandlerTemplate MessageHandler defines the runtime API while MessageHandlerTemplate supplies a
- *           concrete implementation that maps compile-time message traits to Notification types. Logger sends messages to the
- *           current MessageHandler instance, which consults these policies to show or queue notifications.
+ *           @ref AbstractMessageHandler defines the runtime API while MessageHandlerTemplate supplies a concrete implementation that
+ *           maps compile-time message traits to Notification types. Logger sends messages to the current MessageHandler instance,
+ *           which consults these policies to show or queue notifications.
  *
- * @note The actual policy for each message type is defined in derived class (MessageHandlerTemplate).
- * @note MessageHandler is intended to be used together with the Logger singleton as its primary backend.
- * @note Message objects processed via MessageHandler::processMessage are also stored in a MessageListModel to display within
- *       LogWidget / MessageListView
- *
- * @todo Either this class + MessageHandlerTemplate or Logger class needs to be made thread-safe. */
+ * @todo AbstractMessageHandler::_showMessageBox(Message* message) and AbstractMessageHandler::_showMessageBox(const QList<Message*>&
+ *       messageList) methods can be refractored.
+ * @todo Allow configuration of dialogs (blocking vs non-blocking) somewhere. */
 
-
-class MessageHandlerInterface : public QObject
+class AbstractMessageHandler : public QObject
 {
     Q_OBJECT
 public:
-    /*! @brief Default constructor. Creates the underlying MessageListModel. */
-    explicit MessageHandlerInterface(QObject* parent = nullptr);
-
-    /*! @brief Destructor. Deletes internal MessageListModel. */
-    virtual ~MessageHandlerInterface() override;
+    /*! @brief Destructor. Deletes internal @ref Draupnir::Messages::MessageListModel. */
+    virtual ~AbstractMessageHandler() override;
 
 #ifndef QT_NO_SYSTEMTRAYICON
     /*! @brief This method is used to specify tray icon used to show notifications in systemtray.
@@ -77,55 +70,30 @@ public:
 
 #endif // QT_NO_SYSTEMTRAYICON
 
-    /*! @brief Interface method to set the Notification::Type for a specified MessageType. This method is implemented within the
-     *         MessageHandlerTemplate class.
+    /*! @brief Interface method to set the @ref Draupnir::Messages::Notification::Type for a specified @ref Draupnir::Messages::MessageType.
+     *         This method is implemented within the @ref Draupnir::Messages::MessageHandlerTemplate class.
      * @see MessageHandlerTemplate::setNotification */
     virtual void setNotification(MessageType type, const Notification::Type notificationType) = 0;
 
-    /*! @brief Interface method returning Notification::Type which is used for given MessageType. This method is implemented within
-     *         the MessageHandlerTemplate class.
+    /*! @brief Interface method returning @ref Draupnir::Messages::Notification::Type which is used for given @ref Draupnir::Messages::MessageType.
+     *         This method is implemented within the @ref Draupnir::Messages::MessageHandlerTemplate class.
      * @see MessageHandlerTemplate::notification */
     virtual Notification::Type notification(uint64_t type) = 0;
 
-    /*! @brief Gives access to MessageListModel, containing logs about stuff happened. */
+    /*! @brief Gives access to @ref Draupnir::Messages::MessageListModel, containing logs about stuff happened. */
     MessageListModel* messages() { return p_messageListModel; }
 
-    /*! @brief Starts a new message group for batch logging.
-     *  @return A MessageGroup identifier.
-     * @todo Document somewhere MessageGroup usage. */
-    MessageGroup beginMessageGroup();
-
-    /*! @brief Returns true if specified MessageGroup is existing within this MessageHandler.
-     *  @param group The group to be checked.
-     * @todo Document somewhere MessageGroup usage. */
-    bool groupExisting(MessageGroup group) const { return m_messageGroupsMap.contains(group); }
-
-    /*! @brief Flushes the messages stored in the given group.
-     *  @param group The group to flush.
-     * @todo Document somewhere MessageGroup usage. */
-    void flush(MessageGroup group);
-
-    /*! @brief Finalizes a message group and releases its resources.
-     *  @param group The group to end.
-     * @todo Document somewhere MessageGroup usage. */
-    void endMessageGroup(MessageGroup group);
-
-public slots:
     /*! @brief Shows to user how specific Notification::Type things will be displayed. */
     void showDummy(Notification::Type type);
 
-    /*! @brief Processes a single Message object. The message is added to the MessageListModel and then the appropriate
+    /*! @brief Handles a single Message object. The message is added to the MessageListModel and then the appropriate
      *         notification is displayed to the user. */
-    void processMessage(Message* message);
-
-    /*! @brief Processes a Message object as part of a batch. The message is added to the MessageListModel, but the notification
-     *         is shown only after MessageHandler::flush or MessageHandler::endMessageGroup is called. */
-    void processMessage(Message* message, MessageGroup group);
+    void handleMessage(Draupnir::Messages::Message* message);
 
     /*! @brief Processes a list of Message objects. Each Message is added to the MessageListModel and then the proper notification
      *         is displayed to the user.
      * @note If different notification methods are required, each group of messages will use its own notification type. */
-    void processMessageList(const QList<Message*>& messageList);
+    void handleMessageList(const QList<Draupnir::Messages::Message*>& messageList);
 
     /*! @brief Shows the given Message using the Notification::Type stored for its type.
      * @note During execution the Message object is **not** added to the MessageListModel. */
@@ -141,14 +109,19 @@ public slots:
 
     /*! @brief Shows a list of Message objects using the provided Notification::Type.
      * @note During execution the Message objects are **not** added to the MessageListModel. */
-    void showMessageList(const QList<Message*>& messageList, const Notification::Type type);
+    void showMessageList(const QList<Draupnir::Messages::Message*>& messageList, const Notification::Type type);
 
 signals:
     /*! @brief This signal is emitted when a type of notification for specific Message::Type has changed. */
-    void notificationTypeChanged(uint64_t messageType, Notification::Type notification);
+    void notificationTypeChanged(quint64 messageType, Draupnir::Messages::Notification::Type notification);
+
+protected:
+    /*! @brief Default constructor. Creates the underlying @ref Draupnir::Messages::MessageListModel. */
+    explicit AbstractMessageHandler(QObject* parent = nullptr);
 
 private:
     friend class MessageSystemGeneralIT;
+    friend class MessageHandlerTemplateTest;
 
 #ifndef QT_NO_SYSTEMTRAYICON
     /*! @brief Shows tray notification with Message object. */
@@ -158,6 +131,7 @@ private:
     void _showMessageListTray(const QList<Message*>& messageList);
 #endif // QT_NO_SYSTEMTRAYICON
 
+    static MessageDisplayDialog* createMessageDialog(const QString& title);
     void _showMessageBox(Message* message);
     void _showMessageBox(const QList<Message*>& messageList);
 
@@ -167,9 +141,8 @@ private:
 
     Message* p_dummy;
     MessageListModel* p_messageListModel;
-    QMap<MessageGroup,QList<Message*>> m_messageGroupsMap;
 };
 
 }; // namespace Draupnir::Messages
 
-#endif // MESSAGEHANDLERINTERFACE_H
+#endif // ABSTRACTMESSAGEHANDLER_H

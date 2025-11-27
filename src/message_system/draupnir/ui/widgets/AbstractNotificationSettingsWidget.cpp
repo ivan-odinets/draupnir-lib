@@ -22,7 +22,7 @@
  *
  */
 
-#include "draupnir/ui/widgets/MessageNotificationSettingsWidget.h"
+#include "draupnir/ui/widgets/AbstractNotificationSettingsWidget.h"
 
 #include <QFormLayout>
 #include <QFrame>
@@ -30,10 +30,12 @@
 #include <QPushButton>
 #include <QVBoxLayout>
 
+#include "draupnir/core/AbstractMessageHandler.h"
+
 namespace Draupnir::Messages
 {
 
-MessageNotificationSettingsWidget::MessageNotificationSettingsWidget(QWidget *parent) :
+AbstractNotificationSettingsWidget::AbstractNotificationSettingsWidget(QWidget *parent) :
     QWidget{parent},
     w_testLabel{new QLabel},
     w_testNotiticationSelector{new NotificationTypeComboBox},
@@ -58,10 +60,10 @@ MessageNotificationSettingsWidget::MessageNotificationSettingsWidget(QWidget *pa
     _retranslateUi();
 
     connect(w_testButton, &QPushButton::clicked,
-            this, &MessageNotificationSettingsWidget::_onShowDummyClicked);
+            this, &AbstractNotificationSettingsWidget::_onShowDummyClicked);
 }
 
-void MessageNotificationSettingsWidget::changeEvent(QEvent* event)
+void AbstractNotificationSettingsWidget::changeEvent(QEvent* event)
 {
     if (event->type() == QEvent::LanguageChange) {
         _retranslateUi();
@@ -72,17 +74,17 @@ void MessageNotificationSettingsWidget::changeEvent(QEvent* event)
     QWidget::changeEvent(event);
 }
 
-void MessageNotificationSettingsWidget::addRow(QLabel* label, NotificationTypeComboBox* selector)
+void AbstractNotificationSettingsWidget::addRow(QLabel* label, NotificationTypeComboBox* selector)
 {
     p_notificationTypesLayout->addRow(label,selector);
 }
 
-void MessageNotificationSettingsWidget::_onShowDummyClicked()
+void AbstractNotificationSettingsWidget::_onShowDummyClicked()
 {
-//    p_handler->showDummy(w_testNotiticationSelector->selectedNotificationType());
+    handler()->showDummy(w_testNotiticationSelector->notificationType());
 }
 
-void MessageNotificationSettingsWidget::_retranslateUi()
+void AbstractNotificationSettingsWidget::_retranslateUi()
 {
     w_testLabel->setText(tr("Test"));
     w_testButton->setText(tr("Show"));

@@ -33,8 +33,7 @@ namespace Draupnir::Messages
 /*! @class MessageGroupTest tests/message_system/unit/MessageGroupTest.cpp
  *  @brief This test class tests MessageGroup class.
  *
- * @todo Refractor this test so that it will have better readability.
- * @todo Add some script to execute this test in the context of CI. */
+ * @todo Refractor this test so that it will have better readability. */
 
 class MessageGroupTest : public QObject
 {

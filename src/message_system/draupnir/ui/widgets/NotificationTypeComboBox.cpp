@@ -24,13 +24,15 @@
 
 #include "draupnir/ui/widgets/NotificationTypeComboBox.h"
 
+#include <QDebug>
 #include <QEvent>
 
 namespace Draupnir::Messages
 {
 
 NotificationTypeComboBox::NotificationTypeComboBox(QWidget* parent) :
-    QComboBox{parent}
+    QComboBox{parent},
+    m_currentValue{Notification::Type::None}
 {
     for (auto notificationType : Notification::displayedValues) {
         addItem(
@@ -39,32 +41,44 @@ NotificationTypeComboBox::NotificationTypeComboBox(QWidget* parent) :
         );
     }
 
-    connect(this,  static_cast<void(QComboBox::*)(int)>(&QComboBox::currentIndexChanged),
-            this,  &NotificationTypeComboBox::_onCurrentIndexChanged);
+    connect(this,  static_cast<void(QComboBox::*)(int)>(&QComboBox::activated),
+            this,  &NotificationTypeComboBox::_onActivated);
 
     // The only UI strings displayed within this widget - are representation of the Notification::Type enum.
     // So we do not need to call within the consctructor a _retranslateUi() method.
 }
 
-Notification::Type NotificationTypeComboBox::selectedNotificationType() const
+void NotificationTypeComboBox::setNotificationTypeSelected(Notification::Type type)
 {
-    return QComboBox::currentData().value<Notification::Type>();
+    const auto index = _indexOf(type);
+    if (index < 0) {
+        // We should not receive here any other values than those which are part of Notification::displayedValues array
+        // If we have this - probably somewhere something went wrong
+        Q_ASSERT_X(false, "NotificationTypeComboBox::setNotificationTypeSelected",
+                   "Some weird notification type. Probably Notification::displayedValues is outdated");
+        return;
+    }
+
+    setCurrentIndex(index);
+    emit activated(index);
 }
 
 void NotificationTypeComboBox::setNotificationType(Notification::Type type)
 {
-    for (int i = 0; i < count(); i++) {
-        const auto notificationType = itemData(i).value<Notification::Type>();
-        if (notificationType == type) {
-            setCurrentIndex(i);
-            return;
-        }
+    const auto index = _indexOf(type);
+    if (index < 0) {
+        // We should not receive here any other values than those which are part of Notification::displayedValues array
+        // If we have this - probably somewhere something went wrong
+        Q_ASSERT_X(false, "NotificationTypeComboBox::setNotificationType",
+                   "some weird notification type. Probably Notification::displayedValues is outdated");
+        return;
     }
 
-    // We should not receive here any other values than those which are part of Notification::displayedValues array
-    // If we have this - probably somewhere something went wrong
-    Q_ASSERT_X(false, "NotificationTypeComboBox::setNotificationType",
-                      "some weird notification type. Probably Notification::displayedValues is outdated");
+    if (m_currentValue == type)
+        return;
+
+    m_currentValue = type;
+    setCurrentIndex(index);
 }
 
 void NotificationTypeComboBox::changeEvent(QEvent* event)
@@ -75,10 +89,14 @@ void NotificationTypeComboBox::changeEvent(QEvent* event)
     QComboBox::changeEvent(event);
 }
 
-void NotificationTypeComboBox::_onCurrentIndexChanged(int index)
+void NotificationTypeComboBox::_onActivated(int index)
 {
-    Q_UNUSED(index);
-    emit notificationTypeChanged(selectedNotificationType());
+    const auto activatedType = itemData(index).value<Notification::Type>();
+    if (m_currentValue == activatedType)
+        return;
+
+    m_currentValue = activatedType;;
+    emit notificationTypeSelected(m_currentValue);
 }
 
 void NotificationTypeComboBox::_retranslateUi()
@@ -87,6 +105,16 @@ void NotificationTypeComboBox::_retranslateUi()
         const auto notificationType = itemData(i).value<Notification::Type>();
         setItemText(i, Notification::toDisplayString(notificationType));
     }
+}
+
+int NotificationTypeComboBox::_indexOf(Notification::Type type)
+{
+    for (auto i = 0; i < static_cast<int>(sizeof(Notification::displayedValues)); i++) {
+        if (Notification::displayedValues[i] == type)
+            return i;
+    }
+
+    return -1;
 }
 
 }; // namespace Draupnir::Messages

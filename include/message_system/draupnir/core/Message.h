@@ -30,18 +30,57 @@
 #include <QIcon>
 #include <QList>
 
+#include "draupnir/utils/advance_enum.h"
+
 namespace Draupnir::Messages
 {
 
 /*! @class Message draupnir/core/Message.h
  *  @ingroup MessageSystem
  *  @brief This class represents some Message from the App about some event happened. This includes errors, balance changes,
- *         etc. */
+ *         etc.
+ *
+ * @todo Fields-related code can and shoukd be prettified.
+ * @todo Add Fields::toString / Fields::fromString or other settings conversion thingy. */
 
 class Message final
 {
     Q_DISABLE_COPY(Message);
 public:
+    /*! @brief This enum holds flag for fields of Message objects, which can be displayed seperately. */
+    enum Fields : uint8_t {
+        None       = 0b00000000,  /*!< @brief None. */
+        Brief      = 0b00000001,  /*!< @brief Brief summary of Message (Message::brief). */
+        What       = 0b00000010,  /*!< @brief Details what happened (Message::what). */
+        DateTime   = 0b00000100,  /*!< @brief DateTime of Message (Message::dateTime). */
+        Icon       = 0b00001000,  /*!< @brief Icon of Message (Message::icon). */
+        All        = Brief | What | DateTime | Icon,  /*!< @brief All of the above. */
+    };
+
+    /*! @brief This static constexpr array holds values from enum @ref Draupnir::Messages::Message::Fields, which are
+     *         representing individual fields of the @ref Draupnir::Messages::Message objects. */
+    static constexpr Fields individualFieldsArray[] = { Brief, What, DateTime, Icon };
+
+    /*! @brief This is a static comverting Fields valur to user-friendly string. */
+    static QString fieldsDisplayString(Fields value) {
+        switch (value) {
+        case None:
+            return QObject::tr("None");
+        case Brief:
+            return QObject::tr("Brief");
+        case What:
+            return QObject::tr("What");
+        case DateTime:
+            return QObject::tr("Timestamp:");
+        case Icon:
+            return QObject::tr("Icon");
+        case All:
+            return QObject::tr("All");
+        }
+        Q_ASSERT(false);
+        return QString{};
+    }
+
     /*! @brief Static template method to create Message objects from specified MessageTrait.
      *  @tparam MessageTrait trait representing a Message to be created.
      *  @param text text of a Message.
@@ -63,6 +102,25 @@ public:
         return new Message{MessageTrait::type, MessageTrait::icon(), brief, text};
     }
 
+    /*! @brief Returns QString with specified fields of the Message object. */
+    QString getViewString(const std::underlying_type_t<Fields> fields) const {
+        static constexpr std::underlying_type_t<Message::Fields> notIconFields =
+                Message::Brief | Message::What | Message::DateTime;
+        // This method shoud return QString, which is independent of icon display status.
+        // To get rid of anything but not Brief, What, DateTime - we use this.
+        if ((fields & notIconFields) != m_cachedFields) {
+            m_cachedFields = fields & notIconFields;
+            m_cachedView.clear();
+            if (fields & Message::Brief)
+                m_cachedView += brief();
+            if (fields & Message::What)
+                m_cachedView += (m_cachedView.isEmpty() ? "" : "\n") + what();
+            if (fields & Message::DateTime)
+                m_cachedView += (m_cachedView.isEmpty() ? "" : "\n") + dateTime().toString();
+        }
+        return m_cachedView;
+    }
+
     /*! @brief Returns type of this Message object. */
     uint64_t type() const { return m_type; };
 
@@ -78,7 +136,7 @@ public:
     /*! @brief This method returns an QIcon for the type of this message. */
     const QIcon& icon() const { return m_icon; }
 
-protected:
+private:
     Message(const uint64_t newType, const QIcon& icon, const QString& brief, const QString& what) :
         m_type{newType},
         m_icon{icon},
@@ -95,13 +153,28 @@ protected:
         m_dateTime{QDateTime::currentDateTime()}
     {}
 
-private:
     const uint64_t m_type;
     const QIcon& m_icon;
     const QString m_brief;
     const QString m_what;
     const QDateTime m_dateTime;
+    mutable QString m_cachedView;
+    mutable std::underlying_type_t<Fields> m_cachedFields;
+
+    using FieldsValues = draupnir::utils::enum_values<
+        Message::Fields,
+        Message::Brief,
+        Message::Icon,
+        Message::All
+    >;
+    friend Message::Fields& operator++(Message::Fields& type,int);
 };
+
+inline Message::Fields& operator++(Message::Fields& type,int)
+{
+    Message::FieldsValues::advance(type);
+    return type;
+}
 
 inline QDebug operator<< (QDebug dbg, Message* messagePtr)
 {
@@ -116,5 +189,8 @@ inline QDebug operator<< (QDebug dbg, Message* messagePtr)
 typedef QList<Message*> MessageList;
 
 }; // namespace Draupnir::Messages
+
+Q_DECLARE_METATYPE(Draupnir::Messages::Message::Fields);
+Q_DECLARE_METATYPE(Draupnir::Messages::Message*);
 
 #endif // MESSAGE_H

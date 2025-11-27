@@ -32,10 +32,10 @@ namespace Draupnir::Proxy
 
 /*! @class ProxySerializer draupnir/utils/ProxySerializer.h
  *  @ingroup ProxyHelper
- *  @brief Static utility class for conversion between QNetworkProxy objects and their QString representations.
+ *  @brief Static utility class for conversion between `QNetworkProxy` objects and their `QString` representations.
  *
- *  @details Supports parsing and formatting of HTTP and SOCKS5 proxy URLs in string form.
- *           Proxy authentication is not currently supported. */
+ *  @details Supports parsing and formatting of HTTP and SOCKS5 proxy URLs in string form. Proxy authentication is
+ *           currently not supported. */
 
 class ProxySerializer
 {

@@ -24,183 +24,284 @@
 
 #include "draupnir/Logger.h"
 
-#include "draupnir/core/MessageHandlerInterface.h"
+#ifndef DRAUPNIR_MESSAGE_SYSTEM_SINGLETHREAD
+    #include <QMutexLocker>
+#endif // DRAUPNIR_MESSAGE_SYSTEM_SINGLETHREAD
 
+#include "draupnir/core/AbstractMessageHandler.h"
 #include "draupnir/traits/messages/DefaultMessageTraits.h"
 
-Logger::Logger() :
-    p_messageHandler{nullptr}
-{}
-
-void Logger::setMessageHandler(Draupnir::Messages::MessageHandlerInterface* handler)
+Logger::~Logger()
 {
-    Q_ASSERT_X(handler, "Logger::setMessageHandler","Provided MessageHandler is nullptr");
+    if (p_tempMessageStorage != nullptr) {
+        if (p_messageHandler == nullptr)
+            qDebug() << "Logger::~Logger() - deleting p_tempMessagsStorage. AbstractMessageHandler was not set.";
+
+        for (auto i = p_tempMessageStorage->begin(); i != p_tempMessageStorage->end(); i++)
+            delete *i;
+        delete p_tempMessageStorage;
+    }
+}
+
+void Logger::setMessageHandler(Draupnir::Messages::AbstractMessageHandler* handler)
+{
+    Q_ASSERT_X(handler, "Logger::setMessageHandler","Provided AbstractMessageHandler is nullptr.");
+    Q_ASSERT_X(p_messageHandler == nullptr, "Logger::setMessageHandler",
+               "This method can be called only once.");
+
+#ifndef DRAUPNIR_MESSAGE_SYSTEM_SINGLETHREAD
+    QMutexLocker locker{&m_resourceMutex};
+
+    // Connect signals for a multithreading environment
+    connect(this,       &Logger::messageReceived,
+            handler,    &Draupnir::Messages::AbstractMessageHandler::handleMessage);
+    connect(this,       &Logger::messageListReceived,
+            handler,    &Draupnir::Messages::AbstractMessageHandler::handleMessageList, Qt::QueuedConnection);
+#endif // DRAUPNIR_MESSAGE_SYSTEM_SINGLETHREAD
+
     p_messageHandler = handler;
+
+    if (!p_tempMessageStorage->isEmpty()) {
+        handler->handleMessageList(*p_tempMessageStorage);
+        delete p_tempMessageStorage;
+        p_tempMessageStorage = nullptr;
+    }
 }
 
 Draupnir::Messages::MessageGroup Logger::beginMessageGroup()
 {
-    Q_ASSERT_X(p_messageHandler, "Logger::beginMessageGroup",
-               "Logger::setMessageHandler with valid MessageHandler must be called before.");
+#ifndef DRAUPNIR_MESSAGE_SYSTEM_SINGLETHREAD
+    QMutexLocker locker{&m_resourceMutex};
+#endif // DRAUPNIR_MESSAGE_SYSTEM_SINGLETHREAD
 
-    return p_messageHandler->beginMessageGroup();
+    return _beginMessageGroupImpl();
 }
 
-bool Logger::groupExisting(Draupnir::Messages::MessageGroup group) const
+bool Logger::isGroupExisting(Draupnir::Messages::MessageGroup group) const
 {
-    Q_ASSERT_X(p_messageHandler, "Logger::groupExisting",
-               "Logger::setMessageHandler with valid MessageHandler must be called before.");
+#ifndef DRAUPNIR_MESSAGE_SYSTEM_SINGLETHREAD
+    QMutexLocker locker{&m_resourceMutex};
+#endif // #ifndef DRAUPNIR_MESSAGE_SYSTEM_SINGLETHREAD
 
-    return p_messageHandler->groupExisting(group);
+    return m_messageGroupsMap.contains(group);
 }
 
 void Logger::flush(Draupnir::Messages::MessageGroup group)
 {
-    Q_ASSERT_X(p_messageHandler, "Logger::flush",
-               "Logger::setMessageHandler with valid MessageHandler must be called before.");
+#ifndef DRAUPNIR_MESSAGE_SYSTEM_SINGLETHREAD
+    QMutexLocker locker{&m_resourceMutex};
+#endif // DRAUPNIR_MESSAGE_SYSTEM_SINGLETHREAD
 
-    p_messageHandler->flush(group);
+    _flushImpl(group);
 }
 
 void Logger::endMessageGroup(Draupnir::Messages::MessageGroup group)
 {
-    Q_ASSERT_X(p_messageHandler, "Logger::endMessageGroup",
-               "Logger::setMessageHandler with valid MessageHandler must be called before.");
+#ifndef DRAUPNIR_MESSAGE_SYSTEM_SINGLETHREAD
+    QMutexLocker locker{&m_resourceMutex};
+#endif // DRAUPNIR_MESSAGE_SYSTEM_SINGLETHREAD
 
-    p_messageHandler->endMessageGroup(group);
+    _endMessageGroupImpl(group);
+}
+
+void Logger::logMessage(Draupnir::Messages::Message* message)
+{
+#ifndef DRAUPNIR_MESSAGE_SYSTEM_SINGLETHREAD
+    QMutexLocker locker{&m_resourceMutex};
+#endif // DRAUPNIR_MESSAGE_SYSTEM_SINGLETHREAD
+
+    _logMessageImpl(message);
+}
+
+void Logger::logMessage(Draupnir::Messages::Message* message, Draupnir::Messages::MessageGroup group)
+{
+#ifndef DRAUPNIR_MESSAGE_SYSTEM_SINGLETHREAD
+    QMutexLocker locker{&m_resourceMutex};
+#endif // DRAUPNIR_MESSAGE_SYSTEM_SINGLETHREAD
+
+    _logMessageImpl(message,group);
 }
 
 void Logger::logDebug(const QString& what)
 {
-    _logMessage(
+    logMessage(
         Draupnir::Messages::Message::fromTrait<Draupnir::Messages::DebugMessageTrait>(what)
     );
 }
 
 void Logger::logDebug(const QString& what, Draupnir::Messages::MessageGroup group)
 {
-    _logMessage(
+    logMessage(
         Draupnir::Messages::Message::fromTrait<Draupnir::Messages::DebugMessageTrait>(what), group
     );
 }
 
 void Logger::logDebug(const QString& brief, const QString& what)
 {
-    _logMessage(
+    logMessage(
         Draupnir::Messages::Message::fromTrait<Draupnir::Messages::DebugMessageTrait>(brief,what)
     );
 }
 
 void Logger::logDebug(const QString& brief, const QString& what, Draupnir::Messages::MessageGroup group)
 {
-    _logMessage(
+    logMessage(
         Draupnir::Messages::Message::fromTrait<Draupnir::Messages::DebugMessageTrait>(brief,what), group
     );
 }
 
 void Logger::logInfo(const QString& what)
 {
-    _logMessage(
+    logMessage(
         Draupnir::Messages::Message::fromTrait<Draupnir::Messages::InfoMessageTrait>(what)
     );
 }
 
 void Logger::logInfo(const QString& what, Draupnir::Messages::MessageGroup group)
 {
-    _logMessage(
+    logMessage(
         Draupnir::Messages::Message::fromTrait<Draupnir::Messages::InfoMessageTrait>(what), group
     );
 }
 
 void Logger::logInfo(const QString& brief, const QString& what)
 {
-    _logMessage(
+    logMessage(
         Draupnir::Messages::Message::fromTrait<Draupnir::Messages::InfoMessageTrait>(brief,what)
     );
 }
 
 void Logger::logInfo(const QString& brief, const QString& what, Draupnir::Messages::MessageGroup group)
 {
-    _logMessage(
+    logMessage(
         Draupnir::Messages::Message::fromTrait<Draupnir::Messages::InfoMessageTrait>(brief,what), group
     );
 }
 
 void Logger::logWarning(const QString& what)
 {
-    _logMessage(
+    logMessage(
         Draupnir::Messages::Message::fromTrait<Draupnir::Messages::WarningMessageTrait>(what)
     );
 }
 
 void Logger::logWarning(const QString& what, Draupnir::Messages::MessageGroup group)
 {
-    _logMessage(
+    logMessage(
         Draupnir::Messages::Message::fromTrait<Draupnir::Messages::WarningMessageTrait>(what), group
     );
 }
 
 void Logger::logWarning(const QString& brief, const QString& what)
 {
-    _logMessage(
+    logMessage(
         Draupnir::Messages::Message::fromTrait<Draupnir::Messages::WarningMessageTrait>(brief,what)
     );
 }
 
 void Logger::logWarning(const QString& brief, const QString& what, Draupnir::Messages::MessageGroup group)
 {
-    _logMessage(
+    logMessage(
         Draupnir::Messages::Message::fromTrait<Draupnir::Messages::WarningMessageTrait>(brief,what), group
     );
 }
 
 void Logger::logError(const QString& what)
 {
-    _logMessage(
+    logMessage(
         Draupnir::Messages::Message::fromTrait<Draupnir::Messages::ErrorMessageTrait>(what)
     );
 }
 
 void Logger::logError(const QString& what, Draupnir::Messages::MessageGroup group)
 {
-    _logMessage(
+    logMessage(
         Draupnir::Messages::Message::fromTrait<Draupnir::Messages::ErrorMessageTrait>(what), group
     );
 }
 
 void Logger::logError(const QString& brief, const QString& what)
 {
-    _logMessage(
+    logMessage(
         Draupnir::Messages::Message::fromTrait<Draupnir::Messages::ErrorMessageTrait>(brief,what)
     );
 }
 
 void Logger::logError(const QString& brief, const QString& what, Draupnir::Messages::MessageGroup group)
 {
-    _logMessage(
+    logMessage(
         Draupnir::Messages::Message::fromTrait<Draupnir::Messages::ErrorMessageTrait>(brief,what), group
     );
 }
 
-void Logger::_logMessage(Draupnir::Messages::Message* message)
-{
-    Q_ASSERT_X(p_messageHandler, "Logger::logMessage",
-               "Logger::setMessageHandler with valid MessageHandler must be called before.");
+Logger::Logger(QObject* parent) :
+    QObject{parent},
+    p_tempMessageStorage{new QList<Draupnir::Messages::Message*>},
+    p_messageHandler{nullptr}
+{}
 
-    p_messageHandler->processMessage(message);
+Draupnir::Messages::MessageGroup Logger::_beginMessageGroupImpl()
+{
+    const auto newGroup = Draupnir::Messages::MessageGroup::generateUniqueGroup();
+
+    if (m_messageGroupsMap.contains(newGroup)) {
+        return Logger::_beginMessageGroupImpl();
+    }
+
+    m_messageGroupsMap.insert(newGroup, QList<Draupnir::Messages::Message*>{});
+    return newGroup;
 }
 
-void Logger::_logMessage(Draupnir::Messages::Message* message, Draupnir::Messages::MessageGroup group)
+void Logger::_flushImpl(Draupnir::Messages::MessageGroup group)
 {
-    Q_ASSERT_X(p_messageHandler, "Logger::logMessage",
-               "Logger::setMessageHandler with valid MessageHandler must be called before.");
+    if (!m_messageGroupsMap.contains(group)) {
+        qDebug() << "Trying to flush non-existant group.";
+        return;
+    }
 
-    p_messageHandler->processMessage(message, group);
+    _logMessageList(m_messageGroupsMap[group]);
+    m_messageGroupsMap[group].clear();
 }
 
-void Logger::logMessageList(const QList<Draupnir::Messages::Message*>& messageList)
+void Logger::_endMessageGroupImpl(Draupnir::Messages::MessageGroup group)
 {
-    Q_ASSERT_X(p_messageHandler, "Logger::logMessageList",
-               "Logger::setMessageHandler with valid MessageHandler must be called before.");
-    p_messageHandler->processMessageList(messageList);
+    _flushImpl(group);
+
+    m_messageGroupsMap.remove(group);
+}
+
+void Logger::_logMessageImpl(Draupnir::Messages::Message* message)
+{
+    if (Q_LIKELY(p_messageHandler)) {
+#ifndef DRAUPNIR_MESSAGE_SYSTEM_SINGLETHREAD
+        emit messageReceived(message);
+#else
+        p_messageHandler->handleMessage(message);
+#endif // DRAUPNIR_MESSAGE_SYSTEM_SINGLETHREAD
+    } else {
+        p_tempMessageStorage->append(message);
+    }
+}
+
+void Logger::_logMessageImpl(Draupnir::Messages::Message* message, Draupnir::Messages::MessageGroup group)
+{
+    if (!m_messageGroupsMap.contains(group)) {
+        qDebug() << "Non existant message group.";
+        return;
+    }
+
+    m_messageGroupsMap[group].append(message);
+}
+
+void Logger::_logMessageList(const QList<Draupnir::Messages::Message*>& messageList)
+{
+    if (Q_LIKELY(p_messageHandler)) {
+#ifndef DRAUPNIR_MESSAGE_SYSTEM_SINGLETHREAD
+        emit messageListReceived(messageList);
+#else
+        p_messageHandler->handleMessageList(messageList);
+#endif // DRAUPNIR_MESSAGE_SYSTEM_SINGLETHREAD
+    } else {
+        p_tempMessageStorage->append(messageList);
+    }
 }

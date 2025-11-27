@@ -25,7 +25,7 @@
 #ifndef MESSAGEHANDLERTEMPLATE_H
 #define MESSAGEHANDLERTEMPLATE_H
 
-#include "draupnir/core/MessageHandlerInterface.h"
+#include "draupnir/core/AbstractMessageHandler.h"
 
 #include "draupnir/traits/settings/MessageTypeSettingsTrait.h"
 
@@ -44,22 +44,25 @@ namespace Draupnir::Messages
  *           MessageSettingsInterface.
  *
  *           MessageSystemTemplate creates a single instance of this class and shares it with MessageUiBuilderTemplate so that UI
- *           elements reflect and modify the same notification policy map.
- *
- * @todo Either this class + MessageHandlerInterface or Logger class needs to be made thread-safe.
- * @todo Write a reasonable test for this class. */
+ *           elements reflect and modify the same notification policy map. */
 
 
 template<class... MessageTraits>
-class MessageHandlerTemplate final : public MessageHandlerInterface
+class MessageHandlerTemplate final : public AbstractMessageHandler
 {
 public:
     using SettingsBundle = Draupnir::Settings::SettingsBundleTemplate<
         MessageTypeSettingsTrait<MessageTraits>...
     >;
 
+    /*! @brief Returns true if the specified `MessageTrait` is known to this `MessageHandlerTemplate` instantiation. */
     template<class MessageTrait>
     static constexpr bool contains() { return draupnir::utils::is_one_of_v<MessageTrait,MessageTraits...>; }
+
+    /*! @brief Alias constexpr variable contai8ning `true` if this `MessageHandlerTemplate` instantiation knows the
+     *         specified `MessageTrait`. */
+    template<class MessageTrait>
+    static constexpr bool contains_v = contains<MessageTrait>();
 
     /*! @brief Default constructor. */
     MessageHandlerTemplate() :
@@ -69,8 +72,11 @@ public:
     /*! @brief Destructor. */
     ~MessageHandlerTemplate() final = default;
 
-    template<class SettingsRegistry>
-    void loadSettings(SettingsRegistry* registry) {
+    /*! @brief Loads notification settings from the provided SettingsSource. */
+    template<class SettingsSource>
+    void loadSettings(SettingsSource* registry) {
+        static_assert(SettingsBundle::template canBeFullyPopulatedFrom<SettingsSource>(),
+                "Provided SettingsSource can not provide all settings needed for this MessageHandlerTemplate.");
         m_settings = registry->template getSettingsBundle<SettingsBundle>();
     }
 
@@ -79,10 +85,22 @@ public:
         return _notificationImpl<MessageTraits...>(messageId);
     }
 
+    /*! @brief Returns the current notification type associated with the provided `MessageTrait`. */
     template<class MessageTrait>
     Notification::Type notification() {
         return _notificationImpl<MessageTrait,MessageTraits...>();
     }
+
+    /*! @brief Sets the notification type for the given message type ID and updates settings.
+     * @todo Maybe it make sense to emit signal only if the notification type has changes. */
+    void setNotification(MessageType messageId, Notification::Type type) final {
+        _setImpl<MessageTraits...>(messageId, type);
+
+        emit notificationTypeChanged(messageId, type);
+    };
+
+private:
+    SettingsBundle m_settings;
 
     template<class First, class... Rest>
     Notification::Type _notificationImpl(uint64_t messageId) {
@@ -95,16 +113,6 @@ public:
         else
             return Notification::UnknownType;
     }
-
-    /*! @brief Sets the notification type for the given message type ID and updates settings. */
-    void setNotification(MessageType messageId, Notification::Type type) final {
-        _setImpl<MessageTraits...>(messageId, type);
-
-        emit notificationTypeChanged(messageId, type);
-    };
-
-private:
-    SettingsBundle m_settings;
 
     template<class MessageTrait, class First, class... Rest>
     Notification::Type _notificationImpl() {

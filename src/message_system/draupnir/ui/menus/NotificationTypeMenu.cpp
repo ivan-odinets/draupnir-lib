@@ -33,35 +33,41 @@ namespace Draupnir::Messages
 
 NotificationTypeMenu::NotificationTypeMenu(QWidget *parent) :
     QMenu{parent},
-    w_notificationActionGroup{new QActionGroup{this}}
+    w_notificationActionGroup{new QActionGroup{this}},
+    m_currentValue{Notification::Type::UnknownType}
 {
     _setupUi();
 }
 
 NotificationTypeMenu::NotificationTypeMenu(const QString& title,QWidget *parent) :
     QMenu{title,parent},
-    w_notificationActionGroup{new QActionGroup{this}}
+    w_notificationActionGroup{new QActionGroup{this}},
+    m_currentValue{Notification::Type::UnknownType}
 {
     _setupUi();
 }
 
 void NotificationTypeMenu::setNotificationType(Notification::Type newStatus)
 {
-    for (const auto action : w_notificationActionGroup->actions()) {
-        if (action->data().value<Notification::Type>() == newStatus) {
-            action->setChecked(true);
-            return;
-        }
-    }
+    if (newStatus == m_currentValue)
+        return;
+
+    QAction* action = getActionFor(newStatus);
+    if (action  == nullptr)
+        return;
+
+    m_currentValue = newStatus;
+    action->setChecked(true);
 }
 
-Notification::Type NotificationTypeMenu::selectedNotificationType() const
+QAction* NotificationTypeMenu::getActionFor(Notification::Type type)
 {
-    const QAction* const selectedAction = w_notificationActionGroup->checkedAction();
-    return (selectedAction != nullptr) ?
-                selectedAction->data().value<Notification::Type>() :
-                Notification::UnknownType;
+    for (const auto action : w_notificationActionGroup->actions()) {
+        if (action->data().value<Notification::Type>() == type)
+            return action;
+    }
 
+    return nullptr;
 }
 
 void NotificationTypeMenu::changeEvent(QEvent* event)
@@ -76,7 +82,11 @@ void NotificationTypeMenu::_notificationActionSelected(QAction* action)
 {
     Q_ASSERT(action != nullptr);
 
-    emit notificationTypeChanged(action->data().value<Notification::Type>());
+    const auto selectedValue = action->data().value<Notification::Type>();
+    if (selectedValue != m_currentValue) {
+        m_currentValue = selectedValue;
+        emit notificationTypeChanged(action->data().value<Notification::Type>());
+    }
 }
 
 void NotificationTypeMenu::_setupUi()
@@ -86,7 +96,7 @@ void NotificationTypeMenu::_setupUi()
     for (const auto type : Notification::displayedValues) {
         QAction* typeAction = QMenu::addAction(Notification::toDisplayString(type));
         typeAction->setCheckable(true);
-        typeAction->setData(QVariant::fromValue<Notification::Type>(type));
+        typeAction->setData(QVariant::fromValue<Draupnir::Messages::Notification::Type>(type));
         w_notificationActionGroup->addAction(typeAction);
     }
 

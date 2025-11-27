@@ -43,6 +43,8 @@ class GenericMenuEntryHandler;
 /*! @class GenericMenuEntryHandler<FileContext,Draupnir::Menus::FileOpenEntry>
  *  @headerfile draupnir/handlers/file_menu/FileOpenEntryHandler.h
  *  @brief Specialization for handling the "File → Open" menu entry.
+ *  @ingroup HandlerTemplates
+ *
  *  @details Implements flexible logic for opening one або several files, depending on capabilities of the provided FileManager
  *           (multi-file or single-file mode, batch open or not). Handles confirmation prompts if current file(s) may be replaced.
  *

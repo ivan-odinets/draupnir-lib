@@ -28,7 +28,7 @@
 #include "draupnir/core/Message.h"
 #include "draupnir/models/MessageListModel.h"
 #include "draupnir/models/MessageListProxyModel.h"
-#include "draupnir/traits/messages/DefaultMessageTraits.h"
+#include "draupnir/traits/messages/DefaultMessageTraits.h" // IWYU pragma: keep
 
 namespace Draupnir::Messages
 {
@@ -36,77 +36,160 @@ namespace Draupnir::Messages
 /*! @class MessageListProxyModelTest tests/message_system/unit/MessageListProxyModelTest.cpp
  *  @brief This test class tests MessageListProxyModel class.
  *
- * @todo Add test cases for testing display options for message objects (brief, text, icon, date).
- * @todo Refractor this test so that it will have better readability.
- * @todo Add some script to execute this test in the context of CI. */
+ * @todo Refractor this test so that it will have better readability. */
 
 class MessageListProxyModelTest : public QObject
 {
     Q_OBJECT
 public:
-    MessageListProxyModelTest() :
-        sourceModel{new MessageListModel}
-    {}
-    ~MessageListProxyModelTest() {
-        sourceModel->deleteLater();
-    };
-
-    MessageListModel* sourceModel;
-    Message* debugOne;
-    Message* infoOne;
-    Message* infoTwo;
+    MessageListModel* sourceModel = new MessageListModel{this};
+    Message* debugOne = Message::fromTrait<DebugMessageTrait>("Debug");
+    Message* infoOne = Message::fromTrait<InfoMessageTrait>("Info One");
+    Message* infoTwo = Message::fromTrait<InfoMessageTrait>("Info Two");
 
 private slots:
     void initTestCase() {
-        // Populate test model with some random stuff
-        debugOne = Message::fromTrait<DebugMessageTrait>("Debug");
-        infoOne = Message::fromTrait<InfoMessageTrait>("Info One");
-        infoTwo = Message::fromTrait<InfoMessageTrait>("Info Two");
-
         sourceModel->append(
             { debugOne, infoOne, infoTwo }
         );
-
     }
 
     void test_initialization() {
         MessageListProxyModel* testedProxy = new MessageListProxyModel;
         testedProxy->setSourceModel(sourceModel);
 
-        QCOMPARE(testedProxy->messageTypeFilter().id(), MessageType::AllMessages);
+        QCOMPARE(testedProxy->displayedMessageTypesMask().id(), MessageType::AllMessages);
+        QCOMPARE(testedProxy->displayedMessageFieldsMask(), Message::Fields::All);
 
         delete testedProxy;
     }
 
-    void test_setMessageTypeFilter() {
+    void test_setting_message_types() {
         MessageListProxyModel* testedProxy = new MessageListProxyModel;
         Message* message = nullptr;
         testedProxy->setSourceModel(sourceModel);
 
         // Show all messages
-        testedProxy->setMessageTypeFilter(MessageType::AllMessages);
-        QCOMPARE(testedProxy->messageTypeFilter().id(), MessageType::AllMessages);
+        testedProxy->setDisplayedMessageTypesMask(MessageType::AllMessages);
+        QCOMPARE(testedProxy->displayedMessageTypesMask().id(), MessageType::AllMessages);
         QCOMPARE(testedProxy->columnCount(), sourceModel->columnCount());
         QCOMPARE(testedProxy->rowCount(), sourceModel->rowCount());
 
         // Show only debug messages
-        testedProxy->setMessageTypeFilter(MessageType::Debug);
-        QCOMPARE(testedProxy->messageTypeFilter().id(), MessageType::Debug);
+        testedProxy->setDisplayedMessageTypesMask(MessageType::Debug);
+        QCOMPARE(testedProxy->displayedMessageTypesMask().id(), MessageType::Debug);
         QCOMPARE(testedProxy->rowCount(), 1);
         message = static_cast<Message*>(testedProxy->mapToSource(testedProxy->index(0,0)).internalPointer());
         QCOMPARE(message, debugOne);
 
         // Show only info messages
-        testedProxy->setMessageTypeFilter(MessageType::Info);
-        QCOMPARE(testedProxy->messageTypeFilter().id(), MessageType::Info);
+        testedProxy->setDisplayedMessageTypesMask(MessageType::Info);
+        QCOMPARE(testedProxy->displayedMessageTypesMask().id(), MessageType::Info);
         QCOMPARE(testedProxy->rowCount(), 2);
         message = static_cast<Message*>(testedProxy->mapToSource(testedProxy->index(0,0)).internalPointer());
         QVERIFY(message == infoOne || message == infoTwo);
 
         // Show Warning messages (which are not present)
-        testedProxy->setMessageTypeFilter(MessageType::Warning);
-        QCOMPARE(testedProxy->messageTypeFilter().id(), MessageType::Warning);
+        testedProxy->setDisplayedMessageTypesMask(MessageType::Warning);
+        QCOMPARE(testedProxy->displayedMessageTypesMask().id(), MessageType::Warning);
         QCOMPARE(testedProxy->rowCount(), 0);
+
+        delete testedProxy;
+    }
+
+    void test_settings_message_fields() {
+        MessageListProxyModel* testedProxy = new MessageListProxyModel;
+        Message* message = nullptr;
+        testedProxy->setSourceModel(sourceModel);
+
+        // Hide all Message Fields
+        testedProxy->setDisplayedMessageFieldsMask(Message::Fields::None);
+        QCOMPARE(testedProxy->displayedMessageFieldsMask(), Message::Fields::None);
+        QCOMPARE(testedProxy->columnCount(), sourceModel->columnCount());
+        QCOMPARE(testedProxy->rowCount(), sourceModel->rowCount());
+        QModelIndex proxyIndex = testedProxy->index(0,0);
+        QCOMPARE(testedProxy->data(proxyIndex,Qt::DisplayRole).toString(), QString{});
+        QCOMPARE(testedProxy->data(proxyIndex,Qt::DecorationRole).value<QIcon>(), QIcon{});
+
+        // Show only icons
+        testedProxy->setDisplayedMessageFieldsMask(Message::Fields::Icon);
+        QCOMPARE(testedProxy->isMessageFieldDisplayed(Message::Fields::Icon), true);
+        QCOMPARE(testedProxy->isMessageFieldDisplayed(Message::Fields::Brief), false);
+        QCOMPARE(testedProxy->isMessageFieldDisplayed(Message::Fields::What), false);
+        QCOMPARE(testedProxy->isMessageFieldDisplayed(Message::Fields::DateTime), false);
+        proxyIndex = testedProxy->index(0,0);
+        message = static_cast<Message*>(testedProxy->mapToSource(proxyIndex).internalPointer());
+        QCOMPARE(testedProxy->data(proxyIndex,Qt::DecorationRole).value<QIcon>(), message->icon());
+        QCOMPARE(testedProxy->data(proxyIndex,Qt::DisplayRole).toString(), QString{});
+
+        // Show icons and brief
+        testedProxy->setMessageFieldDisplayed(Message::Brief, true);
+        QCOMPARE(testedProxy->isMessageFieldDisplayed(Message::Fields::Icon), true);
+        QCOMPARE(testedProxy->isMessageFieldDisplayed(Message::Fields::Brief), true);
+        QCOMPARE(testedProxy->isMessageFieldDisplayed(Message::Fields::What), false);
+        QCOMPARE(testedProxy->isMessageFieldDisplayed(Message::Fields::DateTime), false);
+        proxyIndex = testedProxy->index(0,0);
+        message = static_cast<Message*>(testedProxy->mapToSource(proxyIndex).internalPointer());
+        QCOMPARE(testedProxy->data(proxyIndex,Qt::DecorationRole).value<QIcon>(), message->icon());
+        QCOMPARE(testedProxy->data(proxyIndex,Qt::DisplayRole).toString(), message->brief());
+
+        // Show icons, brief and what
+        testedProxy->setMessageFieldDisplayed(Message::What, true);
+        QCOMPARE(testedProxy->isMessageFieldDisplayed(Message::Fields::Icon), true);
+        QCOMPARE(testedProxy->isMessageFieldDisplayed(Message::Fields::Brief), true);
+        QCOMPARE(testedProxy->isMessageFieldDisplayed(Message::Fields::What), true);
+        QCOMPARE(testedProxy->isMessageFieldDisplayed(Message::Fields::DateTime), false);
+        proxyIndex = testedProxy->index(0,0);
+        message = static_cast<Message*>(testedProxy->mapToSource(proxyIndex).internalPointer());
+        QCOMPARE(testedProxy->data(proxyIndex,Qt::DecorationRole).value<QIcon>(), message->icon());
+        QCOMPARE(testedProxy->data(proxyIndex,Qt::DisplayRole).toString(), message->brief() + "\n" + message->what());
+
+        // Show icons, brief, what and datetime
+        testedProxy->setMessageFieldDisplayed(Message::DateTime, true);
+        QCOMPARE(testedProxy->isMessageFieldDisplayed(Message::Fields::Icon), true);
+        QCOMPARE(testedProxy->isMessageFieldDisplayed(Message::Fields::Brief), true);
+        QCOMPARE(testedProxy->isMessageFieldDisplayed(Message::Fields::What), true);
+        QCOMPARE(testedProxy->isMessageFieldDisplayed(Message::Fields::DateTime), true);
+        proxyIndex = testedProxy->index(0,0);
+        message = static_cast<Message*>(testedProxy->mapToSource(proxyIndex).internalPointer());
+        QCOMPARE(testedProxy->data(proxyIndex,Qt::DecorationRole).value<QIcon>(), message->icon());
+        QCOMPARE(testedProxy->data(proxyIndex,Qt::DisplayRole).toString(), message->brief() + "\n" + message->what() + "\n" + message->dateTime().toString());
+
+        delete testedProxy;
+    }
+
+    void test_setting_message_types_extended() {
+        MessageListProxyModel* testedProxy = new MessageListProxyModel;
+        testedProxy->setSourceModel(sourceModel);
+
+        testedProxy->setDisplayedMessageTypesMask(MessageType::AllMessages);
+        // Test multiple disabling calls
+        testedProxy->setMessageTypeDisplayed(MessageType::Debug, false);
+        testedProxy->setMessageTypeDisplayed(MessageType::Debug, false);
+        QCOMPARE(testedProxy->isMessageTypeDisplayed(MessageType::Debug), false);
+
+        // Test multiple enabling calls
+        testedProxy->setMessageTypeDisplayed(MessageType::Debug, true);
+        testedProxy->setMessageTypeDisplayed(MessageType::Debug, true);
+        QCOMPARE(testedProxy->isMessageTypeDisplayed(MessageType::Debug), true);
+
+        delete testedProxy;
+    }
+
+    void test_setting_message_fields_extended() {
+        MessageListProxyModel* testedProxy = new MessageListProxyModel;
+        testedProxy->setSourceModel(sourceModel);
+
+        testedProxy->setDisplayedMessageFieldsMask(Message::Fields::All);
+        // Test multiple disabling calls
+        testedProxy->setMessageFieldDisplayed(Message::Fields::DateTime, false);
+        testedProxy->setMessageFieldDisplayed(Message::Fields::DateTime, false);
+        QCOMPARE(testedProxy->isMessageFieldDisplayed(Message::Fields::DateTime), false);
+
+        // Test multiple enabling calls
+        testedProxy->setMessageFieldDisplayed(Message::Fields::DateTime, true);
+        testedProxy->setMessageFieldDisplayed(Message::Fields::DateTime, true);
+        QCOMPARE(testedProxy->isMessageFieldDisplayed(Message::Fields::DateTime), true);
 
         delete testedProxy;
     }

@@ -67,8 +67,7 @@ public:
 #endif //QT_NO_SYSTEMTRAYICON
     };
 
-    /*! @var notificationTypes
-     *  @brief List of all supported notification types (except UnknownType). */
+    /*! @brief List of all supported notification types (except UnknownType). */
     static constexpr Type notificationTypes[] = {
         None, MessageBoxType,
 #ifndef QT_NO_SYSTEMTRAYICON

@@ -27,6 +27,7 @@
 
 #include <QSortFilterProxyModel>
 
+#include "draupnir/core/Message.h"
 #include "draupnir/core/MessageType.h"
 
 namespace Draupnir::Messages
@@ -34,67 +35,49 @@ namespace Draupnir::Messages
 
 /*! @class MessageListProxyModel draupnir/models/MessageListProxyModel.h
  *  @ingroup MessageSystem
- *  @brief This class is a proxy model for MessageListModel which is used for filtering  Message objects. By default this model
- *         will accept any message type.
- *  @details Filtering is done by bitwise comparison between the value returned by Message::type and m_allowedType
- *           stored in this model. See MessageType.
+ *  @brief This class is a proxy model for @ref Draupnir::Messages::MessageListModel which is used for filtering and
+ *         formatting displayed @ref Draupnir::Messages::Message objects. By default this model will accept any
+ *         message type and display everything.
  *
- * @todo Finish with displaying selected fields of the Message objects. */
+ *  @details Filtering is done by bitwise comparison between the value returned by Message::type and m_allowedType
+ *           stored in this model. See MessageType. */
 
 class MessageListProxyModel final : public QSortFilterProxyModel
 {
     Q_OBJECT
 public:
-    /*! @brief This enum holds flag for fields of Message objects, which can be displayed by this model. */
-    enum DisplayedContent {
-        Brief      = 0b00000001,  /*!< @brief Brief summary of Message (Message::brief). */
-        What       = 0b00000010,  /*!< @brief Details what happened (Message::what). */
-        DateTime   = 0b00000100,  /*!< @brief DateTime of Message (Message::dateTime). */
-        Icon       = 0b00001000,  /*!< @brief Icon of Message (Message::icon). */
-        All        = Brief | What | DateTime | Icon,  /*!< @brief All of the above. */
-    };
-
-    /*! @brief Default constructor. By default this filter model will accept all messages. */
+    /*! @brief Default constructor. By default this filter model will accept all messages and display all fields of the
+     *         @ref Draupnir::Messages::Message objects. */
     explicit MessageListProxyModel(QObject* parent = nullptr);
 
-    /*! @brief Destructor. Does nothing. */
-    ~MessageListProxyModel() final;
+    /*! @brief Destructor. Trivial. */
+    ~MessageListProxyModel() final = default;
 
-    /*! @brief Sets what type of Message objects this model should allow displaying. */
-    void setMessageTypeFilter(MessageType type);
+    /*! @brief Sets what type of @ref Draupnir::Messages::Message objects this model should allow displaying. */
+    void setDisplayedMessageTypesMask(MessageType mask);
 
     /*! @brief Returns allowed Message::Type for Message objects that will be shown by this model. */
-    MessageType messageTypeFilter() const { return m_typeFilter; }
+    MessageType displayedMessageTypesMask() const { return m_displayedMessageTypesMask; }
 
     /*! @brief This method allows enabling/disabling filtering of Message objects with specified MessageType. */
-    void setMessageTypeAllowed(MessageType type, bool isVisible);
+    void setMessageTypeDisplayed(MessageType type, bool isVisible);
 
-    /*! @brief Returns true if this model will display content of Message::brief. */
-    bool isBriefDisplayed() const      { return m_displayedContent & Brief; }
+    /*! @brief Returns `true` if the specified messageType will be displayed by this model. */
+    bool isMessageTypeDisplayed(MessageType messageType) { return m_displayedMessageTypesMask & messageType; }
 
-    /*! @brief Allows setting if this model will display content of Message::brief. */
-    void setBriefDisplayed(bool state);
+    /*! @brief Sets what fields of Message objects will be displayed. */
+    void setDisplayedMessageFieldsMask(std::underlying_type_t<Message::Fields> mask);
 
-    /*! @brief Returns true if this model will display content of Message::what. */
-    bool isWhatDisplayed() const       { return m_displayedContent & What; }
+    /*! @brief Returns what fields of Message objects will be displayed. */
+    std::underlying_type_t<Message::Fields> displayedMessageFieldsMask() const { return m_displayedMessageFieldsMask; }
 
-    /*! @brief Allows setting if this model will display content of Message::what. */
-    void setWhatDisplayed(bool state);
+    /*! @brief Sets if specific field of Message object will be displayed. */
+    void setMessageFieldDisplayed(Message::Fields field, bool isVisible);
 
-    /*! @brief Returns true if this model will display content of Message::dateTime. */
-    bool isDateTimeDisplayed() const   { return m_displayedContent & DateTime; }
+    /*! @brief Returns true if specific field of Message object is displayed. */
+    bool isMessageFieldDisplayed(Message::Fields field) const { return m_displayedMessageFieldsMask & field; }
 
-    /*! @brief Allows setting if this model will display content of Message::dateTime. */
-    void setDateTimeDisplayed(bool state);
-
-    /*! @brief Returns true if this model will display content of Message::icon. */
-    bool isIconDisplayed() const       { return m_displayedContent & Icon; }
-
-    /*! @brief Allows setting if this model will display content of Message::icon. */
-    void setIconDisplayed(bool state);
-
-    /*! @brief This is a method.
-     * @todo Document Me. */
+    /*! @brief This method is used to adjust displayed data in accordance to cpnfigured fields mask. */
     QVariant data(const QModelIndex &index, int role = Qt::DisplayRole) const final;
 
 protected:
@@ -103,9 +86,8 @@ protected:
     bool filterAcceptsRow(int source_row, const QModelIndex &source_parent) const final;
 
 private:
-    quint8 m_displayedContent;
-    void _setDisplayedContentBit(DisplayedContent content, bool state);
-    MessageType m_typeFilter;
+    std::underlying_type_t<Message::Fields> m_displayedMessageFieldsMask;
+    MessageType m_displayedMessageTypesMask;
 };
 
 }; // namespace Draupnir::Messages

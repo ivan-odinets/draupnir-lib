@@ -25,8 +25,6 @@
 #ifndef MESSAGESYSTEMTEMPLATE_H
 #define MESSAGESYSTEMTEMPLATE_H
 
-#include "MessageSystemInterface.h"
-
 #include "draupnir/traits/messages/DefaultMessageTraits.h"
 #include "draupnir/utils/MessageTraitsHelper.h"
 #include "draupnir/traits/settings/MessageTypeSettingsTrait.h"
@@ -68,7 +66,7 @@ namespace Draupnir::Messages
  *             type to user. Can return reference to the empty icon. */
 
 template<class... MessageTraits>
-class MessageSystemTemplate final : public Draupnir::Messages::MessageSystemInterface
+class MessageSystemTemplate
 {
     using SpecificMessageTraitsHelper = MessageTraitsHelper<
         DebugMessageTrait,
@@ -77,11 +75,10 @@ class MessageSystemTemplate final : public Draupnir::Messages::MessageSystemInte
         ErrorMessageTrait,
         MessageTraits...
     >;
-
-    using MessageUiBuilder = typename SpecificMessageTraitsHelper::MessageUiBuilder;
-
 public:
     using MessageHandler = typename SpecificMessageTraitsHelper::MessageHandler;
+
+    using MessageUiBuilder = typename SpecificMessageTraitsHelper::MessageUiBuilder;
 
     using SettingsBundle = Draupnir::Settings::bundle_merge_all_t<
         typename MessageHandler::SettingsBundle,
@@ -112,14 +109,20 @@ public:
         m_uiBuilder.template loadSettings<SettingsRegistry>(registry);
     }
 
-    /*! @brief Returns pointer to MessageHandlerTemplate object in form of pointer to the MessageHandler interface. */
-    MessageHandler* handler() final { return &m_handler; }
+    /*! @brief Returns pointer to MessageHandlerTemplate object in form of pointer to the MessageHandlerInterface. */
+    AbstractMessageHandler* handlerInterface() { return &m_handler; }
 
-    /*! @brief Returns pointer to MessageUiBuilderTemplate object in form of pointer to the MessageUiBuilder interface. */
-    MessageUiBuilder* uiBuilder() final { return &m_uiBuilder; }
+    /*! @brief Returns pointer to MessageHandler object used within this MessageSystemTemplate. */
+    MessageHandler* handler() { return &m_handler; }
+
+    /*! @brief Returns pointer to MessageUiBuilderTemplate object in form of pointer to the MessageUiBuilderInterface. */
+    AbstractMessageUiBuilder* uiBuilderInterface() { return &m_uiBuilder; }
+
+    /*! @brief Returns pointer to MessageUiBuilder object used within this MessageSystemTemplate. */
+    MessageUiBuilder* uiBuilder() { return &m_uiBuilder; }
 
     /*! @brief Returns true if provided MessageType is known to this MessageSystem. */
-    bool isTypeKnown(MessageType type) final { return staticIsTypeKnown(type); }
+    bool isTypeKnown(MessageType type) { return staticIsTypeKnown(type); }
 
     /*! @brief Returns true if provided type is known to this MessageSystem. */
     static bool staticIsTypeKnown(MessageType type) {

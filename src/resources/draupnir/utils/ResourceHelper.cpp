@@ -50,7 +50,7 @@ QIcon ResourceHelper::_readIcon(const QString& name)
 {
     QIcon result;
 
-    for (int size : sizes) {
+    for (const int size : sizes) {
         QString fileName = QString(":/draupnir/icons/%1x%1/%2").arg(size).arg(name);
         if (QFileInfo::exists(fileName)) {
             result.addFile(fileName);

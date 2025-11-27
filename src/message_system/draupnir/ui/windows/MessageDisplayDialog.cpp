@@ -64,9 +64,6 @@ MessageDisplayDialog::MessageDisplayDialog(QWidget* parent) :
 
 }
 
-MessageDisplayDialog::~MessageDisplayDialog()
-{}
-
 void MessageDisplayDialog::addMessage(Message* message)
 {
     Q_ASSERT_X(message, "void MessageDisplayDialog::addMessage",
@@ -80,6 +77,13 @@ void MessageDisplayDialog::addMessage(Message* message)
 
 void MessageDisplayDialog::addMessageList(const QList<Message*>& messages)
 {
+#ifndef QT_NO_DEBUG
+    // Just to be sure that no nullptrs are here
+    for (Message* message : messages) {
+        Q_ASSERT_X(message, "MessageDisplayDialog::addMessageList", "One of the provided Message* is nullptr.");
+    }
+#endif // QT_NO_DEBUG
+
     for (const auto message : messages)
         addMessage(message);
 }

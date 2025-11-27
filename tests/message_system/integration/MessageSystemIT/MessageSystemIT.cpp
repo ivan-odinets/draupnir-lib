@@ -41,8 +41,7 @@ namespace Draupnir::Messages
 /*! @class MessageSystemGeneralIT tests/message_system/GeneralIT/MessageSystemGeneralIT.cpp
  *  @brief This test class tests basic functionality of the MessageSystem.
  *
- * @todo Refractor this test so that it will have better readability.
- * @todo Add some script to execute this test in the context of CI. */
+ * @todo Refractor this test so that it will have better readability. */
 
 class MessageSystemGeneralIT : public QObject
 {
@@ -70,7 +69,7 @@ public:
     SettingsRegistry registry;
 
     // Internal things of MessageSystemTemplate
-    MessageHandlerInterface* p_messageHandler;
+    AbstractMessageHandler* p_messageHandler;
     MessageSystem::MessageHandler* p_messageHandlerTemplate;
 
     MessageListModel* p_messageListModel;
@@ -178,28 +177,6 @@ private slots:
         // Clearing the model
         p_messageListModel->clear();
         QVERIFY(p_messageListModel->rowCount() == 0);
-    }
-
-    /*! @brief Testing "batch" logging functionality". */
-    void testBatchLogging() {
-        MessageGroup group = logger.beginMessageGroup();
-        QVERIFY(p_messageHandler->m_messageGroupsMap.contains(group));
-
-        // Test batched logging
-        logger.logDebug("One",group);
-        logger.logDebug("Two",group);
-        logger.logDebug("Three");
-        QVERIFY(p_messageHandler->m_messageGroupsMap[group].count() == 2);
-        QVERIFY(p_messageListModel->rowCount() == 3);
-
-        logger.flush(group);
-        QVERIFY(p_messageHandler->m_messageGroupsMap[group].count() == 0);
-
-        logger.endMessageGroup(group);
-        QVERIFY(p_messageHandler->m_messageGroupsMap.contains(group) == false);
-    }
-
-    void testSettings() {
     }
 };
 

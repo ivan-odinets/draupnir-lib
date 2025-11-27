@@ -37,9 +37,10 @@ template<class Context, class Entry>
 class GenericMenuEntryHandler;
 
 /*! @class GenericMenuEntryHandler<SettingsContext,Draupnir::Menus::MinimizeOnCloseEntry>
+ *  @ingroup HandlerTemplates
  *  @brief This is a class.
  *
- * @todo Maybe this class needs to be placed in other file?
+ * @todo Change naming and location of this class after adjusting Draupnir::Menus::MinimizeOnCloseEntry
  * @todo Write reasonable documentation for this class. */
 
 template<class SettingsContext>
@@ -53,13 +54,14 @@ public:
 };
 
 /*! @struct SettingTraitForEntry<Draupnir::Menus::MinimizeOnCloseEntry>
+ *  @ingroup HandlerTemplates
  *  @brief Specialization mapping a menu entry to its setting trait.
  *
  *  @details Provides a compile-time association between the menu entry trait Draupnir::Menus::MinimizeOnCloseEntry and
  *           the corresponding MinimizeOnClose setting trait. This mapping is required by SettingsMenuEntriesHandler to
  *           resolve the correct value type and persistence key.
  *
- * @todo Maybe this class needs to be placed in other file?
+ * @todo Change naming and location of this class after adjusting Draupnir::Menus::MinimizeOnCloseEntry
  * @todo Maybe include this mapping into the menu entry trait class? */
 
 template<> struct SettingTraitForEntry<Draupnir::Menus::MinimizeOnCloseEntry> {

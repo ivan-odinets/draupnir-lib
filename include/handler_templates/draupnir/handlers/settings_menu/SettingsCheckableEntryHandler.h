@@ -34,6 +34,7 @@ namespace Draupnir::Handlers
 {
 
 /*! @class SettingsCheckableEntryHandler
+ *  @ingroup HandlerTemplates
  *  @brief This is a base class for checkable settings entries.
  *
  * @todo Write reasonable documentation for this class.

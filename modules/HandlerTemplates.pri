@@ -31,13 +31,11 @@
         $$PWD/../include/handler_templates/draupnir/handlers/settings_menu/SettingsCheckableEntryHandler.h \
         $$PWD/../include/handler_templates/draupnir/handlers/settings_menu/SettingsMenuEntriesHandler.h \
         $$PWD/../include/handler_templates/draupnir/handlers/settings_menu/StartHiddenEntryHandler.h \
-    $$PWD/../include/handler_templates/draupnir/handlers/templates/GenericMenuEntriesHandler.h \
+        $$PWD/../include/handler_templates/draupnir/handlers/templates/GenericMenuEntriesHandler.h \
         $$PWD/../include/handler_templates/draupnir/utils/FileManagerValidator.h \
-        $$PWD/../include/handler_templates/draupnir/utils/SettingTraitForEntry.h
+        $$PWD/../include/handler_templates/draupnir/utils/SettingTraitForEntry.h \
+        $$PWD/../include/handler_templates/draupnir/handlers/templates/ActionHandler.h \
+        $$PWD/../include/handler_templates/draupnir/handlers/templates/CheckableActionHandler.h \
+        $$PWD/../include/handler_templates/draupnir/handlers/templates/CustomMenuHandler.h \
+        $$PWD/../include/handler_templates/draupnir/handlers/templates/GenericMenuEntryHandler.h
 }
-
-HEADERS += \
-    $$PWD/../include/handler_templates/draupnir/handlers/templates/ActionHandler.h \
-    $$PWD/../include/handler_templates/draupnir/handlers/templates/CheckableActionHandler.h \
-    $$PWD/../include/handler_templates/draupnir/handlers/templates/CustomMenuHandler.h \
-    $$PWD/../include/handler_templates/draupnir/handlers/templates/GenericMenuEntryHandler.h

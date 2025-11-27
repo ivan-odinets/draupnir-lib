@@ -37,10 +37,10 @@ namespace Draupnir::Messages
 
 /*! @class MessageDisplayWidget draupnir/ui/widgets/MessageDisplayWidget.h
  *  @ingroup MessageSystem
- *  @brief A lightweight QWidget used to visually display the contents of a single @ref Message object.
+ *  @brief A lightweight `QWidget` used to visually display the contents of a single @ref Draupnir::Messages::Message object.
  *
- *  @details This widget is designed to present a @ref Message object in a user-friendly form using labels for the brief
- *           description, detailed explanation, timestamp, and an icon.
+ *  @details This widget is designed to present a @ref Draupnir::Messages::Message object in a user-friendly form using labels
+ *           for the brief description, detailed explanation, timestamp, and an icon.
  *
  *           The layout consists of:
  *           - A left-aligned icon

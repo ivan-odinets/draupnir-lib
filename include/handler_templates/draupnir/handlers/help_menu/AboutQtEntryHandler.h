@@ -37,6 +37,7 @@ class GenericMenuEntryHandler;
 
 /*! @class GenericHelpMenuEntryHandler<HelpContext, Draupnir::Menus::AboutQtMenuTrait>
  *  @headerfile draupnir/handlers/help_menu/AboutQtEntryHandler.h
+ *  @ingroup HandlerTemplates
  *  @tparam HelpContext Any type representing the help/“About” handling context (unused in this specialization).
  *  @brief Partial specialization that wires a QAction to the standard QApplication::aboutQt dialog.
  *

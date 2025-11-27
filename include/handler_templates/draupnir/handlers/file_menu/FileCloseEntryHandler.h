@@ -41,7 +41,9 @@ class GenericMenuEntryHandler;
 
 /*! @class GenericMenuEntryHandler<FileContext,Draupnir::Menus::FileCloseEntry>
  *  @headerfile draupnir/handlers/file_menu/FileCloseEntryHandler.h
+ *  @ingroup HandlerTemplates
  *  @brief Specialization of the menu entry handler for the "File -> Close" menu entry.
+ *
  *  @details This specialization provides the logic for handling file close operations in the file menu. It uses ActionHandler
  *           to connect the QAction, and implements the logic for user interaction when closing a file with possible unsaved
  *           changes./include/templateHandlers

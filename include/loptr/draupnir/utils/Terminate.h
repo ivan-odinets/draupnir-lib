@@ -41,7 +41,7 @@ namespace Draupnir::Loptr
 class Terminate
 {
 public:
-    /*! @brief Generates random number. If generated number is even - will call std::abort. If number is odd - will
+    /*! @brief Generates random number. If generated number is even - will call `std::abort`. If number is odd - will
      *         exit.
      *
      * @note This method is part of Loptr module, which is mostly for fun. However feel free to use this in reasonable

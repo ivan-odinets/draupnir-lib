@@ -26,6 +26,7 @@
 #define MESSAGETYPE_H
 
 #include <cstdint>
+#include <QMetaType>
 
 namespace Draupnir::Messages
 {
@@ -41,13 +42,16 @@ namespace Draupnir::Messages
  *           While adding custom message types the best would be to use MessageType::nextType method and start these types
  *           from DefaultMessageTypes::FirstCustomType enum key.
  *
- * @note This class is designed to work efficiently in compile-time contexts. */
+ * @note This class is designed to work efficiently in compile-time contexts.
+ *
+ * @todo MessageType-related code can be a bit more prettified. */
 
 class MessageType
 {
 public:
     /*! @brief Predefined default message types. */
-    enum DefaultMessageTypes : uint64_t {
+    enum DefaultMessageTypes : quint64 {
+        None            = 0b0000'0000,
         Debug           = 0b0000'0001,
         Info            = 0b0000'0010,
         Warning         = 0b0000'0100,
@@ -60,17 +64,17 @@ public:
 
     /*! @brief Constructs a MessageType with the given value.
      *  @param id Raw numeric identifier for the message type. */
-    constexpr MessageType(uint64_t id = 0) :
+    constexpr MessageType(quint64 id = 0) :
         m_id{id}
     {}
 
     /*! @brief Implicit conversion to uint64_t.
      *  @return The internal message type ID. */
-    constexpr operator uint64_t() const { return m_id; }
+    constexpr operator quint64() const { return m_id; }
 
     /*! @brief Returns the raw identifier.
      *  @return The internal message type ID. */
-    constexpr uint64_t id() const { return m_id; }
+    constexpr quint64 id() const { return m_id; }
 
     /*! @brief Bitwise left shift operator.
      *  @param shift Number of bits to shift.
@@ -98,9 +102,11 @@ public:
     static constexpr MessageType nextType(MessageType prevType) { return MessageType{prevType.id() << 1}; }
 
 private:
-    uint64_t m_id;
+    quint64 m_id;
 };
 
 }; // Draupnir::Messages
+
+Q_DECLARE_METATYPE(Draupnir::Messages::MessageType);
 
 #endif // MESSAGETYPE_H

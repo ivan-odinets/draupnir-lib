@@ -22,81 +22,10 @@
  *
  */
 
-#ifndef MESSAGENOTIFICATIONSETTINGSWIDGET_H
-#define MESSAGENOTIFICATIONSETTINGSWIDGET_H
+#ifndef NOTIFICATIONSETTINGSWIDGETTEMPLATE_H
+#define NOTIFICATIONSETTINGSWIDGETTEMPLATE_H
 
-#include <QWidget>
-
-#include <QLabel>
-
-class QFormLayout;
-class QPushButton;
-
-#include "draupnir/core/MessageType.h"
-#include "draupnir/core/Notification.h"
-#include "draupnir/ui/widgets/NotificationTypeComboBox.h"
-
-namespace Draupnir::Messages
-{
-
-class MessageHandlerInterface;
-
-/*! @class MessageNotificationSettingsWidget draupnir/ui/widgets/MessageNotificationSettingsWidget.h
- *  @brief Abstract base widget for configuring notification settings for the MessageHandler / MessageHandlerTemplate.
- *  @details This widget serves as a user interface for displaying and modifying notification settings associated with
- *           different message types. It is intended to be subclassed by `MessageNotificationSettingsWidgetTemplate`
- *           which populates this widget with actual trait-based controls.
- *
- *           The widget includes a test row (label + combo box + button) and a layout for dynamic rows generated per
- *           message type.
- *
- * @todo Write test for this class.
- * @todo Add support of selecting message parts to be displayed. */
-
-class MessageNotificationSettingsWidget : public QWidget
-{
-    Q_OBJECT
-public:
-    /*! @brief Default constructor. Initializes all internal UI elements.
-     *  @param parent Optional parent widget. */
-    explicit MessageNotificationSettingsWidget(QWidget *parent = nullptr);
-
-    /*! @brief Virtual method to display the current notification type for a specific message type.
-     *  @param type The message type identifier.
-     *  @param notification The notification type to show for the message type. */
-    virtual void showNotificationType(MessageType type, Notification::Type notification) = 0;
-
-signals:
-    /*! @brief Emitted when the user changes the notification type for a given message.
-     *  @param type The message type.
-     *  @param notification The newly selected notification type. */
-    void messageNotificationTypeChanged(MessageType type, Notification::Type notification);
-
-protected:
-    /*! @brief Qt event handler for language change, used for dynamic retranslation.
-     *  @param event The event object. */
-    void changeEvent(QEvent* event) final;
-
-    /*! @brief Adds a labeled combo box row to the layout.
-     *  @param label Pointer to a QLabel.
-     *  @param selector Pointer to a NotificationTypeComboBox. */
-    void addRow(QLabel* label, NotificationTypeComboBox* selector);
-
-    /*! @brief Virtual helper to retranslate the labels of each message type. */
-    virtual void _retranslateTypeLabels() = 0;
-
-private slots:
-    void _onShowDummyClicked();
-
-private:
-    void _retranslateUi();
-    QLabel* w_testLabel;
-    NotificationTypeComboBox* w_testNotiticationSelector;
-    QPushButton* w_testButton;
-    QFormLayout* p_notificationTypesLayout;
-};
-
-}; // namespace Draupnir::Messages
+#include "draupnir/ui/widgets/AbstractNotificationSettingsWidget.h"
 
 #include "draupnir/containers/fixed_tuple_map.h"
 #include "draupnir/core/MessageHandlerTemplate.h"
@@ -104,19 +33,19 @@ private:
 namespace Draupnir::Messages
 {
 
-/*! @class MessageNotificationSettingsWidgetTemplate draupnir/ui/widgets/MessageNotificationSettingsWidget.h
+/*! @class NotificationSettingsWidgetTemplate draupnir/ui/widgets/NotificationSettingsWidgetTemplate.h
+ *  @ingroup MessageSystem
  *  @brief Concrete implementation of `MessageNotificationSettingsWidget` for a fixed set of message traits.
  *  @tparam MessageTraits... A parameter pack of message trait types (e.g., DebugMessageTrait, InfoMessageTrait).
  *
  *  @details This templated class initializes the UI rows for each message trait and handles interactions with a
  *           `MessageHandlerTemplate`. It maps each message type to a pair of widgets (label + combo box) using `fixed_tuple_map`.
  *
- * @todo Seperate this class into seperate file.
  * @todo Write test for this class. */
 
 
 template<class... MessageTraits>
-class MessageNotificationSettingsWidgetTemplate final : public MessageNotificationSettingsWidget
+class NotificationSettingsWidgetTemplate final : public AbstractNotificationSettingsWidget
 {
     using MessageHandler = MessageHandlerTemplate<MessageTraits...>;
 
@@ -125,8 +54,8 @@ class MessageNotificationSettingsWidgetTemplate final : public MessageNotificati
 public:
     /*! @brief Constructs the widget and populates it based on the provided message traits.
      *  @param parent Optional parent widget. */
-    explicit MessageNotificationSettingsWidgetTemplate(QWidget* parent = nullptr) :
-        MessageNotificationSettingsWidget(parent)
+    explicit NotificationSettingsWidgetTemplate(QWidget* parent = nullptr) :
+        AbstractNotificationSettingsWidget{parent}
     {
         _setupUiImpl<MessageTraits...>();
     }
@@ -138,17 +67,24 @@ public:
         std::get<NotificationTypeComboBox*>(m_widgetMap[type])->setNotificationType(notification);
     }
 
+    /*! @brief Returns the displayed notification type for a MessageType specified
+     *  @param type The message type. */
+    Notification::Type notificationType(MessageType type) {
+        return std::get<NotificationTypeComboBox*>(m_widgetMap[type])->notificationType();
+    };
+
     /*! @brief Displays the current notification settings from the message handler.
+     *  @param handler A pointer to the `MessageHandlerTemplate` for the current trait set.
      *  @details This populates the combo boxes based on the values in the handler’s internal notification map and
      *           connects the widgets to update the handler on change.
-     *  @param handler A pointer to the `MessageHandlerTemplate` for the current trait set. */
+     * @todo Add Q_ASSERT_X with reasonable error message. */
     void showNotificationSettings(MessageHandlerTemplate<MessageTraits...>* handler) {
         p_handler = handler;
 
         _showNotificationSettingsImpl<MessageTraits...>();
 
         connect(handler, &MessageHandler::notificationTypeChanged,
-                this,    &MessageNotificationSettingsWidget::showNotificationType);
+                this,    &AbstractNotificationSettingsWidget::showNotificationType);
     }
 
 protected:
@@ -157,7 +93,13 @@ protected:
         _retranslateTypeLabelsImpl<MessageTraits...>();
     }
 
+    AbstractMessageHandler* handler() {
+        return p_handler;
+    }
+
 private:
+    friend class NotificationSettingsWidgetTemplateTest;
+
     MessageHandler* p_handler;
 
     draupnir::containers::fixed_tuple_map<
@@ -175,7 +117,7 @@ private:
         QLabel* displayLabel = new QLabel{First::displayName()};
 
         NotificationTypeComboBox* selector = new NotificationTypeComboBox;
-        connect(selector,&NotificationTypeComboBox::notificationTypeChanged,[this,type](Notification::Type notificationType){
+        connect(selector,&NotificationTypeComboBox::notificationTypeSelected,[this,type](Notification::Type notificationType){
             p_handler->setNotification(type,notificationType);
         });
 
@@ -206,9 +148,8 @@ private:
         if constexpr (sizeof...(Rest) > 0)
             _retranslateTypeLabelsImpl<Rest...>();
     }
-
 };
 
 }; // namespace Draupnir::Messages
 
-#endif // MESSAGENOTIFICATIONSETTINGSWIDGET_H
+#endif // NOTIFICATIONSETTINGSWIDGETTEMPLATE_H

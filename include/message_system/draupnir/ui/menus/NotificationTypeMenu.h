@@ -74,12 +74,15 @@ public:
 
     /*! @brief Returns the currently selected Notification::Type.
      *  @return The selected Notification::Type, or Notification::UnknownType if none is selected. */
-    Notification::Type selectedNotificationType() const;
+    Notification::Type notificationType() const { return m_currentValue; }
+
+    /*! @brief Returns QAction for given Notification::Typeor nullptr for Notification::UnknownType. */
+    QAction* getActionFor(Notification::Type type);
 
 signals:
     /*! @brief Emitted when the user changes the notification type via the menu.
      *  @param notify - the newly selected Notification::Type. */
-    void notificationTypeChanged(Notification::Type notify);
+    void notificationTypeChanged(Draupnir::Messages::Notification::Type notify);
 
 protected:
     /*! @brief Handles dynamic language changes and updates menu text.
@@ -101,6 +104,8 @@ private:
     void _retranslateUi();
 
     QActionGroup* w_notificationActionGroup;
+
+    Notification::Type m_currentValue;
 };
 
 }; // namespace Draupnir::Messages

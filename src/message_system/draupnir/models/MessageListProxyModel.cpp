@@ -31,83 +31,49 @@ namespace Draupnir::Messages
 
 MessageListProxyModel::MessageListProxyModel(QObject* parent) :
     QSortFilterProxyModel{parent},
-    m_displayedContent{All},
-    m_typeFilter{MessageType::AllMessages}
+    m_displayedMessageFieldsMask{Message::All},
+    m_displayedMessageTypesMask{MessageType::AllMessages}
 {}
 
-MessageListProxyModel::~MessageListProxyModel()
-{}
-
-void MessageListProxyModel::setMessageTypeFilter(MessageType type)
+void MessageListProxyModel::setDisplayedMessageTypesMask(MessageType mask)
 {
-    m_typeFilter = type;
+    m_displayedMessageTypesMask = mask;
     invalidateFilter();
 }
 
-void MessageListProxyModel::setMessageTypeAllowed(MessageType type, bool isVisible)
+void MessageListProxyModel::setMessageTypeDisplayed(MessageType type, bool isVisible)
 {
     if (isVisible) {
-        uint64_t intValue = m_typeFilter;
+        uint64_t intValue = m_displayedMessageTypesMask;
         intValue |= type;
-        m_typeFilter = intValue;
+        m_displayedMessageTypesMask = intValue;
     } else {
-        uint64_t intValue = m_typeFilter;
+        uint64_t intValue = m_displayedMessageTypesMask;
         intValue &= ~type;
-        m_typeFilter = intValue;
+        m_displayedMessageTypesMask = intValue;
     }
     invalidateFilter();
 }
 
-void MessageListProxyModel::setBriefDisplayed(bool state)
+void MessageListProxyModel::setDisplayedMessageFieldsMask(std::underlying_type_t<Message::Fields> mask)
 {
-    if (state == isBriefDisplayed())
-        return;
-
-    _setDisplayedContentBit(Brief,state);
-//    emit dataChanged(
-//        index(0,0),
-//        index(size() - 1,0),
-//        {Qt::DisplayRole}
-//    );
+    m_displayedMessageFieldsMask = mask;
 }
 
-void MessageListProxyModel::setWhatDisplayed(bool state)
+void MessageListProxyModel::setMessageFieldDisplayed(Message::Fields field, bool isVisible)
 {
-    if (state == isWhatDisplayed())
+    if (isMessageFieldDisplayed(field) == isVisible)
         return;
 
-    _setDisplayedContentBit(What,state);
-//    emit dataChanged(
-//        index(0,0),
-//        index(m_data.size() - 1,0),
-//        {Qt::DisplayRole}
-//    );
-}
+    if (isVisible)
+        m_displayedMessageFieldsMask |= field;
+    else
+        m_displayedMessageFieldsMask &= ~field;
 
-void MessageListProxyModel::setDateTimeDisplayed(bool state)
-{
-    if (state == isDateTimeDisplayed())
-        return;
-
-    _setDisplayedContentBit(DateTime,state);
-//    emit dataChanged(
-//        index(0,0),
-//        index(m_data.size() - 1,0),
-//        {Qt::DisplayRole}
-//    );
-}
-
-void MessageListProxyModel::setIconDisplayed(bool state)
-{
-    if (state == isIconDisplayed())
-        return;
-
-//    _setDisplayedContentBit(Icon,state);
-//    emit dataChanged(
-//        index(0,0),
-//        index(m_data.size() - 1,0),
-//        {Qt::DecorationRole}
-//    );
+    emit dataChanged(
+        index(0,0),
+        index(rowCount() - 1, columnCount() - 1)
+    );
 }
 
 QVariant MessageListProxyModel::data(const QModelIndex &index, int role) const
@@ -121,14 +87,10 @@ QVariant MessageListProxyModel::data(const QModelIndex &index, int role) const
 
     switch (role) {
         case Qt::DisplayRole:{
-            QString result;
-            if (isBriefDisplayed())     result += message->brief();
-            if (isWhatDisplayed())      result += (result.isEmpty() ? "" : "\n") + message->what();
-            if (isDateTimeDisplayed())  result += (result.isEmpty() ? "" : "\n") + message->dateTime().toString();
-            return result;
+            return message->getViewString(this->m_displayedMessageFieldsMask);
         }
         case Qt::DecorationRole:{
-            return isIconDisplayed() ? message->icon() : QIcon{};
+            return isMessageFieldDisplayed(Message::Icon) ? message->icon() : QIcon{};
         }
         case Qt::ToolTipRole:{
             return message->what();
@@ -147,15 +109,7 @@ bool MessageListProxyModel::filterAcceptsRow(int sourceRow, const QModelIndex &s
     Message* message = static_cast<Message*>(index.internalPointer());
     Q_ASSERT_X(message, "MessageListProxyModel::filterAcceptsRow",
                "Source model for this proxy model MUST provide QModelIndex having internalPointer");
-    return (message->type() & m_typeFilter);
-}
-
-void MessageListProxyModel::_setDisplayedContentBit(DisplayedContent content, bool state)
-{
-    if (state)
-        m_displayedContent |= content;
-    else
-        m_displayedContent &= ~content;
+    return (message->type() & m_displayedMessageTypesMask);
 }
 
 }; // namespace Draupnir::Messages

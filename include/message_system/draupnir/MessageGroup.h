@@ -47,6 +47,7 @@ class MessageGroup
 {
 public:
     /*! @brief Returns MessageGroup object with random integer id.
+     * @todo Check thread-safety.
      * @todo Improve randomness of this method. */
     static MessageGroup generateUniqueGroup() {
         static std::mt19937 rng(static_cast<unsigned>(std::chrono::steady_clock::now().time_since_epoch().count()));

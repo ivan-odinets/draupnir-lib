@@ -25,35 +25,81 @@
 #ifndef LOGWIDGETSETTINGSTRAITS_H
 #define LOGWIDGETSETTINGSTRAITS_H
 
-#include "draupnir/traits/settings/templates/SizeSettingTraitTemplate.h"
-#include "draupnir/traits/settings/templates/SettingTraitTemplate.h"
-
+#include "draupnir/core/Message.h"
 #include "draupnir/core/MessageType.h"
 
 /*! @file LogWidgetSettingsTraits.h
  *  @ingroup MessageSystem
- *  @brief This file contains setting traits for LogWidget to be passed to the SettingsRegistryTemplate.
- *
- * @todo Document entities within this file. */
+ *  @brief This file contains setting traits for the @ref Draupnir::Messages::LogWidget. */
 
-namespace Draupnir::Messages
+/*! @namespace Draupnir::Messages::Settings
+ *  @ingroup MessageSystem
+ *  @brief Namespace for settings-related things within the @ref MessageSystem module. */
+
+namespace Draupnir::Messages::Settings
 {
 
-inline constexpr const char logWidgetIconSize_settingsKey[] = "log_widget/message_icon_size";
+/*! @namespace Draupnir::Messages::Settings::LogWidget
+ *  @ingroup MessageSystem
+ *  @brief Namespace for settings traits of the @ref Draupnir::Messages::LogWidget widget. */
 
-using MessageIconSizeSetting = Draupnir::Settings::SizeSettingTraitTemplate<
-    logWidgetIconSize_settingsKey,
-    64
->;
+namespace LogWidget
+{
 
-inline constexpr const char logWidgetMessagesShown_settingsKey[] = "log_widget/messages_shown";
+/*! @struct IconSize
+ *  @ingroup MessageSystem
+ *  @brief Setting trait for the size of icons within @ref Draupnir::Messages::LogWidget (displaying of the logged @ref
+ *         Draupnir::Messages::Message objects is handled by the @ref Draupnir::Messages::MessageListView). */
 
-using MessagesShown = Draupnir::Settings::SettingTraitTemplate<
-    uint64_t,
-    logWidgetMessagesShown_settingsKey,
-    MessageType::AllMessages
->;
+struct IconSizeSetting
+{
+    /*! @brief Underlying value type. */
+    using Value = QSize;
 
-}; // namespace Draupnir::Messages
+    /*! @brief Return the persistent key as a QString. */
+    static QString key() { return QString{"log_widget/message_icon_size"}; }
+
+    /*! @brief Return the default value. */
+    static QSize defaultValue() { return QSize{64,64}; }
+};
+
+/*! @struct DisplayedMessageTypes
+ *  @ingroup MessageSystem
+ *  @brief Setting trait for the displayed message types setting of the @ref Draupnir::Messages::LogWidget (displaying
+ *         of the logged @ref Draupnir::Messages::Message objects is handled by the @ref Draupnir::Messages::MessageListView). */
+
+struct DisplayedMessageTypesSetting
+{
+    /*! @brief Underlying value type. */
+    using Value = uint64_t;
+
+    /*! @brief Return the persistent key as a QString. */
+    static QString key() { return QString{"log_widget/messages_shown"}; }
+
+    /*! @brief Return the default value. */
+    static auto defaultValue() { return MessageType::AllMessages; }
+};
+
+/*! @struct DisplayedMessageFields
+ *  @ingroup MessageSystem
+ *  @brief Setting trait for the fields of @ref Draupnir::Messages::Message objects which will be displayed to an end user
+ *         within the @ref Draupnir::Messages::LogWidget (displaying of the logged @ref Draupnir::Messages::Message objects
+ *         is handled by the @ref Draupnir::Messages::MessageListView).*/
+
+struct DisplayedMessageFieldsSetting
+{
+    /*! @brief Underlying value type. */
+    using Value = std::underlying_type_t<Message::Fields>;
+
+    /*! @brief Return the persistent key as a QString. */
+    static QString key() { return QString{"log_widget/meddsge_fields_shown"}; }
+
+    /*! @brief Return the default value. */
+    static auto defaultValue() { return Message::Fields::All; }
+};
+
+}; // namespace MessageListView
+
+}; // namespace Draupnir::Messages::Settings
 
 #endif // LOGWIDGETSETTINGSTRAITS_H

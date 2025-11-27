@@ -38,8 +38,6 @@ namespace Draupnir::Handlers
 template<class Context,class HandledEntry>
 class GenericMenuEntryHandler;
 
-
-
 /*! @class GenericHelpMenuEntryHandler<HelpContext, Draupnir::Menus::HelpEntryMenuTrait>
  *  @headerfile draupnir/handlers/help_menu/HelpEntryHandler.h
  *  @ingroup HandlerTemplates

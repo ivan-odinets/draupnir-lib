@@ -37,9 +37,10 @@ template<class Context,class MenuEntry>
 class GenericMenuEntryHandler;
 
 /*! @class GenericMenuEntryHandler<SettingsContext,Draupnir::Menus::StartHiddenMenuEntry>
+ *  @ingroup HandlerTemplates
  *  @brief This is a class.
  *
- * @todo Maybe this class needs to be placed in other file?
+ * @todo Change naming and location of this class after adjusting Draupnir::Menus::StartHiddenEntry
  * @todo Write reasonable documentation for this class. */
 
 template<class SettingsContext>
@@ -53,6 +54,7 @@ public:
 };
 
 /*! @struct SettingTraitForEntry<Draupnir::Menus::StartHiddenMenuEntry>
+ *  @ingroup HandlerTemplates
  *  @brief Specialization mapping the "Start Hidden" menu entry to its setting trait.
  *  @details Associates the menu entry trait Draupnir::Menus::StartHidden with the corresponding StartHiddenSetting
  *           setting trait. This mapping allows SettingsMenuEntriesHandler and to resolve the correct value type and key

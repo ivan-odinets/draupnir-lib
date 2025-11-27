@@ -44,9 +44,7 @@ class ProxyEditWidget;
  *           - Use ProxyEditDialog::setProxy() to display an existing proxy.
  *           - After ProxyEditDialog::exec(), call ProxyEditDialog::proxy() to retrieve user edits if accepted.
  *
- * @note This dialog does not support proxies with authentication.
- *
- * @todo Maybe add some unit test for this widget? */
+ * @note This dialog does not support proxies with authentication. */
 
 class ProxyEditDialog final : public QDialog
 {

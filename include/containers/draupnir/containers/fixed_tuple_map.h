@@ -42,9 +42,9 @@ namespace draupnir::containers
  *  @tparam keys_array - static constexpr C-style array of enum values to be used as keys.
  *  @tparam value_types... - variadic list of types; each key will be associated with a tuple of these types.
  *
- *  @details This class extends fixed_map, associating each key with a tuple containing one value of each specified type. It
- *           provides convenient accessors for getting and setting individual tuple elements by type, as well as functional
- *           iteration over all tuples.
+ *  @details This class extends draupnir::containers::fixed_map, associating each key with a tuple containing one value of
+ *           each specified type. It provides convenient accessors for getting and setting individual tuple elements by
+ *           type, as well as functional iteration over all tuples.
  *
  * @note The container size and key set are defined at compile-time.
  *

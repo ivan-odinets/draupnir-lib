@@ -37,9 +37,10 @@ template<class Context, class MenuEntry>
 class GenericMenuEntryHandler;
 
 /*! @class GenericMenuEntryHandler<SettingsContext,Draupnir::Menus::MinimizeToTrayEntry>
+ *  @ingroup HandlerTemplates
  *  @brief This is a class.
  *
- * @todo Maybe this class needs to be placed in other file?
+ * @todo Change naming and location of this class after adjusting Draupnir::Menus::MinimizeToTrayEntry
  * @todo Write reasonable documentation for this class. */
 
 template<class SettingsContext>
@@ -53,13 +54,14 @@ public:
 };
 
 /*! @struct SettingTraitForEntry<Draupnir::Menus::MinimizeToTrayEntry>
+ *  @ingroup HandlerTemplates
  *  @brief Specialization mapping the "Minimize to Tray" menu entry to its setting trait.
  *
  *  @details Associates the menu entry trait Draupnir::Menus::MinimizeToTrayEntry with the corresponding MinimizeToTray
  *           setting trait. This mapping allows SettingsMenuEntriesHandler to resolve the correct value type and key at
  *           compile time.
  *
- * @todo Maybe this class needs to be placed in other file?
+ * @todo Change naming and location of this class after adjusting Draupnir::Menus::MinimizeToTrayEntry
  * @todo Maybe include this mapping into the menu entry trait class? */
 
 template<> struct SettingTraitForEntry<Draupnir::Menus::MinimizeToTrayEntry> {

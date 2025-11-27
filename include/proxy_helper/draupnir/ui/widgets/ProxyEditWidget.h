@@ -51,7 +51,7 @@ namespace Draupnir::Proxy
  * @note This widget does not support proxies with authentication.
  *
  * @todo Extend configurable things to allow full configuration of the QNetworkProxy objects.
- * @todo Maybe add some unit test for this widget? */
+ * @todo Add unit test of this widget. */
 
 class ProxyEditWidget final : public QWidget
 {

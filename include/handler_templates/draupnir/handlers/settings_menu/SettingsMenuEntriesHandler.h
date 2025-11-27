@@ -32,6 +32,7 @@ namespace Draupnir::Handlers
 {
 
 /*! @class SettingsMenuEntriesHandler
+ *  @ingroup HandlerTemplates
  *  @headerfile draupnir/handlers/settings_menu/SettingsMenuEntriesHandler.h
  *  @brief This class is for handling Settings menu entries.
  *

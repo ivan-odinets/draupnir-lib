@@ -25,7 +25,7 @@
 #ifndef MESSAGETYPESETTINGSTRAIT_H
 #define MESSAGETYPESETTINGSTRAIT_H
 
-#include "draupnir/utils/SettingTraitSerializer.h"
+#include "draupnir/utils/SettingTraitSerializer.h" // IWYU pragma: keep
 #include "draupnir/core/Notification.h"
 
 namespace Draupnir::Messages
@@ -33,20 +33,19 @@ namespace Draupnir::Messages
 
 /*! @struct MessageTypeSettingsTrait draupnir/traits/settings/MessageTypeSettingsTrait.h
  *  @ingroup MessageSystem
- *  @brief This template allows creation of setting traits for each message type. */
+ *  @brief This is a template representing setting trait for individual message trait. */
 
-template<class MsgType>
+template<class MessageTrait>
 struct MessageTypeSettingsTrait
 {
-    using Entry = void;
     using Value = Notification::Type;
 
-    /*! @brief Return the persistent key as a QString.
-     * @note This method prepends notifications/ prefix to the value returned by the MsgType::settingsKey variable. */
-    static QString key() { return QString{"notifications/"} + QString{MsgType::settingsKey}; }
+    /*! @brief Return the persistent key as a `QString`.
+     * @note This method prepends notifications/ prefix to the value returned by the MessageTrait::settingsKey variable. */
+    static QString key() { return QString{"notifications/"} + QString{MessageTrait::settingsKey}; }
 
     /*! @brief Return the compile-time default value. */
-    static Value defaultValue() { return MsgType::defaultNotification; }
+    static Value defaultValue() { return MessageTrait::defaultNotification; }
 };
 
 }; // namespace Draupnir::Messages
@@ -57,8 +56,8 @@ namespace Draupnir::Settings
 /*! @class SettingTraitSerializer<Backend, Draupnir::Messages::MessageTypeSettingsTrait<MsgTrait>>
  *  @ingroup MessageSystem
  *  @brief Specialized serializer for message-type setting traits.
- *  @tparam Backend   The settings backend type (e.g. QSettings, AppSettings).
- *  @tparam MsgTrait  The message-trait type (e.g. DebugMessageTrait, InfoMessageTrait).
+ *  @tparam Backend   The settings backend type (e.g. `QSettings`, or @ref Draupnir::Settings::AppSettings).
+ *  @tparam MsgTrait  The message-trait type (e.g. @ref Draupnir::Messages::DebugMessageTrait, @ref Draupnir::Messages::InfoMessageTrait).
  *
  *  @details This specialization of `SettingTraitSerializer` defines how settings of message notifications represented by
  *           `Draupnir::Messages::MessageTypeSettingsTrait<MsgTrait>` are read from and written to a specific backend (such
@@ -71,7 +70,9 @@ namespace Draupnir::Settings
  *           - get() — retrieves a value from the backend using the trait key. If the key does not exist, returns
  *             `SettingTrait::defaultValue()`.
  *           - If the stored string cannot be parsed to a valid message type, also returns the default value.
- *           - set() — writes the message type to the backend as-is. */
+ *           - set() — writes the message type to the backend as-is.
+ *
+ * @todo Split this entity into seperate file. */
 
 template<class Backend, class MsgTrait>
 class SettingTraitSerializer<Backend,Draupnir::Messages::MessageTypeSettingsTrait<MsgTrait> >

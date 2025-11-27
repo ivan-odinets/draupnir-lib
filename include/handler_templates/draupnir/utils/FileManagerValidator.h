@@ -47,7 +47,7 @@ namespace Draupnir::Handlers
  *
  * @note This class is intended to be used only at compile time; it contains no data or runtime logic.
  *
- * @todo Maybe it make sense to convert this class to a namespace? */
+ * @todo Maybe it make sense to convert this class to a pure namespace? */
 
 class FileManagerValidator
 {

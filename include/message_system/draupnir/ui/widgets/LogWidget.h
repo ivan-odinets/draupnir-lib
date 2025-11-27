@@ -29,180 +29,136 @@
 
 #include <QPointer>
 
-class QComboBox;
 class QLabel;
-class QListView;
 class QPushButton;
 class QSlider;
 class QToolButton;
 
-#include "draupnir/traits/settings/LogWidgetSettingsTraits.h"
-#include "draupnir/ui/menus/MessageViewConfigMenu.h"
-#include "draupnir/ui/windows/MessageViewConfigDialogTemplate.h"
-
 #include "draupnir/SettingsBundleTemplate.h"
-
 #include "draupnir/core/MessageType.h"
+#include "draupnir/traits/settings/LogWidgetSettingsTraits.h"
 
 namespace Draupnir::Messages
 {
 
+class AbstractMessageListViewConfigMenu;
+class AbstractMessageUiBuilder;
+class MessageSystemConfigDialog;
 class MessageListModel;
 class MessageListView;
-class MessageHandlerInterface;
-class MessageSettingsInterface;
-class MessageViewConfigDialog;
-class MessageViewConfigMenu;
-
-/*! @class LogWidget draupnir/messages/widgets/LogWidget.h
- *  @ingroup MessageSystem
- *  @brief A composite QWidget used for displaying and managing logged Message objects in a GUI.
- *  @details This widget provides a complete GUI for viewing and filtering `Message` objects in the application. Internally it
- *           uses a `MessageListView` to display messages stored within MessageListModel of MessageHandler, and exposes controls
- *           for:
- *           - Clearing the log (via QPushButton)
- *           - Configuring the MessageListView (via config dialog and QToolButton dropdown menu)
- *           - Adjusting icon size (via QSlider)
- *
- *           This widget consists of two parts: LogWidget itself, providing QWidget-compatable interface to be inserted in the
- *           GUI and LogWidgetTemplate - which is used to "forward" message types registered via MessageSystemTemplate to the
- *           nested elements of the LogWidget. LogWidgetTemplate is responsible for message-type-specific parts of the LogWidget.
- *
- *           LogWidget supports dynamic retranslation and can persist user preferences using `AppSettings`.
- *
- * @note Before use, `loadSettings()` should be called to configure the widget.
- *
- * @todo Write test for this class.
- * @todo Add support of selecting message parts to be displayed. */
-
-class LogWidget : public QWidget
-{
-    Q_OBJECT
-public:
-    /*! @brief Constructs a LogWidget and initializes its internal layout and controls.
-     *  @param parent Optional parent widget. */
-    explicit LogWidget(QWidget* parent = nullptr);
-
-    /*! @brief Destructor. */
-    ~LogWidget();
-
-    /*! @brief Sets the MessageListModel to be displayed in the message list view.
-     *  @param model Pointer to a valid MessageListModel. */
-    void setMessageListModel(MessageListModel* model);
-
-protected:
-    /*! @brief Handles dynamic retranslation when the application language changes.
-     *  @details Updates all visible labels and translated strings in the UI.
-     *  @param event The event being handled. */
-    void changeEvent(QEvent* event) final;
-
-    /*! @brief This protected method is used by the LogWidgetTemplate to specify the menu used for configuration the
-     *         MessageListView. */
-    void setViewConfigButtonMenu(MessageViewConfigMenu* menu);
-
-    /*! @brief This method is implemented by the LogWidgetTemplate class and returns a pointer to the dialog, which can
-     *         be used to configure the MessageListView. */
-    virtual MessageViewConfigDialog* createDialog(QWidget* parent = nullptr) = 0;
-
-    /*! @brief This is a method.
-     * @todo Document Me. */
-    void onIconSizeLoaded(const QSize& iconSize);
-
-    /*! @brief This is a method.
-     * @todo Document Me. */
-    void onDisplayedMessagesMaskLoaded(uint64_t messagesMask);
-
-private slots:
-    void _onLogClearClicked();
-    void _onConfigureClicked();
-    void _onMessageTypeFilterChanged(MessageType,bool);
-    void _onIconSizeChange(int newSize);
-    void _onIconSizeChangeFinished();
-
-private:
-    void _retranslateUi();
-
-    virtual void _saveIconSize(const QSize& size) = 0;
-
-    MessageListModel*                  p_messageListModel;
-    MessageListView*                   w_messagesListView;
-    // MessageListView configurator
-    QToolButton*                       w_configureViewButton;
-    MessageViewConfigMenu*             w_detailsMenu;
-    QPointer<MessageViewConfigDialog>  p_viewConfigDialog;
-    QPushButton*                       w_clearLogButton;
-    // Icon size changers
-    QLabel*                            w_iconSizeLabel;
-    QSlider*                           w_iconSizeSlider;
-};
 
 }; // namespace Draupnir::Messages
 
 namespace Draupnir::Messages
 {
 
-/*! @class LogWidgetTemplate draupnir/ui/widgets/LogWidget.h
+/*! @class LogWidget draupnir/ui/widgets/LogWidget.h
  *  @ingroup MessageSystem
- *  @brief This template class is used to receive information about supported message types from MessageUiBuilderTemplate and
- *         implements message-type-specific functionality of the LogWidget.
+ *  @brief A composite `QWidget` used for displaying and managing logged @ref Draupnir::Messages::Message objects in a
+ *         GUI.
  *
- * @todo Seperate this class into seperate file.
- * @todo Write test for this class.
- * @todo Add support of selecting message parts to be displayed. */
+ *  @details This widget provides a complete GUI for viewing and filtering @ref Draupnir::Messages::Message objects logged
+ *           using @ref Logger object. Internally it uses a @ref Draupnir::Messages::MessageListView to display messages
+ *           stored within @ref Draupnir::Messages::MessageListModel of @ref Draupnir::Messages::AbstractMessageHandler /
+ *           @ref Draupnir::Messages::MessaheHandlerTemplate and exposes controls for:
+ *           - Clearing the log (via `QPushButton`)
+ *           - Configuring the @ref Draupnir::Messages::MessageListView and notification settings of the associated @ref
+ *             Draupnir::Messages::AbstractMessageHandler / @ref Draupnir::Messages::MessageHandlerTemplate. */
 
-template<class... MessageTraits>
-class LogWidgetTemplate final : public LogWidget
+class LogWidget : public QWidget
 {
+    Q_OBJECT
 public:
+    /*! @brief Alias for @ref Draupnir::Settings::SettingsBundleTemplate instantiation, which holds settings traits being
+     *         used by this @ref LogWidget. */
     using SettingsBundle = Draupnir::Settings::SettingsBundleTemplate<
-        MessageIconSizeSetting,
-        MessagesShown
+        Draupnir::Messages::Settings::LogWidget::IconSizeSetting,
+        Draupnir::Messages::Settings::LogWidget::DisplayedMessageFieldsSetting,
+        Draupnir::Messages::Settings::LogWidget::DisplayedMessageTypesSetting
     >;
 
-    /*! @brief Constructor. Initializes the base class (LogWidget) and calls the LogWidget::setViewConfigButtonMenu method
-     *         to set the menu capable to configure the MessageListView. */
-    explicit LogWidgetTemplate(QWidget* parent = nullptr) :
-        LogWidget{parent}
-    {
-        setViewConfigButtonMenu(new MessageViewConfigMenuTemplate<MessageTraits...>);
-    }
+    /*! @brief Trivial destructor. */
+    ~LogWidget() override = default;
 
-    /*! @brief Trivial final destructor. */
-    ~LogWidgetTemplate() final = default;
-
-    /*! @brief This method loads the settings for this LogWidgetTemplate object from the specified SettingsSource. */
+    /*! @brief This method loads the settings for this @ref Draupnir::Messages::AbstractLogWidget object from the specified
+     *         SettingsSource.
+     * @todo Add logging of the warnings if sth is wrong with the settings. */
     template<class SettingsSource>
     void loadSettings(SettingsSource* source) {
-        Q_ASSERT_X(source,"LogWidgetTemplate<MessageTraits...>::loadSettings",
+        static_assert(SettingsBundle::template canBeFullyPopulatedFrom<SettingsSource>(),
+                "SettingsSource provided can not populate the SettingsBundle for this AbstractLogWidget.");
+        Q_ASSERT_X(source,"AbstractLogWidget<MessageTraits...>::loadSettings",
                    "Specified source is nullptr");
-        Q_ASSERT_X(!m_settings.isValid(),"LogWidgetTemplate<MessageTraits...>::loadSettings",
+        Q_ASSERT_X(!m_settingsBundle.isValid(),"AbstractLogWidget<MessageTraits...>::loadSettings",
                    "This method must be called only once.");
 
-        m_settings = source->template getSettingsBundle<SettingsBundle>();
-
-        LogWidget::onIconSizeLoaded(
-            m_settings.template get<MessageIconSizeSetting>()
-        );
-
-        LogWidget::onDisplayedMessagesMaskLoaded(
-            m_settings.template get<MessagesShown>()
-        );
+        m_settingsBundle = source->template getSettingsBundle<SettingsBundle>();
+        _applyLoadedSettings();
     }
+
+    /*! @brief Sets the @ref Draupnir::Messages::MessageListModel to be displayed in the internal @ref Draupnir::Messages::MessageListView.
+     *  @param model Pointer to a valid @ref Draupnir::Messages::MessageListModel. */
+    void setMessageListModel(MessageListModel* model);
+
+    /*! @brief Returns currently used @ref Draupnir::Messages::MessageListModel.
+     * @note Displaying the messages from the model is done through the @ref Draupnir::Messages::MessageListProxyModel (
+     *       within the @ref Draupnir::Messages::MessageListView widget). This method will return **the original** model
+     *       passed to @ref Draupnir::Messages::LogWidget, but **not the** @ref MessageListProxyModel being used internally. */
+    MessageListModel* messageListModel() { return p_messageListModel; }
 
 protected:
-    /*! @brief Implementation of the LogWidget::createDialog method. Returns the dialog which can be used to configure the
-     *         MessageListView of the LogWidget.
-     * @note Memory management is done within LogWidget. */
-    MessageViewConfigDialog* createDialog(QWidget* parent = nullptr) {
-        return new MessageViewConfigDialogTemplate<MessageTraits...>{parent};
-    }
+    template<class... MessageTypes>
+    friend class MessageUiBuilderTemplate;
+
+    /*! @brief Constructs a @ref Draupnir::Messages::LogWidget and initializes its internal layout and controls.
+     *  @param uiBuilder Required pointer to the @ref Draupnir::Messages::AbstractMessageUiBuilder interface, which will
+     *         be used to get some of the nested UI elements within the @ref Draupnir::Messages::LogWidget.
+     *  @param parent Optional parent widget. */
+    explicit LogWidget(AbstractMessageUiBuilder* uiBuilder, QWidget* parent = nullptr);
+
+    /*! @brief Handles dynamic retranslation when the application language changes.
+     *  @param event The event being handled.
+     *  @details Updates all visible labels and translated strings in the UI. */
+    void changeEvent(QEvent* event) final;
+
+private slots:
+    /*! @brief This private slot handles pressing the "Clear Log" button. */
+    void _onLogClearClicked();
+
+    /*! @brief This private slot handles pressing the "Configure" button. */
+    void _onConfigureClicked();
+
+    /*! @brief This private slot handles changes of displayed message types. */
+    void _onMessageTypeFilterChanged(MessageType,bool);
+
+    /*! @brief This private slot handles changes of displayed message fields. */
+    void _onMessageFieldVisibilityChanged(Draupnir::Messages::Message::Fields field, bool isDisplayed);
+
+    /*! @brief This private slot handles movement of the icon size selector slider. */
+    void _onIconSizeChange(int newSize);
+
+    /*! @brief This private slot handles QSlider::sliderReleased signal from icon selector. Saves the selected icon size
+     *         to settings. */
+    void _onIconSizeEditFinished();
 
 private:
-    SettingsBundle m_settings;
+    void _applyLoadedSettings();
+    void _retranslateUi();
 
-    void _saveIconSize(const QSize& size) final {
-        m_settings.template set<MessageIconSizeSetting>(size);
-    }
+    // Non-displayed fields
+    SettingsBundle m_settingsBundle;
+    MessageListModel* p_messageListModel;
+    AbstractMessageUiBuilder* p_uiBuilder;
+
+    // UI-subelements
+    MessageListView* w_messagesListView;
+    QToolButton* w_configureButton;
+    AbstractMessageListViewConfigMenu* w_messageListViewConfigMenu;
+    QPointer<MessageSystemConfigDialog> p_configurationDialog;
+    QPushButton* w_clearLogButton;
+    // Icon size changers
+    QLabel* w_iconSizeLabel;
+    QSlider* w_iconSizeSlider;
 };
 
 }; // namespace Draupnir::Messages

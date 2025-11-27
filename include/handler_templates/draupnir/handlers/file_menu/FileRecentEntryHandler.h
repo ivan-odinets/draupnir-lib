@@ -41,7 +41,9 @@ class GenericMenuEntryHandler;
 
 /*! @class GenericMenuEntryHandler<FileContext, Draupnir::Menus::RecentFileEntry>
  *  @headerfile draupnir/handlers/file_menu/FileRecentEntryHandler.h
+ *  @ingroup HandlerTemplates
  *  @brief Specialization of the menu entry handler for "Open Recent File" actions.
+ *
  *  @details This template specialization handles selection of recent files from a RecentFilesMenu. It inherits connection
  *           logic from CustomMenuHandler and provides slots for integrating with a RecentFilesMenu UI. Upon construction,
  *           the handler statically asserts that the FileManager provided by FileContext implements the required method
@@ -67,7 +69,7 @@ class GenericMenuEntryHandler;
  *       - `isCurrentFileSaved()`
  *       - Static method `canHaveMultipleFilesOpened()`.
  *
- * @todo Write a test for this class. *//
+ * @todo Write a test for this class. */
 
 template<class FileContext>
 class GenericMenuEntryHandler<FileContext,Draupnir::Menus::RecentFileEntry> :

@@ -39,7 +39,9 @@ class GenericMenuEntryHandler;
 
 /*! @class GenericMenuEntryHandler<FileContext, Draupnir::Menus::FileSaveAsEntry>
  *  @headerfile draupnir/handlers/file_menu/FileSaveAsEntryHandler.h
+ *  @ingroup HandlerTemplates
  *  @brief Specialization of the menu entry handler for "Save As" actions.
+ *
  *  @details This template specialization handles the "Save As" menu action, allowing users to save the current file under a
  *           new name. It inherits QAction connection logic from ActionHandler, and provides a concrete slot (`onTriggered()`)
  *           that invokes a file save dialog and triggers file saving logic through the file manager.
