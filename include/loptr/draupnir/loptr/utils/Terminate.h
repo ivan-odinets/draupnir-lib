@@ -32,7 +32,7 @@
 namespace Draupnir::Loptr
 {
 
-/*! @class Terminate draupnir/utils/Terminate.h
+/*! @class Terminate draupnir/loptr/utils/Terminate.h
  *  @brief This class contains static methods to terminate your application in various ways.
  *
  * @note This class is part of Loptr module, which is mostly for fun. However feel free to use code from this module in

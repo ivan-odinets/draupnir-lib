@@ -6,7 +6,7 @@
     INCLUDEPATH += $$PWD/../include/loptr
 
     HEADERS += \
-        $$PWD/../include/loptr/draupnir/utils/Terminate.h
+        $$PWD/../include/loptr/draupnir/loptr/utils/Terminate.h
 
     DISTFILES += \
         $$PWD/../docs/pages/Loptr.dox

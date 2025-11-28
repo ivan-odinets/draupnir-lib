@@ -25,7 +25,7 @@
 #include <QtTest>
 #include <QCoreApplication>
 
-#include "draupnir/utils/Terminate.h"
+#include "draupnir/loptr/utils/Terminate.h"
 
 /*! @class TerminateIfEvenTest tests/loptr/unit/TerminateTests/TerminateIfEvenTest/TerminateIfEvenTest.cpp
  *  @brief This class is for testing the Draupnir::Loptr::Terminate::terminateIfEven method.
