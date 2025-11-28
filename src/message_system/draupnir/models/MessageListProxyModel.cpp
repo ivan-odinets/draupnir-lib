@@ -22,9 +22,9 @@
  *
  */
 
-#include "draupnir/models/MessageListProxyModel.h"
+#include "draupnir/message_system/models/MessageListProxyModel.h"
 
-#include "draupnir/core/Message.h"
+#include "draupnir/message_system/core/Message.h"
 
 namespace Draupnir::Messages
 {
@@ -37,6 +37,9 @@ MessageListProxyModel::MessageListProxyModel(QObject* parent) :
 
 void MessageListProxyModel::setDisplayedMessageTypesMask(MessageType mask)
 {
+    if (m_displayedMessageTypesMask == mask)
+        return;
+
     m_displayedMessageTypesMask = mask;
     invalidateFilter();
 }

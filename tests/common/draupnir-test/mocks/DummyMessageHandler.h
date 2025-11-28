@@ -25,18 +25,26 @@
 #ifndef DUMMYMESSAGEHANDLER_H
 #define DUMMYMESSAGEHANDLER_H
 
-#include "draupnir/core/AbstractMessageHandler.h"
+#include "draupnir/message_system/core/AbstractMessageHandler.h"
 
 #include "draupnir/containers/fixed_map.h"
 
 template<class... MessageTraits>
-class DummyMessageHandler final : public Draupnir::Messages::AbstractMessageHandler
+class DummyMessageHandler final :
+        public Draupnir::Messages::AbstractMessageHandler
 {
 public:
     DummyMessageHandler() {
         if constexpr (sizeof...(MessageTraits) > 0) {
             initialize<MessageTraits...>();
         }
+    }
+
+    bool contains(Draupnir::Messages::MessageType type) const final {
+        if constexpr (sizeof...(MessageTraits) > 0)
+            return _containsImpl<MessageTraits...>(type);
+        else
+            return false;
     }
 
     void setNotification(Draupnir::Messages::MessageType type, const Draupnir::Messages::Notification::Type notificationType) final {
@@ -58,6 +66,17 @@ private:
         draupnir::containers::fixed_map<types,Draupnir::Messages::Notification::Type>,
         int>;
     MapOrInt m_dummyMap;
+
+    template<class First, class... Rest, const bool isEnabled = (sizeof...(MessageTraits) > 0)>
+    std::enable_if_t<isEnabled, bool> _containsImpl(Draupnir::Messages::MessageType type) const {
+        if (First::type == type)
+            return true;
+
+        if constexpr (sizeof...(Rest) > 0)
+            return _containsImpl<Rest...>();
+        else
+            return false;
+    }
 
     template<class First, class... Rest, const bool isEnabled = (sizeof...(MessageTraits) > 0)>
     std::enable_if_t<isEnabled, void> initialize() {

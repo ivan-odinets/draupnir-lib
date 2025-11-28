@@ -22,9 +22,9 @@
  *
  */
 
-#include "draupnir/models/MessageListModel.h"
+#include "draupnir/message_system/models/MessageListModel.h"
 
-#include "draupnir/core/Message.h"
+#include "draupnir/message_system/core/Message.h"
 
 namespace Draupnir::Messages
 {
@@ -43,7 +43,8 @@ MessageListModel::~MessageListModel()
 
 void MessageListModel::append(Message* message)
 {
-    Q_ASSERT_X(message,"MessageListModel::append","Provided Message* is nullptr");
+    Q_ASSERT_X(message, "MessageListModel::append",
+               "Provided Message* is nullptr.");
     int lastIndex = m_data.count();
     beginInsertRows(QModelIndex(),lastIndex,lastIndex+1);
     m_data.append(message);
@@ -58,7 +59,8 @@ void MessageListModel::append(const QList<Message*>& messages)
 #ifndef QT_NO_DEBUG
     // Just to be sure that no nullptrs are here
     for (Message* message : messages) {
-        Q_ASSERT_X(message, "MessageListModel::append", "One of the provided Message* is nullptr!");
+        Q_ASSERT_X(message, "MessageListModel::append",
+                   "One of the provided Message* is nullptr.");
     }
 #endif // QT_NO_DEBUG
 
@@ -87,10 +89,9 @@ QModelIndex MessageListModel::index(int row, int column, const QModelIndex &pare
     return createIndex(row, column, m_data[row]);
 }
 
-QModelIndex MessageListModel::parent(const QModelIndex& child) const
+QModelIndex MessageListModel::parent(const QModelIndex&) const
 {
-    Q_UNUSED(child);
-    return QModelIndex();
+    return QModelIndex{};
 }
 
 int MessageListModel::rowCount(const QModelIndex& parent) const
@@ -101,9 +102,8 @@ int MessageListModel::rowCount(const QModelIndex& parent) const
     return m_data.count();
 }
 
-int MessageListModel::columnCount(const QModelIndex& parent) const
+int MessageListModel::columnCount(const QModelIndex&) const
 {
-    Q_UNUSED(parent);
     return 1;
 }
 
@@ -130,7 +130,7 @@ QVariant MessageListModel::data(const QModelIndex& index, int role) const
         }
     }
 
-    return QVariant();
+    return QVariant{};
 }
 
 }; // namespace Draupnir::Messages

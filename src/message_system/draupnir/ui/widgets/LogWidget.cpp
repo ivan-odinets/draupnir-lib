@@ -22,7 +22,7 @@
  *
  */
 
-#include "draupnir/ui/widgets/LogWidget.h"
+#include "draupnir/message_system/ui/widgets/LogWidget.h"
 
 #include <QApplication>
 #include <QDebug>
@@ -35,12 +35,13 @@
 #include <QToolTip>
 #include <QVBoxLayout>
 
-#include "draupnir/core/AbstractMessageUiBuilder.h"
-#include "draupnir/models/MessageListModel.h"
-#include "draupnir/traits/settings/LogWidgetSettingsTraits.h"
-#include "draupnir/ui/widgets/MessageListView.h"
-#include "draupnir/ui/menus/AbstractMessageListViewConfigMenu.h"
-#include "draupnir/ui/windows/MessageSystemConfigDialog.h"
+#include "draupnir/message_system/models/MessageListModel.h"
+
+#include "draupnir/message_system/core/AbstractMessageUiBuilder.h"
+#include "draupnir/message_system/traits/settings/LogWidgetSettingsTraits.h"
+#include "draupnir/message_system/ui/widgets/MessageListView.h"
+#include "draupnir/message_system/ui/menus/AbstractMessageListViewConfigMenu.h"
+#include "draupnir/message_system/ui/windows/MessageSystemConfigDialog.h"
 
 namespace Draupnir::Messages
 {

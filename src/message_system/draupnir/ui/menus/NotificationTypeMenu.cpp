@@ -22,7 +22,7 @@
  *
  */
 
-#include "draupnir/ui/menus/NotificationTypeMenu.h"
+#include "draupnir/message_system/ui/menus/NotificationTypeMenu.h"
 
 #include <QAction>
 #include <QActionGroup>
@@ -78,9 +78,14 @@ void NotificationTypeMenu::changeEvent(QEvent* event)
     QMenu::changeEvent(event);
 }
 
-void NotificationTypeMenu::_notificationActionSelected(QAction* action)
+void NotificationTypeMenu::_onNotificationActionSelected(QAction* action)
 {
-    Q_ASSERT(action != nullptr);
+    Q_ASSERT_X(action != nullptr, "NotificationTypeMenu::_onNotificationActionSelected",
+               "Specified QAction is nullptr. This slot should be called upon emission of the QActionGroup::triggered "\
+               "signal");
+    Q_ASSERT_X(qobject_cast<QActionGroup*>(sender()),"NotificationTypeMenu::_onNotificationActionSelected",
+               "sender() method returned something but not QActionGroup. This slot should be called upon emission of the "\
+               "QActionGroup::triggered signal");
 
     const auto selectedValue = action->data().value<Notification::Type>();
     if (selectedValue != m_currentValue) {
@@ -100,7 +105,8 @@ void NotificationTypeMenu::_setupUi()
         w_notificationActionGroup->addAction(typeAction);
     }
 
-    connect(w_notificationActionGroup,&QActionGroup::triggered,this,&NotificationTypeMenu::_notificationActionSelected);
+    connect(w_notificationActionGroup, &QActionGroup::triggered,
+            this, &NotificationTypeMenu::_onNotificationActionSelected);
 }
 
 void NotificationTypeMenu::_retranslateUi()

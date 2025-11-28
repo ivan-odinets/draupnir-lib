@@ -27,8 +27,8 @@
 
 #include <QIcon>
 
-#include "draupnir/core/MessageType.h"
-#include "draupnir/core/Notification.h"
+#include "draupnir/message_system/core/MessageType.h"
+#include "draupnir/message_system/core/Notification.h"
 
 class CustomMessageTrait
 {

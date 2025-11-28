@@ -22,7 +22,7 @@
  *
  */
 
-#include "draupnir/ui/widgets/MessageFieldsSelectorWidget.h"
+#include "draupnir/message_system/ui/widgets/MessageFieldsSelectorWidget.h"
 
 #include <QEvent>
 #include <QFrame>

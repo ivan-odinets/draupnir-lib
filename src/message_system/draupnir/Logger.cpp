@@ -28,8 +28,8 @@
     #include <QMutexLocker>
 #endif // DRAUPNIR_MESSAGE_SYSTEM_SINGLETHREAD
 
-#include "draupnir/core/AbstractMessageHandler.h"
-#include "draupnir/traits/messages/DefaultMessageTraits.h"
+#include "draupnir/message_system/core/AbstractMessageHandler.h"
+#include "draupnir/message_system/traits/messages/DefaultMessageTraits.h"
 
 Logger::~Logger()
 {

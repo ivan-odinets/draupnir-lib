@@ -22,11 +22,11 @@
  *
  */
 
-#include "draupnir/ui/windows/MessageSystemConfigDialog.h"
+#include "draupnir/message_system/ui/windows/MessageSystemConfigDialog.h"
 
 #include <QPushButton>
 
-#include "draupnir/core/AbstractMessageUiBuilder.h"
+#include "draupnir/message_system/core/AbstractMessageUiBuilder.h"
 
 namespace Draupnir::Messages
 {

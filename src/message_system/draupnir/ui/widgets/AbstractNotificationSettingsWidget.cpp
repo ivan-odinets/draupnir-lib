@@ -22,7 +22,7 @@
  *
  */
 
-#include "draupnir/ui/widgets/AbstractNotificationSettingsWidget.h"
+#include "draupnir/message_system/ui/widgets/AbstractNotificationSettingsWidget.h"
 
 #include <QFormLayout>
 #include <QFrame>
@@ -30,7 +30,7 @@
 #include <QPushButton>
 #include <QVBoxLayout>
 
-#include "draupnir/core/AbstractMessageHandler.h"
+#include "draupnir/message_system/core/AbstractMessageHandler.h"
 
 namespace Draupnir::Messages
 {

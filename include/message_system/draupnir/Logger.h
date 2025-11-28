@@ -36,8 +36,8 @@ namespace Draupnir::Messages { class AbstractMessageHandler; }
 
 class Logger;
 
-#include "MessageGroup.h"
-#include "core/Message.h"
+#include "draupnir/message_system/core/Message.h"
+#include "draupnir/message_system/core/MessageGroup.h"
 
 /*! @class Logger draupnir/Logger.h
  *  @ingroup MessageSystem

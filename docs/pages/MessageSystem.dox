@@ -82,6 +82,7 @@
  *           @endcode
  *
  * @todo Restructure the sources within include and src dirs.
+ * @todo Add normal support for custom message lists
  * @todo Add support of the retranslatable messages. Start from making titles of the Messages retranslatable and end
  *       with the full retranslation support of the messages. */
 

@@ -22,14 +22,15 @@
  *
  */
 
-#include "draupnir/core/AbstractMessageHandler.h"
+#include "draupnir/message_system/core/AbstractMessageHandler.h"
 
 #include <QApplication>
 #include <QSystemTrayIcon>
 
-#include "draupnir/models/MessageListModel.h"
-#include "draupnir/traits/messages/InfoMessageTrait.h"
-#include "draupnir/ui/windows/MessageDisplayDialog.h"
+#include "draupnir/message_system/models/MessageListModel.h"
+
+#include "draupnir/message_system/traits/messages/InfoMessageTrait.h"
+#include "draupnir/message_system/ui/windows/MessageDisplayDialog.h"
 
 namespace Draupnir::Messages
 {

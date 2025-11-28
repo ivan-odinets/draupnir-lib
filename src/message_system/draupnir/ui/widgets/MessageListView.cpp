@@ -22,14 +22,15 @@
  *
  */
 
-#include "draupnir/ui/widgets/MessageListView.h"
+#include "draupnir/message_system/ui/widgets/MessageListView.h"
 
 #include <QDebug>
 #include <QMouseEvent>
 
-#include "draupnir/models/MessageListModel.h"
-#include "draupnir/models/MessageListProxyModel.h"
-#include "draupnir/ui/windows/MessageDisplayDialog.h"
+#include "draupnir/message_system/models/MessageListModel.h"
+
+#include "draupnir/message_system/models/MessageListProxyModel.h"
+#include "draupnir/message_system/ui/windows/MessageDisplayDialog.h"
 
 namespace Draupnir::Messages
 {
@@ -47,19 +48,19 @@ MessageListView::MessageListView(QWidget* parent) :
 
 MessageListView::~MessageListView()
 {
-    p_messageListProxyModel->deleteLater();
+    delete p_messageListProxyModel;
 }
 
 void MessageListView::setModel(QAbstractItemModel* model)
 {
-    Q_ASSERT_X(qobject_cast<MessageListModel*>(model),"MessageListView::setModel",
-               "Provided object is not MessageListModel");
+    Q_ASSERT_X(qobject_cast<MessageListModel*>(model), "MessageListView::setModel",
+               "QAbstractItemModel specified is not MessageListModel.");
+
+    // If we have sth else but not MessageListModel - we should crash in Debug. If we have this in Release. Well.
+    // Shit Happens. Not using qobject_cast because its slower and by design we should have here only MessageListModel
+    p_messageList = static_cast<MessageListModel*>(model);
 
     p_messageListProxyModel->setSourceModel(model);
-
-    // If we have sth else but not MessageLIstModel - we should crash in Debug. If we have this in Release. Well.
-    // Shit Happens. Not using qobject_cast because its slower and by design we shluld have here only MessageListModel
-    p_messageList = static_cast<MessageListModel*>(model);
 }
 
 void MessageListView::setDisplayedMessageTypesMask(MessageType type)
@@ -106,6 +107,8 @@ void MessageListView::mouseDoubleClickEvent(QMouseEvent *event)
     QList<Message*> messagesList;
     for (const QModelIndex& index : selectedIndexes) {
         Message* message = static_cast<Message*>(index.internalPointer());
+        Q_ASSERT_X(message,"MessageListView::mouseDoubleClickEvent",
+                   "QModelInxex provided by MessageListProxyModel does not contain valid internalPointer. ");
         messagesList.append(message);
     }
 

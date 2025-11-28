@@ -27,7 +27,7 @@
 #include <QtConcurrent>
 
 #include "draupnir/Logger.h"
-#include "draupnir/models/MessageListModel.h"
+#include "draupnir/message_system/models/MessageListModel.h"
 
 #include "draupnir-test/mocks/DummyMessageHandler.h"
 

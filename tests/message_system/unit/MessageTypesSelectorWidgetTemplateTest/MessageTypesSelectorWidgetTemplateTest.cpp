@@ -25,8 +25,8 @@
 #include <QtTest>
 #include <QCoreApplication>
 
-#include "draupnir/ui/widgets/MessageTypesSelectorWidgetTemplate.h"
-#include "draupnir/traits/messages/DefaultMessageTraits.h"
+#include "draupnir/message_system/ui/widgets/MessageTypesSelectorWidgetTemplate.h"
+#include "draupnir/message_system/traits/messages/DefaultMessageTraits.h"
 
 #include "draupnir-test/traits/messages/CustomMessageTrait.h"
 

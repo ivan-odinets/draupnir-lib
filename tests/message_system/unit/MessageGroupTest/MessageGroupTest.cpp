@@ -25,7 +25,7 @@
 #include <QtTest>
 #include <QCoreApplication>
 
-#include "draupnir/MessageGroup.h"
+#include "draupnir/message_system/core/MessageGroup.h"
 
 namespace Draupnir::Messages
 {

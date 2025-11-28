@@ -22,7 +22,7 @@
  *
  */
 
-#include "draupnir/ui/windows/MessageDisplayDialog.h"
+#include "draupnir/message_system/ui/windows/MessageDisplayDialog.h"
 
 #include <QDebug>
 #include <QDialogButtonBox>
@@ -30,7 +30,7 @@
 #include <QScrollArea>
 #include <QVBoxLayout>
 
-#include "draupnir/ui/widgets/MessageDisplayWidget.h"
+#include "draupnir/message_system/ui/widgets/MessageDisplayWidget.h"
 
 namespace Draupnir::Messages
 {
@@ -66,7 +66,7 @@ MessageDisplayDialog::MessageDisplayDialog(QWidget* parent) :
 
 void MessageDisplayDialog::addMessage(Message* message)
 {
-    Q_ASSERT_X(message, "void MessageDisplayDialog::addMessage",
+    Q_ASSERT_X(message, "MessageDisplayDialog::addMessage",
                "Provided Message* pointer is nullptr.");
     MessageDisplayWidget* widget = new MessageDisplayWidget;
     widget->showMessage(message);
@@ -80,7 +80,8 @@ void MessageDisplayDialog::addMessageList(const QList<Message*>& messages)
 #ifndef QT_NO_DEBUG
     // Just to be sure that no nullptrs are here
     for (Message* message : messages) {
-        Q_ASSERT_X(message, "MessageDisplayDialog::addMessageList", "One of the provided Message* is nullptr.");
+        Q_ASSERT_X(message, "MessageDisplayDialog::addMessageList",
+                   "One of the provided Message* is nullptr.");
     }
 #endif // QT_NO_DEBUG
 

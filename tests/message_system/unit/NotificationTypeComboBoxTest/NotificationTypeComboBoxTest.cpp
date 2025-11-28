@@ -25,7 +25,7 @@
 #include <QtTest>
 #include <QCoreApplication>
 
-#include "draupnir/ui/widgets/NotificationTypeComboBox.h"
+#include "draupnir/message_system/ui/widgets/NotificationTypeComboBox.h"
 
 namespace Draupnir::Messages
 {

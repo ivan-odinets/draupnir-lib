@@ -25,7 +25,7 @@
 #include <QtTest>
 #include <QCoreApplication>
 
-#include "draupnir/ui/widgets/MessageFieldsSelectorWidget.h"
+#include "draupnir/message_system/ui/widgets/MessageFieldsSelectorWidget.h"
 
 namespace Draupnir::Messages
 {

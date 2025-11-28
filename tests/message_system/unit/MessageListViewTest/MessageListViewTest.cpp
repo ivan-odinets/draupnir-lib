@@ -25,9 +25,9 @@
 #include <QtTest>
 #include <QCoreApplication>
 
-#include "draupnir/models/MessageListModel.h"
-#include "draupnir/models/MessageListProxyModel.h"
-#include "draupnir/ui/widgets/MessageListView.h"
+#include "draupnir/message_system/models/MessageListModel.h"
+#include "draupnir/message_system/models/MessageListProxyModel.h"
+#include "draupnir/message_system/ui/widgets/MessageListView.h"
 
 namespace Draupnir::Messages
 {

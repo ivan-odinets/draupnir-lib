@@ -25,9 +25,9 @@
 #include <QtTest>
 
 #include "draupnir/Logger.h"
-#include "draupnir/core/AbstractMessageHandler.h"
-#include "draupnir/models/MessageListModel.h"
-#include "draupnir/traits/messages/DefaultMessageTraits.h"
+#include "draupnir/message_system/core/AbstractMessageHandler.h"
+#include "draupnir/message_system/models/MessageListModel.h"
+#include "draupnir/message_system/traits/messages/DefaultMessageTraits.h"
 
 #include "draupnir-test/mocks/DummyMessageHandler.h"
 #include "draupnir-test/traits/messages/CustomMessageTrait.h"

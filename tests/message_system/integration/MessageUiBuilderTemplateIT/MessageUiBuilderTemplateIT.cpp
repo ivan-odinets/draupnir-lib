@@ -25,11 +25,11 @@
 #include <QtTest>
 #include <QCoreApplication>
 
-#include "draupnir/MessageSystemTemplate.h"
+#include "draupnir/MessageSystem.h"
 #include "draupnir/SettingsRegistryTemplate.h"
-#include "draupnir/traits/messages/DefaultMessageTraits.h"
-#include "draupnir/traits/settings/MessageTypeSettingsTrait.h"
-#include "draupnir/ui/widgets/AbstractNotificationSettingsWidget.h"
+#include "draupnir/message_system/traits/messages/DefaultMessageTraits.h"
+#include "draupnir/message_system/traits/settings/MessageTypeSettingsTrait.h"
+#include "draupnir/message_system/ui/widgets/AbstractNotificationSettingsWidget.h"
 
 #include "draupnir-test/mocks/MockSettingsTemplate.h"
 #include "draupnir-test/traits/messages/CustomMessageTrait.h"

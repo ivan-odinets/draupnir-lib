@@ -31,44 +31,49 @@
 
     HEADERS += \
         $$PWD/../include/message_system/draupnir/Logger.h \
-        $$PWD/../include/message_system/draupnir/MessageGroup.h \
-        $$PWD/../include/message_system/draupnir/MessageSystemTemplate.h \
-        $$PWD/../include/message_system/draupnir/core/AbstractMessageHandler.h \
-        $$PWD/../include/message_system/draupnir/core/AbstractMessageUiBuilder.h \
-        $$PWD/../include/message_system/draupnir/core/Message.h \
-        $$PWD/../include/message_system/draupnir/core/MessageHandlerTemplate.h \
-        $$PWD/../include/message_system/draupnir/core/MessageType.h \
-        $$PWD/../include/message_system/draupnir/core/MessageUiBuilderTemplate.h \
-        $$PWD/../include/message_system/draupnir/core/Notification.h \
-        $$PWD/../include/message_system/draupnir/models/MessageListModel.h \
-        $$PWD/../include/message_system/draupnir/models/MessageListProxyModel.h \
-        $$PWD/../include/message_system/draupnir/traits/messages/DefaultMessageTraits.h \
-        $$PWD/../include/message_system/draupnir/traits/settings/LogWidgetSettingsTraits.h \
-        $$PWD/../include/message_system/draupnir/traits/settings/MessageTypeSettingsTrait.h \
-        $$PWD/../include/message_system/draupnir/ui/menus/MessageListViewConfigMenuTemplate.h \
-        $$PWD/../include/message_system/draupnir/ui/menus/NotificationTypeMenu.h \
-        $$PWD/../include/message_system/draupnir/ui/widgets/AbstractNotificationSettingsWidget.h \
-        $$PWD/../include/message_system/draupnir/ui/widgets/LogWidget.h \
-        $$PWD/../include/message_system/draupnir/ui/widgets/MessageDisplayWidget.h \
-        $$PWD/../include/message_system/draupnir/ui/widgets/MessageListView.h \
-        $$PWD/../include/message_system/draupnir/ui/widgets/NotificationTypeComboBox.h \
-        $$PWD/../include/message_system/draupnir/ui/windows/MessageDisplayDialog.h \
-        $$PWD/../include/message_system/draupnir/utils/MessageTraitsHelper.h \
-        $$PWD/../include/message_system/draupnir/core/MessageFieldsSelectorBase.h \
-        $$PWD/../include/message_system/draupnir/core/MessageTypeSelectorBase.h \
-        $$PWD/../include/message_system/draupnir/traits/messages/DebugMessageTrait.h \
-        $$PWD/../include/message_system/draupnir/traits/messages/ErrorMessageTrait.h \
-        $$PWD/../include/message_system/draupnir/traits/messages/InfoMessageTrait.h \
-        $$PWD/../include/message_system/draupnir/traits/messages/WarningMessageTrait.h \
-        $$PWD/../include/message_system/draupnir/traits/widgets/MessageSystemDialogWidgetTraits.h \
-        $$PWD/../include/message_system/draupnir/ui/menus/AbstractMessageListViewConfigMenu.h \
-        $$PWD/../include/message_system/draupnir/ui/widgets/AbstractMessageTypesSelectorWidget.h \
-        $$PWD/../include/message_system/draupnir/ui/widgets/MessageFieldsSelectorWidget.h \
-        $$PWD/../include/message_system/draupnir/ui/widgets/MessageTypesSelectorWidgetTemplate.h \
-        $$PWD/../include/message_system/draupnir/ui/widgets/NotificationSettingsWidgetTemplate.h \
-        $$PWD/../include/message_system/draupnir/ui/windows/MessageSystemConfigDialog.h \
-        $$PWD/../include/message_system/draupnir/utils/CheckableUiElementHelper.h
+        $$PWD/../include/message_system/draupnir/message_system/core/AbstractMessageHandler.h \
+        $$PWD/../include/message_system/draupnir/message_system/core/AbstractMessageUiBuilder.h \
+        $$PWD/../include/message_system/draupnir/message_system/core/Message.h \
+        $$PWD/../include/message_system/draupnir/message_system/core/MessageFieldsSelectorBase.h \
+        $$PWD/../include/message_system/draupnir/message_system/core/MessageGroup.h \
+        $$PWD/../include/message_system/draupnir/message_system/core/MessageHandlerTemplate.h \
+        $$PWD/../include/message_system/draupnir/message_system/core/MessageSystemTemplate.h \
+        $$PWD/../include/message_system/draupnir/message_system/core/MessageType.h \
+        $$PWD/../include/message_system/draupnir/message_system/core/MessageTypeSelectorBase.h \
+        $$PWD/../include/message_system/draupnir/message_system/core/MessageUiBuilderTemplate.h \
+        $$PWD/../include/message_system/draupnir/message_system/core/Notification.h \
+        $$PWD/../include/message_system/draupnir/message_system/models/MessageListModel.h \
+        $$PWD/../include/message_system/draupnir/message_system/models/MessageListProxyModel.h \
+        $$PWD/../include/message_system/draupnir/message_system/traits/messages/DebugMessageTrait.h \
+        $$PWD/../include/message_system/draupnir/message_system/traits/messages/DefaultMessageTraits.h \
+        $$PWD/../include/message_system/draupnir/message_system/traits/messages/ErrorMessageTrait.h \
+        $$PWD/../include/message_system/draupnir/message_system/traits/messages/InfoMessageTrait.h \
+        $$PWD/../include/message_system/draupnir/message_system/traits/messages/WarningMessageTrait.h \
+        $$PWD/../include/message_system/draupnir/message_system/traits/settings/LogWidgetSettingsTraits.h \
+        $$PWD/../include/message_system/draupnir/message_system/traits/settings/MessageTypeSettingsTrait.h \
+        $$PWD/../include/message_system/draupnir/message_system/traits/widgets/MessageTypesSelectorTrait.h \
+        $$PWD/../include/message_system/draupnir/message_system/ui/menus/AbstractMessageListViewConfigMenu.h \
+        $$PWD/../include/message_system/draupnir/message_system/ui/menus/MessageListViewConfigMenuTemplate.h \
+        $$PWD/../include/message_system/draupnir/message_system/ui/menus/NotificationTypeMenu.h \
+        $$PWD/../include/message_system/draupnir/message_system/ui/widgets/AbstractMessageTypesSelectorWidget.h \
+        $$PWD/../include/message_system/draupnir/message_system/ui/widgets/AbstractNotificationSettingsWidget.h \
+        $$PWD/../include/message_system/draupnir/message_system/ui/widgets/LogWidget.h \
+        $$PWD/../include/message_system/draupnir/message_system/ui/widgets/MessageDisplayWidget.h \
+        $$PWD/../include/message_system/draupnir/message_system/ui/widgets/MessageFieldsSelectorWidget.h \
+        $$PWD/../include/message_system/draupnir/message_system/ui/widgets/MessageListView.h \
+        $$PWD/../include/message_system/draupnir/message_system/ui/widgets/MessageTypesSelectorWidgetTemplate.h \
+        $$PWD/../include/message_system/draupnir/message_system/ui/widgets/NotificationSettingsWidgetTemplate.h \
+        $$PWD/../include/message_system/draupnir/message_system/ui/widgets/NotificationTypeComboBox.h \
+        $$PWD/../include/message_system/draupnir/message_system/ui/windows/MessageDisplayDialog.h \
+        $$PWD/../include/message_system/draupnir/message_system/ui/windows/MessageSystemConfigDialog.h \
+        $$PWD/../include/message_system/draupnir/message_system/utils/CheckableUiElementHelper.h \
+        $$PWD/../include/message_system/draupnir/message_system/utils/MessageTraitsHelper.h
 
     DISTFILES += \
         $$PWD/../docs/pages/MessageSystem.dox
 }
+
+HEADERS += \
+    $$PWD/../include/message_system/draupnir/MessageSystem.h \
+    $$PWD/../include/message_system/draupnir/message_system/traits/widgets/MessageFieldsSelectorTrait.h \
+    $$PWD/../include/message_system/draupnir/message_system/traits/widgets/NotificationSettingsEditorWidgetTrait.h

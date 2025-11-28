@@ -22,7 +22,7 @@
  *
  */
 
-#include "draupnir/ui/widgets/MessageDisplayWidget.h"
+#include "draupnir/message_system/ui/widgets/MessageDisplayWidget.h"
 
 #include <QEvent>
 #include <QFormLayout>
@@ -30,7 +30,7 @@
 #include <QHBoxLayout>
 #include <QStyle>
 
-#include "draupnir/core/Message.h"
+#include "draupnir/message_system/core/Message.h"
 
 static QSize defaultIconSize{64,64};
 
@@ -85,7 +85,7 @@ void MessageDisplayWidget::clear()
 
 void MessageDisplayWidget::showMessage(Message* message)
 {
-    Q_ASSERT_X(message, "void MessageDisplayWidget::showMessage",
+    Q_ASSERT_X(message, "MessageDisplayWidget::showMessage",
                "Privided Message* is nullptr.");
     w_messageBriefLabel->setText(message->brief());
     w_messageWhatLabel->setText(message->what());

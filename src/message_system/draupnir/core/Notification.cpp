@@ -22,7 +22,7 @@
  *
  */
 
-#include "draupnir/core/Notification.h"
+#include "draupnir/message_system/core/Notification.h"
 
 #include <QDebug>
 

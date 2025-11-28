@@ -22,7 +22,7 @@
  *
  */
 
-#include "draupnir/ui/menus/AbstractMessageListViewConfigMenu.h"
+#include "draupnir/message_system/ui/menus/AbstractMessageListViewConfigMenu.h"
 
 #include <QCheckBox>
 #include <QEvent>
