@@ -33,7 +33,7 @@ class QMenu;
 namespace Draupnir::Ui
 {
 
-/*! @class TrayIcon draupnir/ui/TrayIcon.h
+/*! @class TrayIcon draupnir/ui_bricks/ui/TrayIcon.h
  *  @ingroup UiBricks
  *  @brief Provides system tray integration for the application, including message popups and localized tray menu.
  *

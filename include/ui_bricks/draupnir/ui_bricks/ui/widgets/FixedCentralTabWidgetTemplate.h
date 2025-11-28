@@ -25,14 +25,14 @@
 #ifndef FIXEDCENTRALTABWIDGETTEMPLATE_H
 #define FIXEDCENTRALTABWIDGETTEMPLATE_H
 
-#include "draupnir/ui/widgets/FixedTabWidgetTemplate.h"
+#include "draupnir/ui_bricks/ui/widgets/FixedTabWidgetTemplate.h"
 
 #include "draupnir/traits/settings/CentralWidgetIndexSetting.h"
 
 namespace Draupnir::Ui
 {
 
-/*! @typedef FixedCentralTabWidgetTemplate
+/*! @typedef FixedCentralTabWidgetTemplate draupnir/ui_bricks/ui/widgets/FixedCentralTabWidgetTemplate.h
  *  @ingroup UiBricks
  *  @brief Preconfigured FixedTabWidgetTemplate using ActiveWidgetIndexSetting.
  *  @tparam TabTraits List of tab trait types describing each tab.

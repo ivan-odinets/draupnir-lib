@@ -31,9 +31,9 @@
 namespace Draupnir::Ui
 {
 
-/*! @class ViewManager draupnir/core/ViewManager.h
+/*! @class ViewManager draupnir/ui_bricks/core/ViewManager.h
  *  @ingroup UiBricks
- *  @brief Manages the main UI components such as MainWindow and TrayIcon.
+ *  @brief Manages the main UI components such as `MainWindow` and `TrayIcon`.
  *  @tparam MainWindowClass QWidget-derived class representing the main application window. Must be constructible without
  *          arguments and accept a TrayIconClass* via setTrayIcon().
  *  @tparam TrayIconClass QSystemTrayIcon-compatible class representing the tray icon UI.

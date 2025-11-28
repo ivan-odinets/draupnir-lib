@@ -27,7 +27,7 @@
 
 #include <QAction>
 
-#include "draupnir/ui/widgets/FixedTabWidget.h"
+#include "draupnir/ui_bricks/ui/widgets/FixedTabWidget.h"
 
 #include "draupnir/SettingsBundleTemplate.h"
 #include "draupnir/utils/index_of.h"

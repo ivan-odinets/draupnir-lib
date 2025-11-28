@@ -26,7 +26,7 @@
 #include <QCoreApplication>
 
 #include "draupnir/SettingsRegistryTemplate.h"
-#include "draupnir/core/ViewManager.h"
+#include "draupnir/ui_bricks/core/ViewManager.h"
 
 #include "draupnir-test/mocks/MockSettingsTemplate.h"
 #include "draupnir-test/mocks/MockSomeMainWindow.h"

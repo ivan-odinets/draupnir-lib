@@ -11,11 +11,11 @@
     INCLUDEPATH += $$PWD/../include/ui_bricks
 
     HEADERS += \
-        $$PWD/../include/ui_bricks/draupnir/core/ViewManager.h \
-        $$PWD/../include/ui_bricks/draupnir/ui/TrayIcon.h \
-        $$PWD/../include/ui_bricks/draupnir/ui/widgets/FixedTabWidget.h \
-        $$PWD/../include/ui_bricks/draupnir/ui/widgets/FixedTabWidgetTemplate.h \
-        $$PWD/../include/ui_bricks/draupnir/ui/widgets/FixedCentralTabWidgetTemplate.h
+        $$PWD/../include/ui_bricks/draupnir/ui_bricks/core/ViewManager.h \
+        $$PWD/../include/ui_bricks/draupnir/ui_bricks/ui/TrayIcon.h \
+        $$PWD/../include/ui_bricks/draupnir/ui_bricks/ui/widgets/FixedCentralTabWidgetTemplate.h \
+        $$PWD/../include/ui_bricks/draupnir/ui_bricks/ui/widgets/FixedTabWidget.h \
+        $$PWD/../include/ui_bricks/draupnir/ui_bricks/ui/widgets/FixedTabWidgetTemplate.h
 
     SOURCES += \
         $$PWD/../src/ui_bricks/draupnir/ui/TrayIcon.cpp

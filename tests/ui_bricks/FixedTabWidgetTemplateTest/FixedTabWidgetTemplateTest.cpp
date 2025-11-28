@@ -28,8 +28,8 @@
 #include "draupnir/SettingsBundleTemplate.h"
 #include "draupnir/SettingsRegistryTemplate.h"
 #include "draupnir/traits/settings/CentralWidgetIndexSetting.h"
-#include "draupnir/ui/widgets/FixedCentralTabWidgetTemplate.h"
-#include "draupnir/ui/widgets/FixedTabWidgetTemplate.h"
+#include "draupnir/ui_bricks/ui/widgets/FixedCentralTabWidgetTemplate.h"
+#include "draupnir/ui_bricks/ui/widgets/FixedTabWidgetTemplate.h"
 
 #include "draupnir-test/mocks/MockSettingsTemplate.h"
 #include "draupnir-test/traits/settings/SomeRandomWidgetIndexSetting.h"
