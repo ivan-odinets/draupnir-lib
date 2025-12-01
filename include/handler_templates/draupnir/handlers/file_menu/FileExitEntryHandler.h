@@ -29,7 +29,7 @@
 
 #include <QApplication>
 
-#include "draupnir/traits/entries/FileMenuEntries.h"
+#include "draupnir/ui_bricks/traits/menu_entries/FileMenuEntries.h"
 
 namespace Draupnir::Handlers
 {
@@ -49,8 +49,8 @@ class GenericMenuEntryHandler;
  *  @tparam FileContext A context class that provides access to file management and application state. */
 
 template<class FileContext>
-class GenericMenuEntryHandler<FileContext,Draupnir::Menus::ExitApplicationEntry> :
-        public ActionHandler<GenericMenuEntryHandler<FileContext,Draupnir::Menus::ExitApplicationEntry>>
+class GenericMenuEntryHandler<FileContext,Draupnir::Ui::ExitApplicationEntry> :
+        public ActionHandler<GenericMenuEntryHandler<FileContext,Draupnir::Ui::ExitApplicationEntry>>
 {
 public:
     /*! @brief Constructs the handler. Context is required by interface but not used directly.

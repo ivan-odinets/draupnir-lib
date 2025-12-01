@@ -27,7 +27,7 @@
 
 #include <QApplication>
 
-#include "draupnir/traits/entries/HelpMenuEntries.h"
+#include "draupnir/ui_bricks/traits/menu_entries/HelpMenuEntries.h"
 
 namespace Draupnir::Handlers
 {
@@ -35,7 +35,7 @@ namespace Draupnir::Handlers
 template<class Context,class HandledEntry>
 class GenericMenuEntryHandler;
 
-/*! @class GenericHelpMenuEntryHandler<HelpContext, Draupnir::Menus::AboutQtMenuTrait>
+/*! @class GenericHelpMenuEntryHandler<HelpContext, Draupnir::Ui::AboutQtMenuTrait>
  *  @headerfile draupnir/handlers/help_menu/AboutQtEntryHandler.h
  *  @ingroup HandlerTemplates
  *  @tparam HelpContext Any type representing the help/“About” handling context (unused in this specialization).
@@ -50,7 +50,7 @@ class GenericMenuEntryHandler;
  * @note The slot QApplication::aboutQt is invoked on qApp; ensure this code runs on the GUI thread. */
 
 template<class HelpContext>
-class GenericMenuEntryHandler<HelpContext,Draupnir::Menus::AboutQtMenuTrait>
+class GenericMenuEntryHandler<HelpContext,Draupnir::Ui::AboutQtMenuTrait>
 {
 public:
     /*! @brief Constructs the handler.

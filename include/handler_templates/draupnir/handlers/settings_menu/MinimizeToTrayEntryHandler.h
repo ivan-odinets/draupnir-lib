@@ -27,7 +27,7 @@
 
 #include "SettingsCheckableEntryHandler.h"
 
-#include "draupnir/traits/entries/SettingsMenuEntries.h"
+#include "draupnir/ui_bricks/traits/menu_entries/SettingsMenuEntries.h"
 #include "draupnir/traits/settings/main_window/MinimizeToTraySetting.h"
 
 namespace Draupnir::Handlers
@@ -44,12 +44,12 @@ class GenericMenuEntryHandler;
  * @todo Write reasonable documentation for this class. */
 
 template<class SettingsContext>
-class GenericMenuEntryHandler<SettingsContext,Draupnir::Menus::MinimizeToTrayEntry> :
-    public SettingsCheckableEntryHandler<SettingsContext,Draupnir::Menus::MinimizeToTrayEntry>
+class GenericMenuEntryHandler<SettingsContext,Draupnir::Ui::MinimizeToTrayEntry> :
+    public SettingsCheckableEntryHandler<SettingsContext,Draupnir::Ui::MinimizeToTrayEntry>
 {
 public:
     GenericMenuEntryHandler(SettingsContext& context) :
-        SettingsCheckableEntryHandler<SettingsContext,Draupnir::Menus::MinimizeToTrayEntry>{context}
+        SettingsCheckableEntryHandler<SettingsContext,Draupnir::Ui::MinimizeToTrayEntry>{context}
     {}
 };
 
@@ -64,7 +64,7 @@ public:
  * @todo Change naming and location of this class after adjusting Draupnir::Menus::MinimizeToTrayEntry
  * @todo Maybe include this mapping into the menu entry trait class? */
 
-template<> struct SettingTraitForEntry<Draupnir::Menus::MinimizeToTrayEntry> {
+template<> struct SettingTraitForEntry<Draupnir::Ui::MinimizeToTrayEntry> {
     using type = Settings::MainWindow::MinimizeToTraySetting;
 };
 

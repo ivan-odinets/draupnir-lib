@@ -28,7 +28,7 @@
 #include "SettingsCheckableEntryHandler.h"
 
 #include "draupnir/traits/settings/main_window/MinimizeOnCloseSetting.h"
-#include "draupnir/traits/entries/SettingsMenuEntries.h"
+#include "draupnir/ui_bricks/traits/menu_entries/SettingsMenuEntries.h"
 
 namespace Draupnir::Handlers
 {
@@ -44,12 +44,12 @@ class GenericMenuEntryHandler;
  * @todo Write reasonable documentation for this class. */
 
 template<class SettingsContext>
-class GenericMenuEntryHandler<SettingsContext,Draupnir::Menus::MinimizeOnCloseEntry> :
-    public SettingsCheckableEntryHandler<SettingsContext,Draupnir::Menus::MinimizeOnCloseEntry>
+class GenericMenuEntryHandler<SettingsContext,Draupnir::Ui::MinimizeOnCloseEntry> :
+    public SettingsCheckableEntryHandler<SettingsContext,Draupnir::Ui::MinimizeOnCloseEntry>
 {
 public:
     GenericMenuEntryHandler(SettingsContext& context) :
-        SettingsCheckableEntryHandler<SettingsContext,Draupnir::Menus::MinimizeOnCloseEntry>{context}
+        SettingsCheckableEntryHandler<SettingsContext,Draupnir::Ui::MinimizeOnCloseEntry>{context}
     {}
 };
 
@@ -64,7 +64,7 @@ public:
  * @todo Change naming and location of this class after adjusting Draupnir::Menus::MinimizeOnCloseEntry
  * @todo Maybe include this mapping into the menu entry trait class? */
 
-template<> struct SettingTraitForEntry<Draupnir::Menus::MinimizeOnCloseEntry> {
+template<> struct SettingTraitForEntry<Draupnir::Ui::MinimizeOnCloseEntry> {
     using type = Settings::MainWindow::MinimizeOnCloseSetting;
 };
 

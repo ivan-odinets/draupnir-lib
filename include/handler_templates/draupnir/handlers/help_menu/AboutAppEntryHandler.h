@@ -29,7 +29,7 @@
 
 #include <QMessageBox>
 
-#include "draupnir/traits/entries/HelpMenuEntries.h"
+#include "draupnir/ui_bricks/traits/menu_entries/HelpMenuEntries.h"
 
 namespace Draupnir::Handlers
 {
@@ -37,7 +37,7 @@ namespace Draupnir::Handlers
 template<class HelpContext,class MenuEntry>
 class GenericMenuEntryHandler;
 
-/*! @class GenericHelpMenuEntryHandler<HelpContext, Draupnir::MenusAboutAppMenuTrait>
+/*! @class GenericHelpMenuEntryHandler<HelpContext, Draupnir::Ui::AboutAppMenuTrait>
  *  @headerfile draupnir/handlers/help_menu/AboutAppEntryHandler.h
  *  @ingroup HandlerTemplates
  *  @brief Specialization of the menu entry handler for the "About Application" menu entry.
@@ -54,8 +54,8 @@ class GenericMenuEntryHandler;
  *           the dialog for better readability. */
 
 template<class HelpContext>
-class GenericMenuEntryHandler<HelpContext,Draupnir::Menus::AboutAppMenuTrait> :
-        public ActionHandler<GenericMenuEntryHandler<HelpContext,Draupnir::Menus::AboutAppMenuTrait>>
+class GenericMenuEntryHandler<HelpContext,Draupnir::Ui::AboutAppMenuTrait> :
+        public ActionHandler<GenericMenuEntryHandler<HelpContext,Draupnir::Ui::AboutAppMenuTrait>>
 {
 private:
     /*! @struct has_aboutAppText

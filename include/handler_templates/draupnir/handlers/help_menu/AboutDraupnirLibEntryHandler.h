@@ -26,7 +26,7 @@
 #define ABOUTDRAUPNIRLIBENTRYHANDLER_H
 
 #include "draupnir/handlers/templates/ActionHandler.h"
-#include "draupnir/traits/entries/HelpMenuEntries.h"
+#include "draupnir/ui_bricks/traits/menu_entries/HelpMenuEntries.h"
 
 #include <QMessageBox>
 #include <QPointer>
@@ -39,7 +39,7 @@ namespace Draupnir::Handlers
 template<class Context,class HandledEntry>
 class GenericMenuEntryHandler;
 
-/*! @class GenericHelpMenuEntryHandler<HelpContext, Draupnir::Menus::AboutDraupnirLibMenuTrait>
+/*! @class GenericHelpMenuEntryHandler<HelpContext, Draupnir::UI::AboutDraupnirLibMenuTrait>
  *  @ingroup HandlerTemplates
  *  @headerfile draupnir/handlers/help_menu/AboutDraupnirLibEntryHandler.h
  *  @brief Partial specialization that wires a QAction to the standard dialog About Draupnir Lib.
@@ -48,8 +48,8 @@ class GenericMenuEntryHandler;
  * @note The connection is made without an explicit QObject context; lifetime of QAction must be managed externally. */
 
 template<class HelpContext>
-class GenericMenuEntryHandler<HelpContext,Draupnir::Menus::AboutDraupnirLibMenuTrait> :
-        public ActionHandler<GenericMenuEntryHandler<HelpContext,Draupnir::Menus::AboutDraupnirLibMenuTrait>>
+class GenericMenuEntryHandler<HelpContext,Draupnir::Ui::AboutDraupnirLibMenuTrait> :
+        public ActionHandler<GenericMenuEntryHandler<HelpContext,Draupnir::Ui::AboutDraupnirLibMenuTrait>>
 {
 public:
     /*! @brief Constructs the handler.

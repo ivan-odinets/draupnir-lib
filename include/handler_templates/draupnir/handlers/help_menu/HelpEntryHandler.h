@@ -30,7 +30,7 @@
 #include <QDialog>
 #include <QPointer>
 
-#include "draupnir/traits/entries/HelpMenuEntries.h"
+#include "draupnir/ui_bricks/traits/menu_entries/HelpMenuEntries.h"
 
 namespace Draupnir::Handlers
 {
@@ -38,7 +38,7 @@ namespace Draupnir::Handlers
 template<class Context,class HandledEntry>
 class GenericMenuEntryHandler;
 
-/*! @class GenericHelpMenuEntryHandler<HelpContext, Draupnir::Menus::HelpEntryMenuTrait>
+/*! @class GenericHelpMenuEntryHandler<HelpContext, Draupnir::Ui::HelpEntryMenuTrait>
  *  @headerfile draupnir/handlers/help_menu/HelpEntryHandler.h
  *  @ingroup HandlerTemplates
  *  @brief Specialization of the menu entry handler for HelpEntryMenuTrait
@@ -56,8 +56,8 @@ class GenericMenuEntryHandler;
  * @todo Is this should be contextless? */
 
 template<class HelpContext>
-class GenericMenuEntryHandler<HelpContext,Draupnir::Menus::HelpEntryMenuTrait> :
-        public ActionHandler<GenericMenuEntryHandler<HelpContext,Draupnir::Menus::HelpEntryMenuTrait>>
+class GenericMenuEntryHandler<HelpContext,Draupnir::Ui::HelpEntryMenuTrait> :
+        public ActionHandler<GenericMenuEntryHandler<HelpContext,Draupnir::Ui::HelpEntryMenuTrait>>
 {
 private:
     /*! @struct has_createHelpDialog

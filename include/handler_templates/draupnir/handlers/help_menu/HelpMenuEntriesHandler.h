@@ -26,7 +26,7 @@
 #define HELPMENUENTRIESHANDLER_H
 
 #include "draupnir/handlers/templates/GenericMenuEntriesHandler.h"
-#include "draupnir/traits/entries/HelpMenuEntries.h"
+#include "draupnir/ui_bricks/traits/menu_entries/HelpMenuEntries.h"
 
 namespace Draupnir::Handlers {
 
@@ -70,13 +70,13 @@ public:
         GenericMenuEntriesHandler<HelpMenuEntriesHandler<HelpSource,HandledEntries...>,HandledEntries...>()
     {}
 
-    template<bool cond = draupnir::utils::is_one_of_v<Draupnir::Menus::AboutAppMenuTrait,HandledEntries...>>
+    template<bool cond = draupnir::utils::is_one_of_v<Draupnir::Ui::AboutAppMenuTrait,HandledEntries...>>
     static std::enable_if_t<cond,QString>
     aboutAppText() {
         return HelpSource::aboutAppText();
     }
 
-    template<bool cond = draupnir::utils::is_one_of_v<Draupnir::Menus::HelpEntryMenuTrait,HandledEntries...>>
+    template<bool cond = draupnir::utils::is_one_of_v<Draupnir::Ui::HelpEntryMenuTrait,HandledEntries...>>
     static std::enable_if_t<cond,QDialog*>
     createHelpDialog() {
         return HelpSource::createHelpDialog();

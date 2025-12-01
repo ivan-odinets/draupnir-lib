@@ -36,7 +36,8 @@ class QDialogButton;
 #include "draupnir/message_system/traits/widgets/MessageFieldsSelectorTrait.h"
 #include "draupnir/message_system/traits/widgets/MessageTypesSelectorTrait.h"
 #include "draupnir/message_system/traits/widgets/NotificationSettingsEditorWidgetTrait.h"
-#include "draupnir/ui/widgets/FixedTabWidgetTemplate.h"
+
+#include "draupnir/ui_bricks/ui/widgets/FixedTabWidgetTemplate.h"
 
 namespace Draupnir::Messages {
     class AbstractMessageUiBuilder;

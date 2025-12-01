@@ -22,7 +22,7 @@
  *
  */
 
-#include "draupnir/ui/TrayIcon.h"
+#include "draupnir/ui_bricks/ui/TrayIcon.h"
 
 #include <QApplication>
 #include <QDebug>

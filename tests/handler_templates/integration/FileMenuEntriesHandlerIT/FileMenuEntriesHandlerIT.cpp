@@ -28,8 +28,7 @@
 /*! @class FileMenuEntriesHandlerIT
  *  @brief This is a test class for testing basic functionality of the FileMenuEntriesHandler
  *
- * @todo Implement this test to check successfull compilation.
- * @todo Add some script to execute this test in the context of CI. */
+ * @todo Implement this test to check successfull compilation. */
 
 class FileMenuEntriesHandlerIT : public QObject
 {

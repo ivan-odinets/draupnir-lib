@@ -26,7 +26,7 @@
 #define FILESAVEASENTRYHANDLER_H
 
 #include "draupnir/handlers/templates/ActionHandler.h"
-#include "draupnir/traits/entries/FileMenuEntries.h"
+#include "draupnir/ui_bricks/traits/menu_entries/FileMenuEntries.h"
 
 #include "draupnir/SettingsBundleTemplate.h"
 #include "draupnir/traits/settings/files/LastUsedDirectorySetting.h"

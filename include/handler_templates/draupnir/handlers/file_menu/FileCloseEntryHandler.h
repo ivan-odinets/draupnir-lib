@@ -30,7 +30,7 @@
 #include <QApplication>
 #include <QMessageBox>
 
-#include "draupnir/traits/entries/FileMenuEntries.h"
+#include "draupnir/ui_bricks/traits/menu_entries/FileMenuEntries.h"
 #include "draupnir/utils/FileManagerValidator.h"
 
 namespace Draupnir::Handlers
@@ -64,8 +64,8 @@ class GenericMenuEntryHandler;
  * @todo Write a test for this class. */
 
 template<class FileContext>
-class GenericMenuEntryHandler<FileContext,Draupnir::Menus::FileCloseEntry> :
-    public ActionHandler<GenericMenuEntryHandler<FileContext,Draupnir::Menus::FileCloseEntry>>
+class GenericMenuEntryHandler<FileContext,Draupnir::Ui::FileCloseEntry> :
+    public ActionHandler<GenericMenuEntryHandler<FileContext,Draupnir::Ui::FileCloseEntry>>
 {
 public:
     /*! @brief Constructs the handler, enforcing interface compliance for FileManager. Static assertions ensure the FileManager

@@ -25,8 +25,8 @@
 #include <QtTest>
 #include <QCoreApplication>
 
-#include "draupnir/ui/menus/MenuTemplate.h"
-#include "draupnir/traits/entries/HelpMenuEntries.h"
+#include "draupnir/ui_bricks/ui/menus/MenuTemplate.h"
+#include "draupnir/ui_bricks/traits/menu_entries/HelpMenuEntries.h"
 #include "draupnir/handlers/help_menu/HelpMenuEntriesHandler.h"
 
 #include "draupnir/handlers/help_menu/AboutAppEntryHandler.h"
@@ -57,26 +57,25 @@ public:
 /*! @class FileMenuEntriesHandlerIT
  *  @brief This is a test class for testing basic functionality of the FileMenuEntriesHandler
  *
- * @todo Implement this test to check successfull compilation.
- * @todo Add some script to execute this test in the context of CI. */
+ * @todo Implement this test to check successfull compilation. */
 
 class HelpMenuEntriesHandlerIT : public QObject
 {
     Q_OBJECT
 public:
-    using MyHelpMenu = Draupnir::Menus::MenuTemplate<
-        Draupnir::Menus::AboutDraupnirLibMenuTrait,
-        Draupnir::Menus::AboutQtMenuTrait,
-        Draupnir::Menus::HelpEntryMenuTrait,
-        Draupnir::Menus::AboutAppMenuTrait
+    using MyHelpMenu = Draupnir::Ui::MenuTemplate<
+        Draupnir::Ui::AboutDraupnirLibMenuTrait,
+        Draupnir::Ui::AboutQtMenuTrait,
+        Draupnir::Ui::HelpEntryMenuTrait,
+        Draupnir::Ui::AboutAppMenuTrait
     >;
 
     using MyHelpHandler = Draupnir::Handlers::HelpMenuEntriesHandler<
         HelpSource,
-        Draupnir::Menus::AboutDraupnirLibMenuTrait,
-        Draupnir::Menus::AboutQtMenuTrait,
-        Draupnir::Menus::HelpEntryMenuTrait,
-        Draupnir::Menus::AboutAppMenuTrait
+        Draupnir::Ui::AboutDraupnirLibMenuTrait,
+        Draupnir::Ui::AboutQtMenuTrait,
+        Draupnir::Ui::HelpEntryMenuTrait,
+        Draupnir::Ui::AboutAppMenuTrait
     >;
 
     HelpMenuEntriesHandlerIT() = default;

@@ -34,8 +34,8 @@
 #include "draupnir/traits/settings/main_window/MinimizeToTraySetting.h"
 
 // SettingsMenu
-#include "draupnir/traits/entries/SettingsMenuEntries.h"
-#include "draupnir/ui/menus/MenuTemplate.h"
+#include "draupnir/ui_bricks/traits/menu_entries/SettingsMenuEntries.h"
+#include "draupnir/ui_bricks/ui/menus/MenuTemplate.h"
 
 // FileHandlers
 #include "draupnir/handlers/settings_menu/SettingsMenuEntriesHandler.h"
@@ -52,8 +52,7 @@
  *  @headerfile tests/handler_templates/SettingsMenuEntriesHandler/GeneralIT/SettingsMenuEntriesHandlerGeneralIT.cpp
  *  @brief This is a test class for testing basic functionality of the SettingsMenuEntriesHandler
  *
- * @todo Refractor this test so that it will have better readability.
- * @todo Add some script to execute this test in the context of CI. */
+ * @todo Refractor this test so that it will have better readability. */
 
 class SettingsMenuEntriesHandlerIT : public QObject
 {
@@ -73,18 +72,18 @@ public:
     >;
     SettingsRegistry registry;
 
-    using SettingsMenu = Draupnir::Menus::MenuTemplate<
+    using SettingsMenu = Draupnir::Ui::MenuTemplate<
         SomeCustomCheckableMenuEntry,
-        Draupnir::Menus::MinimizeOnCloseEntry,
-        Draupnir::Menus::MinimizeToTrayEntry
+        Draupnir::Ui::MinimizeOnCloseEntry,
+        Draupnir::Ui::MinimizeToTrayEntry
     >;
     SettingsMenu menu;
 
     using SettingsMenuHandler = Draupnir::Handlers::SettingsMenuEntriesHandler<
         SettingsRegistry,
         SomeCustomCheckableMenuEntry,
-        Draupnir::Menus::MinimizeOnCloseEntry,
-        Draupnir::Menus::MinimizeToTrayEntry
+        Draupnir::Ui::MinimizeOnCloseEntry,
+        Draupnir::Ui::MinimizeToTrayEntry
     >;
     SettingsMenuHandler handler;
 
@@ -99,7 +98,7 @@ private slots:
         QAction* customAction = menu.get<SomeCustomCheckableMenuEntry>();
         QCOMPARE(customAction->isChecked(), false);
 
-        QAction* minimizeOnCloseAction = menu.get<Draupnir::Menus::MinimizeOnCloseEntry>();
+        QAction* minimizeOnCloseAction = menu.get<Draupnir::Ui::MinimizeOnCloseEntry>();
         QCOMPARE(minimizeOnCloseAction->isChecked(), false);
 
         handler.setRegistry(&registry);
@@ -109,7 +108,7 @@ private slots:
     }
 
     void test_actionTriggering() {
-        QAction* minimizeOnCloseAction = menu.get<Draupnir::Menus::MinimizeOnCloseEntry>();
+        QAction* minimizeOnCloseAction = menu.get<Draupnir::Ui::MinimizeOnCloseEntry>();
         QVERIFY(minimizeOnCloseAction->isChecked() == registry.template get<Draupnir::Settings::MainWindow::MinimizeOnCloseSetting>());
 
         minimizeOnCloseAction->triggered(true);
