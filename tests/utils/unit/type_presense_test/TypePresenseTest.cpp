@@ -28,11 +28,8 @@
 
 using namespace draupnir::utils;
 
-/*! @class TypePresenseTest
- *  @brief Test class for testing entities present within @ref draupnir/utils/type_presense.h
- *
- * @todo Refractor this test so that it will have better readability and cover more cases.
- * @todo Add some script to execute this test in the context of CI. */
+/*! @class TypePresenseTest tests/utils/unit/type_presense_test/TypePresenseTest.cpp
+ *  @brief Test class for testing entities present within @ref draupnir/utils/type_presense.h. */
 
 class TypePresenseTest final : public QObject
 {
@@ -47,34 +44,33 @@ public:
 private slots:
     void test_is_one_of() {
         // Check if type is present
-        QCOMPARE((is_one_of<int,int,double,char>::value),true);
-        QCOMPARE((is_one_of_v<int,int,double,char>),true);
+        QCOMPARE((is_one_of<int,int,double,char>::value),  true);
+        QCOMPARE((is_one_of_v<int,int,double,char>),       true);
 
         // Check if type is absent
-        QCOMPARE((is_one_of<QString,int,double,char>::value), false);
-        QCOMPARE((is_one_of_v<QString,int,double,char>), false);
+        QCOMPARE((is_one_of<QString,int,double,char>::value),   false);
+        QCOMPARE((is_one_of_v<QString,int,double,char>),        false);
 
         // Check alias if present
-        QCOMPARE((is_one_of<CustomInt,int,QString,int>::value),true);
-        QCOMPARE((is_one_of_v<CustomInt,int,QString,int>),true);
+        QCOMPARE((is_one_of<CustomInt,int,QString,int>::value), true);
+        QCOMPARE((is_one_of_v<CustomInt,int,QString,int>),      true);
 
         // Check alias if absent
-        QCOMPARE((is_one_of<SomeQStringAlias,int,QString,int>::value),true);
-        QCOMPARE((is_one_of_v<SomeQStringAlias,int,QString,int>),true);
+        QCOMPARE((is_one_of<SomeQStringAlias,int,QStringList,int>::value),     false);
+        QCOMPARE((is_one_of_v<SomeQStringAlias,int,QStringList,int>),          false);
     }
 
     void test_is_type_in_tuple() {
         using MyTuple = std::tuple<int,double,QString>;
 
         // Check if type is present
-        QCOMPARE((is_type_in_tuple<int,MyTuple>::value), true);
-        QCOMPARE((is_type_in_tuple_v<int,MyTuple>), true);
+        QCOMPARE((is_type_in_tuple<int,MyTuple>::value),   true);
+        QCOMPARE((is_type_in_tuple_v<int,MyTuple>),        true);
 
         // Check if type is absent
         QCOMPARE((is_type_in_tuple<char,MyTuple>::value), false);
-        QCOMPARE((is_type_in_tuple_v<char,MyTuple>), false);
+        QCOMPARE((is_type_in_tuple_v<char,MyTuple>),      false);
     }
-
 };
 
 QTEST_APPLESS_MAIN(TypePresenseTest)

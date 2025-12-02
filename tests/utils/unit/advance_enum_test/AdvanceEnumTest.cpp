@@ -39,23 +39,20 @@ using SimpleEnumValues = enum_values<SimpleEnum,
     SimpleEnum::One, SimpleEnum::Two, SimpleEnum::Three, SimpleEnum::Four
 >;
 
-inline SimpleEnum& operator++(SimpleEnum& value,int)
-{
+inline SimpleEnum& operator++(SimpleEnum& value,int) {
     SimpleEnumValues::advance(value);
     return value;
 }
 
-
-/*! @class AdvanceEnumTest
- *  @brief Test class for testing entities present within @ref draupnir/utils/advance_enum.h
- *
- * @todo Refractor this test so that it will have better readability and cover more cases.
- * @todo Add some script to execute this test in the context of CI. */
+/*! @class AdvanceEnumTest tests/utils/unit/advance_enum_test/AdvanceEnumTest.cpp
+ *  @brief Test class for testing entities present within @ref draupnir/utils/advance_enum.h. */
 
 class AdvanceEnumTest final : public QObject
 {
     Q_OBJECT
 public:
+    AdvanceEnumTest() = default;
+    ~AdvanceEnumTest() final = default;
 
 private slots:
     void test_advance_enum() {

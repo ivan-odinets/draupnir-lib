@@ -32,11 +32,8 @@
 
 using namespace draupnir::utils;
 
-/*! @class TemplateConstructorsTest
- *  @brief Test class for testing entities present within @ref draupnir/utils/template_constructors.h
- *
- * @todo Refractor this test so that it will have better readability and cover more cases.
- * @todo Add some script to execute this test in the context of CI. */
+/*! @class TemplateConstructorsTest tests/utils/unit/template_detectors_test/TemplateConstructorsTest.cpp
+ *  @brief Test class for testing entities present within @ref draupnir/utils/template_constructors.h */
 
 class TemplateConstructorsTest final : public QObject
 {
@@ -50,29 +47,23 @@ private slots:
         TupleOne one = create_tuple_new<TupleOne>();
         // Check first
         QVERIFY(std::get<0>(one) != nullptr);
-        // By default created int will be 0.
         QCOMPARE((*std::get<0>(one)), 0);
         // Check second
         QVERIFY(std::get<1>(one) != nullptr);
-        // By default created int will be 0.
         QCOMPARE((*std::get<1>(one)), 0);
         // Check third
         QVERIFY(std::get<2>(one) != nullptr);
-        // By default created int will be 0.
         QCOMPARE((*std::get<2>(one)), 0);
 
         TupleTwo two = create_tuple_new<TupleTwo>();
         // Check first
         QVERIFY(std::get<0>(two) != nullptr);
-        // By default created int will be 0.
         QCOMPARE((*std::get<0>(two)), QString{});
         // Check second
         QVERIFY(std::get<1>(one) != nullptr);
-        // By default created int will be 0.
         QCOMPARE((*std::get<1>(two)), QString{});
         // Check third
         QVERIFY(std::get<2>(two) != nullptr);
-        // By default created int will be 0.
         QCOMPARE((*std::get<2>(two)), QString{});
 
         std::apply([](auto*... elements){

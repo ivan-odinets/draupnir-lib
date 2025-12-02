@@ -38,7 +38,7 @@
 namespace draupnir::utils
 {
 
-/*! @brief Constructs a "zero" value for the given type `T`.
+/*! @brief Constructs a "zero" value for the given type `T` draupnir/utils/template_constructors.h
  *  @ingroup Utils
  *  @tparam T The type to initialize.
  *  @return A "zero" value of type `T`, constructed as described above.
@@ -53,6 +53,8 @@ namespace draupnir::utils
 
 template<typename T>
 inline constexpr T make_zero_value() {
+    static_assert(std::is_default_constructible_v<T>,
+            "T must be default constructable.");
     if constexpr (std::is_pointer_v<T>) {
         return nullptr;
     } else if constexpr (std::is_arithmetic_v<T>) {
@@ -70,7 +72,7 @@ inline constexpr T make_zero_value() {
     }
 }
 
-/*! @brief Creates a tuple of dynamically allocated default-initialized objects.
+/*! @brief Creates a tuple of dynamically allocated default-initialized objects. draupnir/utils/template_constructors.h
  *  @ingroup Utils
  *  @tparam Tuple A tuple type whose elements are all pointer types.
  *  @return A tuple of dynamically allocated, default-initialized objects.
@@ -79,15 +81,16 @@ inline constexpr T make_zero_value() {
  *           returns a tuple of pointers, where each pointer points to a new default-constructed instance of the pointed-to
  *           type.
  *
- *           Memory is allocated using `new`, and it is the caller's responsibility to delete the objects afterwards.
- *
- * @warning static_assert if `Tuple` is not a `std::tuple`.
- *
- * @todo static_assert when Tuple contains non-pointer types. */
+ *           Memory is allocated using `new`, and it is the caller's responsibility to delete the objects afterwards. */
 
 template<typename Tuple>
 inline Tuple create_tuple_new() {
-    static_assert(is_tuple_v<Tuple>, "Provided type is not a tuple!");
+    static_assert(is_tuple_v<Tuple>,
+            "Provided type is not a tuple.");
+    static_assert(is_tuple_ptr_only_v<Tuple>,
+            "Provided tuple is containing non-pointers.");
+    static_assert(is_tuple_like_pointees_default_constructible_v<Tuple>,
+            "Provided tuple contains one or more pointers to objects which can not be dafult constructed (using new T).");
 
     static constexpr auto tupleSize = std::tuple_size_v<Tuple>;
     return [&]<std::size_t... I>(std::index_sequence<I...>) {

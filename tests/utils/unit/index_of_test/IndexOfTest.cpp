@@ -28,11 +28,8 @@
 
 using namespace draupnir::utils;
 
-/*! @class IndexOfTest
- *  @brief Test class for testing entities present within @ref draupnir/utils/index_of.h
- *
- * @todo Refractor this test so that it will have better readability and cover more cases.
- * @todo Add some script to execute this test in the context of CI. */
+/*! @class IndexOfTest tests/utils/unit/index_of_test/IndexOfTest.cpp
+ *  @brief Test class for testing entities present within @ref draupnir/utils/index_of.h. */
 
 class IndexOfTest final : public QObject
 {
@@ -42,11 +39,11 @@ public:
 private slots:
     void test_index_of() {
         // Present type
-        QCOMPARE((index_of<int,int,double,QString>::value),(unsigned long)0);
-        QCOMPARE((index_of_v<int,int,double,QString>),(unsigned long)0);
+        QCOMPARE((index_of<int,int,double,QString>::value), (unsigned long)0);
+        QCOMPARE((index_of_v<int,int,double,QString>), (unsigned long)0);
 
-        QCOMPARE((index_of<double,int,double,QString>::value),(unsigned long)1);
-        QCOMPARE((index_of_v<double,int,double,QString>),(unsigned long)1);
+        QCOMPARE((index_of<double,int,double,QString>::value), (unsigned long)1);
+        QCOMPARE((index_of_v<double,int,double,QString>), (unsigned long)1);
     }
 };
 
