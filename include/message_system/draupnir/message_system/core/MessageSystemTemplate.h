@@ -25,12 +25,13 @@
 #ifndef MESSAGESYSTEMTEMPLATE_H
 #define MESSAGESYSTEMTEMPLATE_H
 
+#include "draupnir/message_system/core/AbstractMessageSystem.h"
 #include "draupnir/message_system/traits/messages/DefaultMessageTraits.h"
 #include "draupnir/message_system/utils/MessageTraitsHelper.h"
 #include "draupnir/message_system/traits/settings/MessageTypeSettingsTrait.h"
 
-#include "draupnir/SettingsBundleTemplate.h"
-#include "draupnir/SettingsBundleMerge.h"
+#include "draupnir/settings_registry/SettingsBundleTemplate.h"
+#include "draupnir/settings_registry/SettingsBundleMerge.h"
 
 namespace Draupnir::Messages
 {
@@ -71,7 +72,7 @@ namespace Draupnir::Messages
  * @todo Maybe add some kind of macro-based configuration if default message traits should be enabled? */
 
 template<class... MessageTraits>
-class MessageSystemTemplate
+class MessageSystemTemplate final : public AbstractMessageSystem
 {
     using SpecificMessageTraitsHelper = MessageTraitsHelper<
         DebugMessageTrait,

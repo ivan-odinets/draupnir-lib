@@ -11,6 +11,7 @@
     INCLUDEPATH += $$PWD/../include/ui_bricks
 
     HEADERS += \
+        $$PWD/../include/ui_bricks/draupnir/message_system/utils/CheckableUiElementHelper.h \
         $$PWD/../include/ui_bricks/draupnir/ui_bricks/core/ViewManager.h \
         $$PWD/../include/ui_bricks/draupnir/ui_bricks/ui/TrayIcon.h \
         $$PWD/../include/ui_bricks/draupnir/ui_bricks/ui/widgets/FixedCentralTabWidgetTemplate.h \

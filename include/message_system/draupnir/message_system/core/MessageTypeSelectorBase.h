@@ -27,7 +27,7 @@
 
 #include "draupnir/containers/fixed_map.h"  // IWYU pragma: keep
 #include "draupnir/message_system/core/MessageType.h"
-#include "draupnir/message_system/utils/CheckableUiElementHelper.h"
+#include "draupnir/ui_bricks/utils/CheckableUiElementHelper.h"
 
 namespace Draupnir::Messages
 {
@@ -48,7 +48,7 @@ public:
 
         // Handle individual Field checkers
         m_uiElementMap.for_each_pair([this](auto& pair){
-            pair.second = CheckableUiElementHelper<UiElement>::createConnectedUiElement([this,pair](bool isChecked) {
+            pair.second = Draupnir::Ui::CheckableUiElementHelper<UiElement>::createConnectedUiElement([this,pair](bool isChecked) {
                 m_callback(pair.first,isChecked);
             });
         });

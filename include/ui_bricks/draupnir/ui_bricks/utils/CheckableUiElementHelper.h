@@ -28,19 +28,17 @@
 #include <QAction>
 #include <QCheckBox>
 
-namespace Draupnir::Messages
+namespace Draupnir::Ui
 {
 
 /*! @class CheckableUiElementHelper draupnit/message_system/utils/CheckableUiElementHelper.h
- *  @ingroup MessageSystem
+ *  @ingroup UiBricks
  *  @brief This is a helper class used to create checkable UI elements (`QAction` or `QCheckBox`) which are connected to
  *         a specific callback using a generic interface.
  *  @tparam UiElement class of the UI element to be created / handled. Should be either `QAction` or `QCheckBox`.
  *
  *  @details This class is used within template-based containers (e.g. @ref Draupnir::Messages::MessageFieldsSelectorBase)
- *           to have an abstract interface for connecting slots to a `QAction` and `QCheckBox` user-triggered signals.
- *
- * @todo This class is a candidate to be transferred to the UiBricks module. */
+ *           to have an abstract interface for connecting slots to a `QAction` and `QCheckBox` user-triggered signals. */
 
 template<class UiElement>
 class CheckableUiElementHelper
@@ -63,7 +61,8 @@ public:
      *  @param callable Slot to call on toggled/triggered(bool).
      *  @return A new DisplayUiElement* properly connected and checkable.
      * @todo Create a universal template-based analogue of this method. */
-    static UiElement* createConnectedUiElement(std::function<void(bool)> callable) {
+    template<typename F>
+    static UiElement* createConnectedUiElement(/*std::function<void(bool)>*/F callable) {
         UiElement* result = new UiElement{};
         if constexpr (std::is_same_v<UiElement,QAction>)
             result->setCheckable(true);
@@ -74,6 +73,6 @@ public:
     }
 };
 
-};
+}; // namespace Draupnir::Ui
 
 #endif // CHECKABLEUIELEMENTHELPER_H

@@ -30,7 +30,9 @@
         $$PWD/../src/message_system/draupnir/ui/windows/MessageSystemConfigDialog.cpp
 
     HEADERS += \
+        $$PWD/../include/message_system/draupnir/MessageSystem.h \
         $$PWD/../include/message_system/draupnir/Logger.h \
+        $$PWD/../include/message_system/draupnir/message_system/core/AbstractMessageSystem.h \
         $$PWD/../include/message_system/draupnir/message_system/core/AbstractMessageHandler.h \
         $$PWD/../include/message_system/draupnir/message_system/core/AbstractMessageUiBuilder.h \
         $$PWD/../include/message_system/draupnir/message_system/core/Message.h \
@@ -43,6 +45,9 @@
         $$PWD/../include/message_system/draupnir/message_system/core/MessageUiBuilderTemplate.h \
         $$PWD/../include/message_system/draupnir/message_system/core/Notification.h \
         $$PWD/../include/message_system/draupnir/message_system/models/MessageListModel.h \
+        $$PWD/../include/message_system/draupnir/message_system/traits/menu_entries/GlobalNotificationSettingsMenuEntry.h \
+        $$PWD/../include/message_system/draupnir/message_system/traits/menu_entries/NotificationsSettingsMenuEntryTemplate.h \
+        $$PWD/../include/message_system/draupnir/message_system/ui/NotificationSettingsMenuEntriesContext.h \
         $$PWD/../include/message_system/draupnir/message_system/models/MessageListProxyModel.h \
         $$PWD/../include/message_system/draupnir/message_system/traits/messages/DebugMessageTrait.h \
         $$PWD/../include/message_system/draupnir/message_system/traits/messages/DefaultMessageTraits.h \
@@ -52,6 +57,8 @@
         $$PWD/../include/message_system/draupnir/message_system/traits/settings/LogWidgetSettingsTraits.h \
         $$PWD/../include/message_system/draupnir/message_system/traits/settings/MessageTypeSettingsTrait.h \
         $$PWD/../include/message_system/draupnir/message_system/traits/widgets/MessageTypesSelectorTrait.h \
+        $$PWD/../include/message_system/draupnir/message_system/traits/widgets/MessageFieldsSelectorTrait.h \
+        $$PWD/../include/message_system/draupnir/message_system/traits/widgets/NotificationSettingsEditorWidgetTrait.h \
         $$PWD/../include/message_system/draupnir/message_system/ui/menus/AbstractMessageListViewConfigMenu.h \
         $$PWD/../include/message_system/draupnir/message_system/ui/menus/MessageListViewConfigMenuTemplate.h \
         $$PWD/../include/message_system/draupnir/message_system/ui/menus/NotificationTypeMenu.h \
@@ -66,16 +73,8 @@
         $$PWD/../include/message_system/draupnir/message_system/ui/widgets/NotificationTypeComboBox.h \
         $$PWD/../include/message_system/draupnir/message_system/ui/windows/MessageDisplayDialog.h \
         $$PWD/../include/message_system/draupnir/message_system/ui/windows/MessageSystemConfigDialog.h \
-        $$PWD/../include/message_system/draupnir/message_system/utils/CheckableUiElementHelper.h \
         $$PWD/../include/message_system/draupnir/message_system/utils/MessageTraitsHelper.h
 
     DISTFILES += \
         $$PWD/../docs/pages/MessageSystem.dox
 }
-
-HEADERS += \
-    $$PWD/../include/message_system/draupnir/MessageSystem.h \
-    $$PWD/../include/message_system/draupnir/message_system/core/AbstractMessageSystem.h \
-    $$PWD/../include/message_system/draupnir/message_system/traits/menu_entries/MessageNotificationsSubmenuEntryTemplate.h \
-    $$PWD/../include/message_system/draupnir/message_system/traits/widgets/MessageFieldsSelectorTrait.h \
-    $$PWD/../include/message_system/draupnir/message_system/traits/widgets/NotificationSettingsEditorWidgetTrait.h
