@@ -27,10 +27,12 @@
 
 #include <QMenu>
 
+#include "draupnir/ui_bricks/ui/menus/MenuTemplate.h"
+
 namespace Draupnir::Ui {
 
-template<class... Entries>
-class MenuTemplate;
+//template<class... Entries>
+//class MenuTemplate;
 
 /*! @class MenuTemplateEntry draupnir/ui_bricks/traits/menu_entries/templates/MenuTemplateEntry.h
  *  @ingroup UiBricks

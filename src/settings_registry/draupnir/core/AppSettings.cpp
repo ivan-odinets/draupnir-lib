@@ -22,7 +22,7 @@
  *
  */
 
-#include "draupnir/core/AppSettings.h"
+#include "draupnir/settings_registry/core/AppSettings.h"
 
 #include <QDebug>
 #include <QSettings>

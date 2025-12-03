@@ -35,7 +35,7 @@
 #include "draupnir/message_system/ui/widgets/MessageTypesSelectorWidgetTemplate.h"
 #include "draupnir/message_system/ui/menus/MessageListViewConfigMenuTemplate.h"
 
-#include "draupnir/SettingsBundleMerge.h"
+#include "draupnir/settings_registry/SettingsBundleMerge.h"
 
 namespace Draupnir::Messages
 {

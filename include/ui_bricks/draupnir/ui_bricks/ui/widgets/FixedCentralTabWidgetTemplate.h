@@ -27,7 +27,7 @@
 
 #include "draupnir/ui_bricks/ui/widgets/FixedTabWidgetTemplate.h"
 
-#include "draupnir/traits/settings/CentralWidgetIndexSetting.h"
+#include "draupnir/settings_registry/traits/settings/CentralWidgetIndexSetting.h"
 
 namespace Draupnir::Ui
 {

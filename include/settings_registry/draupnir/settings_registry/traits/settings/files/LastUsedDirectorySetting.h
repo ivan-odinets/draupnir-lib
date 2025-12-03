@@ -22,34 +22,40 @@
  *
  */
 
-#ifndef RECENTFILESLISTSETTING_H
-#define RECENTFILESLISTSETTING_H
+#ifndef LASTUSEDDIRECTORYSETTING_H
+#define LASTUSEDDIRECTORYSETTING_H
 
-#include <QStringList>
+#include <QDir>
+#include <QString>
 
 namespace Draupnir::Settings
 {
 
-/*! @struct RecentFileList draupnir/traits/settings/files/RecentFileList.h
+/*! @struct LastUsedDirectorySetting draupnir/traits/settings_registry/settings/files/LastUsedDirectorySetting.h
  *  @ingroup SettingsRegistry
- *  @brief Setting trait for tracking the list of the recently used files
+ *  @brief Setting trait for tracking the most recently used directory.
+ *
+ *  @details This trait defines how the last used directory setting is stored and retrieved. It provides:
+ *           - The value type (`QString`);
+ *           - A storage key ("files/last_used_directory");
+ *           - A default value.
  *
  * @todo Allow changing of the defaultValue behaviour using preprocessor.
  * @todo Test changing of the default value by using macro defines.
  * @todo Update documentation to include this feature. */
 
-struct RecentFileListSetting
+struct LastUsedDirectorySetting
 {
     /*! @brief Underlying value type. */
-    using Value = QStringList;
+    using Value = QString;
 
-    /*! @brief Return the persistent storage key ("files/recent_files"). */
-    static QString key() { return "files/recent_files"; }
+    /*! @brief Return the persistent storage key ("files/last_used_directory"). */
+    static QString key() { return "files/last_used_directory"; }
 
-    /*! @brief Return the default value - empty QStringList. */
-    static QStringList defaultValue() { return QStringList{}; }
+    /*! @brief Return the default value - home directory of the user. */
+    static QString defaultValue() { return QDir::homePath(); }
 };
 
 }
 
-#endif // RECENTFILESLISTSETTING_H
+#endif // LASTUSEDDIRECTORYSETTING_H

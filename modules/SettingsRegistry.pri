@@ -49,7 +49,7 @@
 
     contains(DEFINES, DRAUPNIR_SETTINGS_USE_APPSETTINGS) {
         HEADERS += \
-            $$PWD/../include/settings_registry/draupnir/core/AppSettings.h
+            $$PWD/../include/settings_registry/draupnir/settings_registry/core/AppSettings.h
 
         SOURCES += \
             $$PWD/../src/settings_registry/draupnir/core/AppSettings.cpp
@@ -57,30 +57,29 @@
 
     contains(DEFINES, DRAUPNIR_SETTINGS_USE_CUSTOM) {
         HEADERS += \
-            $$PWD/../include/settings_registry/draupnir/core/SettingsBackendInterface.h
+            $$PWD/../include/settings_registry/draupnir/settings_registry/core/SettingsBackendInterface.h
     }
 
     HEADERS += \
-        $$PWD/../include/settings_registry/draupnir/SettingsBundleMerge.h \
-        $$PWD/../include/settings_registry/draupnir/SettingsBundleTemplate.h \
-        $$PWD/../include/settings_registry/draupnir/SettingsRegistryTemplate.h \
-        $$PWD/../include/settings_registry/draupnir/core/SettingTemplate.h \
-        $$PWD/../include/settings_registry/draupnir/traits/settings/CentralWidgetIndexSetting.h \
-        $$PWD/../include/settings_registry/draupnir/traits/settings/files/LastUsedDirectorySetting.h \
-        $$PWD/../include/settings_registry/draupnir/traits/settings/files/RecentFilesListSetting.h \
-        $$PWD/../include/settings_registry/draupnir/traits/settings/main_window/MinimizeOnCloseSetting.h \
-        $$PWD/../include/settings_registry/draupnir/traits/settings/main_window/MinimizeToTraySetting.h \
-        $$PWD/../include/settings_registry/draupnir/traits/settings/main_window/StartHiddenSetting.h \
-        $$PWD/../include/settings_registry/draupnir/traits/settings/main_window/WindowSizeSetting.h \
-        $$PWD/../include/settings_registry/draupnir/traits/settings/templates/SettingTraitTemplate.h \
-        $$PWD/../include/settings_registry/draupnir/utils/SettingTraitSerializer.h \
-        $$PWD/../include/settings_registry/draupnir/utils/SettingTraitValidator.h \
-        $$PWD/../include/settings_registry/draupnir/utils/SettingTraitsConcat.h \
-        $$PWD/../include/settings_registry/draupnir/utils/ValueSerializer.h
+        $$PWD/../include/settings_registry/draupnir/SettingsRegistry.h \
+        $$PWD/../include/settings_registry/draupnir/settings_registry/SettingsBundleMerge.h \
+        $$PWD/../include/settings_registry/draupnir/settings_registry/SettingsBundleTemplate.h \
+        $$PWD/../include/settings_registry/draupnir/settings_registry/SettingsRegistryTemplate.h \
+        $$PWD/../include/settings_registry/draupnir/settings_registry/core/SettingTemplate.h \
+        $$PWD/../include/settings_registry/draupnir/settings_registry/traits/settings/CentralWidgetIndexSetting.h \
+        $$PWD/../include/settings_registry/draupnir/settings_registry/traits/settings/files/LastUsedDirectorySetting.h \
+        $$PWD/../include/settings_registry/draupnir/settings_registry/traits/settings/files/RecentFilesListSetting.h \
+        $$PWD/../include/settings_registry/draupnir/settings_registry/traits/settings/main_window/MinimizeOnCloseSetting.h \
+        $$PWD/../include/settings_registry/draupnir/settings_registry/traits/settings/main_window/MinimizeToTraySetting.h \
+        $$PWD/../include/settings_registry/draupnir/settings_registry/traits/settings/main_window/StartHiddenSetting.h \
+        $$PWD/../include/settings_registry/draupnir/settings_registry/traits/settings/main_window/WindowSizeSetting.h \
+        $$PWD/../include/settings_registry/draupnir/settings_registry/traits/settings/templates/SettingTraitTemplate.h \
+        $$PWD/../include/settings_registry/draupnir/settings_registry/utils/SettingTraitSerializer.h \
+        $$PWD/../include/settings_registry/draupnir/settings_registry/utils/SettingTraitValidator.h \
+        $$PWD/../include/settings_registry/draupnir/settings_registry/traits/settings/templates/SizeSettingTraitTemplate.h \
+        $$PWD/../include/settings_registry/draupnir/settings_registry/utils/SettingTraitsConcat.h \
+        $$PWD/../include/settings_registry/draupnir/settings_registry/utils/ValueSerializer.h
 
     DISTFILES += \
         $$PWD/../docs/pages/SettingsRegistry.dox
 }
-
-HEADERS += \
-    $$PWD/../include/settings_registry/draupnir/traits/settings/templates/SizeSettingTraitTemplate.h

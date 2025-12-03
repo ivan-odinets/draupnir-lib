@@ -22,39 +22,43 @@
  *
  */
 
-#ifndef MINIMIZETOTRAYSETTING_H
-#define MINIMIZETOTRAYSETTING_H
+#ifndef WINDOWSIZESETTING_H
+#define WINDOWSIZESETTING_H
 
+#include <QSize>
 #include <QString>
 
 namespace Draupnir::Settings::MainWindow
 {
 
-/*! @struct MinimizeToTraySetting draupnir/traits/settings/main_window/MinimizeToTraySetting.h
+/*! @struct WindowSizeSetting draupnir/settings_registry/traits/settings/main_window/WindowSizeSetting.h
  *  @ingroup SettingsRegistry
- *  @brief Concrete setting trait describing the "Minimize to Tray" option for the application main window.
+ *  @brief Setting trait describing the main application window size.
  *
- *  @details This struct provides MinimizeToTraySetting trait with:
- *           - using Value = bool;
- *           - static QString key();
- *           - static bool defaultValue();
+ *  @details This trait defines a setting that stores and retrieves the window size (width and height) as a QSize. It can
+ *           be used directly in a SettingsRegistryTemplate.
+ *
+ *           Provides:
+ *           - using Value = QSize (the stored C++ type);
+ *           - static QString key() — returns the persistent key string ("main_window/window_size");
+ *           - static Value defaultValue() — returns the default QSize (empty size).
  *
  * @todo Allow changing of the defaultValue behaviour using preprocessor.
  * @todo Test changing of the default value by using macro defines.
  * @todo Update documentation to include this feature. */
 
-struct MinimizeToTraySetting
+struct WindowSizeSetting
 {
     /*! @brief Underlying value type. */
-    using Value = bool;
+    using Value = QSize;
 
-    /*! @brief Return the persistent storage key ("main_window/minimize_to_tray"). */
-    static QString key() { return "main_window/minimize_to_tray"; }
+    /*! @brief Return the persistent storage key ("main_window/window_size"). */
+    static QString key() { return "main_window/window_size"; }
 
-    /*! @brief Return the default value - false. */
-    static bool defaultValue() { return false; }
+    /*! @brief Return the default value (empty QSize). */
+    static QSize defaultValue() { return QSize{}; }
 };
 
-}; // namespace Draupnir::Settings::MainWindow
+};
 
-#endif // MINIMIZETOTRAYSETTING_H
+#endif // WINDOWSIZESETTING_H

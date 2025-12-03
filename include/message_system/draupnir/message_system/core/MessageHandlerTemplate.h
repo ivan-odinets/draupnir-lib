@@ -28,7 +28,7 @@
 #include "draupnir/message_system/core/AbstractMessageHandler.h"
 #include "draupnir/message_system/traits/settings/MessageTypeSettingsTrait.h"
 
-#include "draupnir/SettingsBundleTemplate.h"
+#include "draupnir/SettingsRegistry.h"
 
 namespace Draupnir::Messages
 {

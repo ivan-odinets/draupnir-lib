@@ -32,7 +32,7 @@
 namespace Draupnir::Settings
 {
 
-/*! @class SettingTraitValidator draupnir-lib/incldue/settings/utils/SettingTraitValidator.h
+/*! @class SettingTraitValidator draupnirsetting_resgistry/utils/SettingTraitValidator.h
  *  @ingroup SettingsRegistry
  *  @brief Compile-time validator for SettingTrait requirements.
  *

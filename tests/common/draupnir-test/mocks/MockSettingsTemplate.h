@@ -27,8 +27,8 @@
 
 #include <type_traits>
 
-#include "draupnir/core/SettingsBackendInterface.h"
-#include "draupnir/core/SettingTemplate.h"
+#include "draupnir/settings_registry/core/SettingsBackendInterface.h"
+#include "draupnir/settings_registry/core/SettingTemplate.h"
 
 /*! @class MockSettingsTemplate tests/common/mocks/MockSettingsTemplate.h
  *  @brief This is a mock class implementing Draupnir::Settings::SettingsBackendInterface interface. This class initializes

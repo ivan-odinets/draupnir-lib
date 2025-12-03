@@ -30,7 +30,7 @@
 namespace Draupnir::Settings
 {
 
-/*! @class ValueSerializer draupnir-lib/incldue/settings/utils/ValueSerializer.h
+/*! @class ValueSerializer draupnir/setting_resgistry/utils/ValueSerializer.h
  *  @ingroup SettingsRegistry
  *  @brief Provides type-safe serialization and deserialization of values using a specified backend.
  *  @tparam Backend Type of the backend providing key-value storage interface (e.g., AppSettings, QSettings).

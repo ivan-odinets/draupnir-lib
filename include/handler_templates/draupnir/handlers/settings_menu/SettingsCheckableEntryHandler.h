@@ -27,7 +27,7 @@
 
 #include "draupnir/handlers/templates/CheckableActionHandler.h"
 
-#include "draupnir/SettingsBundleTemplate.h"
+#include "draupnir/settings_registry/SettingsBundleTemplate.h"
 #include "draupnir/utils/SettingTraitForEntry.h"
 
 namespace Draupnir::Handlers

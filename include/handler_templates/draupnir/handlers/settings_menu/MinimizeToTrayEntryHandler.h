@@ -28,7 +28,7 @@
 #include "SettingsCheckableEntryHandler.h"
 
 #include "draupnir/ui_bricks/traits/menu_entries/SettingsMenuEntries.h"
-#include "draupnir/traits/settings/main_window/MinimizeToTraySetting.h"
+#include "draupnir/settings_registry/traits/settings/main_window/MinimizeToTraySetting.h"
 
 namespace Draupnir::Handlers
 {

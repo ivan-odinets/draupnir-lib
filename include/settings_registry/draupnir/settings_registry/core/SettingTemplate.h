@@ -25,11 +25,11 @@
 #ifndef SETTINGTEMPLATE_H
 #define SETTINGTEMPLATE_H
 
-#include "draupnir/utils/SettingTraitValidator.h"
+#include "draupnir/settings_registry/utils/SettingTraitValidator.h"
 
 namespace Draupnir::Settings {
 
-/*! @class SettingTemplate draupnir/core/SettingTemplate.h
+/*! @class SettingTemplate draupnir/settings_registry/core/SettingTemplate.h
  *  @ingroup SettingsRegistry
  *  @brief Lightweight wrapper for a single setting trait.
  *  @tparam SettingTrait The trait type describing this setting.

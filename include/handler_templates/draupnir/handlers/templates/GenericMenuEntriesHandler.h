@@ -28,7 +28,7 @@
 #include <tuple>
 
 #include "GenericMenuEntryHandler.h"
-#include "draupnir/SettingsBundleMerge.h"
+#include "draupnir/settings_registry/SettingsBundleMerge.h"
 #include "draupnir/utils/type_presense.h"
 
 namespace Draupnir::Handlers {

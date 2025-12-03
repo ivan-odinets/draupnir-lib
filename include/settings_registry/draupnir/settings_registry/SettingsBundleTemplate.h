@@ -29,8 +29,8 @@
 
 #include <QDebug>
 
-#include "draupnir/core/SettingTemplate.h"
-#include "draupnir/utils/SettingTraitSerializer.h"
+#include "draupnir/settings_registry/core/SettingTemplate.h"
+#include "draupnir/settings_registry/utils/SettingTraitSerializer.h"
 
 #include "draupnir/utils/type_presense.h"
 
@@ -39,7 +39,7 @@
 #elif defined(DRAUPNIR_SETTINGS_USE_APPSETTINGS)
     #include "draupnir/core/AppSettings.h"
 #elif defined(DRAUPNIR_SETTINGS_USE_CUSTOM)
-    #include "draupnir/core/SettingsBackendInterface.h"
+    #include "draupnir/settings_registry/core/SettingsBackendInterface.h"
 #endif // DRAUPNIR_SETTINGS_USE_QSETTINGS || DRAUPNIR_SETTINGS_USE_APPSETTINGS
 
 namespace Draupnir::Settings

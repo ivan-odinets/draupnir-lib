@@ -29,7 +29,7 @@
 
 #include "draupnir/ui_bricks/ui/widgets/FixedTabWidget.h"
 
-#include "draupnir/SettingsBundleTemplate.h"
+#include "draupnir/settings_registry/SettingsBundleTemplate.h"
 #include "draupnir/utils/index_of.h"
 
 namespace Draupnir::Ui

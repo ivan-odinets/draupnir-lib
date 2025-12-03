@@ -25,8 +25,8 @@
 #ifndef VIEWMANAGER_H
 #define VIEWMANAGER_H
 
-#include "draupnir/SettingsBundleTemplate.h"
-#include "draupnir/traits/settings/main_window/StartHiddenSetting.h"
+#include "draupnir/settings_registry/SettingsBundleTemplate.h"
+#include "draupnir/settings_registry/traits/settings/main_window/StartHiddenSetting.h"
 
 namespace Draupnir::Ui
 {

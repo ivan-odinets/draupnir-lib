@@ -27,10 +27,10 @@
 
 #include <tuple>
 
-#include "draupnir/core/SettingTemplate.h"
-#include "draupnir/SettingsBundleTemplate.h"
+#include "draupnir/settings_registry/core/SettingTemplate.h"
+#include "draupnir/settings_registry/SettingsBundleTemplate.h"
 
-#include "draupnir/SettingsBundleMerge.h"
+#include "draupnir/settings_registry/SettingsBundleMerge.h"
 
 namespace Draupnir::Settings
 {

@@ -33,9 +33,9 @@
     #include "core/SettingsBackendInterface.h"
 #endif
 
-#include "utils/SettingTraitsConcat.h"
-#include "utils/SettingTraitValidator.h"
-#include "utils/SettingTraitSerializer.h"
+#include "draupnir/settings_registry/utils/SettingTraitsConcat.h"
+#include "draupnir/settings_registry/utils/SettingTraitValidator.h"
+#include "draupnir/settings_registry/utils/SettingTraitSerializer.h"
 
 #include "draupnir/utils/type_presense.h"
 

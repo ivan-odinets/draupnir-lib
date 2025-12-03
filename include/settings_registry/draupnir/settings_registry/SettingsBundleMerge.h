@@ -27,9 +27,9 @@
 
 #include <type_traits>
 
-#include "SettingsBundleTemplate.h"
+#include "draupnir/settings_registry/SettingsBundleTemplate.h"
 
-/*! @file draupnir/SettingsBundleMerge.h
+/*! @file draupnir/settings_resgistry/SettingsBundleMerge.h
  *  @ingroup SettingsRegistry
  *  @brief This file contains the SettingsBundleMerge utility capable of merging multiple SettingsBundleTemplate types
  *         into one without possible duplicates.

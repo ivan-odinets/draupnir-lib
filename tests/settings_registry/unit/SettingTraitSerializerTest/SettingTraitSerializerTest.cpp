@@ -25,9 +25,9 @@
 #include <QtTest>
 #include <QCoreApplication>
 
-#include "draupnir/utils/SettingTraitSerializer.h"
-#include "draupnir/traits/settings/files/LastUsedDirectorySetting.h"
-#include "draupnir/traits/settings/files/RecentFilesListSetting.h"
+#include "draupnir/settings_registry/utils/SettingTraitSerializer.h"
+#include "draupnir/settings_registry/traits/settings/files/LastUsedDirectorySetting.h"
+#include "draupnir/settings_registry/traits/settings/files/RecentFilesListSetting.h"
 
 #include "draupnir-test/mocks/MockSettingsTemplate.h"
 #include "draupnir-test/traits/settings/SomeCustomDoubleSetting.h"

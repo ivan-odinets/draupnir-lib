@@ -75,5 +75,7 @@
 
 HEADERS += \
     $$PWD/../include/message_system/draupnir/MessageSystem.h \
+    $$PWD/../include/message_system/draupnir/message_system/core/AbstractMessageSystem.h \
+    $$PWD/../include/message_system/draupnir/message_system/traits/menu_entries/MessageNotificationsSubmenuEntryTemplate.h \
     $$PWD/../include/message_system/draupnir/message_system/traits/widgets/MessageFieldsSelectorTrait.h \
     $$PWD/../include/message_system/draupnir/message_system/traits/widgets/NotificationSettingsEditorWidgetTrait.h

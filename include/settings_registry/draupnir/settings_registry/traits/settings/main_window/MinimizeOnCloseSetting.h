@@ -30,7 +30,7 @@
 namespace Draupnir::Settings::MainWindow
 {
 
-/*! @struct MinimizeOnCloseSetting draupnir/traits/settings/main_window/MinimizeOnCloseSetting.h
+/*! @struct MinimizeOnCloseSetting draupnir/settings_registry/traits/settings/main_window/MinimizeOnCloseSetting.h
  *  @ingroup SettingsRegistry
  *  @brief Concrete setting trait describing the "Minimize on Close" option for the application main window.
  *

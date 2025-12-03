@@ -26,7 +26,7 @@
 #include <QCoreApplication>
 
 #include "draupnir/MessageSystem.h"
-#include "draupnir/SettingsRegistryTemplate.h"
+#include "draupnir/settings_registry/SettingsRegistryTemplate.h"
 #include "draupnir/message_system/traits/messages/DefaultMessageTraits.h"
 #include "draupnir/message_system/traits/settings/MessageTypeSettingsTrait.h"
 #include "draupnir/message_system/ui/widgets/AbstractNotificationSettingsWidget.h"

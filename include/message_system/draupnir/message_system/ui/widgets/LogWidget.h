@@ -34,7 +34,8 @@ class QPushButton;
 class QSlider;
 class QToolButton;
 
-#include "draupnir/SettingsBundleTemplate.h"
+#include "draupnir/SettingsRegistry.h"
+
 #include "draupnir/message_system/core/MessageType.h"
 #include "draupnir/message_system/traits/settings/LogWidgetSettingsTraits.h"
 

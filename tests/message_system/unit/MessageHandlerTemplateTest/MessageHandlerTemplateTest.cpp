@@ -27,7 +27,7 @@
 
 #include "draupnir/message_system/core/MessageHandlerTemplate.h"
 
-#include "draupnir/SettingsRegistryTemplate.h"
+#include "draupnir/settings_registry/SettingsRegistryTemplate.h"
 #include "draupnir/message_system/traits/messages/DefaultMessageTraits.h"
 #include "draupnir/message_system/traits/settings/MessageTypeSettingsTrait.h"
 #include "draupnir/message_system/models/MessageListModel.h"

@@ -31,7 +31,7 @@
 namespace Draupnir::Settings
 {
 
-/*! @class SettingTraitSerializer draupnir-lib/incldue/settings/utils/SettingTraitSerializer.h
+/*! @class SettingTraitSerializer draupnir/setting_resgistry/utils/SettingTraitSerializer.h
  *  @ingroup SettingsRegistry
  *  @brief Type-safe bridge for serializing and deserializing a specific SettingTrait using a backend.
  *  @tparam Backend       Type of the backend used for persistence (e.g., AppSettings, QSettings).

@@ -22,40 +22,42 @@
  *
  */
 
-#ifndef LASTUSEDDIRECTORYSETTING_H
-#define LASTUSEDDIRECTORYSETTING_H
+#ifndef CENTRALWIDGETINDEXSETTING_H
+#define CENTRALWIDGETINDEXSETTING_H
 
-#include <QDir>
 #include <QString>
 
 namespace Draupnir::Settings
 {
 
-/*! @struct LastUsedDirectorySetting draupnir/traits/settings/files/LastUsedDirectorySetting.h
+/*! @struct CentralWidgetIndexSetting draupnir/settings_registry/traits/settings/CentralWidgetIndexSetting.h
  *  @ingroup SettingsRegistry
- *  @brief Setting trait for tracking the most recently used directory.
+ *  @brief Setting trait describing the index of currently active widget within the central widget of the main window
+ *         (e.g. within QTabWidget or FixedCentralTabWidgetTemplate)
+ *  @details This trait defines a setting that stores and retrieves the active widget index as int.
+ *           Provides:
+ *           - using Value = int (the stored C++ type);
+ *           - static QString key() — returns the persistent key string ("central_widget/active_widget_index");
+ *           - static int defaultValue() — returns the default index = 0.
  *
- *  @details This trait defines how the last used directory setting is stored and retrieved. It provides:
- *           - The value type (`QString`);
- *           - A storage key ("files/last_used_directory");
- *           - A default value.
- *
+ * @todo Finalize naming, file and directory (which will contain such traits) as this. Maybe split it to
+ *       seperate namespace?.
  * @todo Allow changing of the defaultValue behaviour using preprocessor.
  * @todo Test changing of the default value by using macro defines.
  * @todo Update documentation to include this feature. */
 
-struct LastUsedDirectorySetting
+struct CentralWidgetIndexSetting
 {
     /*! @brief Underlying value type. */
-    using Value = QString;
+    using Value = int;
 
-    /*! @brief Return the persistent storage key ("files/last_used_directory"). */
-    static QString key() { return "files/last_used_directory"; }
+    /*! @brief Return the persistent storage key ("central_widget/active_widget_index"). */
+    static QString key() { return "central_widget/active_widget_index"; }
 
-    /*! @brief Return the default value - home directory of the user. */
-    static QString defaultValue() { return QDir::homePath(); }
+    /*! @brief Return the default value - 0. */
+    static int defaultValue() { return 0; }
 };
 
-}
+};
 
-#endif // LASTUSEDDIRECTORYSETTING_H
+#endif // CENTRALWIDGETINDEXSETTING_H

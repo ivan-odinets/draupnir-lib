@@ -31,7 +31,7 @@
 namespace Draupnir::Settings
 {
 
-/*! @struct SettingTraitTemplate draupnir/traits/settings/templates/SettingTraitTemplate.h
+/*! @struct SettingTraitTemplate draupnir/settings_registry/traits/settings/templates/SettingTraitTemplate.h
  *  @ingroup SettingsRegistry
  *  @brief Generic template for defining a setting trait.
  *  @tparam ValueClass      The underlying C++ type of the setting value.

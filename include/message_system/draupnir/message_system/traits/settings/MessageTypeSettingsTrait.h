@@ -25,7 +25,7 @@
 #ifndef MESSAGETYPESETTINGSTRAIT_H
 #define MESSAGETYPESETTINGSTRAIT_H
 
-#include "draupnir/utils/SettingTraitSerializer.h" // IWYU pragma: keep
+#include "draupnir/settings_registry/utils/SettingTraitSerializer.h" // IWYU pragma: keep
 #include "draupnir/message_system/core/Notification.h"
 
 namespace Draupnir::Messages

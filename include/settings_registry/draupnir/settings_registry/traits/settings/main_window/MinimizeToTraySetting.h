@@ -22,42 +22,39 @@
  *
  */
 
-#ifndef CENTRALWIDGETINDEXSETTING_H
-#define CENTRALWIDGETINDEXSETTING_H
+#ifndef MINIMIZETOTRAYSETTING_H
+#define MINIMIZETOTRAYSETTING_H
 
 #include <QString>
 
-namespace Draupnir::Settings
+namespace Draupnir::Settings::MainWindow
 {
 
-/*! @struct CentralWidgetIndexSetting draupnir/traits/settings/CentralWidgetIndexSetting.h
+/*! @struct MinimizeToTraySetting draupnir/settings_registry/traits/settings/main_window/MinimizeToTraySetting.h
  *  @ingroup SettingsRegistry
- *  @brief Setting trait describing the index of currently active widget within the central widget of the main window
- *         (e.g. within QTabWidget or FixedCentralTabWidgetTemplate)
- *  @details This trait defines a setting that stores and retrieves the active widget index as int.
- *           Provides:
- *           - using Value = int (the stored C++ type);
- *           - static QString key() — returns the persistent key string ("central_widget/active_widget_index");
- *           - static int defaultValue() — returns the default index = 0.
+ *  @brief Concrete setting trait describing the "Minimize to Tray" option for the application main window.
  *
- * @todo Finalize naming, file and directory (which will contain such traits) as this. Maybe split it to
- *       seperate namespace?.
+ *  @details This struct provides MinimizeToTraySetting trait with:
+ *           - using Value = bool;
+ *           - static QString key();
+ *           - static bool defaultValue();
+ *
  * @todo Allow changing of the defaultValue behaviour using preprocessor.
  * @todo Test changing of the default value by using macro defines.
  * @todo Update documentation to include this feature. */
 
-struct CentralWidgetIndexSetting
+struct MinimizeToTraySetting
 {
     /*! @brief Underlying value type. */
-    using Value = int;
+    using Value = bool;
 
-    /*! @brief Return the persistent storage key ("central_widget/active_widget_index"). */
-    static QString key() { return "central_widget/active_widget_index"; }
+    /*! @brief Return the persistent storage key ("main_window/minimize_to_tray"). */
+    static QString key() { return "main_window/minimize_to_tray"; }
 
-    /*! @brief Return the default value - 0. */
-    static int defaultValue() { return 0; }
+    /*! @brief Return the default value - false. */
+    static bool defaultValue() { return false; }
 };
 
-};
+}; // namespace Draupnir::Settings::MainWindow
 
-#endif // CENTRALWIDGETINDEXSETTING_H
+#endif // MINIMIZETOTRAYSETTING_H

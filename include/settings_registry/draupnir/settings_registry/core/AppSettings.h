@@ -33,11 +33,11 @@
 namespace Draupnir::Settings
 {
 
-/*! @class AppSettings draupnir/core/AppSettings.h
+/*! @class AppSettings draupnir/settings_registry/core/AppSettings.h
  *  @ingroup SettingsRegistry
- *  @brief Wrapper class around QSettings providing sectioned access, optional config preservation, and enum support.
+ *  @brief Wrapper class around `QSettings` providing sectioned access, optional config preservation, and enum support.
  *
- *  @details AppSettings simplifies work with application configuration stored via QSettings:
+ *  @details AppSettings simplifies work with application configuration stored via `QSettings`:
  *           - Provides access by section (Core, Network, Files, GUI, Global);
  *           - Allows "preserve mode" (if enabled, settings are never written to disk);
  *           - Offers templated methods for seamless enum <-> string conversion for config keys;

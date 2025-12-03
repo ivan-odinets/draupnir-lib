@@ -29,9 +29,9 @@
 #include "draupnir-test/mocks/MockSettingsTemplate.h"
 
 // SettingsRegistry
-#include "draupnir/SettingsRegistryTemplate.h"
-#include "draupnir/traits/settings/main_window/MinimizeOnCloseSetting.h"
-#include "draupnir/traits/settings/main_window/MinimizeToTraySetting.h"
+#include "draupnir/settings_registry/SettingsRegistryTemplate.h"
+#include "draupnir/settings_registry/traits/settings/main_window/MinimizeOnCloseSetting.h"
+#include "draupnir/settings_registry/traits/settings/main_window/MinimizeToTraySetting.h"
 
 // SettingsMenu
 #include "draupnir/ui_bricks/traits/menu_entries/SettingsMenuEntries.h"

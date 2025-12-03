@@ -30,7 +30,7 @@
 namespace Draupnir::Settings::MainWindow
 {
 
-/*! @struct MainWindowStartHiddenSetting draupnir/traits/settings/MainWindowStartHiddenSetting.h
+/*! @struct MainWindowStartHiddenSetting draupnir/settings_registry/traits/settings/MainWindowStartHiddenSetting.h
  *  @ingroup SettingsRegistry
  *  @brief Concrete setting trait describing the "Start Hidden" option for the application main window.
  *

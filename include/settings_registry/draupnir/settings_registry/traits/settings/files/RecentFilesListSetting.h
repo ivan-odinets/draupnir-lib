@@ -22,43 +22,34 @@
  *
  */
 
-#ifndef WINDOWSIZESETTING_H
-#define WINDOWSIZESETTING_H
+#ifndef RECENTFILESLISTSETTING_H
+#define RECENTFILESLISTSETTING_H
 
-#include <QSize>
-#include <QString>
+#include <QStringList>
 
-namespace Draupnir::Settings::MainWindow
+namespace Draupnir::Settings
 {
 
-/*! @struct WindowSizeSetting draupnir/traits/settings/main_window/WindowSizeSetting.h
+/*! @struct RecentFileList draupnir/settings_registry/traits/settings/files/RecentFileList.h
  *  @ingroup SettingsRegistry
- *  @brief Setting trait describing the main application window size.
- *
- *  @details This trait defines a setting that stores and retrieves the window size (width and height) as a QSize. It can
- *           be used directly in a SettingsRegistryTemplate.
- *
- *           Provides:
- *           - using Value = QSize (the stored C++ type);
- *           - static QString key() — returns the persistent key string ("main_window/window_size");
- *           - static Value defaultValue() — returns the default QSize (empty size).
+ *  @brief Setting trait for tracking the list of the recently used files
  *
  * @todo Allow changing of the defaultValue behaviour using preprocessor.
  * @todo Test changing of the default value by using macro defines.
  * @todo Update documentation to include this feature. */
 
-struct WindowSizeSetting
+struct RecentFileListSetting
 {
     /*! @brief Underlying value type. */
-    using Value = QSize;
+    using Value = QStringList;
 
-    /*! @brief Return the persistent storage key ("main_window/window_size"). */
-    static QString key() { return "main_window/window_size"; }
+    /*! @brief Return the persistent storage key ("files/recent_files"). */
+    static QString key() { return "files/recent_files"; }
 
-    /*! @brief Return the default value (empty QSize). */
-    static QSize defaultValue() { return QSize{}; }
+    /*! @brief Return the default value - empty QStringList. */
+    static QStringList defaultValue() { return QStringList{}; }
 };
 
-};
+}
 
-#endif // WINDOWSIZESETTING_H
+#endif // RECENTFILESLISTSETTING_H
