@@ -41,6 +41,9 @@ public:
     using SomeQStringAlias = QString;
     using CustomInt = int;
 
+    using MyVector = std::vector<int>;
+    using MyTuple = std::tuple<int,double,float>;
+
 private slots:
     void test_is_one_of() {
         // Check if type is present
@@ -58,6 +61,20 @@ private slots:
         // Check alias if absent
         QCOMPARE((is_one_of<SomeQStringAlias,int,QStringList,int>::value),     false);
         QCOMPARE((is_one_of_v<SomeQStringAlias,int,QStringList,int>),          false);
+    }
+
+    void test_is_template_instantiation_present() {
+        // Confirm that proper templates are present within the pack
+        QCOMPARE((is_template_instantiation_present<std::tuple,int,float,MyTuple,QString>::value), true);
+        QCOMPARE((is_template_instantiation_present_v<std::tuple,int,float,MyTuple,QString>), true);
+        QCOMPARE((is_template_instantiation_present<std::vector,int,float,MyVector,QString>::value), true);
+        QCOMPARE((is_template_instantiation_present_v<std::vector,int,float,MyVector,QString>), true);
+
+        // Confirm that proper templates are absent within the pack
+        QCOMPARE((is_template_instantiation_present<std::vector,int,float,MyTuple,QString>::value), false);
+        QCOMPARE((is_template_instantiation_present_v<std::vector,int,float,MyTuple,QString>), false);
+        QCOMPARE((is_template_instantiation_present<std::vector,int,float,MyTuple,QString>::value), false);
+        QCOMPARE((is_template_instantiation_present_v<std::vector,int,float,MyTuple,QString>), false);
     }
 
     void test_is_type_in_tuple() {

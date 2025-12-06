@@ -17,3 +17,7 @@
     DISTFILES += \
         $$PWD/../docs/pages/Utils.dox
 }
+
+HEADERS += \
+    $$PWD/../include/utils/draupnir/utils/tuple_like_merge.h \
+    $$PWD/../include/utils/draupnir/utils/type_extractors.h

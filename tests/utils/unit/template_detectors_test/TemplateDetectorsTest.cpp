@@ -76,6 +76,24 @@ public:
     using VectorTwo = std::vector<QString>;
 
 private slots:
+    void test_is_instantiation_of() {
+        // Check if tuple is recognized as tuple
+        QCOMPARE((is_instantiation_of<TupleOne,std::tuple>::value), true);
+        QCOMPARE((is_instantiation_of_v<TupleOne,std::tuple>), true);
+
+        // Check if vector is recognized as vector
+        QCOMPARE((is_instantiation_of<VectorOne,std::vector>::value), true);
+        QCOMPARE((is_instantiation_of_v<VectorOne,std::vector>), true);
+
+        // Check that tuple is not vector
+        QCOMPARE((is_instantiation_of<TupleOne,std::vector>::value), false);
+        QCOMPARE((is_instantiation_of_v<TupleOne,std::vector>), false);
+
+        // Check that vector is not tuple
+        QCOMPARE((is_instantiation_of<VectorOne,std::tuple>::value), false);
+        QCOMPARE((is_instantiation_of_v<VectorOne,std::tuple>), false);
+    }
+
     void test_is_tuple() {
         // Check if tuples are recognized as tuples
         QCOMPARE((is_tuple<TupleOne>::value),true);

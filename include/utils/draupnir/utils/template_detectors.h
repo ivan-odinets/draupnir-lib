@@ -34,6 +34,47 @@
 namespace draupnir::utils
 {
 
+/*! @struct is_instantiation_of draupnir/utils/template_detectors.h
+ *  @ingroup Utils
+ *  @brief Type trait that determines whether a given type @p T is an instantiation of the class template @p Template.
+ *  @tparam T        Type to be inspected.
+ *  @tparam Template Class template to compare against.
+ *
+ *  @details Primary template: yields `std::false_type` for all combinations of @p T and @p Template. A partial specialization
+ *           is provided for the case when @p T is of the form `Template<Args...>` for some type pack `Args...`. In that case
+ *           the trait evaluates to `std::true_type`.
+ *
+ *           Example:
+ *           @code
+ *           using TupleOne = std::tuple<int, double>;
+ *
+ *           static_assert(is_instantiation_of<TupleOne, std::tuple>::value, "");
+ *           static_assert(!is_instantiation_of<int, std::tuple>::value, "");
+ *           @endcode */
+
+template<typename T, template<typename...> class Template>
+struct is_instantiation_of : std::false_type {};
+
+/*! @struct is_instantiation_of draupnir/utils/template_detectors.h
+ *  @brief Partial specialization of @ref draupnir::utils::is_instantiation_of for types of the form `Template<Args...>`.
+ *  @tparam Template Class template that accepts one or more type parameters.
+ *  @tparam Args...  Template argument types used to instantiate @p Template.
+ *
+ *  @details This specialization matches exactly when the inspected type @p T is an instantiation of @p Template with some type
+ *           arguments `Args...`, and evaluates to `std::true_type`. */
+
+template<template<typename...> class Template, typename... Args>
+struct is_instantiation_of<Template<Args...>, Template> : std::true_type {};
+
+/*! @ingroup Utils
+ *  @brief Convenience variable template for @ref draupnir::utils::is_instantiation_of.
+ *
+ *  @details Evaluates to `true` if @p T is an instantiation of the class template @p Template with some type arguments,
+ *           and `false` otherwise. */
+
+template<typename T, template<typename...> class Template>
+inline constexpr bool is_instantiation_of_v = is_instantiation_of<T,Template>::value;
+
 /*! @struct is_pair draupnir/utils/template_detectors.h
  *  @ingroup Utils
  *  @brief Type trait to detect whether a type is a `std::pair`.

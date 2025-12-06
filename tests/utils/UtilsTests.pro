@@ -6,6 +6,8 @@ SUBDIRS += \
     unit/index_of_test \
     unit/template_constructors_test \
     unit/template_detectors_test \
+    unit/tuple_like_merge_test \
+    unit/type_extractors_test \
     unit/type_presense_test
 
 

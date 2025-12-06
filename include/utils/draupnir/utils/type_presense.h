@@ -32,6 +32,8 @@
 #include <tuple>
 #include <type_traits>
 
+#include "draupnir/utils/template_detectors.h"
+
 namespace draupnir::utils
 {
 
@@ -52,7 +54,45 @@ struct is_one_of : std::disjunction<std::is_same<T, Args>...> {};
  *         in `Args...`, `false` otherwise. */
 
 template<typename T, typename... Args>
-constexpr bool is_one_of_v = is_one_of<T, Args...>::value;
+inline constexpr bool is_one_of_v = is_one_of<T, Args...>::value;
+
+/*! @struct is_template_instantiation_present draupnir/utils/type_presense.h
+ *  @ingroup Utils
+ *  @brief Type trait that checks whether at least one of the provided types is an instantiation of a given class template.
+ *  @tparam Template Class template to search for.
+ *  @tparam Args...  Types to be inspected.
+ *
+ *  @details This trait leverages @ref draupnir::utils::is_instantiation_of to determine whether any of the types in the
+ *           parameter pack @p Args... is an instantiation of the class template @p Template.
+ *
+ *           Formally, it evaluates to `std::true_type` if there exists at least one type `T` in `Args...` such that:
+ *           `is_instantiation_of<T, Template>::value == true`
+ *
+ *           If none of the types in @p Args... is an instantiation of @p Template, the trait evaluates to `std::false_type`.
+ *           If @p Args... is an empty parameter pack, the result is also `std::false_type`.
+ *
+ *           Example:
+ *           @code
+ *           using T1 = std::tuple<int, double>;
+ *           using T2 = std::pair<int, int>;
+ *           using T3 = int;
+ *
+ *           static_assert(is_template_instantiation_present<std::tuple, T1, T2, T3>::value,"T1 is a std::tuple");
+ *
+ *           static_assert(!is_template_instantiation_present<std::vector, T1, T2, T3>::value,"None of T1, T2, T3 is a
+ *           std::vector<...>");
+ *           @endcode */
+
+template<template<typename...> typename Template, typename... Args>
+struct is_template_instantiation_present : std::disjunction<is_instantiation_of<Args,Template>...> {};
+
+/*! @ingroup Utils
+ *  @brief Convenience variable template for @ref draupnir::utils::is_template_instantiation_present. Evaluates to `true`
+ *         if at least one of the types in @p Args... is an instantiation of the class template @p Template, and `false`
+ *         otherwise. */
+
+template<template<typename...> typename Template, typename... Args>
+inline constexpr bool is_template_instantiation_present_v = is_template_instantiation_present<Template,Args...>::value;
 
 /*! @struct is_one_of draupnir/utils/type_presense.h
  *  @ingroup Utils
@@ -83,6 +123,8 @@ struct is_type_in_tuple<T, std::tuple<Ts...>>
 
 template<typename T, typename Tuple>
 inline constexpr bool is_type_in_tuple_v = is_type_in_tuple<T, Tuple>::value;
+
+
 
 }; // draupnir::utils
 
