@@ -95,8 +95,8 @@ private slots:
         QCOMPARE(infoNotifications->notificationType(), messageHandler->notification(MessageType::Info));
 
         // Now we trigger, and...
-        debugNotifications->setNotificationType(Notification::None);
-        infoNotifications->setNotificationType(Notification::MessageBoxType);
+        debugNotifications->getActionFor(Notification::MessageBoxType)->trigger();
+        infoNotifications->getActionFor(Notification::MessageBoxType)->trigger();
 
         // Still we have the same types displayed and used within the MessageHandler
         QCOMPARE(debugNotifications->notificationType(), messageHandler->notification(MessageType::Debug));
