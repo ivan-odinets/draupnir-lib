@@ -35,7 +35,7 @@
 #include "draupnir/message_system/ui/widgets/MessageTypesSelectorWidgetTemplate.h"
 #include "draupnir/message_system/ui/menus/MessageListViewConfigMenuTemplate.h"
 
-#include "draupnir/settings_registry/SettingsBundleMerge.h"
+#include "draupnir/SettingsRegistry.h"
 
 namespace Draupnir::Messages
 {
@@ -55,9 +55,9 @@ public:
     /*! @brief Defines @ref Draupnir::Settings::SettingsBundleTemplate template instantiation containing all settings which
      *         are required by this @ref Draupnir::Messages::MessageUiBuilderTemplate to work properly. To be used as one of
      *         the template arguments of the @ref SettingsRegistryTemplate. */
-    using SettingsBundle = Draupnir::Settings::bundle_merge_all_t<
+    using SettingsBundle = Draupnir::Settings::SettingsTraitsConcatenator<
         typename LogWidget::SettingsBundle
-    >;
+    >::toSettingsBundle;
 
     /*! @brief Returns a created and ready-to-use @ref LogWidget. This widget is capable of displaying messages from @ref
      *         MessageSystemTemplate to which this @ref MessageUiBuilderTemplate instantiation is belonging.

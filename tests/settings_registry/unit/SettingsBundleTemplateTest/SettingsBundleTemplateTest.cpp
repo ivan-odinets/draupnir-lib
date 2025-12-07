@@ -37,13 +37,8 @@
 namespace Draupnir::Settings
 {
 
-/*! @class SettingsBundleTemplateTest
- *  @brief This is a test for SettingsBundleTemplate
- *
- * @todo Split this test into several: unit-test for SettingsRegistryTemplate, unit test for SettingsBundleTemplate and
- *       integration between SettingsRegistryTemplate and SettingsBundleTemplate.
- * @todo Refractor this test so that it will have better readability.
- * @todo Add some script to execute this test in the context of CI. */
+/*! @class SettingsBundleTemplateTest tests/settings_registry/unit/SettingsBundleTemplateTest.cpp
+ *  @brief This is a test for SettingsBundleTemplate */
 
 class SettingsBundleTemplateTest final : public QObject
 {
@@ -123,7 +118,6 @@ private slots:
         QCOMPARE(RandomUnpopulatableBundle::canBeFullyPopulatedFrom_v<SettingsBundle>, false);
     }
 
-    /*! @brief Testing if the SettingsRegistryTemplate is correctly initialized and if backend is correctly loaded. */
     void test_initialization() {
         // We need this for test to work
         QVERIFY(settingsRegistry.settings() != nullptr);

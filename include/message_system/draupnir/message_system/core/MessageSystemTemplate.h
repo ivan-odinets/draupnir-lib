@@ -30,8 +30,7 @@
 #include "draupnir/message_system/utils/MessageTraitsHelper.h"
 #include "draupnir/message_system/traits/settings/MessageTypeSettingsTrait.h"
 
-#include "draupnir/settings_registry/SettingsBundleTemplate.h"
-#include "draupnir/settings_registry/SettingsBundleMerge.h"
+#include "draupnir/SettingsRegistry.h"
 
 namespace Draupnir::Messages
 {
@@ -86,10 +85,10 @@ public:
 
     using MessageUiBuilder = typename SpecificMessageTraitsHelper::MessageUiBuilder;
 
-    using SettingsBundle = Draupnir::Settings::bundle_merge_all_t<
+    using SettingsBundle = typename Draupnir::Settings::SettingsTraitsConcatenator<
         typename MessageHandler::SettingsBundle,
         typename MessageUiBuilder::SettingsBundle
-    >;
+    >::toSettingsBundle;
 
     /*! @brief Default constructor. Configures @ref Draupnir::Messages::MessageUiBuilderTemplate.
      *  @details A static_assert will happen within this constructor if:

@@ -35,9 +35,7 @@
 /*! @class SettingTraitSerializerTest tests/settings_registry/unit/SettingTraitSerializerTest/SettingTraitSerializerTest.cpp
  *  @brief This test class tests functionality of the SettingTraitSerializer.
  *
- * @todo Add custom complex setting trait support.
- * @todo Refractor this test so that it will have better readability.
- * @todo Add some script to execute this test in the context of CI. */
+ * @todo Add custom complex setting trait support. */
 
 class SettingTraitSerializerTest final : public QObject
 {

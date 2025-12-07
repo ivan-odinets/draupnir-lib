@@ -25,6 +25,8 @@
 #ifndef SETTINGSREGISTRYTEMPLATE_H
 #define SETTINGSREGISTRYTEMPLATE_H
 
+#include <QDebug>
+
 #if defined(DRAUPNIR_SETTINGS_USE_QSETTINGS)
     #include <QSettings>
 #elif defined(DRAUPNIR_SETTINGS_USE_APPSETTINGS)
@@ -33,7 +35,8 @@
     #include "core/SettingsBackendInterface.h"
 #endif
 
-#include "draupnir/settings_registry/utils/SettingTraitsConcat.h"
+#include "draupnir/settings_registry/SettingsBundleTemplate.h"
+#include "draupnir/settings_registry/core/SettingTemplate.h"
 #include "draupnir/settings_registry/utils/SettingTraitValidator.h"
 #include "draupnir/settings_registry/utils/SettingTraitSerializer.h"
 
@@ -45,10 +48,9 @@ namespace Draupnir::Settings
 /*! @class SettingsRegistryTemplate draupnir/SettingsRegistryTemplate.h
  *  @ingroup SettingsRegistry
  *  @brief Strongly-typed, compile-time registry of application settings.
- *  @tparam Traits A variadic list of SettingTraits or SettingsBundle<Ts...>.
+ *  @tparam Traits A variadic list of SettingTraits.
  *
- *  @details This class aggregates all specified setting traits (either individually or via SettingsBundle), flattens them
- *           into a single tuple of SettingTemplate<Trait>, and provides:
+ *  @details This class aggregates all specified setting traits and provides:
  *           - Bulk loading of all settings from a backend (either QSettings or AppSettings). Backend selection is done by
  *             macro (DRAUPNIR_SETTINGS_USE_QSETTINGS or DRAUPNIR_SETTINGS_USE_APPSETTINGS);
  *           - Type-safe accessors and mutators for individual setting values;
@@ -75,7 +77,6 @@ namespace Draupnir::Settings
  *             SettingsRegistryTemplate by using SettingsRegistryTemplate::setBackend method. Note that SettingsRegistryTemplate
  *             **WILL NOT** take ownership on the provided object, so deletion of this thing - is on end developer.
  *
- * @note Internally, all traits and bundles are flattened to a single tuple of SettingTemplate<T>.
  * @note One of the marcos: DRAUPNIR_SETTINGS_USE_QSETTINGS, DRAUPNIR_SETTINGS_USE_APPSETTINGS, DRAUPNIR_SETTINGS_USE_CUSTOM
  *       **MUST** be defined. Or compilation will fail.
  *
@@ -98,7 +99,7 @@ class SettingsRegistryTemplate
            "DRAUPNIR_SETTINGS_USE_APPSETTINGS macro must be defined.")
 #endif
 
-    using AbstractSettingsTuple = SettingsTraitConcat<Traits...>;
+    using AbstractSettingsTuple = std::tuple<SettingTemplate<Traits>...>;
 
 public:
     /*! @brief Checks at compile time whether a specific SettingTrait is part of this registry.

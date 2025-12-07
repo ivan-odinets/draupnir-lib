@@ -32,4 +32,6 @@
 #include "draupnir/settings_registry/SettingsRegistryTemplate.h"
 #include "draupnir/settings_registry/SettingsBundleTemplate.h"
 
+#include "draupnir/settings_registry/utils/SettingsTraitsConcatenator.h"
+
 #endif // SETTINGSREGISTRY_H

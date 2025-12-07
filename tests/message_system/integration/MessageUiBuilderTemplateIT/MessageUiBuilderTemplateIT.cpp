@@ -61,9 +61,9 @@ public:
     MessageSystem messageSystem;
 
     // We will need SettingsResitryTemplate as well
-    using SettingsRegistry = Draupnir::Settings::SettingsRegistryTemplate<
+    using SettingsRegistry = Draupnir::Settings::SettingsTraitsConcatenator<
         MessageSystem::SettingsBundle
-    >;
+    >::toSettingsRegistry;
     SettingsRegistry settingsRegistry;
 
     // Internal things of MessageSystemTemplate
@@ -96,7 +96,7 @@ private slots:
 
         // Now we trigger, and...
         debugNotifications->setNotificationType(Notification::None);
-        infoNotifications->setNotificationType(Notification::Systemtray);
+        infoNotifications->setNotificationType(Notification::MessageBoxType);
 
         // Still we have the same types displayed and used within the MessageHandler
         QCOMPARE(debugNotifications->notificationType(), messageHandler->notification(MessageType::Debug));

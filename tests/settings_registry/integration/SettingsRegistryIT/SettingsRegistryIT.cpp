@@ -38,9 +38,7 @@
  *  @brief This is a very basic test for SettingsRegistryTemplate and related things.
  *
  * @todo Split this test into several: unit-test for SettingsRegistryTemplate, unit test for SettingsBundleTemplate and
- *       integration between SettingsRegistryTemplate and SettingsBundleTemplate.
- * @todo Refractor this test so that it will have better readability.
- * @todo Add some script to execute this test in the context of CI. */
+ *       integration between SettingsRegistryTemplate and SettingsBundleTemplate.  */
 
 class SettingsRegistryIT final : public QObject
 {

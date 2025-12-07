@@ -62,7 +62,6 @@
 
     HEADERS += \
         $$PWD/../include/settings_registry/draupnir/SettingsRegistry.h \
-        $$PWD/../include/settings_registry/draupnir/settings_registry/SettingsBundleMerge.h \
         $$PWD/../include/settings_registry/draupnir/settings_registry/SettingsBundleTemplate.h \
         $$PWD/../include/settings_registry/draupnir/settings_registry/SettingsRegistryTemplate.h \
         $$PWD/../include/settings_registry/draupnir/settings_registry/core/SettingTemplate.h \
@@ -77,7 +76,7 @@
         $$PWD/../include/settings_registry/draupnir/settings_registry/utils/SettingTraitSerializer.h \
         $$PWD/../include/settings_registry/draupnir/settings_registry/utils/SettingTraitValidator.h \
         $$PWD/../include/settings_registry/draupnir/settings_registry/traits/settings/templates/SizeSettingTraitTemplate.h \
-        $$PWD/../include/settings_registry/draupnir/settings_registry/utils/SettingTraitsConcat.h \
+        $$PWD/../include/settings_registry/draupnir/settings_registry/utils/SettingsTraitsConcatenator.h \
         $$PWD/../include/settings_registry/draupnir/settings_registry/utils/ValueSerializer.h
 
     DISTFILES += \

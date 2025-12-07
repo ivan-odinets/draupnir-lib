@@ -33,11 +33,12 @@
 #include "draupnir/settings_registry/utils/SettingTraitSerializer.h"
 
 #include "draupnir/utils/type_presense.h"
+#include "draupnir/utils/tuple_like_merge.h"
 
 #if defined(DRAUPNIR_SETTINGS_USE_QSETTINGS)
     #include <QSettings>
 #elif defined(DRAUPNIR_SETTINGS_USE_APPSETTINGS)
-    #include "draupnir/core/AppSettings.h"
+    #include "draupnir/settings_registru/core/AppSettings.h"
 #elif defined(DRAUPNIR_SETTINGS_USE_CUSTOM)
     #include "draupnir/settings_registry/core/SettingsBackendInterface.h"
 #endif // DRAUPNIR_SETTINGS_USE_QSETTINGS || DRAUPNIR_SETTINGS_USE_APPSETTINGS
@@ -48,7 +49,7 @@ namespace Draupnir::Settings
 /*! @class SettingsBundleTemplate draupnir/SettingsBundleTemplate.h
  *  @ingroup SettingsRegistry
  *  @brief Lightweight non-owning view over a subset of settings managed by a SettingsRegistryTemplate.
- *  @tparam SettingTraits Variadic list of SettingTrait types included in this bundle.
+ *  @tparam SettingTraits... Variadic list of `SettingTrait` types included in this bundle.
  *
  *  @details A SettingsBundleTemplate represents a scoped subset of SettingTraits collected from a SettingsRegistryTemplate.
  *           It provides:
@@ -65,11 +66,8 @@ namespace Draupnir::Settings
  *           SettingsRegistryTemplate (using SettingsRegistryTemplate::getSettingBundle() or
  *           SettingsRegistryTemplate::getSettingBundleForTraits() methods)
  *
- *
  *  @note Bundles can represent arbitrary subsets of traits. Compile-time utilities (contains, canBePopulatedFrom)
  *        allow verifying whether a bundle matches a given registry.
- *
- *  @see SettingsRegistryTemplate, SettingTraitSerializer, SettingTraitForEntry, SettingTemplate
  *
  * @todo Add interface for partial updating of the settings. E.g. when the setting has sth like QStringList type - not replace
  *       the variable, but use append method and than write to the backend. */
@@ -77,6 +75,8 @@ namespace Draupnir::Settings
 template<class... SettingTraits>
 class SettingsBundleTemplate
 {
+    using SettingTemplatePtrTuple = std::tuple<SettingTemplate<SettingTraits>*...>;
+
 #if defined(DRAUPNIR_SETTINGS_USE_QSETTINGS)
     using Backend = QSettings;
 #elif defined(DRAUPNIR_SETTINGS_USE_APPSETTINGS)
@@ -89,11 +89,21 @@ class SettingsBundleTemplate
 #endif // DRAUPNIR_SETTINGS_USE_APPSETTINGS || DRAUPNIR_SETTINGS_USE_QSETTINGS
 
 public:
+    /*! @brief Returns amount of individual traits within this SettingsBundleTemplate. */
+    static constexpr std::size_t traitCount() {
+        return std::tuple_size_v<SettingTemplatePtrTuple>;
+    }
+
+    /*! @brief Contains amount of individual traits within this SettingsBundleTemplate. */
+    static inline constexpr std::size_t traitCount_v = traitCount();
+
     /*! @brief Checks at compile time whether the bundle contains the given trait.
      *  @tparam Trait A trait to check.
      *  @return true If Trait is in SettingTraits... and false Otherwise */
     template<class Trait>
-    static constexpr bool contains() { return draupnir::utils::is_one_of_v<Trait, SettingTraits...>; }
+    static constexpr bool contains() {
+        return draupnir::utils::is_type_in_tuple_v<SettingTemplate<Trait>*,SettingTemplatePtrTuple>;
+    }
 
     /*! @brief Static template constexpr variable containing `true` if this instantiation of the @ref Draupnir::Settings::SettingsBundle
      *         template contains the specified Trait. */
@@ -234,11 +244,11 @@ protected:
 private:
     friend class SettingsBundleTemplateTest;
 
-    Backend* p_backend;             ///< Pointer to the backend settings store.
+    /*! @brief Pointer to the backend settings store. */
+    Backend* p_backend;
 
-    std::tuple<
-        SettingTemplate<SettingTraits>*...
-    > m_settingTemplatePtrTuple;    /// Tuple of non-owning pointers to AbstractSetting<Trait> for each registered trait.
+    /*! @brief Tuple of non-owning pointers to AbstractSetting<Trait> for each registered trait. */
+    SettingTemplatePtrTuple m_settingTemplatePtrTuple;
 
     /*! @brief Implementation detail: recursive debug print for each trait in the bundle. */
     template<class First, class... Rest>

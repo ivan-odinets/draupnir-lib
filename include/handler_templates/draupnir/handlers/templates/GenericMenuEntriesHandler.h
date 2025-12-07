@@ -28,7 +28,7 @@
 #include <tuple>
 
 #include "GenericMenuEntryHandler.h"
-#include "draupnir/settings_registry/SettingsBundleMerge.h"
+#include "draupnir/SettingsRegistry.h"
 #include "draupnir/utils/type_presense.h"
 
 namespace Draupnir::Handlers {
@@ -59,7 +59,9 @@ template<class Implementation, class... HandledEntries>
 class GenericMenuEntriesHandler
 {
 public:
-    using SettingBundle = Settings::collect_settings_t<GenericMenuEntryHandler<Implementation,HandledEntries>...>;
+    using SettingBundle = typename Settings::SettingsTraitsConcatenator<
+        GenericMenuEntryHandler<Implementation, HandledEntries>...
+    >::toSettingsBundle;
 
     /*! @brief Constructs the handler and creates individual entry handlers for each handled entry type. */
     GenericMenuEntriesHandler() :

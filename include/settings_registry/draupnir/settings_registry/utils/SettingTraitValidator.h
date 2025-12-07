@@ -83,6 +83,13 @@ public:
             std::is_same_v<typename SettingTrait::Value,decltype(SettingTrait::defaultValue())>
         )>
     > : std::true_type {};
+
+    template<class SettingTrait>
+    static constexpr bool isValidSettingTrait() {
+        return has_defaultValue<SettingTrait>::value &&
+            has_valueType<SettingTrait>::value &&
+            has_key<SettingTrait>::value;
+    }
 };
 
 }; // namespace Draupnir::Settings

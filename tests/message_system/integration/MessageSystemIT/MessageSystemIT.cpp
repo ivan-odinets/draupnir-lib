@@ -61,9 +61,9 @@ public:
     MessageSystem simpleMessageSystem;
 
     // We will need SettingsResitryTemplate as well
-    using SettingsRegistry = Draupnir::Settings::SettingsRegistryTemplate<
+    using SettingsRegistry = Draupnir::Settings::SettingsTraitsConcatenator<
         MessageSystem::SettingsBundle
-    >;
+    >::toSettingsRegistry;
     SettingsRegistry registry;
 
     // Internal things of MessageSystemTemplate
