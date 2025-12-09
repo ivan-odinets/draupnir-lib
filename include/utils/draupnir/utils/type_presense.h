@@ -124,7 +124,58 @@ struct is_type_in_tuple<T, std::tuple<Ts...>>
 template<typename T, typename Tuple>
 inline constexpr bool is_type_in_tuple_v = is_type_in_tuple<T, Tuple>::value;
 
+/*! @struct is_template_instantiation_present_in_tuple draupnir/utils/type_presence.h
+ *  @ingroup Utils
+ *  @brief Checks whether a given std::tuple contains at least one instantiation of a specified class template.
+ *  @tparam Template    Class template of the form `template<typename...> class Template` to search for (e.g. `std::tuple`,
+ *          `MyWrapper`, etc.).
+ *  @tparam Tuple       Tuple type to be inspected. By default, the primary template assumes that @p Tuple is not a `std::tuple`
+ *          and yields `std::false_type`.
+ *
+ *  @details This trait answers the question: *“Does this `std::tuple<...>` contain at least one element whose type is an instantiation
+ *           of the given template?”*.
+ *
+ *           The primary template is a fallback that evaluates to `std::false_type` for any @p Tuple that is not matched by the partial
+ *           specialization below.
+ *
+ *           A partial specialization is provided for `std::tuple<Args...>`, where the trait expands over all element types `Args...`
+ *           and checks, via @ref draupnir::utils::is_instantiation_of, whether any of them is an instantiation of @p Template.
+ *           Internally it uses `std::disjunction` over `is_instantiation_of<Args, Template>...`.
+ *
+ *           Examples of questions this trait can answer at compile time:
+ *           - “Does this tuple contain any `std::optional<...>`?”
+ *           - “Is there at least one `MyWrapper<...>` inside this `std::tuple`?”
+ *
+ * @todo Write a test for this thing. */
 
+template<template<typename...> typename Template, typename Tuple>
+struct is_template_instantiation_present_in_tuple : std::false_type {};
+
+/*! @struct is_template_instantiation_present_in_tuple draupnir/utils/type_presence.h
+ *  @ingroup Utils
+ *  @brief Partial specialization for `std::tuple<Args...>`.
+ *  @tparam Template    Class template to search for.
+ *  @tparam Args...     Types contained in the inspected `std::tuple`.
+ *
+ *  @details For a tuple of the form `std::tuple<Args...>`, this specialization evaluates to `std::true_type` if at least one
+ *           of the types in `Args...` is an instantiation of @p Template (according to @ref draupnir::utils::is_instantiation_of).
+ *           Otherwise it evaluates to `std::false_type`. */
+
+template<template<typename...> typename Template, typename... Args>
+struct is_template_instantiation_present_in_tuple<Template, std::tuple<Args...>> :
+    std::disjunction<is_instantiation_of<Args,Template>...> {};
+
+/*! @ingroup Utils
+ *  @tparam Template    Class template to search for.
+ *  @tparam Tuple       Tuple type to be inspected.
+ *  @brief Convenience variable template for @ref is_template_instantiation_present_in_tuple.
+ *
+ *  @details This constexpr boolean is equal to `true` if @p Tuple is a `std::tuple` whose element types include at least one
+ *           instantiation of @p Template, and `false` otherwise. It is equivalent to:
+ *           `is_template_instantiation_present_in_tuple<Template, Tuple>::value` */
+
+template<template<typename...> typename Template, typename Tuple>
+inline constexpr bool is_template_instantiation_present_in_tuple_v = is_template_instantiation_present_in_tuple<Template,Tuple>::value;
 
 }; // draupnir::utils
 
