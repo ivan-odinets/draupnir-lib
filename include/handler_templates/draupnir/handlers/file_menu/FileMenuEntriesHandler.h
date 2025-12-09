@@ -87,10 +87,10 @@ public:
                 "Specified FileManager must provide QString saveDialogTitle() method.");
 
         this->registerSaveMethod([this](){
-            Base::template getHandler<Draupnir::Menus::FileSaveEntry>().onTriggered();
+            Base::template getHandler<Draupnir::Ui::FileSaveEntry>().onTriggered();
         });
         this->registerSaveAsMethod([this](){
-            Base::template getHandler<Draupnir::Menus::FileSaveAsEntry>().onTriggered();
+            Base::template getHandler<Draupnir::Ui::FileSaveAsEntry>().onTriggered();
         });
 
     }

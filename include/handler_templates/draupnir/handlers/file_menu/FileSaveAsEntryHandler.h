@@ -28,8 +28,8 @@
 #include "draupnir/handlers/templates/ActionHandler.h"
 #include "draupnir/ui_bricks/traits/menu_entries/FileMenuEntries.h"
 
-#include "draupnir/SettingsBundleTemplate.h"
-#include "draupnir/traits/settings/files/LastUsedDirectorySetting.h"
+#include "draupnir/settings_registry/SettingsBundleTemplate.h"
+#include "draupnir/settings_registry/traits/settings/files/LastUsedDirectorySetting.h"
 
 namespace Draupnir::Handlers
 {
@@ -37,7 +37,7 @@ namespace Draupnir::Handlers
 template<class Context, class Entry>
 class GenericMenuEntryHandler;
 
-/*! @class GenericMenuEntryHandler<FileContext, Draupnir::Menus::FileSaveAsEntry>
+/*! @class GenericMenuEntryHandler<FileContext, Draupnir::Ui::FileSaveAsEntry>
  *  @headerfile draupnir/handlers/file_menu/FileSaveAsEntryHandler.h
  *  @ingroup HandlerTemplates
  *  @brief Specialization of the menu entry handler for "Save As" actions.
@@ -57,13 +57,11 @@ class GenericMenuEntryHandler;
  * @note This handler expects FileContext to provide:
  *   - `fileManager()`: Returns a pointer to the FileManager.
  *   - `getSaveFileName()`: Opens a QFileDialog to get a filename from the user.
- *   - FileManager must implement `hasNothingOpened()` and `saveCurrentFileAs(const QString&)`.
- *
- * @todo Write a test for this class. */
+ *   - FileManager must implement `hasNothingOpened()` and `saveCurrentFileAs(const QString&)`. */
 
 template<class FileContext>
-class GenericMenuEntryHandler<FileContext,Draupnir::Menus::FileSaveAsEntry> :
-        public ActionHandler<GenericMenuEntryHandler<FileContext,Draupnir::Menus::FileSaveAsEntry>>
+class GenericMenuEntryHandler<FileContext,Draupnir::Ui::FileSaveAsEntry> :
+        public ActionHandler<GenericMenuEntryHandler<FileContext,Draupnir::Ui::FileSaveAsEntry>>
 {
 public:
     using SettingsBundle = Settings::SettingsBundleTemplate<Settings::LastUsedDirectorySetting>;

@@ -30,9 +30,9 @@
 #include <QDir>
 #include <QMessageBox>
 
-#include "draupnir/SettingsBundleTemplate.h"
+#include "draupnir/settings_registry/SettingsBundleTemplate.h"
 #include "draupnir/ui_bricks/traits/menu_entries/FileMenuEntries.h"
-#include "draupnir/traits/settings/files/LastUsedDirectorySetting.h"
+#include "draupnir/settings_registry/traits/settings/files/LastUsedDirectorySetting.h"
 #include "draupnir/utils/FileManagerValidator.h"
 
 namespace Draupnir::Handlers {
@@ -40,7 +40,7 @@ namespace Draupnir::Handlers {
 template<class Context, class Entry>
 class GenericMenuEntryHandler;
 
-/*! @class GenericMenuEntryHandler<FileContext,Draupnir::Menus::FileOpenEntry>
+/*! @class GenericMenuEntryHandler<FileContext,Draupnir::Ui::FileOpenEntry>
  *  @headerfile draupnir/handlers/file_menu/FileOpenEntryHandler.h
  *  @brief Specialization for handling the "File → Open" menu entry.
  *  @ingroup HandlerTemplates
@@ -71,8 +71,8 @@ class GenericMenuEntryHandler;
  * @todo Write a test for this class. */
 
 template<class FileContext>
-class GenericMenuEntryHandler<FileContext,Draupnir::Menus::FileOpenEntry> :
-        public ActionHandler<GenericMenuEntryHandler<FileContext,Draupnir::Menus::FileOpenEntry>>
+class GenericMenuEntryHandler<FileContext,Draupnir::Ui::FileOpenEntry> :
+        public ActionHandler<GenericMenuEntryHandler<FileContext,Draupnir::Ui::FileOpenEntry>>
 {
 public:
     using SettingsBundle = Settings::SettingsBundleTemplate<Settings::LastUsedDirectorySetting>;

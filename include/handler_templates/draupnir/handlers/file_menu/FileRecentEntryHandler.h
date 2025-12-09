@@ -29,9 +29,10 @@
 
 #include <QMessageBox>
 
-#include "draupnir/SettingsBundleTemplate.h"
+#include "draupnir/settings_registry/SettingsBundleTemplate.h"
 #include "draupnir/ui_bricks/traits/menu_entries/FileMenuEntries.h"
-#include "draupnir/traits/settings/files/RecentFilesListSetting.h"
+#include "draupnir/settings_registry/traits/settings/files/RecentFilesListSetting.h"
+#include "draupnir/handlers/templates/CustomMenuHandler.h"
 #include "draupnir/utils/FileManagerValidator.h"
 
 namespace Draupnir::Handlers {
@@ -39,7 +40,7 @@ namespace Draupnir::Handlers {
 template<class Context, class Entry>
 class GenericMenuEntryHandler;
 
-/*! @class GenericMenuEntryHandler<FileContext, Draupnir::Menus::RecentFileEntry>
+/*! @class GenericMenuEntryHandler<FileContext, Draupnir::Ui::RecentFileEntry>
  *  @headerfile draupnir/handlers/file_menu/FileRecentEntryHandler.h
  *  @ingroup HandlerTemplates
  *  @brief Specialization of the menu entry handler for "Open Recent File" actions.
@@ -72,8 +73,8 @@ class GenericMenuEntryHandler;
  * @todo Write a test for this class. */
 
 template<class FileContext>
-class GenericMenuEntryHandler<FileContext,Draupnir::Menus::RecentFileEntry> :
-        public CustomMenuHandler<GenericMenuEntryHandler<FileContext,Draupnir::Menus::RecentFileEntry>>
+class GenericMenuEntryHandler<FileContext,Draupnir::Ui::RecentFileEntry> :
+        public CustomMenuHandler<GenericMenuEntryHandler<FileContext,Draupnir::Ui::RecentFileEntry>,Draupnir::Ui::RecentFileEntry>
 {
 public:
     using SettingsBundle = Settings::SettingsBundleTemplate<Settings::RecentFileListSetting>;
@@ -89,14 +90,12 @@ public:
 
     /*! @brief Connects this handler to the RecentFilesMenu's selection signal.
      *  @param entry Pointer to the RecentFilesMenu instance. */
-    void connectImplementation(Draupnir::Menus::RecentFilesMenu* entry) {
-        qDebug() << "Saving menu... but through the ass..";
-
-        QObject::connect(entry, &Draupnir::Menus::RecentFilesMenu::recentFileSelected, [this](const QFileInfo& fileInfo){
+    void connectImplementation(Draupnir::Ui::RecentFilesMenu* entry) {
+        QObject::connect(entry, &Draupnir::Ui::RecentFilesMenu::recentFileSelected, [this](const QFileInfo& fileInfo){
             onRecentFileSelected(fileInfo);
         });
 
-        QObject::connect(entry, &Draupnir::Menus::RecentFilesMenu::recentFilesMenuCleared, [this](){
+        QObject::connect(entry, &Draupnir::Ui::RecentFilesMenu::recentFilesMenuCleared, [this](){
             onRecentFilesCleared();
         });
     }
@@ -143,9 +142,9 @@ public:
     void onSettingsLoaded() {
         const QStringList files = m_context.template getSetting<Draupnir::Settings::RecentFileListSetting>();
 
-        auto menu = CustomMenuHandler<GenericMenuEntryHandler<FileContext,Draupnir::Menus::RecentFileEntry>,Draupnir::Menus::RecentFileEntry>::menu();
+        auto menu = CustomMenuHandler<GenericMenuEntryHandler<FileContext,Draupnir::Ui::RecentFileEntry>,Draupnir::Ui::RecentFileEntry>::menu();
 
-        CustomMenuHandler<GenericMenuEntryHandler<FileContext,Draupnir::Menus::RecentFileEntry>,Draupnir::Menus::RecentFileEntry>::menu()->loadRecentFiles(files);
+        CustomMenuHandler<GenericMenuEntryHandler<FileContext,Draupnir::Ui::RecentFileEntry>,Draupnir::Ui::RecentFileEntry>::menu()->loadRecentFiles(files);
     }
 
 private:

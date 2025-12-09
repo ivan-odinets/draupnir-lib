@@ -39,7 +39,7 @@ namespace Draupnir::Handlers
 template<class Context,class HandledEntry>
 class GenericMenuEntryHandler;
 
-/*! @class GenericHelpMenuEntryHandler<HelpContext, Draupnir::UI::AboutDraupnirLibMenuTrait>
+/*! @class GenericHelpMenuEntryHandler<HelpContext, Draupnir::Ui::AboutDraupnirLibMenuTrait>
  *  @ingroup HandlerTemplates
  *  @headerfile draupnir/handlers/help_menu/AboutDraupnirLibEntryHandler.h
  *  @brief Partial specialization that wires a QAction to the standard dialog About Draupnir Lib.

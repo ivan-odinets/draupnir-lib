@@ -36,7 +36,7 @@ namespace Draupnir::Handlers
 template<class Context, class Entry>
 class GenericMenuEntryHandler;
 
-/*! @class GenericMenuEntryHandler<FileContext,Draupnir::Menus::FileSaveEntry>
+/*! @class GenericMenuEntryHandler<FileContext,Draupnir::Ui::FileSaveEntry>
  *  @headerfile draupnir/handlers/file_menu/FileSaveEntryHandler.h
  *  @ingroup HandlerTemplates
  *  @brief Specialization of the menu entry handler for "Save File" actions.
@@ -63,8 +63,8 @@ class GenericMenuEntryHandler;
  * @todo Write a test for this class. */
 
 template<class FileContext>
-class GenericMenuEntryHandler<FileContext,Draupnir::Menus::FileSaveEntry> :
-        public ActionHandler<GenericMenuEntryHandler<FileContext,Draupnir::Menus::FileSaveEntry>>
+class GenericMenuEntryHandler<FileContext,Draupnir::Ui::FileSaveEntry> :
+        public ActionHandler<GenericMenuEntryHandler<FileContext,Draupnir::Ui::FileSaveEntry>>
 {
 public:
     /*! @brief Constructs the handler, statically asserting FileManager interface compliance.

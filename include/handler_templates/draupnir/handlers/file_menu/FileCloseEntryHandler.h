@@ -39,7 +39,7 @@ namespace Draupnir::Handlers
 template<class Context, class Entry>
 class GenericMenuEntryHandler;
 
-/*! @class GenericMenuEntryHandler<FileContext,Draupnir::Menus::FileCloseEntry>
+/*! @class GenericMenuEntryHandler<FileContext,Draupnir::Ui::FileCloseEntry>
  *  @headerfile draupnir/handlers/file_menu/FileCloseEntryHandler.h
  *  @ingroup HandlerTemplates
  *  @brief Specialization of the menu entry handler for the "File -> Close" menu entry.
@@ -59,9 +59,7 @@ class GenericMenuEntryHandler;
  *          FileManager, and provide methods:
  *          - FileManager* fileManager();
  *          - int askUser(const QString& title, const QString& message, QMessageBox::StandardButtons buttons);
- *          - void onSaveFile(); (Check FileEntriesHandlersContext)
- *
- * @todo Write a test for this class. */
+ *          - void onSaveFile(); (Check FileEntriesHandlersContext). */
 
 template<class FileContext>
 class GenericMenuEntryHandler<FileContext,Draupnir::Ui::FileCloseEntry> :

@@ -37,7 +37,7 @@ namespace Draupnir::Handlers
 template<class FileContext,class MenuEntry>
 class GenericMenuEntryHandler;
 
-/*! @class GenericMenuEntryHandler<FileContext, Draupnir::Menus::ExitApplicationEntry>
+/*! @class GenericMenuEntryHandler<FileContext, Draupnir::Ui::ExitApplicationEntry>
  *  @headerfile draupnir/handlers/file_menu/FileExitEntryHandler.h
  *  @ingroup HandlerTemplates
  *  @brief Specialization of the menu entry handler for "Exit Application" actions.

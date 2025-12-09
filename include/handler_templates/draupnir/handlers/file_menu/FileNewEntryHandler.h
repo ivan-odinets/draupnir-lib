@@ -39,7 +39,7 @@ namespace Draupnir::Handlers
 template<class FileContext,class MenuEntry>
 class GenericMenuEntryHandler;
 
-/*! @class GenericMenuEntryHandler<FileContext,Draupnir::Menus::FileNewEntry>
+/*! @class GenericMenuEntryHandler<FileContext,Draupnir::Ui::FileNewEntry>
  *  @headerfile draupnir/handlers/file_menu/FileNewEntryHandler.h
  *  @ingroup HandlerTemplates
  *  @brief Specialization for handling the "File → New" menu action.
@@ -67,8 +67,8 @@ class GenericMenuEntryHandler;
  * @todo Write a test for this class. */
 
 template<class FileContext>
-class GenericMenuEntryHandler<FileContext,Draupnir::Menus::FileNewEntry> :
-        public ActionHandler<GenericMenuEntryHandler<FileContext,Draupnir::Menus::FileNewEntry>>
+class GenericMenuEntryHandler<FileContext,Draupnir::Ui::FileNewEntry> :
+        public ActionHandler<GenericMenuEntryHandler<FileContext,Draupnir::Ui::FileNewEntry>>
 {
 public:
     /*! @brief Constructs the handler.

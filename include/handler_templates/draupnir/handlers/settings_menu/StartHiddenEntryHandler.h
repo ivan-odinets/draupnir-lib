@@ -27,8 +27,8 @@
 
 #include "SettingsCheckableEntryHandler.h"
 
-#include "draupnir/traits/entries/SettingsMenuEntries.h"
-#include "draupnir/traits/settings/main_window/StartHiddenSetting.h"
+#include "draupnir/settings_registry/traits/settings/main_window/StartHiddenSetting.h"
+#include "draupnir/ui_bricks/traits/menu_entries/SettingsMenuEntries.h"
 
 namespace Draupnir::Handlers
 {
@@ -36,24 +36,24 @@ namespace Draupnir::Handlers
 template<class Context,class MenuEntry>
 class GenericMenuEntryHandler;
 
-/*! @class GenericMenuEntryHandler<SettingsContext,Draupnir::Menus::StartHiddenMenuEntry>
+/*! @class GenericMenuEntryHandler<SettingsContext,Draupnir::Ui::StartHiddenMenuEntry>
  *  @ingroup HandlerTemplates
  *  @brief This is a class.
  *
- * @todo Change naming and location of this class after adjusting Draupnir::Menus::StartHiddenEntry
+ * @todo Change naming and location of this class after adjusting Draupnir::Ui::StartHiddenEntry
  * @todo Write reasonable documentation for this class. */
 
 template<class SettingsContext>
-class GenericMenuEntryHandler<SettingsContext,Draupnir::Menus::StartHiddenMenuEntry> :
-    public SettingsCheckableEntryHandler<SettingsContext,Draupnir::Menus::StartHiddenMenuEntry>
+class GenericMenuEntryHandler<SettingsContext,Draupnir::Ui::StartHiddenMenuEntry> :
+    public SettingsCheckableEntryHandler<SettingsContext,Draupnir::Ui::StartHiddenMenuEntry>
 {
 public:
     GenericMenuEntryHandler(SettingsContext& context) :
-        SettingsCheckableEntryHandler<SettingsContext,Draupnir::Menus::StartHiddenMenuEntry>{context}
+        SettingsCheckableEntryHandler<SettingsContext,Draupnir::Ui::StartHiddenMenuEntry>{context}
     {}
 };
 
-/*! @struct SettingTraitForEntry<Draupnir::Menus::StartHiddenMenuEntry>
+/*! @struct SettingTraitForEntry<Draupnir::Ui::StartHiddenMenuEntry>
  *  @ingroup HandlerTemplates
  *  @brief Specialization mapping the "Start Hidden" menu entry to its setting trait.
  *  @details Associates the menu entry trait Draupnir::Menus::StartHidden with the corresponding StartHiddenSetting
@@ -63,7 +63,7 @@ public:
  * @todo Maybe this class needs to be placed in other file?
  * @todo Maybe include this mapping into the menu entry trait class? */
 
-template<> struct SettingTraitForEntry<Draupnir::Menus::StartHiddenMenuEntry> {
+template<> struct SettingTraitForEntry<Draupnir::Ui::StartHiddenMenuEntry> {
     using type = Settings::MainWindow::StartHiddenSetting;
 };
 
