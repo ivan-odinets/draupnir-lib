@@ -145,12 +145,6 @@ private:
         using type = typename flatten_pack<_TupleLike, Out, AfterHead, Tail...>::type;
     };
 
-    template<template<class...> class _TupleLike, template<class...> class Out, class... Us, class... Inner>
-    struct flatten_one<_TupleLike, Out, Out<Us...>, _TupleLike<Inner...>>
-    {
-        using type = typename flatten_pack<_TupleLike, Out, Out<Us...>, Inner...>::type;
-    };
-
     /*! @brief Specialization of @ref tuple_like_merge::flatten_one for the case where the processed type is a tuple-like
      *         instantiation.
      *  @tparam _TupleLike   Tuple-like class template being matched.
@@ -162,6 +156,11 @@ private:
      *           a leaf. Instead, it delegates to @ref tuple_like_merge::flatten_pack with the current accumulator and the
      *           `Inner...` types, effectively flattening nested tuple-like layers and continuing trait collection
      *           recursively. */
+    template<template<class...> class _TupleLike, template<class...> class Out, class... Us, class... Inner>
+    struct flatten_one<_TupleLike, Out, Out<Us...>, _TupleLike<Inner...>>
+    {
+        using type = typename flatten_pack<_TupleLike, Out, Out<Us...>, Inner...>::type;
+    };
 public:
 
     /*! @brief The final collected type.
