@@ -27,11 +27,32 @@
 
 /*! @file draupnir/SettingsRegistry.h
  *  @ingroup SettingsRegistry
- *  @brief General header for the @ref SettingsRegistry module. */
+ *  @brief This file is a general include to use the @ref SettingsRegistry module. */
 
-#include "draupnir/settings_registry/SettingsRegistryTemplate.h"
-#include "draupnir/settings_registry/SettingsBundleTemplate.h"
 
-#include "draupnir/settings_registry/utils/SettingsTraitsConcatenator.h"
+// Core things
+#include "draupnir/settings_registry/SettingsRegistryTemplate.h"  // IWYU pragma: keep
+#include "draupnir/settings_registry/SettingsBundleTemplate.h"    // IWYU pragma: keep
+
+// To work with SettingTraits
+#include "draupnir/settings_registry/utils/SettingsTraitsConcatenator.h" // IWYU pragma: keep
+
+// Default traits provided:
+// Uncategorized
+#include "draupnir/settings_registry/traits/settings/CentralWidgetIndexSetting.h"             // IWYU pragma: keep
+
+// Files
+#include "draupnir/settings_registry/traits/settings/files/LastUsedDirectorySetting.h"        // IWYU pragma: keep
+#include "draupnir/settings_registry/traits/settings/files/RecentFilesListSetting.h"          // IWYU pragma: keep
+
+// MainWindow
+#include "draupnir/settings_registry/traits/settings/main_window/MinimizeOnCloseSetting.h"    // IWYU pragma: keep
+#include "draupnir/settings_registry/traits/settings/main_window/MinimizeToTraySetting.h"     // IWYU pragma: keep
+#include "draupnir/settings_registry/traits/settings/main_window/StartHiddenSetting.h"        // IWYU pragma: keep
+#include "draupnir/settings_registry/traits/settings/main_window/WindowSizeSetting.h"         // IWYU pragma: keep
+
+// Templates
+#include "draupnir/settings_registry/traits/settings/templates/SizeSettingTraitTemplate.h"    // IWYU pragma: keep
+#include "draupnir/settings_registry/traits/settings/templates/SettingTraitTemplate.h"        // IWYU pragma: keep
 
 #endif // SETTINGSREGISTRY_H

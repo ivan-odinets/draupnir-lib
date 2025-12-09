@@ -25,12 +25,23 @@
 #ifndef MESSAGESYSTEM_H
 #define MESSAGESYSTEM_H
 
-/*! @file draupnir/message_system/MessageSystem.h
+/*! @file draupnir/MessageSystem.h
+ *  @ingroup MessageSystem
  *  @brief This file is a general include to use the @ref MessageSystem module. */
 
 #include "Logger.h" // IWYU pragma: keep
 
-#include "draupnir/message_system/core/MessageGroup.h" // IWYU pragma: keep
-#include "draupnir/message_system/core/MessageSystemTemplate.h" // IWYU pragma: keep
+// Core things
+#include "draupnir/message_system/core/AbstractMessageUiBuilder.h"   // IWYU pragma: keep
+#include "draupnir/message_system/core/MessageGroup.h"               // IWYU pragma: keep
+#include "draupnir/message_system/core/MessageSystemTemplate.h"      // IWYU pragma: keep
+
+// Required for custom message types
+#include "draupnir/message_system/core/MessageType.h"      // IWYU pragma: keep
+#include "draupnir/message_system/core/Notification.h"     // IWYU pragma: keep
+
+// Traits to be used with MenuTemplate / MenuBarTemplate
+#include "draupnir/message_system/traits/menu_entries/GlobalNotificationSettingsMenuEntry.h"       // IWYU pragma: keep
+#include "draupnir/message_system/traits/menu_entries/NotificationsSettingsMenuEntryTemplate.h"    // IWYU pragma: keep
 
 #endif // MESSAGESYSTEM_H

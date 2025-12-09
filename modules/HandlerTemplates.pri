@@ -37,5 +37,6 @@
         $$PWD/../include/handler_templates/draupnir/handlers/templates/ActionHandler.h \
         $$PWD/../include/handler_templates/draupnir/handlers/templates/CheckableActionHandler.h \
         $$PWD/../include/handler_templates/draupnir/handlers/templates/CustomMenuHandler.h \
-        $$PWD/../include/handler_templates/draupnir/handlers/templates/GenericMenuEntryHandler.h
+        $$PWD/../include/handler_templates/draupnir/handlers/templates/GenericMenuEntryHandler.h \
+        $$PWD/../include/handler_templates/draupnir/HandlerTemplates.h
 }
