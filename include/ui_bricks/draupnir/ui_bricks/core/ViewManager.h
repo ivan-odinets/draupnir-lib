@@ -25,7 +25,11 @@
 #ifndef VIEWMANAGER_H
 #define VIEWMANAGER_H
 
-#include "draupnir/settings_registry/SettingsBundleTemplate.h"
+#include <QApplication>
+#include <QMainWindow>
+#include <QSystemTrayIcon>
+
+#include "draupnir/settings_registry/utils/SettingsTraitsConcatenator.h"
 #include "draupnir/settings_registry/traits/settings/main_window/StartHiddenSetting.h"
 
 namespace Draupnir::Ui
@@ -34,9 +38,10 @@ namespace Draupnir::Ui
 /*! @class ViewManager draupnir/ui_bricks/core/ViewManager.h
  *  @ingroup UiBricks
  *  @brief Manages the main UI components such as `MainWindow` and `TrayIcon`.
- *  @tparam MainWindowClass QWidget-derived class representing the main application window. Must be constructible without
- *          arguments and accept a TrayIconClass* via setTrayIcon().
- *  @tparam TrayIconClass QSystemTrayIcon-compatible class representing the tray icon UI.
+ *  @tparam MainWindowClass  `QWidget`-derived class representing the main application window. Must be constructible without
+ *                           arguments and may accept a `TrayIconClass` pointer via `void MainWindowClass::setTrayIcon(TrayIconClass*)
+ *                           method.
+ *  @tparam TrayIconClass    `QSystemTrayIcon`-compatible class representing the tray icon UI.
  *
  *  @details This templated class is responsible for creating, showing, and cleaning up the primary user interface components:
  *           the main window and tray icon. It supports both automatic instantiation via `createUi()` and manual injection via
@@ -46,11 +51,9 @@ namespace Draupnir::Ui
  *           The expected interfaces:
  *           - MainWindowClass must provide:
  *              - void show();
- *              - void setTrayIcon(TrayIconClass*);
+ *              - [optionally] void setTrayIcon(TrayIconClass*);
  *           - TrayIconClass must provide:
- *              - void show();
- *
- * @todo Add possibility to aggregate settings from MainWindowClass and TrayIconClass. */
+ *              - void show(); */
 
 template<class MainWindowClass, class TrayIconClass>
 class ViewManager
@@ -75,14 +78,33 @@ class ViewManager
     struct has_setTrayIcon<
         T,
         std::void_t<decltype(
-            std::is_same_v<void,decltype(std::declval<T>().setTrayIcon(std::declval<TrayIconClass*>()))>
+            std::is_same_v<void,decltype(std::declval<T>().template setTrayIcon<TrayIconClass>(std::declval<TrayIconClass*>()))>
         )>
     > : std::true_type {};
 
-public:
-    using SettingsBundle = Draupnir::Settings::SettingsBundleTemplate<
+    template<class T, class SettingsRegistry, class = std::void_t<>>
+    struct has_loadSettings : std::false_type {};
+
+    template<class T, class SettingsSource>
+    struct has_loadSettings<
+        T,
+        SettingsSource,
+        std::void_t<decltype(
+            std::is_same_v<void,decltype(std::declval<T>().template loadSettings<SettingsSource>(std::declval<SettingsSource*>()))>
+        )>
+    > : std::true_type {};
+
+    using _SettingsBundleInternal = Draupnir::Settings::SettingsBundleTemplate<
         Draupnir::Settings::MainWindow::StartHiddenSetting
     >;
+
+public:
+    /*! @brief This is public SettingsBundleTemplate instantiation which contains settings from all UI components managed by this
+     *         ViewManager. */
+    using SettingsBundle = typename Draupnir::Settings::SettingsTraitsConcatenator<
+        _SettingsBundleInternal,
+        MainWindowClass
+    >::toSettingsBundle;
 
     /*! @brief Constructs an empty ViewManager with null-initialized elements.
      *  @details Also verifies at compile-time that the provided UI classes conform to the expected interfaces. */
@@ -93,8 +115,6 @@ public:
                 "Provided MainWindowClass argument must have void show() method.");
         static_assert(has_show<TrayIconClass>(),
                 "Provided TrayIconClass argument must have void show() method.");
-        static_assert(has_setTrayIcon<MainWindowClass>(),
-                "Provided MainWindowClass argument must have void setTrayIcon(TrayIconClass*) method.");
     }
 
     /*! @brief Destructor. Cleans up created UI elements (if any). */
@@ -104,25 +124,30 @@ public:
         },m_elementsTuple);
     }
 
-    /*! @brief Loads UI-related settings from a settings registry.
-     *  @param settings Pointer to a SettingsRegistry instance.
-     *  @tparam SettingsRegistry - type of specific SettingsRegistry. The povided SettingsRegistryMust be capable to
-     *          populate SettingsBundle of the ViewManager object (should have StartHiddenSetting trait present.
-     *  @details This must be called exactly once before calling showUi() method. Will assert if called more than once. */
-    template<class SettingsRegistry>
-    void loadSettings(SettingsRegistry* settings) {
-        static_assert(SettingsBundle::canBeFullyPopulatedFrom<SettingsRegistry>(),
-                "Provided SettingsRegistry can not populate the SettingsBundle required by ViewManager.");
+    /*! @brief Loads UI-related settings from a settings source (typically @ref Draupnir::Settings::SettingsRegistry).
+     *  @tparam SettingsSource    type of specific source of settings. Typically this will be @ref Draupnir::Settings::SettingsRegistryTemplate,
+     *                            but @ref Draupnir::Settings::SettingsBundleTemplate can be used as well. The povided SettingsSource
+     *                            must be capable to populate `SettingsBundle` of the `ViewManager` object.
+     *  @param settings Pointer to a SettingsSource instance.
+     *  @details This must be called exactly once before calling `showUi()` method. Will assert if called more than once. */
+    template<class SettingsSource>
+    void loadSettings(SettingsSource* settings) {
+        static_assert(SettingsBundle::template canBeFullyPopulatedFrom<SettingsSource>(),
+                "Provided SettingsSource can not populate the SettingsBundle required by this ViewManager.");
         Q_ASSERT_X(settings, "ViewManager::loadSettings",
-                   "Provided SettingsRegistry pointer is nullptr");
+                   "Provided SettingsSource pointer is nullptr");
         Q_ASSERT_X(!m_settings.isValid(), "ViewManager::loadSettings",
                    "This method must be called only once.");
 
-        m_settings = settings->template getSettingsBundle<SettingsBundle>();
+        m_settings = settings->template getSettingsBundle<_SettingsBundleInternal>();
+
+        if constexpr (has_loadSettings<MainWindowClass, SettingsSource>::value) {
+            mainWindow()->template loadSettings<SettingsSource>(settings);
+        }
     }
 
     /*! @brief Sets the "start hidden" flag and updates the corresponding persistent setting.
-     *  @param state If true, the main window will be hidden on application startup.
+     *  @param state If `true`, the main window will be hidden on application startup.
      * @note Must be called after loadSettings(). */
     void setStartHidden(bool state) {
         Q_ASSERT_X(m_settings.isValid(),"ViewManager::setStartHidden",
@@ -134,8 +159,8 @@ public:
     }
 
     /*! @brief Checks whether the main window is configured to start hidden.
-     *  @return True if the UI should not show the main window initially.
-     * @note Must be called after loadSettings(). */
+     *  @return `True` if the UI should not show the main window initially.
+     * @note Must be called after `loadSettings()`. */
     bool startHidden() const {
         Q_ASSERT_X(m_settings.isValid(),"ViewManager::startHidden",
                    "This method must be called after UiManager::loadSettings method.");
@@ -143,10 +168,9 @@ public:
         return m_settings.template get<Draupnir::Settings::MainWindow::StartHiddenSetting>();
     }
 
-    /*! @brief Creates instances of MainWindowClass and TrayIconClass, and connects them together.
-     *  @details This method performs instantiation of the main UI components. It also wires the tray icon to the main
-     *           window via setTrayIcon(). This method must be called only once, and is mutually exclusive with manual
-     *           injection via setMainWindow() and setTrayIcon(). */
+    /*! @brief Creates instances of `MainWindowClass` and `TrayIconClass`, and connects them together if MainWindowClass has
+     *         `void MainWindowClass::setTrayIcon(TrayIconClass*)` method. This method must be called only once, and is mutually
+     *          exclusive with manual injection via `setMainWindow()` and `setTrayIcon()`. */
     void createUi() {
         Q_ASSERT_X(!mainWindow(),"ViewManager::setMainWindow",
                    "Only one of the either this method or ViewManager::setMainWindow must be called only once.");
@@ -155,15 +179,18 @@ public:
 
         std::get<MainWindowClass*>(m_elementsTuple) = new MainWindowClass{};
         std::get<TrayIconClass*>(m_elementsTuple) = new TrayIconClass;
-        std::get<MainWindowClass*>(m_elementsTuple)->setTrayIcon(
-            std::get<TrayIconClass*>(m_elementsTuple)
-        );
+
+        if constexpr (has_setTrayIcon<MainWindowClass>::value) {
+            std::get<MainWindowClass*>(m_elementsTuple)->setTrayIcon(
+                std::get<TrayIconClass*>(m_elementsTuple)
+            );
+        }
     }
 
-    /*! @brief Injects an existing MainWindowClass instance into the ViewManager.
-     *  @param newWindow Pointer to a MainWindowClass object.
+    /*! @brief Injects an existing `MainWindowClass` instance into the `ViewManager`.
+     *  @param newWindow Pointer to a `MainWindowClass` object.
      * @note The ViewManager takes ownership and will delete the object in its destructor.
-     * @note Must be called exactly once, and only if createUi() was not used. */
+     * @note Must be called exactly once, and only if `createUi()` was not used. */
     void setMainWindow(MainWindowClass* newWindow) {
         Q_ASSERT_X(newWindow,"ViewManager::setMainWindow",
                    "Provided MainWindowClass* pointer is nullptr.");
@@ -173,10 +200,10 @@ public:
         std::get<MainWindowClass*>(m_elementsTuple) = newWindow;
     }
 
-    /*! @brief Injects an existing TrayIconClass instance into the ViewManager.
-     *  @param newTrayIcon Pointer to a TrayIconClass object.
-     * @note The ViewManager takes ownership and will delete the object in its destructor.
-     * @note Must be called exactly once, and only if createUi() was not used. */
+    /*! @brief Injects an existing `TrayIconClass` instance into the `ViewManager`.
+     *  @param newTrayIcon Pointer to a `TrayIconClass` object.
+     * @note The `ViewManager` takes ownership and will delete the object in its destructor.
+     * @note Must be called exactly once, and only if `createUi()` was not used. */
     void setTrayIcon(TrayIconClass* newTrayIcon) {
         Q_ASSERT_X(newTrayIcon,"ViewManager::setTrayIcon",
                    "Provided TrayIconClass* pointer is nullptr.");
@@ -186,9 +213,8 @@ public:
         std::get<TrayIconClass*>(m_elementsTuple) = newTrayIcon;
     }
 
-    /*! @brief Shows the main UI elements.
-     *  @details The tray icon is always shown. The main window is shown only if the "start hidden" flag is false.
-     *           Must be called after loadSettings().*/
+    /*! @brief Shows the main UI elements. The tray icon is always shown. The main window is shown only if the "start hidden"
+     *         flag is `false`. Must be called after loadSettings().*/
     void showUi() {
         Q_ASSERT_X(mainWindow(), "ViewManager::showUi()",
                    "MainWindowClass instance is not set. Either ViewManager::createUi or ViewManager::setMainWindow methods "
@@ -205,21 +231,21 @@ public:
     }
 
     /*! @brief Returns a pointer to the stored UI element of a given type.
-     *  @tparam Element Type of the element to retrieve. Must match either MainWindowClass or TrayIconClass.
-     *  @return Pointer to the requested element, or nullptr if it has not been set. */
+     *  @tparam Element Type of the element to retrieve. Must match either `MainWindowClass` or `TrayIconClass`.
+     *  @return Pointer to the requested element, or `nullptr` if it has not been set. */
     template<class Element>
     Element* getElement() { return std::get<Element*>(m_elementsTuple); }
 
     /*! @brief Returns the pointer to the tray icon instance.
-     *  @return Pointer to TrayIconClass. */
+     *  @return Pointer to `TrayIconClass`. */
     TrayIconClass* trayIcon() { return std::get<TrayIconClass*>(m_elementsTuple); }
 
     /*! @brief Returns the pointer to the main window instance.
-     *  @return Pointer to MainWindowClass. */
+     *  @return Pointer to `MainWindowClass`. */
     MainWindowClass* mainWindow() { return std::get<MainWindowClass*>(m_elementsTuple); }
 
 private:
-    SettingsBundle m_settings;
+    _SettingsBundleInternal m_settings;
     std::tuple<
         MainWindowClass*,
         TrayIconClass*

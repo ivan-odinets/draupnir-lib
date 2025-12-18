@@ -31,7 +31,7 @@
 namespace Draupnir::Ui
 {
 
-/*! @class CheckableUiElementHelper draupnit/message_system/utils/CheckableUiElementHelper.h
+/*! @class CheckableUiElementHelper draupnit/ui_bricks/utils/CheckableUiElementHelper.h
  *  @ingroup UiBricks
  *  @brief This is a helper class used to create checkable UI elements (`QAction` or `QCheckBox`) which are connected to
  *         a specific callback using a generic interface.

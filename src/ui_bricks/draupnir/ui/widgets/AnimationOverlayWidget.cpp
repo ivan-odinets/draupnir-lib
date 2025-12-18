@@ -22,41 +22,40 @@
  *
  */
 
-#include "draupnir/ui_bricks/ui/TrayIcon.h"
-
-#include <QApplication>
-#include <QDebug>
-#include <QEvent>
-#include <QMenu>
+#include "draupnir/ui_bricks/ui/widgets/AnimationOverlayWidget.h"
 
 namespace Draupnir::Ui
 {
 
-TrayIcon::TrayIcon(QObject *parent) :
-    QSystemTrayIcon{parent},
-    w_trayMenu{new QMenu{QString(),nullptr}}
+AnimationOverlayWidget::AnimationOverlayWidget(const QPixmap& pixmap, QWidget* parent) :
+    QWidget{parent},
+    m_originalPixmap{pixmap}
 {
-    if (!QSystemTrayIcon::isSystemTrayAvailable() || !QSystemTrayIcon::supportsMessages()) {
-        qWarning() << "System tray is not avaialble.";
-    }
-
-    QSystemTrayIcon::setIcon(qApp->windowIcon());
-    QSystemTrayIcon::setContextMenu(w_trayMenu);
+    resize(m_originalPixmap.size());
+    setAttribute(Qt::WA_TranslucentBackground);
+    setWindowFlags(Qt::FramelessWindowHint | Qt::WindowStaysOnTopHint);
+    setAutoFillBackground(false);
 }
 
-TrayIcon::~TrayIcon()
+void AnimationOverlayWidget::resizeEvent(QResizeEvent *event)
 {
-    w_trayMenu->deleteLater();
+    QWidget::changeEvent(event);
+
+    m_currentPixmap = m_originalPixmap.scaled(event->size());
 }
 
-void TrayIcon::addAction(QAction* action)
+void AnimationOverlayWidget::paintEvent(QPaintEvent* event)
 {
-    w_trayMenu->addAction(action);
+    QPainter p(this);
+    p.setRenderHint(QPainter::SmoothPixmapTransform, true);
+    p.setOpacity(m_opacity);
+
+    p.translate(m_offset);
+    p.scale(m_scale, m_scale);
+
+    p.drawPixmap(0, 0, m_currentPixmap);
+    QWidget::paintEvent(event);
 }
 
-void TrayIcon::addMenu(QMenu* menu)
-{
-    w_trayMenu->addMenu(menu);
-}
 
-};
+}; // namespace Draupnir::Ui
