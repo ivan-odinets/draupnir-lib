@@ -46,6 +46,21 @@
 namespace Draupnir::Messages
 {
 
+LogWidget::LogWidget(QWidget* parent) :
+    QWidget{parent},
+    p_messageListModel{nullptr},
+    p_uiBuilder{nullptr},
+    w_messagesListView{new MessageListView},
+    w_configureButton{new QToolButton},
+    w_messageListViewConfigMenu{nullptr},
+    p_configurationDialog{nullptr},
+    w_clearLogButton{new QPushButton},
+    w_iconSizeLabel{new QLabel},
+    w_iconSizeSlider{new QSlider{Qt::Horizontal}}
+{
+    _setupGeneralUi();
+}
+
 void LogWidget::setMessageListModel(MessageListModel* model)
 {
     Q_ASSERT_X(model, "LogWidget::setMessageListModel",
@@ -55,67 +70,27 @@ void LogWidget::setMessageListModel(MessageListModel* model)
     w_messagesListView->setModel(model);
 }
 
-LogWidget::LogWidget(AbstractMessageUiBuilder* uiBuilder, QWidget* parent) :
-    QWidget{parent},
-    p_messageListModel{nullptr},
-    p_uiBuilder{uiBuilder},
-    w_messagesListView{new MessageListView},
-    w_configureButton{new QToolButton},
-    w_messageListViewConfigMenu{uiBuilder->createAbstractMessageListViewConfigMenu()},
-    p_configurationDialog{nullptr},
-    w_clearLogButton{new QPushButton},
-    w_iconSizeLabel{new QLabel},
-    w_iconSizeSlider{new QSlider{Qt::Horizontal}}
+void LogWidget::setMessageSystemSpecificUiElements(AbstractMessageUiBuilder* uiBuilder)
 {
-    // Setup layout
-    QVBoxLayout* mainLayout = new QVBoxLayout;
-    // Setup UI-subelements: MessageListView
-    mainLayout->addWidget(w_messagesListView);
-    // Setup control elements:
-    QHBoxLayout* controlButtonsLayout = new QHBoxLayout;
-    // Clear Log
-    controlButtonsLayout->addWidget(w_clearLogButton);
-    // Configure MessageSystem button
-    w_configureButton->setPopupMode(QToolButton::MenuButtonPopup);
-    w_configureButton->setMenu(w_messageListViewConfigMenu);
-    controlButtonsLayout->addWidget(w_configureButton);
-    // Stretch
-    controlButtonsLayout->addStretch();
-    // Icon size related things
-    controlButtonsLayout->addWidget(w_iconSizeLabel);
-    controlButtonsLayout->addWidget(w_iconSizeSlider);
-    // Add control elements layout
-    mainLayout->addLayout(controlButtonsLayout);
-    // Apply Layout
-    setLayout(mainLayout);
-    // Setup initial strings
-    _retranslateUi();
+    Q_ASSERT_X(uiBuilder,"LogWidget::setMessageSpecificUiElements",
+               "Provided AbstractMessageUiBuilder* pointer is nullptr.");
 
-    // Display default settings values
+    p_uiBuilder = uiBuilder;
+    w_messageListViewConfigMenu = uiBuilder->createAbstractMessageListViewConfigMenu();
+
+    // Load Settings
     using namespace Draupnir::Messages::Settings::LogWidget;
-    w_messagesListView->setIconSize(IconSizeSetting::defaultValue());
-    w_messagesListView->setDisplayedMessageTypesMask(DisplayedMessageTypesSetting::defaultValue());
-    w_messagesListView->setDisplayedMessageFieldsMask(DisplayedMessageFieldsSetting::defaultValue());
-    w_iconSizeSlider->setMinimum(12);
-    w_iconSizeSlider->setMaximum(128);
+    const auto messagesMask = m_settingsBundle.template get<DisplayedMessageTypesSetting>();
+    w_messageListViewConfigMenu->setDisplayedMessageTypesMask(messagesMask);
 
-    // Connect signals and slots
-    connect(w_clearLogButton, &QPushButton::clicked,
-            this, &LogWidget::_onLogClearClicked);
-    connect(w_configureButton,&QPushButton::clicked,
-            this, &LogWidget::_onConfigureClicked);
-    connect(w_messagesListView, &MessageListView::messageTypeVisibilityChanged,
-            this, &LogWidget::_onMessageTypeFilterChanged);
-    connect(w_messagesListView, &MessageListView::messageFieldVisibilityChanged,
-            this, &LogWidget::_onMessageFieldVisibilityChanged);
+    const auto messageFieldsMask = m_settingsBundle.template get<DisplayedMessageFieldsSetting>();
+    w_messageListViewConfigMenu->setDisplayedMessageFieldsMask(messageFieldsMask);
+
+    w_configureButton->setMenu(w_messageListViewConfigMenu);
     connect(w_messageListViewConfigMenu, &AbstractMessageListViewConfigMenu::messageTypeVisibilityChanged,
             w_messagesListView, &MessageListView::setMessageTypeDisplayed);
     connect(w_messageListViewConfigMenu, &AbstractMessageListViewConfigMenu::messageFieldVisibilityChanged,
             w_messagesListView, &MessageListView::setMessageFieldDisplayed);
-    connect(w_iconSizeSlider, &QSlider::valueChanged,
-            this, &LogWidget::_onIconSizeChange);
-    connect(w_iconSizeSlider, &QSlider::sliderReleased,
-            this, &LogWidget::_onIconSizeEditFinished);
 }
 
 void LogWidget::changeEvent(QEvent* event)
@@ -128,7 +103,7 @@ void LogWidget::changeEvent(QEvent* event)
 
 void LogWidget::_onLogClearClicked()
 {
-    Q_ASSERT_X(p_messageListModel, "AbstractLogWidget::_onLogClearClicked",
+    Q_ASSERT_X(p_messageListModel, "LogWidget::_onLogClearClicked",
                "MessageListModel must have been set before.");
 
     p_messageListModel->clear();
@@ -136,6 +111,9 @@ void LogWidget::_onLogClearClicked()
 
 void LogWidget::_onConfigureClicked()
 {
+    Q_ASSERT_X(p_uiBuilder,"LogWidget::_onConfigureClicked",
+               "LogWidget should be either created using AbstractMessageUiBuilder or it should be attached to MessageSystem"
+               " using LogWidget::attachTo method.");
     if (p_configurationDialog) {
         p_configurationDialog->show();
         return;
@@ -182,12 +160,58 @@ void LogWidget::_applyLoadedSettings()
     // MessageListView -> DisplayedMessageTypes
     const quint64 messagesMask = m_settingsBundle.template get<DisplayedMessageTypesSetting>();
     w_messagesListView->setDisplayedMessageTypesMask(messagesMask);
-    w_messageListViewConfigMenu->setDisplayedMessageTypesMask(messagesMask);
 
     // MessageListView -> DisplayedMessageFields
     const auto messageFieldsMask = m_settingsBundle.template get<DisplayedMessageFieldsSetting>();
     w_messagesListView->setDisplayedMessageFieldsMask(messageFieldsMask);
-    w_messageListViewConfigMenu->setDisplayedMessageFieldsMask(messageFieldsMask);
+}
+
+void LogWidget::_setupGeneralUi()
+{
+    // Setup layout
+    QVBoxLayout* mainLayout = new QVBoxLayout;
+    // Setup UI-subelements: MessageListView
+    mainLayout->addWidget(w_messagesListView);
+    // Setup control elements:
+    QHBoxLayout* controlButtonsLayout = new QHBoxLayout;
+    // Clear Log
+    controlButtonsLayout->addWidget(w_clearLogButton);
+    // Configure MessageSystem button
+    w_configureButton->setPopupMode(QToolButton::MenuButtonPopup);
+    controlButtonsLayout->addWidget(w_configureButton);
+    // Stretch
+    controlButtonsLayout->addStretch();
+    // Icon size related things
+    controlButtonsLayout->addWidget(w_iconSizeLabel);
+    controlButtonsLayout->addWidget(w_iconSizeSlider);
+    // Add control elements layout
+    mainLayout->addLayout(controlButtonsLayout);
+    // Apply Layout
+    setLayout(mainLayout);
+    // Setup initial strings
+    _retranslateUi();
+
+    // Display default settings values
+    using namespace Draupnir::Messages::Settings::LogWidget;
+    w_messagesListView->setIconSize(IconSizeSetting::defaultValue());
+    w_messagesListView->setDisplayedMessageTypesMask(DisplayedMessageTypesSetting::defaultValue());
+    w_messagesListView->setDisplayedMessageFieldsMask(DisplayedMessageFieldsSetting::defaultValue());
+    w_iconSizeSlider->setMinimum(12);
+    w_iconSizeSlider->setMaximum(128);
+
+    // Connect signals and slots
+    connect(w_clearLogButton, &QPushButton::clicked,
+            this, &LogWidget::_onLogClearClicked);
+    connect(w_configureButton,&QPushButton::clicked,
+            this, &LogWidget::_onConfigureClicked);
+    connect(w_messagesListView, &MessageListView::messageTypeVisibilityChanged,
+            this, &LogWidget::_onMessageTypeFilterChanged);
+    connect(w_messagesListView, &MessageListView::messageFieldVisibilityChanged,
+            this, &LogWidget::_onMessageFieldVisibilityChanged);
+    connect(w_iconSizeSlider, &QSlider::valueChanged,
+            this, &LogWidget::_onIconSizeChange);
+    connect(w_iconSizeSlider, &QSlider::sliderReleased,
+            this, &LogWidget::_onIconSizeEditFinished);
 }
 
 void LogWidget::_retranslateUi()

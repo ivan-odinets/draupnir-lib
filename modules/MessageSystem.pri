@@ -73,7 +73,8 @@
         $$PWD/../include/message_system/draupnir/message_system/ui/widgets/NotificationTypeComboBox.h \
         $$PWD/../include/message_system/draupnir/message_system/ui/windows/MessageDisplayDialog.h \
         $$PWD/../include/message_system/draupnir/message_system/ui/windows/MessageSystemConfigDialog.h \
-        $$PWD/../include/message_system/draupnir/message_system/utils/MessageTraitsHelper.h
+        $$PWD/../include/message_system/draupnir/message_system/utils/MessageTraitsHelper.h \
+        $$PWD/../include/message_system/draupnir/message_system/traits/widgets/LogWidgetTrait.h
 
     DISTFILES += \
         $$PWD/../docs/pages/MessageSystem.dox

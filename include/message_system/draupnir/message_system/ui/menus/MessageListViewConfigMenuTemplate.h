@@ -94,6 +94,11 @@ public:
         return m_typeActionsContainer.isFlagDisplayed(type);
     };
 
+    /*! @brief Returns QAction* representing specific @ref MessageType. */
+    QAction* getActionForType(MessageType type) final {
+        return m_typeActionsContainer.getUiElement(type);
+    }
+
 protected:
     /*! @brief Updates text of all type-specific QAction items. Called on language change.
      * @see Draupnir::Messages::MessageTypeSelectorBase */

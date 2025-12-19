@@ -33,6 +33,8 @@ namespace Draupnir::Messages
 
 class AbstractMessageHandler;
 class AbstractMessageUiBuilder;
+class LogWidget;
+class NotificationTypeMenu;
 
 /*! @class AbstractMessageSystem
  *  @ingroup MessageSystem
@@ -68,6 +70,9 @@ public:
      *  @param type The @ref Draupnir::Messages::MessageType to check.
      *  @return `true` if this message system recognizes the type; otherwise `false`. */
     virtual bool isTypeKnown(MessageType type) = 0;
+
+    /*! @brief Configures specified @ref Draupnir::Messages::LogWidget instance to be used within this @ref AbstractMessageSystem. */
+    virtual void configureLogWidget(LogWidget* logWidget) = 0;
 };
 
 }; // namespace Draupnir::Messages

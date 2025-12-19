@@ -67,9 +67,10 @@ public:
         Q_ASSERT_X(m_settings.isValid(),"MessageUiBuilderTemplate<MessageTraits...>::createLogWidget",
                    "Method MessageUiBuilderTemplate<MessageTraits...>::loadSettings must have been called before.");
 
-        LogWidget* result = new LogWidget{this,parent};
+        LogWidget* result = new LogWidget{parent};
         result->template loadSettings<SettingsBundle>(&m_settings);
         result->setMessageListModel(p_handler->messages());
+        result->setMessageSystemSpecificUiElements(this);
         return result;
     };
 

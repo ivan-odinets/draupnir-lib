@@ -86,6 +86,11 @@ public:
         return m_messageFieldsContainer.isFlagDisplayed(field);
     }
 
+    /*! @brief Returns QAction representing specific Message::Fields key. */
+    QAction* getActionForField(Message::Fields field) {
+        return m_messageFieldsContainer.getUiElement(field);
+    }
+
     /*! @brief Updates all message type entries based on the given filter bitmask. This method is implemented in @ref
      *         Draupnir::Messages::MessageListViewConfigMenuTemplate.
      *  @param config Bitmask of message types to mark as visible.
@@ -110,6 +115,11 @@ public:
      *         method is implemented in @ref Draupnir::Messages::MessageListViewConfigMenuTemplate.
      * @see Draupnir::Messages::MessageListViewConfigMenuTemplate, @ref Draupnir::Messages::MessageTypeSelectorBase. */
     virtual bool isMessageTypeDisplayed(MessageType type) const = 0;
+
+    /*! @brief Returns QAction* for specified @ref Draupnir::Messages::MessageType. This method is implemented in @ref
+     *         Draupnir::Messages::MessageListViewConfigMenuTemplate.
+     * @see Draupnir::Messages::MessageListViewConfigMenuTemplate, @ref Draupnir::Messages::MessageTypeSelectorBase. */
+    virtual QAction* getActionForType(MessageType type) = 0;
 
 signals:
     /*! @brief Emitted when user toggles message field visibility via `QAction`.

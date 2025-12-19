@@ -6,6 +6,7 @@ SUBDIRS += \
     integration/MessageUiBuilderTemplateIT \
     unit/LoggerMultithreadTest \
     unit/LoggerTest \
+    unit/LogWidgetTest \
     unit/MessageFieldsSelectorWidgetTest \
     unit/MessageGroupTest \
     unit/MessageHandlerTemplateTest \

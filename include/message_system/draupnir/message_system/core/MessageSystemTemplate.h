@@ -28,6 +28,7 @@
 #include "draupnir/message_system/core/AbstractMessageSystem.h"
 #include "draupnir/message_system/traits/messages/DefaultMessageTraits.h"
 #include "draupnir/message_system/utils/MessageTraitsHelper.h"
+#include "draupnir/message_system/ui/widgets/LogWidget.h"
 #include "draupnir/message_system/traits/settings/MessageTypeSettingsTrait.h"
 
 #include "draupnir/SettingsRegistry.h"
@@ -111,9 +112,13 @@ public:
                 "SettingsSource specified can not populate the SettingsBundle within this MessageSystemTemplate instantiation.");
         Q_ASSERT_X(registry, "MessageSystemTemolate<MessageTraits...>::loadSettings",
                    "SettingsSource pointer provided is nullptr.");
+        // Save bundle
+        m_settings = registry->template getSettingsBundle<SettingsBundle>();
 
+        // Load handler settings
         m_handler.template loadSettings<SettingsSource>(registry);
 
+        // Load UiBuilder settings
         m_uiBuilder.template loadSettings<SettingsSource>(registry);
     }
 
@@ -139,6 +144,13 @@ public:
     /*! @brief Returns `true` if provided `MessageType` is known to this instantiation of the MessageSystemTemplate */
     static bool staticIsTypeKnown(MessageType type) {
         return SpecificMessageTraitsHelper::isTypeKnown(type);
+    }
+
+    /*! @brief Configures specified @ref Draupnir::Messages::LogWidget instance to be used within this @ref AbstractMessageSystem. */
+    void configureLogWidget(LogWidget* widget) final {
+        widget->loadSettings(&m_settings);
+        widget->setMessageListModel(m_handler.messages());
+        widget->setMessageSystemSpecificUiElements(&m_uiBuilder);
     }
 
 private:

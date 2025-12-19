@@ -81,19 +81,42 @@ public:
         Draupnir::Messages::Settings::LogWidget::DisplayedMessageTypesSetting
     >;
 
+    /*! @brief Default constructor. Accepts pointer to parent `QWidget` object and creates @ref LogWidget, which needs to be
+     *         configured.
+     *  @param parent - optional parent `QWidget`.
+     *  @details When constructing @ref LogWidget by using this constructor - resulting widget is requires additional configuration
+     *           to work properly. This includes:
+     *           - Loading of the settings (using @ref LogWidget::loadSettings method);
+     *           - Specifying @ref Draupnir::Messages::MessageListModel, messages from which will be displayed using internal
+     *             @ref Draupnir::Messages::MessageListView (using either @ref LogWidget::setMessageListModel or @ref
+     *             LogWidget::attachTo method);
+     *           - Setting up `MessageSystem`-specific UI elements (using either @ref LogWidget::setMessageSystemSpecificUiElements
+     *             or @ref LogWidget::attachTo method; */
+    explicit LogWidget(QWidget* parent = nullptr);
+
     /*! @brief Trivial destructor. */
     ~LogWidget() override = default;
 
-    /*! @brief This method loads the settings for this @ref Draupnir::Messages::AbstractLogWidget object from the specified
-     *         SettingsSource.
+    /*! @brief This method attaches @ref LogWidget to the provided `MessageSystem` object.
+     *  @tparam MessageSystem - to be attached to.
+     *  @param messageSystem - pointer to `MessageSystem` object. */
+    template<class MessageSystem>
+    void attachTo(MessageSystem* messageSystem) {
+        Q_ASSERT_X(messageSystem, "LogWidget::attachTo",
+                   "Provided MessageSystem* pointer is nullptr.");
+
+        messageSystem->configureLogWidget(this);
+    }
+
+    /*! @brief This method loads the settings for this @ref LogWidget object from the specified `SettingsSource`.
      * @todo Add logging of the warnings if sth is wrong with the settings. */
     template<class SettingsSource>
     void loadSettings(SettingsSource* source) {
         static_assert(SettingsBundle::template canBeFullyPopulatedFrom<SettingsSource>(),
-                "SettingsSource provided can not populate the SettingsBundle for this AbstractLogWidget.");
-        Q_ASSERT_X(source,"AbstractLogWidget<MessageTraits...>::loadSettings",
+                "Provided SettingsSource can not populate the SettingsBundle for this LogWidget.");
+        Q_ASSERT_X(source,"LogWidget::loadSettings",
                    "Specified source is nullptr");
-        Q_ASSERT_X(!m_settingsBundle.isValid(),"AbstractLogWidget<MessageTraits...>::loadSettings",
+        Q_ASSERT_X(!m_settingsBundle.isValid(),"LogWidget::loadSettings",
                    "This method must be called only once.");
 
         m_settingsBundle = source->template getSettingsBundle<SettingsBundle>();
@@ -110,15 +133,12 @@ public:
      *       passed to @ref Draupnir::Messages::LogWidget, but **not the** @ref MessageListProxyModel being used internally. */
     MessageListModel* messageListModel() { return p_messageListModel; }
 
+    /*! @brief Sets `MessageSystem`-specific Ui elements used by this @ref LogWidget. */
+    void setMessageSystemSpecificUiElements(AbstractMessageUiBuilder* uiBuilder);
+
 protected:
     template<class... MessageTypes>
     friend class MessageUiBuilderTemplate;
-
-    /*! @brief Constructs a @ref Draupnir::Messages::LogWidget and initializes its internal layout and controls.
-     *  @param uiBuilder Required pointer to the @ref Draupnir::Messages::AbstractMessageUiBuilder interface, which will
-     *         be used to get some of the nested UI elements within the @ref Draupnir::Messages::LogWidget.
-     *  @param parent Optional parent widget. */
-    explicit LogWidget(AbstractMessageUiBuilder* uiBuilder, QWidget* parent = nullptr);
 
     /*! @brief Handles dynamic retranslation when the application language changes.
      *  @param event The event being handled.
@@ -146,7 +166,11 @@ private slots:
     void _onIconSizeEditFinished();
 
 private:
+    friend class LogWidgetTest;
+
     void _applyLoadedSettings();
+    void _setupGeneralUi();
+    void _setupMessageSystemSpecificUi(AbstractMessageUiBuilder* uiBuilder);
     void _retranslateUi();
 
     // Non-displayed fields
