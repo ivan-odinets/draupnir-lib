@@ -125,7 +125,7 @@ public:
      *           to: `using Result = Container< Ts... >;` only those Ts from Types... where Detector<Ts>::value is `true`. */
 
     template<template<class...> class Container>
-    using to_container= typename merge_if_true<Container,Container<>,Types...>::type;
+    using to_container = typename merge_if_true<Container,Container<>,Types...>::type;
 };
 
 }; // namespace draupnir::utils
