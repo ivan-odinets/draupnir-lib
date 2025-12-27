@@ -18,7 +18,9 @@
         $$PWD/../include/utils/draupnir/utils/tuple_like_merge.h \
         $$PWD/../include/utils/draupnir/utils/type_extractors.h \
         $$PWD/../include/utils/draupnir/utils/type_list.h \
-        $$PWD/../include/utils/draupnir/utils/type_name_utils.h
+        $$PWD/../include/utils/draupnir/utils/type_name_utils.h \
+        $$PWD/../include/utils/draupnir/utils/class_marcos.h \
+        $$PWD/../include/utils/draupnir/utils/type_if.h
 
     DISTFILES += \
         $$PWD/../docs/pages/Utils.dox

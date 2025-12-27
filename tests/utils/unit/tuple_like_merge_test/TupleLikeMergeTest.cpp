@@ -50,7 +50,7 @@ private slots:
     void test_simple_type_merging_into_tuple() {
         // Simple case, merging unique types into tuple
         using Result = tuple_like_merge_t<std::tuple, std::tuple, int, char, double, QString, std::vector<int>>;
-        QCOMPARE(std::tuple_size_v<Result>, 5);
+        QCOMPARE(std::tuple_size_v<Result>, std::size_t{5});
         QCOMPARE((is_type_in_tuple_v<int,Result>),              true);
         QCOMPARE((is_type_in_tuple_v<char,Result>),             true);
         QCOMPARE((is_type_in_tuple_v<double,Result>),           true);
@@ -61,7 +61,7 @@ private slots:
     void test_simple_type_merging_with_duplicates_into_tuple() {
         // Simple case, merging typelist with duplicates into tuple
         using Result = tuple_like_merge_t<std::tuple, std::tuple, int, char, double, double, QString, int, QString>;
-        QCOMPARE(std::tuple_size_v<Result>, 4);
+        QCOMPARE(std::tuple_size_v<Result>, std::size_t{4});
         QCOMPARE((is_type_in_tuple_v<int,Result>),         true);
         QCOMPARE((is_type_in_tuple_v<char,Result>),        true);
         QCOMPARE((is_type_in_tuple_v<double,Result>),      true);
@@ -74,7 +74,7 @@ private slots:
             std::tuple, std::tuple,
             std::tuple<int,double>, std::tuple<double,QString,QString>, int, QString, std::tuple<>
         >;
-        QCOMPARE(std::tuple_size_v<Result>, 3);
+        QCOMPARE(std::tuple_size_v<Result>, std::size_t{3});
         QCOMPARE((is_type_in_tuple_v<int,Result>),         true);
         QCOMPARE((is_type_in_tuple_v<double,Result>),      true);
         QCOMPARE((is_type_in_tuple_v<QString,Result>),     true);
@@ -88,7 +88,7 @@ private slots:
             std::tuple<std::tuple<char,std::tuple<long,std::tuple<QString>>>,QString,QString>,
             QString, std::tuple<>
         >;
-        QCOMPARE(std::tuple_size_v<Result>, 5);
+        QCOMPARE(std::tuple_size_v<Result>, std::size_t{5});
         QCOMPARE((is_type_in_tuple_v<int,Result>),         true);
         QCOMPARE((is_type_in_tuple_v<double,Result>),      true);
         QCOMPARE((is_type_in_tuple_v<QString,Result>),     true);

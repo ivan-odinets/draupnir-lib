@@ -274,6 +274,18 @@ DEFINE_PRETTY_TEMPLATE_INSTANTIATION_PRINTER(std::vector);
 DEFINE_PRETTY_TEMPLATE_INSTANTIATION_PRINTER(std::list);
 DEFINE_PRETTY_TEMPLATE_INSTANTIATION_PRINTER(std::optional);
 
+template<class Type, std::size_t N>
+struct draupnir::utils::type_pretty_name_impl<std::array<Type,N>> {
+    static std::string get() {
+        std::string result{"std::array<"};
+        result += draupnir::utils::type_pretty_name_impl<Type>::get();
+        result += ',';
+        result += std::to_string(N);
+        result += '>';
+        return result;
+    }
+};
+
 #if defined(QT_CORE_LIB)
 
 #include <QHash>

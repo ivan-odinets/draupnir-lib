@@ -136,6 +136,20 @@ struct get_template_instantiation<Template, Head>
 template<template<typename...> class Template, typename... Ts>
 using get_template_instantiation_t = typename get_template_instantiation<Template,Ts...>::type;
 
+template<template<typename...> class TemplateBase, class Derived>
+struct get_base_template_instantiation_or_void
+{
+private:
+    template<class... Args>
+    static TemplateBase<Args...> getBase(TemplateBase<Args...>*);
+    static void getBase(...);
+public:
+    using type = decltype(getBase(std::declval<Derived*>()));
+};
+
+template<template<typename...> class TemplateBase, class Derived>
+using get_base_template_instantiation_or_void_t = typename get_base_template_instantiation_or_void<TemplateBase,Derived>::type;
+
 }; // namespace draupnir::utils
 
 #endif // TYPE_EXTRACTORS_H

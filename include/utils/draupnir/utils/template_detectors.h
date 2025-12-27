@@ -75,6 +75,23 @@ struct is_instantiation_of<Template<Args...>, Template> : std::true_type {};
 template<typename T, template<typename...> class Template>
 inline constexpr bool is_instantiation_of_v = is_instantiation_of<T,Template>::value;
 
+/*! @struct is_template draupnir/utils/template_detectors.h
+ *  @ingroup Utils
+ *  @brief Helper-adapter that turns a class template into a unary predicate for @ref is_instantiation_of.
+ *  @tparam Template    Class template of the form `template<class...> class Template`.
+ *
+ *  @details This helper is convenient when an API expects a unary type trait of the form `template<class> class Pred`, but you
+ *           conceptually want to test "is this type an instantiation of this template?".
+ *
+ *           Given a template `Template`, the nested template @ref is_template::instantiated_as defines a trait `instantiated_as<T>`
+ *           which is simply an alias for @ref draupnir::utils::is_instantiation_of<T, Template>. */
+template<template<class...> class Template>
+struct is_template
+{
+    template<class T>
+    struct instantiated_as : is_instantiation_of<T,Template> {};
+};
+
 /*! @struct is_pair draupnir/utils/template_detectors.h
  *  @ingroup Utils
  *  @brief Type trait to detect whether a type is a `std::pair`.
@@ -128,6 +145,43 @@ struct is_tuple<std::tuple<Args...>> : std::true_type {};
 
 template<typename T>
 inline constexpr bool is_tuple_v = is_tuple<T>::value;
+
+/*! @struct is_template_base_of draupnir/utils/template_detectors.h
+ *  @ingroup Utils
+ *  @brief Checks whether a given class template is a (direct or indirect) base of a derived type.
+ *  @tparam TemplateBase Class template of the form `template<class...> class TemplateBase`.
+ *  @tparam Derived      Concrete type that is tested against `TemplateBase<...>` bases.
+ *
+ *  @details This trait evaluates to `std::true_type` if `Derived` is publicly derived from some instantiation of `TemplateBase`
+ *           (i.e. from `TemplateBase<Args...>` for some type pack `Args...`), and `std::false_type` otherwise.
+ *
+ *           Internally it uses an overload set of `test`:
+ *           - One overload accepting a pointer to `TemplateBase<Args...>` and returning `std::true_type`.
+ *           - A variadic fallback overload returning `std::false_type`.
+ *
+ *           When `test(std::declval<Derived*>())` is formed, overload resolution prefers the `TemplateBase<Args...>*` overload
+ *           if `Derived*` is implicitly convertible to such a pointer (i.e. if `Derived` inherits from `TemplateBase<Args...>`),
+ *           otherwise the ellipsis overload is chosen. */
+
+template<template<class...> class TemplateBase, class Derived>
+struct is_template_base_of
+{
+private:
+    template<class... Args>
+    static constexpr std::true_type test(TemplateBase<Args...>*);
+
+    static constexpr std::false_type test(...);
+public:
+    /*! @brief Boolean shortcut for the result of the trait. `true` if `Derived` is derived from some `TemplateBase<Args...>`,
+     *         `false` otherwise. */
+    static constexpr bool value = decltype(test(std::declval<Derived*>()))::value;
+};
+
+/*! @brief Convenience variable template for @ref is_template_base_of. Evaluates to `true` if `Derived` is derived from some
+ *         instantiation of `TemplateBase`, and `false` otherwise. */
+
+template<template<class...> class TemplateBase, class Derived>
+inline constexpr bool is_template_base_of_v = is_template_base_of<TemplateBase,Derived>::value;
 
 /*! @struct is_pair_of_ptr draupnir/utils/template_detectors.h
  *  @ingroup Utils
