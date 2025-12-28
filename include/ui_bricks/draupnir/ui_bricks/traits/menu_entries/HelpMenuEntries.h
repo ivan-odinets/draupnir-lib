@@ -48,7 +48,7 @@ namespace Draupnir::Ui {
  *  @ingroup MenuTemplates
  *  @brief Inline constexpr lambda returning the localized display name for the "Help" menu. */
 
-inline constexpr auto helpMenuName = []() -> QString {
+[[deprecated]] inline constexpr auto helpMenuName = []() -> QString {
     return QObject::tr("Help");
 };
 

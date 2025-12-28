@@ -32,9 +32,7 @@
 namespace Draupnir::Ui {
 
 /*! @class MenuBarTemplateTest tests/ui_bricks/unit/MenuBarTemplateTest/MenuBarTemplateTest.cpp
- *  @brief Test class for the MenuBarTemplate.
- *
- * @todo Refractor this test so that it will have better readability. */
+ *  @brief Test class for the MenuBarTemplate. */
 
 class MenuBarTemplateTest final : public QObject
 {

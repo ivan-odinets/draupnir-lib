@@ -46,7 +46,7 @@ namespace Draupnir::Ui {
  *  @ingroup MenuTemplates
  *  @brief Inline constexpr lambda returning the localized display name for the "Settings" menu. */
 
-inline constexpr auto settingsMenuName = []() -> QString {
+[[deprecated]] inline constexpr auto settingsMenuName = []() -> QString {
     return QObject::tr("Settings");
 };
 

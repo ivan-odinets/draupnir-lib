@@ -64,7 +64,7 @@ public:
     static inline constexpr bool hasState_v = true;
 
     /*! @brief Alias for the tray icon type used by this feature. */
-    using TrayIconClass = IconClass;
+    using TrayIcon = IconClass;
 
     /*! @brief Pointer to the tray icon instance associated with the main window.
      *  @details This pointer is typically set by @ref MainWindowTemplate::setTrayIcon() and may be used later to:
@@ -73,7 +73,7 @@ public:
      *           - customize tray behavior per window.
      *
      *           The lifetime of the pointed-to object is managed by the caller; the feature itself does not own the icon. */
-    TrayIconClass* icon { nullptr };
+    TrayIcon* icon { nullptr };
 };
 
 }; // namespace Draupnir::Ui::MainWindow

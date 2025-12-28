@@ -43,7 +43,12 @@
         $$PWD/../include/ui_bricks/draupnir/ui_bricks/traits/menu_entries/templates/MenuTemplateEntry.h \
         $$PWD/../include/ui_bricks/draupnir/ui_bricks/ui/menus/MenuBarTemplate.h \
         $$PWD/../include/ui_bricks/draupnir/ui_bricks/ui/menus/MenuTemplate.h \
-        $$PWD/../include/ui_bricks/draupnir/ui_bricks/ui/menus/RecentFilesMenu.h
+        $$PWD/../include/ui_bricks/draupnir/ui_bricks/ui/menus/RecentFilesMenu.h \
+        $$PWD/../include/ui_bricks/draupnir/ui_bricks/core/MenuEntriesContainer.h \
+        $$PWD/../include/ui_bricks/draupnir/ui_bricks/traits/features/CentralWidgetFeatureTemplate.h \
+        $$PWD/../include/ui_bricks/draupnir/ui_bricks/traits/features/MenuBarFeatureTemplate.h \
+        $$PWD/../include/ui_bricks/draupnir/ui_bricks/traits/menu_entries/submenus/HelpMenuTemplate.h \
+        $$PWD/../include/ui_bricks/draupnir/ui_bricks/traits/menu_entries/submenus/SettingsMenuTemplate.h
 
     SOURCES += \
         $$PWD/../src/ui_bricks/draupnir/ui/TrayIcon.cpp \
@@ -53,7 +58,6 @@
     DISTFILES += \
         $$PWD/../docs/pages/UiBricks.dox
 }
-
 
 
 

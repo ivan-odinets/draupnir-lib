@@ -29,7 +29,7 @@
 
 #include "draupnir/ui_bricks/ui/widgets/FixedTabWidget.h"
 
-#include "draupnir/settings_registry/SettingsBundleTemplate.h"
+#include "draupnir/settings_registry/utils/SettingsTraitsConcatenator.h"
 #include "draupnir/utils/index_of.h"
 
 namespace Draupnir::Ui
@@ -62,17 +62,20 @@ namespace Draupnir::Ui
  *           };
  *           @endcode
  *
- * @todo Add possibility to aggregate settings from TabTraits (or in particular - nested widget). */
+ * @todo Add possibility to aggregate settings from TabTraits (or in particular - nested widget).
+ * @todo Improve constructor so that: If widget described by the TabTrait is default constructible - than construct it. If not -
+ *       use nullptr as placeholder. */
 
 template<class WidgetIndexSetting, class... TabTraits>
 class FixedTabWidgetTemplate final : public FixedTabWidget
 {
 public:
-    using SettingsBundle = std::conditional_t<
-        std::is_same_v<WidgetIndexSetting,void>,
-        Settings::SettingsBundleTemplate<>,
-        Draupnir::Settings::SettingsBundleTemplate<WidgetIndexSetting>
-    >;
+//    using SettingsBundle = std::conditional_t<
+//        std::is_same_v<WidgetIndexSetting,void>,
+//        Settings::SettingsBundleTemplate<>,
+//        Draupnir::Settings::SettingsBundleTemplate<WidgetIndexSetting>
+//    >;
+    using SettingsBundle = typename Draupnir::Settings::SettingsTraitsConcatenator<WidgetIndexSetting,typename TabTraits::Widget...>::toSettingsBundle;
 
     /*! @brief Constructs tab widgets from default constructors.
      *  @param parent Optional parent widget. */

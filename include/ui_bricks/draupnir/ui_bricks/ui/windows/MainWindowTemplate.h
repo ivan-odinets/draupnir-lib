@@ -34,15 +34,19 @@
 
 #include "draupnir/ui_bricks/animations/AnimationBuilder.h"
 
-#include "draupnir/ui_bricks/traits/features/AnimatedMinimizableToTray.h" // IWYU pragma: keep
+#include "draupnir/ui_bricks/ui/widgets/FixedCentralTabWidgetTemplate.h"       // IWYU pragma: keep
+#include "draupnir/ui_bricks/traits/features/AnimatedMinimizableToTray.h"      // IWYU pragma: keep
+#include "draupnir/ui_bricks/traits/features/CentralWidgetFeatureTemplate.h"   // IWYU pragma: keep
+#include "draupnir/ui_bricks/traits/features/MenuBarFeatureTemplate.h"     // IWYU pragma: keep
 #include "draupnir/ui_bricks/traits/features/MinimizableOnClose.h"
 #include "draupnir/ui_bricks/traits/features/MinimizableToTray.h"
 #include "draupnir/ui_bricks/traits/features/RememberWindowSize.h"
-#include "draupnir/ui_bricks/traits/features/TrayIconSupported.h"         // IWYU pragma: keep
+#include "draupnir/ui_bricks/traits/features/TrayIconSupported.h"              // IWYU pragma: keep
 
 #include "draupnir/utils/type_presense.h"
 #include "draupnir/utils/type_extractors.h"
 #include "draupnir/utils/filter_if.h"
+#include "draupnir/utils/sfinae_detector_macro.h"
 
 namespace Draupnir::Ui
 {
@@ -78,7 +82,8 @@ class MainWindowTemplate : public QMainWindow
 {
 private:
     /*! @brief This SFINAE detector is used to detect if feature class has state. By now state is detected by the presense of
-     *         `static constexpr bool hasState_v` and if this field is set to `true`. */
+     *         `static constexpr bool hasState_v` and if this field is set to `true`.
+     * @todo Switch this thing to macros. */
     template<class, class = void>
     struct has_state : std::false_type {};
 
@@ -109,7 +114,7 @@ protected:
      *           there is more than one instantiation, the behavior is defined by @ref draupnir::utils::get_template_instantiation_t
      *           (the first matching type). */
     template<template<class...> class FeatureTemplate>
-    using getFeatureTemplateInstantiation = draupnir::utils::get_template_instantiation_t<FeatureTemplate,Features...>;
+    using getFeatureTemplateInstantiation_t = draupnir::utils::get_template_instantiation_t<FeatureTemplate,Features...>;
 
     /*! @brief Accessor for the runtime state of a specific feature type.
      *  @tparam Feature Concrete feature type whose state should be retrieved.
@@ -134,7 +139,7 @@ protected:
         static_assert(draupnir::utils::is_template_instantiation_present_in_tuple_v<FeatureTemplate, FeaturesStateTuple>,
             "The feature template specified does not have state.");
         return getFeatureState<
-            getFeatureTemplateInstantiation<FeatureTemplate>
+            getFeatureTemplateInstantiation_t<FeatureTemplate>
         >();
     }
 
@@ -149,7 +154,27 @@ public:
     /*! @brief Constructs a main window with the given `parent`. */
     explicit MainWindowTemplate(QWidget* parent = nullptr) :
         QMainWindow{parent}
-    {}
+    {
+        // If we have preset CentralWidgetFeatureTemplate - create it and add it to the window
+        if constexpr (featurePresent<MainWindow::CentralWidgetFeatureTemplate>()) {
+            using CentralWidgetFeature = getFeatureTemplateInstantiation_t<MainWindow::CentralWidgetFeatureTemplate>;
+            using CentralWidget = typename CentralWidgetFeature::CentralWidget;
+            static_assert(std::is_default_constructible_v<CentralWidget>,
+                    "Widget specified within the CentralWidgetFeatureTemplate must be default-constructible.");
+            getFeatureState<CentralWidgetFeature>().widget = new CentralWidget;
+            setCentralWidget(getFeatureState<CentralWidgetFeature>().widget);
+        }
+
+        // If we have present MainMenuBarFeatureTemplate - create it and add it to the window
+        if constexpr (featurePresent<MainWindow::MenuBarFeatureTemplate>()) {
+            using MenuBarFeature = getFeatureTemplateInstantiation_t<MainWindow::MenuBarFeatureTemplate>;
+            using MenuBar = typename MenuBarFeature::MenuBar;
+            static_assert(std::is_default_constructible_v<MenuBar>,
+                    "MenuBar specified within the MenuBarFeatureTemplate must be default-constructible.");
+            getFeatureState<MenuBarFeature>().menuBar = new MenuBar;
+            setMenuBar(getFeatureState<MenuBarFeature>().menuBar);
+        }
+    }
 
     /*! @brief Destructor that optionally persists window size. If the `MainWindow::RememberWindowSize` feature is present, the current
      *         window size is stored into the @ref SettingsBundle using `Draupnir::Settings::MainWindow::WindowSizeSetting`. */
@@ -181,6 +206,11 @@ public:
         if constexpr (featurePresent<MainWindow::RememberWindowSize>()) {
             const QSize windowSize = m_settings.template get<Draupnir::Settings::MainWindow::WindowSizeSetting>();
             resize(windowSize);
+        }
+
+        // If we have CentralWidget with settings - I guess e need to load them
+        if constexpr (featurePresent<MainWindow::CentralWidgetFeatureTemplate>()) {
+            getFeatureState<MainWindow::CentralWidgetFeatureTemplate>().widget->template loadSettings<SettingsSource>(source);
         }
     }
 
@@ -376,9 +406,8 @@ private:
         }
     }
 #endif // QT_NO_SYSTEMTRAYICON
-
 };
 
-};
+}; // namespace Draupnir::Ui
 
 #endif // MAINWINDOWTEMPLATE_H
