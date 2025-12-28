@@ -7,7 +7,6 @@
 
     include(DraupnirVersion.pri)
     include(DraupnirResources.pri)
-    include(MenuTemplates.pri)
     include(SettingsRegistry.pri)
 
     INCLUDEPATH += $$PWD/../include/handler_templates/

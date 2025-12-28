@@ -28,6 +28,9 @@
 #include "draupnir/handlers/templates/GenericMenuEntriesHandler.h"
 #include "draupnir/utils/SettingTraitForEntry.h"
 
+#include "draupnir/handlers/settings_menu/MinimizeOnCloseEntryHandler.h"
+#include "draupnir/handlers/settings_menu/MinimizeToTrayEntryHandler.h"
+
 namespace Draupnir::Handlers
 {
 

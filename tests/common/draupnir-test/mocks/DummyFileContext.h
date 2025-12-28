@@ -53,6 +53,15 @@ public:
 
     QString getSaveFileName_result;
     QString getSaveFileName() const { return getSaveFileName_result; }
+
+    QString getOpenFileName_result;
+    QString getOpenFileName() const { return getOpenFileName_result; }
+
+    QStringList getOpenFileNames_result = QStringList{};
+    QStringList getOpenFileNames() const { return getOpenFileNames_result; }
+
+    QString updateLastUsedDirectory_value = QString{};
+    void updateLastUsedDirectory(const QString& dir) { updateLastUsedDirectory_value = dir; }
 };
 
 #endif // DUMMYFILECONTEXT_H

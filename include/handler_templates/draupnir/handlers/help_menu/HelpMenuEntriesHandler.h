@@ -27,6 +27,8 @@
 
 #include "draupnir/handlers/templates/GenericMenuEntriesHandler.h"
 #include "draupnir/ui_bricks/traits/menu_entries/HelpMenuEntries.h"
+#include "draupnir/handlers/help_menu/AboutDraupnirLibEntryHandler.h"
+#include "draupnir/handlers/help_menu/AboutQtEntryHandler.h"
 
 namespace Draupnir::Handlers {
 

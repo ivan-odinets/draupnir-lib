@@ -25,6 +25,7 @@
 #ifndef DUMMYFILEMANAGERBASE_H
 #define DUMMYFILEMANAGERBASE_H
 
+#include <QFileInfo>
 #include <QString>
 #include <QStringList>
 
@@ -55,6 +56,11 @@ public:
         saveCurrentFileAs_callArguments.append(filePath);
         saveCurrentFileAs_callCount++;
     }
+
+    int newFile_callCount = 0;
+    void newFile() { newFile_callCount++; }
+
+    void openFile(const QFileInfo&) {};
 };
 
 #endif // DUMMYFILEMANAGERBASE_H

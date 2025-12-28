@@ -29,18 +29,13 @@
 #include "draupnir-test/mocks/MockSettingsTemplate.h"
 
 // SettingsRegistry
-#include "draupnir/settings_registry/SettingsRegistryTemplate.h"
-#include "draupnir/settings_registry/traits/settings/main_window/MinimizeOnCloseSetting.h"
-#include "draupnir/settings_registry/traits/settings/main_window/MinimizeToTraySetting.h"
+#include "draupnir/SettingsRegistry.h"
 
 // SettingsMenu
 #include "draupnir/ui_bricks/traits/menu_entries/SettingsMenuEntries.h"
 #include "draupnir/ui_bricks/ui/menus/MenuTemplate.h"
 
-// FileHandlers
-#include "draupnir/handlers/settings_menu/SettingsMenuEntriesHandler.h"
-#include "draupnir/handlers/settings_menu/MinimizeOnCloseEntryHandler.h"
-#include "draupnir/handlers/settings_menu/MinimizeToTrayEntryHandler.h"
+#include "draupnir/HandlerTemplates.h"
 
 // Test things
 #include "draupnir-test/handlers/settings_menu/SomeCheckableSettingsEntryHandler.h"
@@ -68,20 +63,23 @@ public:
     using SettingsRegistry = Draupnir::Settings::SettingsRegistryTemplate<
         SomeCustomBoolSetting,
         Draupnir::Settings::MainWindow::MinimizeOnCloseSetting,
-        Draupnir::Settings::MainWindow::MinimizeToTraySetting
+        Draupnir::Settings::MainWindow::MinimizeToTraySetting,
+        Draupnir::Settings::MainWindow::StartHiddenSetting
     >;
     SettingsRegistry registry;
 
     using SettingsMenu = Draupnir::Ui::MenuTemplate<
         SomeCustomCheckableMenuEntry,
         Draupnir::Ui::MinimizeOnCloseEntry,
-        Draupnir::Ui::MinimizeToTrayEntry
+        Draupnir::Ui::MinimizeToTrayEntry,
+        Draupnir::Ui::StartHiddenMenuEntry
     >;
     SettingsMenu menu;
 
     using SettingsMenuHandler = Draupnir::Handlers::SettingsMenuEntriesHandler<
         SettingsRegistry,
         SomeCustomCheckableMenuEntry,
+        Draupnir::Ui::StartHiddenMenuEntry,
         Draupnir::Ui::MinimizeOnCloseEntry,
         Draupnir::Ui::MinimizeToTrayEntry
     >;

@@ -149,7 +149,7 @@ public:
                 return;
 
             const QFileInfo fileInfo(filePath);
-            m_context.template setSetting<Draupnir::Settings::LastUsedDirectorySetting>(fileInfo.dir().path());
+            m_context.updateLastUsedDirectory(fileInfo.dir().path());
             m_context.fileManager()->openFile(fileInfo);
         }
     }

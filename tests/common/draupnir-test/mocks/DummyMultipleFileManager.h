@@ -22,21 +22,22 @@
  *
  */
 
-#include <QtTest>
-#include <QCoreApplication>
+#ifndef DUMMYMULTIPLEFILEMANAGER_H
+#define DUMMYMULTIPLEFILEMANAGER_H
 
-/*! @class FileMenuEntriesHandlerIT
- *  @brief This is a test class for testing basic functionality of the FileMenuEntriesHandler
- *
- * @todo Implement this test to check at least successfull compilation. */
+#include "DummyFileManagerBase.h"
 
-class FileMenuEntriesHandlerIT : public QObject
+/*! @class DummyMultipleFileManager draupnir-test/mocks/DummyMultipleFileManager.h
+ *  @brief This is a base class for MultipleFileManager mocks. */
+
+class DummyMultipleFileManager : public DummyFileManagerBase
 {
-    Q_OBJECT
 public:
-private slots:
+    static constexpr bool canHaveMultipleFilesOpened() { return true; }
+
+    static constexpr bool canOpenMultipleFilesAtOnce() { return true; }
+
+    void openFiles(const QStringList& /*filePaths*/) {}
 };
 
-QTEST_MAIN(FileMenuEntriesHandlerIT)
-
-#include "FileMenuEntriesHandlerIT.moc"
+#endif // DUMMYMULTIPLEFILEMANAGER_H

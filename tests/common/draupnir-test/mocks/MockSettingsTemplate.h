@@ -79,7 +79,9 @@ private:
     template<class First,class... Rest>
     QVariant _valueImpl(const QString& key, const QVariant& defaultValue = QVariant()) {
         if (First::key() == key) {
-            return std::get<Draupnir::Settings::SettingTemplate<First>>(m_dummyTuple).value;
+            return QVariant::fromValue<
+                typename Draupnir::Settings::SettingTemplate<First>::Value
+            >(std::get<Draupnir::Settings::SettingTemplate<First>>(m_dummyTuple).value);
         }
 
         if constexpr (sizeof...(Rest) > 0) {

@@ -33,6 +33,9 @@
 class DummySingleFileManager : public DummyFileManagerBase
 {
 public:
+    static constexpr bool canOpenMultipleFilesAtOnce() { return false; }
+
+    static constexpr bool canHaveMultipleFilesOpened() { return false; }
 };
 
 #endif // DUMMYSINGLEFILEMANAGER_H

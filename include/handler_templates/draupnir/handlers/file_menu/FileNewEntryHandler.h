@@ -82,7 +82,7 @@ public:
                 "FileManager must have hasNothingOpened method.");
         static_assert(FileManagerValidator::has_isCurrentFileSaved<typename FileContext::FileManager>::value,
                 "FileManager must have isCurrentFileSaved method.");
-    };
+    }
 
     /*! @brief Slot called when the "File → New" action is triggered. Implements logic for creating a new file, prompting the
      *         user if needed. */
