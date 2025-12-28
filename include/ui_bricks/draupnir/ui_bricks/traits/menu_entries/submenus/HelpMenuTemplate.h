@@ -3,7 +3,7 @@
 
 #include "draupnir/ui_bricks/ui/menus/MenuTemplate.h"
 
-#include "draupnir/handlers/help_menu/HelpMenuEntriesHandler.h"
+#include "draupnir/ui_bricks/handlers/help_menu/HelpMenuEntriesHandler.h"
 
 namespace Draupnir::Ui
 {

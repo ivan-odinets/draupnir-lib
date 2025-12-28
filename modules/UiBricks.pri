@@ -48,7 +48,32 @@
         $$PWD/../include/ui_bricks/draupnir/ui_bricks/traits/features/CentralWidgetFeatureTemplate.h \
         $$PWD/../include/ui_bricks/draupnir/ui_bricks/traits/features/MenuBarFeatureTemplate.h \
         $$PWD/../include/ui_bricks/draupnir/ui_bricks/traits/menu_entries/submenus/HelpMenuTemplate.h \
-        $$PWD/../include/ui_bricks/draupnir/ui_bricks/traits/menu_entries/submenus/SettingsMenuTemplate.h
+        $$PWD/../include/ui_bricks/draupnir/ui_bricks/traits/menu_entries/submenus/SettingsMenuTemplate.h \
+        $$PWD/../include/ui_bricks/draupnir/ui_bricks/handlers/file_menu/FileCloseEntryHandler.h \
+        $$PWD/../include/ui_bricks/draupnir/ui_bricks/handlers/file_menu/FileExitEntryHandler.h \
+        $$PWD/../include/ui_bricks/draupnir/ui_bricks/handlers/file_menu/FileMenuEntriesHandler.h \
+        $$PWD/../include/ui_bricks/draupnir/ui_bricks/handlers/file_menu/FileNewEntryHandler.h \
+        $$PWD/../include/ui_bricks/draupnir/ui_bricks/handlers/file_menu/FileOpenEntryHandler.h \
+        $$PWD/../include/ui_bricks/draupnir/ui_bricks/handlers/file_menu/FileRecentEntryHandler.h \
+        $$PWD/../include/ui_bricks/draupnir/ui_bricks/handlers/file_menu/FileSaveAsEntryHandler.h \
+        $$PWD/../include/ui_bricks/draupnir/ui_bricks/handlers/file_menu/FileSaveEntryHandler.h \
+        $$PWD/../include/ui_bricks/draupnir/ui_bricks/handlers/help_menu/AboutAppEntryHandler.h \
+        $$PWD/../include/ui_bricks/draupnir/ui_bricks/handlers/help_menu/AboutDraupnirLibEntryHandler.h \
+        $$PWD/../include/ui_bricks/draupnir/ui_bricks/handlers/help_menu/AboutQtEntryHandler.h \
+        $$PWD/../include/ui_bricks/draupnir/ui_bricks/handlers/help_menu/HelpEntryHandler.h \
+        $$PWD/../include/ui_bricks/draupnir/ui_bricks/handlers/help_menu/HelpMenuEntriesHandler.h \
+        $$PWD/../include/ui_bricks/draupnir/ui_bricks/handlers/settings_menu/MinimizeOnCloseEntryHandler.h \
+        $$PWD/../include/ui_bricks/draupnir/ui_bricks/handlers/settings_menu/MinimizeToTrayEntryHandler.h \
+        $$PWD/../include/ui_bricks/draupnir/ui_bricks/handlers/settings_menu/SettingsCheckableEntryHandler.h \
+        $$PWD/../include/ui_bricks/draupnir/ui_bricks/handlers/settings_menu/SettingsMenuEntriesHandler.h \
+        $$PWD/../include/ui_bricks/draupnir/ui_bricks/handlers/settings_menu/StartHiddenEntryHandler.h \
+        $$PWD/../include/ui_bricks/draupnir/ui_bricks/handlers/templates/ActionHandler.h \
+        $$PWD/../include/ui_bricks/draupnir/ui_bricks/handlers/templates/CheckableActionHandler.h \
+        $$PWD/../include/ui_bricks/draupnir/ui_bricks/handlers/templates/CustomMenuHandler.h \
+        $$PWD/../include/ui_bricks/draupnir/ui_bricks/handlers/templates/GenericMenuEntriesHandler.h \
+        $$PWD/../include/ui_bricks/draupnir/ui_bricks/handlers/templates/GenericMenuEntryHandler.h \
+        $$PWD/../include/ui_bricks/draupnir/ui_bricks/utils/FileManagerValidator.h \
+        $$PWD/../include/ui_bricks/draupnir/ui_bricks/utils/SettingTraitForEntry.h
 
     SOURCES += \
         $$PWD/../src/ui_bricks/draupnir/ui/TrayIcon.cpp \
@@ -58,7 +83,6 @@
     DISTFILES += \
         $$PWD/../docs/pages/UiBricks.dox
 }
-
 
 
 

@@ -25,13 +25,16 @@
 #ifndef SOMECHECKABLESETTINGSENTRYHANDLER_H
 #define SOMECHECKABLESETTINGSENTRYHANDLER_H
 
-#include "draupnir/handlers/settings_menu/SettingsCheckableEntryHandler.h"
+#include "draupnir/ui_bricks/handlers/settings_menu/SettingsCheckableEntryHandler.h"
 
 #include "draupnir-test/traits/entries/SomeCheckableMenuEntry.h"
 #include "draupnir-test/traits/settings/SomeCustomBoolSetting.h"
 
 namespace Draupnir::Handlers
 {
+
+template<class Context,class MenuEntry>
+class GenericMenuEntryHandler;
 
 /*! @class GenericMenuEntryHandler<Context,SomeCustomMenuEntryTrait>
  *  @headerfile draupnir-test/handlers/settings_menu/SomeCheckableSettingsEntryHandler.h
