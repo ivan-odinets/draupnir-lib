@@ -31,6 +31,24 @@ using namespace draupnir::utils;
 /*! @class TypeExtractorsTest tests/utils/unit/type_extractors_test/TypeExtractorsTest.cpp
  *  @brief Test class for testing entities present within @ref draupnir/utils/type_extractors.h. */
 
+using MyVector = std::vector<int>;
+using MyTuple = std::tuple<int,double,QString>;
+using MyPair = std::pair<std::tuple<int,double,float>,QString>;
+
+class CustomVector : public MyVector {};
+class CustomTuple : public MyTuple {};
+
+template<bool condition, class IfTrue, class IfFalse>
+struct conditional;
+
+template<class IfTrue,class IfFalse>
+struct conditional<true,IfTrue,IfFalse> { using type = IfTrue; };
+
+template<class IfTrue,class IfFalse>
+struct conditional<false,IfTrue,IfFalse> { using type = IfFalse; };
+
+using test = std::conditional_t<true,void,void>;
+
 class TypeExtractorsTest final : public QObject
 {
     Q_OBJECT
@@ -58,6 +76,16 @@ private slots:
         using ShouldBePair = typename get_template_instantiation<std::pair,
             int,double,MyTuple,float, MyVector, QString, MyPair, QList<int>>::type;
         QCOMPARE((std::is_same_v<ShouldBePair,MyPair>), true);
+    }
+
+    void test_get_base_template_instantiation_or_void() {
+        QCOMPARE((std::is_same_v<get_base_template_instantiation_or_void_t<std::tuple,CustomTuple>, MyTuple>),true);
+        QCOMPARE((std::is_same_v<get_base_template_instantiation_or_void_t<std::tuple,CustomVector>, void>),true);
+
+        QCOMPARE((std::is_same_v<get_base_template_instantiation_or_void_t<std::vector,CustomVector>, MyVector>),true);
+        QCOMPARE((std::is_same_v<get_base_template_instantiation_or_void_t<std::vector,CustomTuple>, void>),true);
+
+        QCOMPARE((std::is_same_v<get_base_template_instantiation_or_void_t<std::vector,void>, void>),true);
     }
 };
 

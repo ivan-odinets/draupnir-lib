@@ -10,6 +10,7 @@ SUBDIRS += \
     unit/tuple_like_merge_test \
     unit/type_extractors_test \
     unit/type_list_test \
+    unit/type_if_test \
     unit/type_presense_test
 
 

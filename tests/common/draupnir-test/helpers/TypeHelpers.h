@@ -22,35 +22,22 @@
  *
  */
 
+#ifndef TYPE_HELPERS_H
+#define TYPE_HELPERS_H
+
 #include <QtTest>
 
-#include "draupnir/utils/filter_if.h"
-#include "draupnir/utils/type_presense.h"
+#include <type_traits>
 
-using namespace draupnir::utils;
+#include "draupnir/utils/type_name_utils.h"
 
-/*! @class FilterIfTest tests/utils/unit/filter_if_test/FilterIfTest.cpp
- *  @brief Test class for testing entities present within @ref draupnir/utils/filter_if_test.h. */
+#define TYPE_COMPARE(actual, expected) \
+    do {\
+        if (!QTest::qCompare(std::is_same_v<actual,expected>,true, \
+            draupnir::utils::type_pretty_name<actual>().c_str(), \
+            draupnir::utils::type_pretty_name<expected>().c_str(), \
+            __FILE__,__LINE__)) \
+        return;\
+    } while (false);
 
-class FilterIfTest final : public QObject
-{
-    Q_OBJECT
-public:
-    FilterIfTest() = default;
-    ~FilterIfTest() final = default;
-
-private slots:
-    void test_filter_if() {
-        using Result = filter_if<std::is_floating_point,double,int,char,float>::to_container<std::tuple>;
-
-        QCOMPARE(std::tuple_size_v<Result>,std::size_t{2});
-        QCOMPARE((is_type_in_tuple_v<int,Result>), false);
-        QCOMPARE((is_type_in_tuple_v<char,Result>), false);
-        QCOMPARE((is_type_in_tuple_v<double,Result>), true);
-        QCOMPARE((is_type_in_tuple_v<float,Result>), true);
-    }
-};
-
-QTEST_APPLESS_MAIN(FilterIfTest)
-
-#include "FilterIfTest.moc"
+#endif // TYPE_HELPERS_H

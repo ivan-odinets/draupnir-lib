@@ -53,6 +53,9 @@ public:
     ~ArgumentedConstructor() = default;
 };
 
+class CustomVector : public std::vector<int> {};
+class CustomTuple : public std::tuple<int,double,float> {};
+
 /*! @class TemplateDetectorsTest tests/utils/unit/template_detectors_test/TemplateDetectorsTest.cpp
  *  @brief Test class for testing entities present within @ref draupnir/utils/template_detectors.h. */
 
@@ -92,6 +95,20 @@ private slots:
         // Check that vector is not tuple
         QCOMPARE((is_instantiation_of<VectorOne,std::tuple>::value), false);
         QCOMPARE((is_instantiation_of_v<VectorOne,std::tuple>), false);
+    }
+
+    void test_is_template_base_of() {
+        QCOMPARE((is_template_base_of<std::vector,CustomVector>::value),true);
+        QCOMPARE((is_template_base_of_v<std::vector,CustomVector>),true);
+
+        QCOMPARE((is_template_base_of<std::list,CustomVector>::value),false);
+        QCOMPARE((is_template_base_of_v<std::list,CustomVector>),false);
+
+        QCOMPARE((is_template_base_of<std::tuple,CustomTuple>::value),true);
+        QCOMPARE((is_template_base_of_v<std::tuple,CustomTuple>),true);
+
+        QCOMPARE((is_template_base_of<std::pair,CustomTuple>::value),false);
+        QCOMPARE((is_template_base_of_v<std::pair,CustomTuple>),false);
     }
 
     void test_is_tuple() {

@@ -27,6 +27,7 @@
 
 #include <iostream>
 
+#include "draupnir/utils/class_marcos.h"
 #include "draupnir/utils/index_of.h"
 #include "draupnir/utils/type_presense.h"
 
@@ -69,25 +70,33 @@ namespace draupnir::utils
 template<class... Ts>
 class type_list
 {
-    /*! @brief Deleted default constructor to enforce purely type-level usage. */
-    type_list() = delete;
-
-    /*! @brief Deleted destructor to enforce purely type-level usage. */
-    ~type_list() = delete;
-
-    /*! @brief Deleted copy constructor. */
-    type_list(const type_list<Ts...>&) = delete;
-
-    /*! @brief Deleted move constructor. */
-    type_list(type_list<Ts...>&&) = delete;
-
-    /*! @brief Deleted copy-assignment operator. */
-    type_list<Ts...>& operator=(const type_list<Ts...>&) = delete;
+    DEFINE_COMPILE_TIME(type_list);
 
 protected:
     /*! @brief Grant access to other @ref type_list instantiations for internal helpers. */
     template<class... Us>
     friend class type_list;
+
+    /*! @struct from_template_instantiation
+     *  @brief Implementation detail: extracts template type arguments from a class template instantiation into a @ref type_list.
+     *  @tparam Type Type to be inspected.
+     *  @details The primary template is a fallback that yields an empty @ref type_list for arbitrary `Type`. A partial specialization
+     *           is provided for types of the form `SourceTemplate<Args...>`, in which case the nested alias `result` is defined as
+     *           `type_list<Args...>`. */
+    template<class Type>
+    struct from_template_instantiation {
+        using result = type_list<>;
+    };
+
+    /*! @brief Partial specialization of @ref from_template_instantiation for class template instantiations.
+     *  @tparam SourceTemplate Class template being inspected.
+     *  @tparam Args...        Template arguments used to instantiate @p SourceTemplate.
+     *  @details When `Type` is of the form `SourceTemplate<Args...>`, this specialization exposes the pack `Args...` as
+     *           `type_list<Args...>` via the nested alias `result`. */
+    template<template <class...> class SourceTemplate, class... Args>
+    struct from_template_instantiation<SourceTemplate<Args...>> {
+        using result = type_list<Args...>;
+    };
 
     /*! @struct get
      *  @brief Implementation detail: recursively retrieves the type at the given index.
@@ -286,6 +295,12 @@ protected:
         struct as : std::is_same<Type,Other> {};
     };
 
+    template<template<class...> class Template>
+    struct is_instantiation {
+        template<class T>
+        struct of : draupnir::utils::is_instantiation_of<T,Template> {};
+    };
+
     /*! @struct filter_if
      *  @brief Implementation detail: retains only those types that satisfy a unary type trait `Condition`.
      *  @tparam Condition    Unary trait template of the form `template<class> class Condition`.
@@ -372,6 +387,24 @@ protected:
     };
 
 public:
+    /*! @ingroup Utils
+     *  @brief Convenience alias for @ref from_template_instantiation.
+     *
+     *  @tparam Type Type to be inspected.
+     *
+     *  @details Equivalent to `typename from_template_instantiation<Type>::result`. */
+    /*      *           This metafunction is useful when you have an instantiation of some variadic class template and want
+     *           to re-use its template arguments as a @ref type_list for further compile-time processing.
+     *
+     *           Example:
+     *           @code
+     *           using Tuple = std::tuple<int, double, char>;
+     *           using Args  = typename from_template_instantiation<Tuple>::result;
+     *           // Args == type_list<int, double, char>
+     *           @endcode */
+    template<class Type>
+    using from_template_instantiation_t = typename from_template_instantiation<Type>::result;
+
     /*! @brief Number of types stored in this @ref type_list. */
     inline static constexpr std::size_t size_v = sizeof...(Ts);
 
