@@ -2,7 +2,7 @@
  **********************************************************************************************************************
  *
  * draupnir-lib
- * Copyright (C) 2025 Ivan Odinets <i_odinets@protonmail.com>
+ * Copyright (C) 2025-2026 Ivan Odinets <i_odinets@protonmail.com>
  *
  * This file is part of draupnir-lib
  *
@@ -29,6 +29,8 @@
 
 #include "draupnir/utils/class_marcos.h"
 #include "draupnir/utils/index_of.h"
+#include "draupnir/utils/template_adapters.h"
+#include "draupnir/utils/type_if.h"
 #include "draupnir/utils/type_presense.h"
 
 namespace draupnir::utils
@@ -59,13 +61,7 @@ namespace draupnir::utils
  *
  *  @note All operations are performed entirely at compile time and introduce no runtime overhead.
  *  @note The public interface follows the common `_t` / `_v` naming convention, mirroring the style of the standard library’s
- *        type traits (e.g. `std::is_same_v`, `std::remove_cv_t`).
- *
- * @todo Add take_first_t / drop_first_t / take_last_t / drop_last_t / slice_t / find_if_index_v - return index of element if
- *       condition is true / count_if_v<Pred> - count amount of types if predicate is true / is_subset_of_v<Other> /
- *       is_superset_of_v<Other> / is_disjoint_with_v<Other> / union_t<Other> / intersection_t<Other> / difference_t<Other> /
- * @todo Add global concat / merge "methods" ?
- * @todo Extend the test. */
+ *        type traits (e.g. `std::is_same_v`, `std::remove_cv_t`). */
 
 template<class... Ts>
 class type_list
@@ -77,25 +73,77 @@ protected:
     template<class... Us>
     friend class type_list;
 
-    /*! @struct from_template_instantiation
-     *  @brief Implementation detail: extracts template type arguments from a class template instantiation into a @ref type_list.
-     *  @tparam Type Type to be inspected.
-     *  @details The primary template is a fallback that yields an empty @ref type_list for arbitrary `Type`. A partial specialization
-     *           is provided for types of the form `SourceTemplate<Args...>`, in which case the nested alias `result` is defined as
-     *           `type_list<Args...>`. */
+    /*! @struct contains
+     *  @brief Implementation detail: wraps @ref draupnir::utils::is_one_of for the current parameter pack.
+     *  @tparam Type Type to test for membership.
+     *  @details This helper adapts the global @ref draupnir::utils::is_one_of trait to the context of the current @ref type_list
+     *           instantiation. For a given `Type` it exposes a `value` member that is `true` if `Type` is one of `Ts...`,  and
+     *           `false` otherwise. */
     template<class Type>
-    struct from_template_instantiation {
-        using result = type_list<>;
+    struct contains : is_one_of<Type,Ts...> {};
+
+    /*! @struct index_of_impl
+     *  @brief Thin wrapper around @ref draupnir::utils::index_of_v , but providing static_assert within @ref type_list if there
+     *         is no elements of type `Type` within `Ts...` pack. */
+    template<class Type, class... Args>
+    struct index_of_impl {
+        static_assert(draupnir::utils::is_one_of_v<Type,Ts...>,
+            "type_list<class... Ts>::index_of_impl - There is no Type within the Ts... pack.");
+
+        static constexpr std::size_t value = draupnir::utils::index_of_v<Type,Args...>;
     };
 
-    /*! @brief Partial specialization of @ref from_template_instantiation for class template instantiations.
-     *  @tparam SourceTemplate Class template being inspected.
-     *  @tparam Args...        Template arguments used to instantiate @p SourceTemplate.
-     *  @details When `Type` is of the form `SourceTemplate<Args...>`, this specialization exposes the pack `Args...` as
-     *           `type_list<Args...>` via the nested alias `result`. */
-    template<template <class...> class SourceTemplate, class... Args>
-    struct from_template_instantiation<SourceTemplate<Args...>> {
-        using result = type_list<Args...>;
+    /*! @struct index_of_first_if
+     *  @brief Implementation detail: finds the index of the first type satisfying a unary predicate.
+     *  @tparam Condition Unary trait template of the form `template<class> class Condition`.
+     *  @tparam Current   Current index in the recursion.
+     *  @tparam Args...   Remaining types to be inspected.
+     *  @details This metafunction performs a linear scan over a parameter pack, starting from the logical index `Current`. For
+     *           each type `T` in `Args...` it evaluates `Condition<T>::value`:
+     *           - if `true`, the current index is reported via the static constexpr member `value`;
+     *           - otherwise, it recurses with `Current + 1` on the tail of the pack.
+     *
+     *           A specialization for an empty pack provides the recursion terminator and defines the fallback index (currently
+     *           `0`). The public alias @ref type_list::index_of_first_if_v is built on top of this helper and always starts
+     *           with `Current == 0`. */
+    template<template<class> class Condition, std::size_t Current, class... Args>
+    struct index_of_first_if;
+
+    /*! @brief Base specialization of @ref index_of_first_if for an empty pack.
+     *  @details When no types remain to be checked, `static_assert` happens. */
+    template<template<class> class Condition, std::size_t Current>
+    struct index_of_first_if<Condition,Current> {
+        static_assert((Condition<Ts>::value || ...),
+            "type_list<class... Ts>::index_of_first_if - None of the elements satisfies provided Condition.");
+
+        static inline constexpr std::size_t value = 0;
+    };
+
+    /*! @brief Recursive specialization of @ref index_of_first_if for a non-empty pack.
+     *  @details If `Condition<First>::value` is `true`, the search stops and `value` is equal to `Current`. Otherwise, the search
+     *           continues with `Rest...` and `Current + 1`. */
+    template<template<class> class Condition, std::size_t Current, class First, class... Rest>
+    struct index_of_first_if<Condition,Current,First,Rest...> {
+        static inline constexpr std::size_t value = (Condition<First>::value) ?
+            Current : index_of_first_if<Condition,Current+1,Rest...>::value;
+    };
+
+    /*! @struct count_if
+     *  @brief Implementation detail: counts amount of elements for which Condition<Element>::value is evaluated to `true`. */
+    template<template <class> class Condition, class... Args>
+    struct count_if {
+        static inline constexpr int value = 0;
+    };
+
+    /*! @struct count_if
+     *  @brief Implementation detail: counts amount of elements for which Condition<Element>::value is evaluated to `true`. */
+    template<template <class> class Condition, class First, class... Rest>
+    struct count_if<Condition,First,Rest...> {
+    private:
+        static inline constexpr int _rest_value = count_if<Condition,Rest...>::value;
+    public:
+        static inline constexpr int value = (Condition<First>::value) ?
+                _rest_value + 1 : _rest_value;
     };
 
     /*! @struct get
@@ -103,7 +151,6 @@ protected:
      *  @tparam Index   Target zero-based index.
      *  @tparam Current Current index in the recursion.
      *  @tparam Pack    Remaining types to traverse.
-     *
      *  @details The primary template and its specializations form a recursive metafunction that walks the parameter pack until
      *           `Current` equals `Index`, at which point the corresponding type is exposed via the nested alias `result`. If
      *           the recursion reaches the end of the pack without finding the requested index, a `static_assert` is triggered. */
@@ -127,7 +174,10 @@ protected:
      *           @ref type_list instantiation. */
     template<std::size_t Index, std::size_t Current>
     struct get<Index,Current> {
-        static_assert(Index < sizeof...(Ts),"Index out of range compiler error.");
+        static_assert(sizeof...(Ts) != 0,
+            "type_list<class... Ts>::get - This is not supported for empty type_list.");
+        static_assert(Index < sizeof...(Ts),
+            "type_list<class... Ts>::get - Index out of range.");
 
         using result = void;
     };
@@ -168,7 +218,6 @@ protected:
      *  @tparam Output  Accumulator list built so far (always an instantiation of @ref type_list).
      *  @tparam Type    Type to be inserted.
      *  @tparam Us...   Remaining types from the original parameter pack that have not yet been processed.
-     *
      *  @details This metafunction is used by the public alias @ref type_list::insert_before_t. Conceptually, it walks through the
      *           original sequence `Ts...`, copying elements into `Output` one by one until `Output::size_v == Index`. At that point,
      *           `Type` is placed in front of the remaining unprocessed elements.
@@ -191,9 +240,10 @@ protected:
      *           effectively rejecting out-of-range indices (including insertion "at the end"). */
     template<std::size_t Index, class Output, class Type>
     struct insert_before<Index,Output,Type> {
-        static_assert(Index < Output::size_v);
+        static_assert((Index == 0 && sizeof...(Ts) == 0) || Index < sizeof...(Ts),
+            "type_list<class... Ts>::insert_before - trying to insert element outside of list boundaries.");
 
-        using result = void;
+        using result = type_list<Type>;
     };
 
     /*! @brief Recursive specialization of @ref type_list::insert_before.
@@ -230,10 +280,10 @@ protected:
 
     /*! @brief Base specialization of @ref type_list::remove_at for an exhausted pack.
      *  @details Instantiated only if the recursion has consumed all elements without matching `Index`, in which case `Index` is
-     *           necessarily out of bounds. The `static_assert` emits a clear compile-time diagnostic. */
+     *           necessarily out of bounds. */
     template<std::size_t Index, std::size_t Current>
     struct remove_at<Index,Current> {
-        static_assert(Index < sizeof...(Ts),"Index out of range compiler error.");
+        static_assert(Index < sizeof...(Ts),"type_list<class... Ts>::remove_at - Index out of bounds.");
 
         using result = void;
     };
@@ -284,23 +334,6 @@ protected:
         >;
     };
 
-    /*! @struct the_same
-     *  @brief Implementation detail: builds a unary predicate that checks for equality with a fixed type.
-     *  @tparam Type Reference type to compare against.
-     *  @details Given a `Type`, this helper defines a nested template `as<Other>` which is a `std::is_same<Type, Other>`. It is
-     *           primarily used as an adapter to feed into @ref type_list::remove_if when implementing @ref type_list::remove_all_t. */
-    template<class Type>
-    struct the_same {
-        template<class Other>
-        struct as : std::is_same<Type,Other> {};
-    };
-
-    template<template<class...> class Template>
-    struct is_instantiation {
-        template<class T>
-        struct of : draupnir::utils::is_instantiation_of<T,Template> {};
-    };
-
     /*! @struct filter_if
      *  @brief Implementation detail: retains only those types that satisfy a unary type trait `Condition`.
      *  @tparam Condition    Unary trait template of the form `template<class> class Condition`.
@@ -325,6 +358,54 @@ protected:
             typename type_list<First>::template append_t<typename filter_if<Condition, Rest...>::result>,
             typename filter_if<Condition, Rest...>::result
         >;
+    };
+
+    /*! @struct slice
+     *  @brief Implementation detail: extracts a contiguous subrange of types as a @ref type_list.
+     *  @tparam First    Zero-based index of the first element to keep (inclusive).
+     *  @tparam Last     Zero-based index of the last  element to keep (inclusive).
+     *  @tparam Current  Current index in the recursion while walking the parameter pack.
+     *  @tparam Args...  Remaining types to traverse.
+     *  @details This helper is used by the public alias @ref type_list::slice_t. Conceptually, it walks the pack `Args...` while
+     *           maintaining a running index `Current`. For each element:
+     *           - if `Current` is in the range [`First`, `Last`], that element is included into the resulting @ref type_list;
+     *           - otherwise the element is skipped.
+     *
+     *           When the input pack is exhausted, the base specialization yields an empty @ref type_list, and the recursion folds
+     *           back, building the final subrange in order. */
+    template<std::size_t First, std::size_t Last, std::size_t Current, class... Args>
+    struct slice;
+
+    /*! @brief Base specialization of @ref slice for an exhausted input pack.
+     *  @details When no types remain to be processed, the resulting subrange is the empty @ref type_list. */
+    template<std::size_t First, std::size_t Last, std::size_t Current>
+    struct slice<First,Last,Current> {
+        static_assert(First <= sizeof...(Ts) && First <= Last && (Last == 0 || Last < sizeof...(Ts)),
+            "type_list<class... Ts>::slice - [First,Last] should be within range of type_list indexes.");
+
+        using result = type_list<>;
+    };
+
+    /*! @brief Recursive specialization of @ref slice that processes one element at a time.
+     *  @tparam From     Lower bound of the slice (inclusive).
+     *  @tparam To       Upper bound of the slice (inclusive).
+     *  @tparam Current  Index of the current element being inspected.
+     *  @tparam First    Current head type of the remaining input pack.
+     *  @tparam Rest...  Tail of the remaining input pack.
+     *  @details The recursion first computes the sliced tail for `Rest...` at `Current + 1`, and then:
+     *           - if `Current` is within [`From`, `To`], it prepends `First` to the processed tail;
+     *           - otherwise, it simply returns the processed tail unchanged.
+     *
+     *           This produces a @ref type_list containing exactly the types in positions [`From`, `To`] of the original pack, in
+     *           their original order. */
+    template<std::size_t From, std::size_t To, std::size_t Current, class First, class... Rest>
+    struct slice<From,To,Current,First,Rest...> {
+        using processed_tail = typename slice<From,To,Current+1,Rest...>::result;
+
+        using result = typename type_if<Current >= From && Current <= To>
+            ::template then_type<typename processed_tail::template push_front_t<First>>
+            ::template else_type<processed_tail>
+        ::result;
     };
 
     /*! @struct unique_types
@@ -352,6 +433,62 @@ protected:
             typename unique_types<typename Output::template push_back_t<First>,Rest...>::result
         >;
     };
+
+    /*! @struct is_subset_of
+     *  @brief Implementation detail: checks whether this type sequence is a subset of another @ref type_list.
+     *  @tparam Other     Candidate superset type. Must be an instantiation of @ref type_list.
+     *  @tparam ThisArgs  Types from the “current” list being tested for subset relation.
+     *  @details The primary template acts as a guard: it triggers a `static_assert` unless `Other` is an instantiation of @ref
+     *           type_list. This enforces correct usage of the metafunction.
+     *
+     *           A partial specialization is provided for the case when `Other` is @ref type_List instantiation. In this case,
+     *           the metafunction inherits from `std::bool_constant` whose `value` is `true` when every type in `ThisArgs...`
+     *           is present in `OtherTs...` (treating the “current” @ref type_list as a subset of @p Other). For an empty
+     *           `ThisArgs...` pack this condition evaluates to `true` as well, which matches the usual set-theoretic convention
+     *           that the empty set is a subset of any set. */
+    template<class Other, class... ThisArgs>
+    struct is_subset_of : std::false_type {
+        static_assert(is_instantiation_of_v<Other,type_list>,
+            "type_list<class... Ts>::is_subset_of - Other must be instantiation of type_list<class... Ts> template.");
+    };
+
+    /*! @brief Partial specialization of @ref is_subset_of for `Other` being a @ref type_list.
+     *  @tparam OtherTs   Types stored in the `Other` list.
+     *  @tparam ThisArgs  Types from the “current” @ref type_list being tested.
+     *  @details The metafunction inherits from `std::bool_constant` whose `value` equals to `type_list<OtherTs...>::template
+     *           contains<ThisArgs>::value && ... )` i.e. all types in @p ThisArgs... must be contained in @p OtherTs.... */
+    template<class... OtherTs,class... ThisArgs>
+    struct is_subset_of<type_list<OtherTs...>,ThisArgs...> : std::bool_constant<
+        (type_list<OtherTs...>::template contains<ThisArgs>::value && ...)
+    > {};
+
+    /*! @struct is_superset_of
+     *  @brief Implementation detail: checks whether this type sequence is a superset of another @ref type_list.
+     *  @tparam Other     Candidate subset type. Must be an instantiation of @ref type_list.
+     *  @tparam ThisArgs  Types from the “curren"" list, i.e. the one being tested as a potential superset.
+     *  @details The primary template acts as a guard: it triggers a `static_assert` unless `Other` is an instantiation of @ref
+     *           type_list. This enforces correct usage of the metafunction.
+     *
+     *           A partial specialization is provided for the case when `Other` is a @ref type_list instantiation. In this case,
+     *           the metafunction inherits from `std::bool_constant` whose `value` is `true` when every type in `OtherTs...` is
+     *           present in `ThisArgs...` (treating the "current" @ref type_list as a superset of `Other`). In case when the
+     *           `OtherTs...` pack is empty this condition evaluates to `true` as well, which matches the usual set-theoretic
+     *           convention that the empty set is a subset of any set (and thus any list is its superset). */
+    template<class Other, class... ThisArgs>
+    struct is_superset_of : std::false_type {
+        static_assert(is_instantiation_of_v<Other,type_list>,
+            "type_list<class... Ts>::is_superset_of - Other must be instantiation of type_list<class... Ts> template.");
+    };
+
+    /*! @brief Partial specialization of @ref is_superset_of for `Other` being a @ref type_list.
+     *  @tparam OtherTs   Types stored in the `Other` list (candidate subset).
+     *  @tparam ThisArgs  Types from the “current” @ref type_list being tested as a superset.
+     *  @details The metafunction inherits from `std::bool_constant` whose `value` equals `( type_list<ThisArgs...>::template
+     *           contains<OtherTs>::value && ... )`, i.e. all types in `OtherTs...` must be contained in `ThisArgs...`. */
+    template<class... OtherTs,class... ThisArgs>
+    struct is_superset_of<type_list<OtherTs...>,ThisArgs...> : std::bool_constant<
+        (type_list<ThisArgs...>::template contains<OtherTs>::value && ...)
+    > {};
 
     /*! @struct reverse
      *  @brief Implementation detail: reverses the order of a pack of types into an accumulator.
@@ -386,25 +523,75 @@ protected:
         using result = typename Output::template push_back_t<First>::template prepend_t<typename reverse<Output,Rest...>::result>;
     };
 
-public:
-    /*! @ingroup Utils
-     *  @brief Convenience alias for @ref from_template_instantiation.
+    /*! @struct union_impl
+     *  @brief Implementation detail: computes the set-theoretic union of two @ref type_list sequences.
+     *  @tparam Other   Another type sequence, expected to be an instantiation of @ref type_list.
+     *  @tparam ThisTs  Types from the “current” list participating in the union.
+     *  @details The primary template is left undefined and is only specialized for the case when `Other` is a @ref type_list. The
+     *           specialization takes all types from the “current” list (`ThisTs...`) and from `Other` (`OtherTs...`), concatenates
+     *           them into a single pack, and then passes that pack into @ref unique_types with an initially empty accumulator.
      *
-     *  @tparam Type Type to be inspected.
-     *
-     *  @details Equivalent to `typename from_template_instantiation<Type>::result`. */
-    /*      *           This metafunction is useful when you have an instantiation of some variadic class template and want
-     *           to re-use its template arguments as a @ref type_list for further compile-time processing.
-     *
-     *           Example:
-     *           @code
-     *           using Tuple = std::tuple<int, double, char>;
-     *           using Args  = typename from_template_instantiation<Tuple>::result;
-     *           // Args == type_list<int, double, char>
-     *           @endcode */
-    template<class Type>
-    using from_template_instantiation_t = typename from_template_instantiation<Type>::result;
+     *           The resulting type thus contains each distinct type from `ThisTs...` and `OtherTs...` at most once, preserving
+     *           the order of their first appearance. Conceptually, this corresponds to the set-theoretic union of two type sets. */
+    template<class Other,class... ThisTs>
+    struct union_impl {
+        static_assert(is_instantiation_of_v<Other,type_list>,
+            "type_list<class... Ts>::union_impl - Other must be instantiation of type_list<class... Ts> template.");
+    };
 
+    /*! @brief Partial specialization of @ref union_impl for `Other` being a @ref type_list.
+     *  @tparam OtherTs Types contained in the `Other` list.
+     *  @tparam ThisTs  Types from the “current” list.
+     *  @details Inherits from @ref unique_types instantiated with an empty accumulator and the concatenated parameter pack `ThisTs...,
+     *           OtherTs...`. */
+    template<class... OtherTs, class... ThisTs>
+    struct union_impl<type_list<OtherTs...>,ThisTs...> : unique_types<type_list<>,ThisTs...,OtherTs...> {};
+
+    /*! @struct intersection
+     *  @brief Implementation detail: computes the set-theoretic intersection with another @ref type_list.
+     *  @tparam Other   Candidate type sequence to intersect with. Must be an instantiation of @ref type_list.
+     *  @tparam ThisTs  Types from the "current" list participating in the intersection.
+     *  @details The primary template serves as a guard and is only valid when `Other` is a @ref type_list. Any other use triggers a
+     *           `static_assert`, making misuse of the metafunction immediately visible. */
+    template<class Other,class... ThisTs>
+    struct intersection {
+        static_assert(is_instantiation_of_v<Other,type_list>,
+            "type_list<class... Ts>::intersection - Other must be instantiation of type_list<class... Ts> template.");
+    };
+
+    /*! @brief Base specialization of @ref intersection for an empty "current" list.
+     *  @tparam OtherTs Types contained in the `Other` list.
+     *  @details When there are no `ThisTs...` to process, the intersection is empty by definition, so the nested alias `result` is
+     *           an empty @ref type_list. */
+    template<class... OtherTs>
+    struct intersection<type_list<OtherTs...>> {
+        using result = type_list<>;
+    };
+
+    /*! @brief Recursive specialization of @ref intersection for non-empty "current" list.
+     *  @tparam OtherTs       Types contained in the `Other` list.
+     *  @tparam FirstThisTs   First type of the "current" list being inspected.
+     *  @tparam RestThisTs... Remaining types of the "current" list.
+     *  @details The recursion proceeds left-to-right over `FirstThisTs, RestThisTs...`. For each `FirstThisTs`:
+     *           - it first computes the intersection of `RestThisTs...` with `type_list<OtherTs...>` into `tail`;
+     *           - then, if `FirstThisTs` is contained in `OtherTs...` *and* is not yet present in `tail`, it is
+     *             prepended to `tail`. Otherwise, `tail` is propagated unchanged.
+     *
+     *             This yields a deduplicated intersection that preserves the order of first appearance from the "current" list
+     *             `ThisTs...`. */
+    template<class... OtherTs,class FirstThisTs, class... RestThisTs>
+    struct intersection<type_list<OtherTs...>,FirstThisTs,RestThisTs...> {
+    private:
+        using tail = typename intersection<type_list<OtherTs...>,RestThisTs...>::result;
+    public:
+        using result = typename type_if<
+                type_list<OtherTs...>::template contains<FirstThisTs>::value && !tail::template contains<FirstThisTs>::value
+            >::template then_type<typename tail::template push_front_t<FirstThisTs>>
+             ::template else_type<tail>
+        ::result;
+    };
+
+public:
     /*! @brief Number of types stored in this @ref type_list. */
     inline static constexpr std::size_t size_v = sizeof...(Ts);
 
@@ -416,7 +603,7 @@ public:
      *  @details Evaluates to `true` if `Type` is exactly equal to at least one of `Ts...`, and to `false` otherwise. Internally,
      *           this relies on @ref draupnir::utils::is_one_of_v. */
     template<class Type>
-    inline static constexpr bool contains_v = is_one_of_v<Type,Ts...>;
+    inline static constexpr bool contains_v = contains<Type>::value;
 
     /*! @brief Compile-time check for membership of a instantiation of a given template.
      *  @tparam Template     Template to test for presence in the list.
@@ -449,9 +636,28 @@ public:
     /*! @brief Compile-time index lookup of a type within the list.
      *  @tparam Type    Type whose index is to be determined.
      *  @details Produces the zero-based index of `Type` within `Ts...`, assuming it is present. The actual computation is delegated
-     *           to @ref draupnir::utils::index_of_v. If `Type` is not present in `Ts...` - copile error will happen. */
+     *           to @ref draupnir::utils::index_of_v (Through internal structure @ref index_of_impl). If `Type` is not present in
+     *           `Ts...` - `static_assert` will happen. */
     template<class Type>
-    inline static constexpr std::size_t index_of_v = draupnir::utils::index_of_v<Type,Ts...>;
+    inline static constexpr std::size_t index_of_v = index_of_impl<Type,Ts...>::value;
+
+    /*! @brief Index of the first element satisfying a unary predicate.
+     *  @tparam Condition Unary type trait of the form `template<class> class Condition`.
+     *  @details Computes the zero-based index of the first type `T` in `Ts...` for which `Condition<T>::value` is `true`, by
+     *           delegating to the internal @ref index_of_first_if metafunction with an initial `Current` index of `0`.
+     *
+     *           If no type in the list satisfies `Condition`, `static_assert` happens. */
+    template<template<class> class Condition>
+    inline static constexpr std::size_t index_of_first_if_v = index_of_first_if<Condition,0,Ts...>::value;
+
+    /*! @brief Counts amount of elements for which Predicate<Element>::value is evaluated to `true`. */
+    template<template<class> class Condition>
+    inline static constexpr int count_if_v = count_if<Condition,Ts...>::value;
+
+    /*! @brief Counts amount of occurrences of a specific type.
+     *  @tparam Type Type to be counted. */
+    template<class Type>
+    inline static constexpr int count_v = count_if_v<the_same<Type>::template as>;
 
     /*! @brief Retrieves the type at a given index in the list.
      *  @tparam Index Zero-based index of the element to access.
@@ -529,6 +735,17 @@ public:
     template<template<class> class Condition>
     using filter_if_t = typename filter_if<Condition,Ts...>::result;
 
+    /*! @brief Extracts a contiguous subrange of types as a new @ref type_list.
+     *  @tparam First Zero-based index of the first element to include (inclusive).
+     *  @tparam Last  Zero-based index of the last element to include (inclusive).
+     *  @details Delegates to the internal @ref slice metafunction, starting with `Current == 0`, and produces a @ref type_list
+     *           consisting of all types `Ts...` whose indices satisfy `First <= index <= Last`.
+     *
+     *           If `First` and `Last` are outside the bounds of the list, the behavior is defined by the underlying @ref slice
+     *           implementation - `static_assert`. */
+    template<std::size_t First,std::size_t Last>
+    using slice_t = typename slice<First,Last,0,Ts...>::result;
+
     /*! @brief Converts the stored types into another variadic class template.
      *  @tparam Container    Variadic class template of the form `template<class...> class Container`.
      *  @details Instantiates `Container` with the types `Ts...`, effectively reusing the type sequence in a different container
@@ -549,11 +766,119 @@ public:
      *           @ref type_list contains each distinct type from `Ts...` at most once, in the order of their first appearance. */
     using unique_types_t = typename unique_types<type_list<>,Ts...>::result;
 
+    /*! @brief Compile-time check whether this list is a subset of another @ref type_list.
+     *  @tparam Other Candidate superset. Must be an instantiation of @ref type_list.
+     *  @details Equivalent to @ref is_subset_of<Other,Ts...>::value. Evaluates to `true` when every type in this @ref type_list
+     *           appears in `Other` (treating this list as a subset of `Other`), and `false` otherwise. */
+    template<class Other>
+    static inline constexpr bool is_subset_of_v = is_subset_of<Other,Ts...>::value;
+
+    /*! @brief Compile-time check whether this list is a superset of another @ref type_list.
+     *  @tparam Other Candidate subset. Must be an instantiation of @ref type_list.
+     *  @details Equivalent to @ref is_superset_of<Other,Ts...>::value. Evaluates to `true` when every type in `Other` appears in
+     *           this @ref type_list (treating this list as a superset of `Other`), and `false` otherwise. */
+    template<class Other>
+    static inline constexpr bool is_superset_of_v = is_superset_of<Other,Ts...>::value;
+
     /*! @brief Reversed version of this @ref type_list.
      *  @details Alias to the nested `result` of the internal @ref type_list::reverse metafunction with an initially empty accumulator.
      *           The resulting type is a @ref type_list where the order of `Ts...` is reversed. */
     using reverse_t = typename reverse<type_list<>,Ts...>::result;
+
+    /*! @brief Set-theoretic union of this @ref type_list with another.
+     *  @tparam Other Other list to be combined with. Must be an instantiation of @ref type_list.
+     *  @details Delegates to the internal @ref union_impl metafunction, producing a @ref type_list that contains all types from this
+     *           list and `Other`, with duplicates removed according to @ref unique_types. */
+    template<class Other>
+    using union_t = typename union_impl<Other,Ts...>::result;
+
+    /*! @brief Set-theoretic intersection of this @ref type_list with another.
+     *  @tparam Other Other list to intersect with. Must be an instantiation of @ref type_list.
+     *  @details Delegates to the internal @ref intersection metafunction, producing a @ref type_list that contains exactly those types
+     *           that appear both in this list and in `Other`. Duplicates are removed; order is defined by the @ref intersection
+     *           implementation (typically driven by the order of this list). */
+    template<class Other>
+    using intersection_t = typename intersection<Other,Ts...>::result;
 };
+
+/*! @struct type_list_from_template_instantiation draupnir/utils/type_list.h
+ *  @brief Extracts template type arguments from a class template instantiation into a @ref type_list.
+ *  @tparam Type Type to be inspected.
+ *  @details The primary template is a fallback that yields an empty @ref type_list for arbitrary `Type`. A partial specialization
+ *           is provided for types of the form `SourceTemplate<Args...>`, in which case the nested alias `result` is defined as
+ *           `type_list<Args...>`. */
+template<class Type>
+struct type_list_from_template_instantiation {
+    static_assert(!std::is_same_v<Type,Type>,
+        "type_list_from_template_instantiation<class Type> - Provided Type should be instantiation of some template in a form "\
+        "template<class... Args> Template.");
+
+    using result = type_list<>;
+};
+
+/*! @brief Partial specialization of @ref type_list_from_template_instantiation for class template instantiations.
+ *  @tparam SourceTemplate Class template being inspected.
+ *  @tparam Args...        Template arguments used to instantiate `SourceTemplate`.
+ *  @details When `Type` is of the form `SourceTemplate<Args...>`, this specialization exposes the pack `Args...` as
+ *           `type_list<Args...>` via the nested alias `result`. */
+template<template <class...> class SourceTemplate, class... Args>
+struct type_list_from_template_instantiation<SourceTemplate<Args...>> {
+    using result = type_list<Args...>;
+};
+
+/*! @ingroup Utils
+ *  @brief Convenience alias for @ref type_list_from_template_instantiation.
+ *  @tparam Type Type to be inspected.
+ *  @details Equivalent to `typename from_template_instantiation<Type>::result`. This metafunction is useful when you have an instantiation
+ *           of some variadic class template and want to re-use its template arguments as a @ref type_list for further compile-time processing.
+ *
+ *           Example:
+ *           @code
+ *           using Tuple = std::tuple<int, double, char>;
+ *           using Args  = typename from_template_instantiation<Tuple>::result;
+ *           // Args == type_list<int, double, char>
+ *           @endcode */
+template<class Type>
+using type_list_from_template_instantiation_t = typename type_list_from_template_instantiation<Type>::result;
+
+/*! @struct type_list_merge draupnir/utils/type_list.h
+ *  @ingroup Utils
+ *  @brief Compile-time union-like merge of two @ref type_list instantiations.
+ *  @tparam First   First operand. Must be an instantiation of @ref type_list.
+ *  @tparam Second  Second operand. Must be an instantiation of @ref type_list.
+ *  @details The primary template serves as a guard and enforces correct usage via `static_assert`s: both `First` and `Second` are
+ *           required to be instantiations of @ref type_list. If either is not, a clear diagnostic message is emitted at compile time.
+ *
+ *           A partial specialization is provided for the case where both operands are of the form `type_list<...>`. In that case the
+ *           nested alias `result` is defined as: `type_list<FirstTs...>::union_t< type_list<SecondTs...> >` i.e. it computes the
+ *           set-theoretic union of the two lists, as defined by @ref type_list::union_t (with duplicates removed according to @ref
+ *           type_list::unique_types_t). */
+template<class First,class Second>
+struct type_list_merge {
+    static_assert(is_instantiation_of_v<First,type_list>,
+        "Both arguments should be type_list<...> instantiations. First is not.");
+    static_assert(is_instantiation_of_v<Second,type_list>,
+        "Both arguments should be type_list<...> instantiations. Second is not.");
+};
+
+/*! @brief Partial specialization of @ref type_list_merge for two @ref type_list operands.
+ *  @tparam FirstTs...   Types in the first list.
+ *  @tparam SecondTs...  Types in the second list.
+ *  @details The nested alias `result` is defined as the union of `type_list<FirstTs...>` and `type_list<SecondTs...>` via @ref
+ *           type_list::union_t. */
+template<class... FirstTs,class... SecondTs>
+struct type_list_merge<type_list<FirstTs...>,type_list<SecondTs...>>
+{
+    using result = typename type_list<FirstTs...>::template union_t<type_list<SecondTs...>>;
+};
+
+/*! @ingroup Utils
+ *  @brief Convenience alias for @ref type_list_merge.
+ *  @tparam First   First @ref type_list operand.
+ *  @tparam Second  Second @ref type_list operand.
+ *  @details Equivalent to `typename type_list_merge<First,Second>::result`. */
+template<class First, class Second>
+using type_list_merge_t = typename type_list_merge<First,Second>::result;
 
 }; // namespace draupnir::utils
 

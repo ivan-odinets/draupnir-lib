@@ -2,7 +2,7 @@
  **********************************************************************************************************************
  *
  * draupnir-lib
- * Copyright (C) 2025 Ivan Odinets <i_odinets@protonmail.com>
+ * Copyright (C) 2025-2026 Ivan Odinets <i_odinets@protonmail.com>
  *
  * This file is part of draupnir-lib
  *
@@ -25,6 +25,8 @@
 #include <QtTest>
 
 #include "draupnir/utils/type_list.h"
+
+#include "draupnir-test/helpers/TypeHelpers.h"
 
 /*! @class TypeListTest tests/utils/unit/type_presense_test/TypeListTest.cpp
  *  @brief Test class for testing entities present within @ref draupnir/utils/type_list.h. */
@@ -66,7 +68,7 @@ private slots:
     };
 
     void test_contains() {
-        // Empty List contains nothin
+        // Empty List contains nothing
         QCOMPARE(EmptyList::contains_v<int>, false);
         QCOMPARE(EmptyList::contains_template_instantiation_v<std::vector>, false);
 
@@ -101,40 +103,61 @@ private slots:
 
         // And specific template instantiations
         QCOMPARE(ListWithTemplates::index_of_v<std::vector<int>>,std::size_t{0});
+
+        // When uncommented - will static_assert during compile time
+        // FirstList::index_of_v<QString>;
+    }
+
+    void test_index_of_first_if() {
+        QCOMPARE(FirstList::index_of_first_if_v<std::is_floating_point>, std::size_t{0});
+        QCOMPARE(ReversedFirstList::index_of_first_if_v<std::is_floating_point>, std::size_t{2});
+
+        // When uncommented - will static_assert during compile time
+        // FirstList::index_of_first_if_v<std::is_array>;
+    }
+
+    void test_counting() {
+        QCOMPARE(EmptyList::count_v<double>,0);
+        QCOMPARE(FirstList::count_v<QString>,0);
+        QCOMPARE(FirstList::count_v<double>,1);
+        QCOMPARE(ListOfDoubles::count_v<double>,3);
     }
 
     void test_get() {
         // Test FirstList
-        QCOMPARE((std::is_same_v<double,FirstList::get_t<0>>), true);
-        QCOMPARE((std::is_same_v<int,FirstList::get_t<1>>), true);
-        QCOMPARE((std::is_same_v<char,FirstList::get_t<2>>), true);
-        // When uncommented - will static_assert duritg compile time
-        //QCOMPARE((std::is_same_v<char,ListOne::get_t<3>>), true);
+        TYPE_COMPARE(FirstList::get_t<0>,double);
+        TYPE_COMPARE(FirstList::get_t<1>,int);
+        TYPE_COMPARE(FirstList::get_t<2>,char);
 
         // Test ListOfDoubles
-        QCOMPARE((std::is_same_v<double,ListOfDoubles::get_t<0>>),true);
+        TYPE_COMPARE(ListOfDoubles::get_t<0>,double);
+        TYPE_COMPARE(ListOfDoubles::get_t<0>,double);
+
+        // When uncommented - will static_assert duritg compile time
+        // EmptyList::get_t<10>;
+        // FirstList::get_t<1000>;
     }
 
     void test_appending_types() {
         // Appending using append_t "method"
         using listWithAppendedQString = ListOfDoubles::append_t<QString>;
         QCOMPARE(listWithAppendedQString::size_v, ListOfDoubles::size_v + 1);
-        QCOMPARE((std::is_same_v<QString,listWithAppendedQString::get_t<3>>),true);
+        TYPE_COMPARE(listWithAppendedQString::get_t<3>,QString);
 
         using listWithAppendedList = ListOfDoubles::append_t<FirstList>;
         QCOMPARE(listWithAppendedList::size_v, ListOfDoubles::size_v + FirstList::size_v);
         QCOMPARE(listWithAppendedList::contains_template_instantiation_v<draupnir::utils::type_list>,false);
 
         using listWithAppendedEmptyList = ListOfDoubles::append_t<draupnir::utils::type_list<>>;
-        QCOMPARE((std::is_same_v<listWithAppendedEmptyList,ListOfDoubles>), true);
+        TYPE_COMPARE(listWithAppendedEmptyList,ListOfDoubles);
 
         // Appending using push_back_t "method"
         using listWithPushedQString = ListOfDoubles::push_back_t<QString>;
-        QCOMPARE((std::is_same_v<listWithAppendedQString,listWithPushedQString>), true);
+        TYPE_COMPARE(listWithAppendedQString,listWithPushedQString);
 
         // When we push_back_t type_list - we will get +1 element, but not concatenation result
         using listWithPushedTypeList = ListOfDoubles::push_back_t<listWithAppendedList>;
-        QCOMPARE((std::is_same_v<listWithPushedTypeList::get_t<3>,listWithAppendedList>), true);
+        TYPE_COMPARE(listWithPushedTypeList::get_t<3>,listWithAppendedList);
         QCOMPARE(listWithPushedTypeList::contains_template_instantiation_v<draupnir::utils::type_list>,true);
     }
 
@@ -142,98 +165,133 @@ private slots:
         // Prepending using prepend_t "method"
         using listWithPrependedQString = ListOfDoubles::prepend_t<QString>;
         QCOMPARE(listWithPrependedQString::size_v, ListOfDoubles::size_v + 1);
-        QCOMPARE((std::is_same_v<QString,listWithPrependedQString::get_t<0>>),true);
+        TYPE_COMPARE(listWithPrependedQString::get_t<0>,QString);
 
         using listWithPrependedList = ListOfDoubles::prepend_t<FirstList>;
         QCOMPARE(listWithPrependedList::size_v, ListOfDoubles::size_v + FirstList::size_v);
         QCOMPARE(listWithPrependedList::contains_template_instantiation_v<draupnir::utils::type_list>,false);
 
         using listWithPrependedEmptyList = ListOfDoubles::append_t<draupnir::utils::type_list<>>;
-        QCOMPARE((std::is_same_v<listWithPrependedEmptyList,ListOfDoubles>), true);
+        TYPE_COMPARE(listWithPrependedEmptyList,ListOfDoubles);
 
         // Appending using push_front_t "method"
         using listWithPushedQString = ListOfDoubles::push_front_t<QString>;
-        QCOMPARE((std::is_same_v<listWithPrependedQString,listWithPushedQString>), true);
+        TYPE_COMPARE(listWithPrependedQString,listWithPushedQString);
 
         // When we push_front_t type_list - we will get +1 element, but not concatenation result
         using listWithPushedTypeList = ListOfDoubles::push_front_t<listWithPrependedList>;
-        QCOMPARE((std::is_same_v<listWithPushedTypeList::get_t<0>,listWithPrependedList>), true);
+        TYPE_COMPARE(listWithPushedTypeList::get_t<0>,listWithPrependedList);
         QCOMPARE(listWithPushedTypeList::contains_template_instantiation_v<draupnir::utils::type_list>,true);
     }
 
     void test_insert_before() {
         using InsertedInteger = ListOfDoubles::insert_before_t<0,int>;
         QCOMPARE(InsertedInteger::size_v, ListOfDoubles::size_v + 1);
-        QCOMPARE((std::is_same_v<InsertedInteger::get_t<0>,int>),true);
-        QCOMPARE((std::is_same_v<InsertedInteger::get_t<1>,double>),true);
+        TYPE_COMPARE(InsertedInteger::get_t<0>,int);
+        TYPE_COMPARE(InsertedInteger::get_t<1>,double);
 
         using InsertedChar = ListOfDoubles::insert_before_t<1,char>;
         QCOMPARE(InsertedChar::size_v, ListOfDoubles::size_v + 1);
-        QCOMPARE((std::is_same_v<InsertedChar::get_t<0>,double>),true);
-        QCOMPARE((std::is_same_v<InsertedChar::get_t<1>,char>),true);
+        TYPE_COMPARE(InsertedChar::get_t<0>,double);
+        TYPE_COMPARE(InsertedChar::get_t<1>,char);
 
         using InsertedQString = ListOfDoubles::insert_before_t<2,QString>;
         QCOMPARE(InsertedQString::size_v, ListOfDoubles::size_v + 1);
-        QCOMPARE((std::is_same_v<InsertedQString::get_t<0>,double>),true);
-        QCOMPARE((std::is_same_v<InsertedQString::get_t<1>,double>),true);
-        QCOMPARE((std::is_same_v<InsertedQString::get_t<2>,QString>),true);
-        QCOMPARE((std::is_same_v<InsertedQString::get_t<3>,double>),true);
+        TYPE_COMPARE(InsertedQString::get_t<0>,double);
+        TYPE_COMPARE(InsertedQString::get_t<1>,double);
+        TYPE_COMPARE(InsertedQString::get_t<2>,QString);
+        TYPE_COMPARE(InsertedQString::get_t<3>,double);
+
+        using InsertIntoEmpty = EmptyList::insert_before_t<0,int>;
+        TYPE_COMPARE(InsertIntoEmpty,draupnir::utils::type_list<int>);
+
+        // When uncommented - will static_assert duritg compile time
+        // EmptyList::insert_before_t<1,int>;
+        // FirstList::insert_before_t<12,int>;
     }
 
     void test_remove_at() {
         using RemovedZero = FirstList::remove_at_t<0>;
         QCOMPARE(RemovedZero::size_v, FirstList::size_v - 1);
-        QCOMPARE((std::is_same_v<RemovedZero::get_t<0>,double>), false);
-        QCOMPARE((std::is_same_v<RemovedZero::get_t<0>,int>), true);
-        QCOMPARE((std::is_same_v<RemovedZero::get_t<1>,char>), true);
+        TYPE_COMPARE(RemovedZero::get_t<0>,int);
+        TYPE_COMPARE(RemovedZero::get_t<1>,char);
 
         using RemovedOne = FirstList::remove_at_t<1>;
         QCOMPARE(RemovedOne::size_v, FirstList::size_v - 1);
-        QCOMPARE((std::is_same_v<RemovedOne::get_t<0>,double>), true);
-        QCOMPARE((std::is_same_v<RemovedOne::get_t<1>,int>), false);
-        QCOMPARE((std::is_same_v<RemovedZero::get_t<1>,char>), true);
+        TYPE_COMPARE(RemovedOne::get_t<0>,double);
+        TYPE_COMPARE(RemovedZero::get_t<1>,char);
 
         using RemovedTwo = FirstList::remove_at_t<2>;
         QCOMPARE(RemovedTwo::size_v, FirstList::size_v - 1);
-        QCOMPARE((std::is_same_v<RemovedTwo::get_t<0>,double>), true);
-        QCOMPARE((std::is_same_v<RemovedTwo::get_t<1>,int>), true);
-        QCOMPARE((std::is_same_v<RemovedTwo::get_t<1>,char>), false);
+        TYPE_COMPARE(RemovedTwo::get_t<0>,double);
+        TYPE_COMPARE(RemovedTwo::get_t<1>,int);
+
+        // When uncommented - will static_assert duritg compile time
+        // EmptyList::remove_at_t<0>;
+        // FirstList::remove_at_t<12>;
     }
 
     void test_remove_all() {
-        using FirstListWithoutDoubles = draupnir::utils::type_list<double,int,char>;
-        QCOMPARE((std::is_same_v<FirstListWithoutDoubles::remove_all_t<double>,draupnir::utils::type_list<int,char>>),true);
+        using FirstListWithoutDoubles = draupnir::utils::type_list<int,char>;
+        TYPE_COMPARE(FirstListWithoutDoubles::remove_all_t<double>,FirstListWithoutDoubles);
 
-        using ShouldBeEmpty = ListOfDoubles::remove_all_t<double>;
-        QCOMPARE((std::is_same_v<ShouldBeEmpty,EmptyList>),true);
+        TYPE_COMPARE(ListOfDoubles::remove_all_t<double>,EmptyList);
     }
 
     void test_filter_if() {
-        using OnlyFloatingPoint = ListOfDoubles::filter_if_t<std::is_floating_point>;
-        QCOMPARE((std::is_same_v<OnlyFloatingPoint,ListOfDoubles>),true);
+        TYPE_COMPARE(ListOfDoubles::filter_if_t<std::is_floating_point>, ListOfDoubles);
 
-        using ShouldBeEmpty = ListOfDoubles::filter_if_t<std::is_pointer>;
-        QCOMPARE((std::is_same_v<ShouldBeEmpty,EmptyList>), true);
+        TYPE_COMPARE(ListOfDoubles::filter_if_t<std::is_pointer>, EmptyList);
 
-        using ShouldBeTwo = ListWithTwoPointers::filter_if_t<std::is_pointer>;
-        QCOMPARE(ShouldBeTwo::size_v, std::size_t{2});
-        QCOMPARE(ShouldBeTwo::all_of_v<std::is_pointer>,true);
+//        using ListWithTwoPointers= draupnir::utils::type_list<
+//            void*, int, double, char*, float
+//        >;
+        // This may change in future
+        using TwoPointers = draupnir::utils::type_list<void*,char*>;
+        QCOMPARE(ListWithTwoPointers::filter_if_t<std::is_pointer>::size_v, std::size_t{2});
+        QCOMPARE(ListWithTwoPointers::filter_if_t<std::is_pointer>::all_of_v<std::is_pointer>,true);
+        TYPE_COMPARE(ListWithTwoPointers::filter_if_t<std::is_pointer>, TwoPointers);
     }
 
     void test_convert_to() {
         using ExpectedTuple = std::tuple<double, int, char>;
-        using UnexpectedTuple = std::tuple<double, double, double>;
+        using OtherTuple = std::tuple<double, double, double>;
 
-        QCOMPARE((std::is_same_v<FirstList::convert_to_t<std::tuple>,ExpectedTuple>), true);
-        QCOMPARE((std::is_same_v<FirstList::convert_to_t<std::tuple>,UnexpectedTuple>), false);
+        TYPE_COMPARE(FirstList::convert_to_t<std::tuple>,ExpectedTuple);
+        TYPE_COMPARE(ListOfDoubles::convert_to_t<std::tuple>,OtherTuple);
     }
 
     void test_transform() {
         using ListOfVectors = ListOfDoubles::transform_t<std::vector>;
         QCOMPARE(ListOfVectors::size_v, ListOfDoubles::size_v);
-        QCOMPARE((std::is_same_v<ListOfVectors::get_t<0>,std::vector<double>>), true);
+        TYPE_COMPARE(ListOfVectors::get_t<0>,std::vector<double>);
         QCOMPARE(ListOfVectors::contains_template_instantiation_v<std::vector>,true);
         QCOMPARE(ListOfDoubles::contains_template_instantiation_v<std::vector>,false);
+    }
+
+    void test_slice() {
+//        using ListWithTwoPointers= draupnir::utils::type_list<
+//            void*, int, double, char*, float
+//        >;
+        using Expected = draupnir::utils::type_list<int,double,char*>;
+        using Result12 = typename ListWithTwoPointers::slice_t<1,3>;
+        TYPE_COMPARE(Result12,Expected);
+
+        using ShouldBeEmpty = EmptyList::slice_t<0,0>;
+        TYPE_COMPARE(ShouldBeEmpty,EmptyList);
+
+        using ShouleBeFirstList = FirstList::slice_t<0,2>;
+        TYPE_COMPARE(ShouleBeFirstList,FirstList);
+
+        using ShouldBeInt = FirstList::slice_t<1,1>;
+        TYPE_COMPARE(ShouldBeInt,draupnir::utils::type_list<int>);
+
+        // When uncommented - will static_assert during compile time
+        // FirstList::slice_t<1,100>;
+        // FirstList::slice_t<100,1>;
+        // FirstList::slice_t<100,1000>;
+        // FirstList::slice_t<0,3>;
+        // EmptyList::slice_t<0,1>;
     }
 
     void test_unique_lists() {
@@ -245,18 +303,69 @@ private slots:
         QCOMPARE(Result::contains_v<int>, true);
 
         // Empty list
-        QCOMPARE((std::is_same_v<EmptyList::unique_types_t,EmptyList>), true);
+        TYPE_COMPARE(EmptyList::unique_types_t,EmptyList);
+    }
+
+    void test_is_subset_of() {
+        QCOMPARE(ListOfDoubles::is_subset_of_v<FirstList>, true);
+        QCOMPARE(FirstList::is_subset_of_v<ListOfDoubles>, false);
+
+        QCOMPARE(EmptyList::is_subset_of_v<FirstList>, true);
+
+        // When uncommented - will static_assert during compile time
+        // FirstList::is_subset_of_v<int>;
+    }
+
+    void test_is_superset_of() {
+        QCOMPARE(ListOfDoubles::is_superset_of_v<FirstList>, false);
+        QCOMPARE(FirstList::is_superset_of_v<ListOfDoubles>, true);
+
+        QCOMPARE(EmptyList::is_superset_of_v<FirstList>, false);
+
+        // When uncommented - will static_assert during compile time
+        // FirstList::is_superset_of_v<int>;
     }
 
     void test_reverse() {
         // Reverse non-empty list
         using Result = FirstList::reverse_t;
         QCOMPARE(Result::size_v,FirstList::size_v);
-        QCOMPARE((std::is_same_v<Result, ReversedFirstList>),true);
+        TYPE_COMPARE(Result, ReversedFirstList);
 
         // Reverse empty list
-        QCOMPARE((std::is_same_v<EmptyList::reverse_t,EmptyList>), true);
+        TYPE_COMPARE(EmptyList::reverse_t,EmptyList);
     };
+
+    void test_union() {
+        TYPE_COMPARE(FirstList,ListOfDoubles::union_t<FirstList>);
+        TYPE_COMPARE(FirstList,FirstList::union_t<ListOfDoubles>);
+
+        TYPE_COMPARE(FirstList,EmptyList::union_t<FirstList>);
+        TYPE_COMPARE(FirstList,FirstList::union_t<EmptyList>);
+
+        // When uncommented - will static_assert during compile time
+        // FirstList::union_t<int>;
+    }
+
+    void test_intersection() {
+        using Result_FirstList_intersect_ListOfDoubles = draupnir::utils::type_list<double>;
+        TYPE_COMPARE(Result_FirstList_intersect_ListOfDoubles, FirstList::intersection_t<ListOfDoubles>);
+        TYPE_COMPARE(Result_FirstList_intersect_ListOfDoubles, ListOfDoubles::intersection_t<FirstList>);
+
+        TYPE_COMPARE(FirstList::intersection_t<EmptyList>,EmptyList);
+        TYPE_COMPARE(EmptyList::intersection_t<FirstList>,EmptyList);
+
+        // When uncommented - will static_assert during compile time
+        // FirstList::intersection_t<int>;
+    }
+
+    void test_type_list_from_template_instantiation() {
+        using FirstTuple = std::tuple<double,int,char>;
+        TYPE_COMPARE(draupnir::utils::type_list_from_template_instantiation_t<FirstTuple>,FirstList);
+
+        // When uncommented - will static_assert during compile time
+        // draupnir::utils::type_list_from_template_instantiation_t<int>;
+    }
 };
 
 QTEST_APPLESS_MAIN(TypeListTest)

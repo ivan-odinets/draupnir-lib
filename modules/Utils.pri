@@ -20,7 +20,8 @@
         $$PWD/../include/utils/draupnir/utils/type_list.h \
         $$PWD/../include/utils/draupnir/utils/type_name_utils.h \
         $$PWD/../include/utils/draupnir/utils/class_marcos.h \
-        $$PWD/../include/utils/draupnir/utils/type_if.h
+        $$PWD/../include/utils/draupnir/utils/type_if.h \
+        $$PWD/../include/utils/draupnir/utils/template_adapters.h
 
     DISTFILES += \
         $$PWD/../docs/pages/Utils.dox

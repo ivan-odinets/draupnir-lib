@@ -7,6 +7,7 @@ CONFIG -= app_bundle
 TEMPLATE = app
 
 include(../../../../modules/Utils.pri)
+include(../../../common/TypeHelpers.pri)
 
 SOURCES += \
     TypeListTest.cpp
