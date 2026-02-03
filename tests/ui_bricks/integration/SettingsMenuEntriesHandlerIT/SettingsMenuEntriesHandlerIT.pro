@@ -10,7 +10,6 @@ DEFINES += DRAUPNIR_SETTINGS_USE_CUSTOM
 
 # Modules
 include(../../../../modules/UiBricks.pri)
-include(../../../../modules/HandlerTemplates.pri)
 
 include(../../../common/SomeRandomHandlers.pri)
 

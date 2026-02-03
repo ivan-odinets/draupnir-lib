@@ -13,9 +13,6 @@ include(../../../common/DummyFileContext.pri)
 
 # Modules
 include(../../../../modules/UiBricks.pri)
-include(../../../../modules/HandlerTemplates.pri)
 
 SOURCES += \
     FileOpenEntryHandlerTest.cpp
-
-HEADERS +=

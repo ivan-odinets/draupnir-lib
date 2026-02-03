@@ -2,7 +2,7 @@
  **********************************************************************************************************************
  *
  * draupnir-lib
- * Copyright (C) 2025 Ivan Odinets <i_odinets@protonmail.com>
+ * Copyright (C) 2025-2026 Ivan Odinets <i_odinets@protonmail.com>
  *
  * This file is part of draupnir-lib
  *
@@ -22,38 +22,26 @@
  *
  */
 
-#ifndef CUSTOMMENUHANDLER_H
-#define CUSTOMMENUHANDLER_H
+#ifndef CUSTOMENTRYHANDLER_H
+#define CUSTOMENTRYHANDLER_H
 
 namespace Draupnir::Handlers {
 
-/*! @class CustomMenuHandler draupnir/handlers/AbstractHandlers.h
- *  @ingroup HandlerTemplates
- *  @brief CRTP base class for handling “custom” menu entries (MenuEntry::Type is not QAction but a custom widget/menu).
- *  @tparam Implementation The derived class implementing \c connect(T*).
- *  @tparam MenuEntry The menu entry trait with \c using Type = ... (actual menu/widget type).
+/*! @class CustomEntryHandler draupnir/ui_bricks/handlers/templates/CustomEntryHandler.h
+ *  @ingroup UiBricks
+ *  @brief CRTP base class for handling custom menu entries (MenuEntry::Type is not `QAction` but a custom widget/menu).
+ *  @tparam Implementation The derived class implementing `connect(T*)`.
+ *  @tparam MenuEntry The menu entry trait with `using Type = ... `(actual menu/widget type).
  *
- *  @details Stores a pointer to an instance of MenuEntry::Type and delegates connection/initialization
- *           to Implementation::connect(typename MenuEntry::Type*).
- *
- *           @code
- *           class MyCustom : public CustomMenuHandler<MyCustom, RecentFileEntry>
- *           {
- *           public:
- *               void connect(RecentFilesMenu* m) {
- *                    // connect signals, set up initial state...
- *               }
- *           };
- *           @endcode
- *
- * @note The class stores a raw pointer to MenuEntry::Type; lifetime management is external. */
+ *  @details Stores a pointer to an instance of MenuEntry::Type and delegates connection/initialization to
+ *           Implementation::connect(typename MenuEntry::Type*). */
 
 template<class Implementation, class MenuEntry>
-class CustomMenuHandler
+class CustomEntryHandler
 {
 public:
     /*! @brief Constructor. Initializes internal p_menu pointer with nullptr. */
-    CustomMenuHandler() :
+    CustomEntryHandler() :
         p_menu{nullptr}
     {}
 
@@ -76,4 +64,4 @@ private:
 
 }; // namespace Draupnir::Handlers
 
-#endif // CUSTOMMENUHANDLER_H
+#endif // CUSTOMENTRYHANDLER_H

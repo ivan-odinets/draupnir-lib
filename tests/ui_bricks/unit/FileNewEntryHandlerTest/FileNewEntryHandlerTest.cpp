@@ -2,7 +2,7 @@
  **********************************************************************************************************************
  *
  * draupnir-lib
- * Copyright (C) 2025 Ivan Odinets <i_odinets@protonmail.com>
+ * Copyright (C) 2025-2026 Ivan Odinets <i_odinets@protonmail.com>
  *
  * This file is part of draupnir-lib
  *
@@ -41,10 +41,10 @@ public:
     using MultipleFileContext = DummyFileContext<DummyMultipleFileManager>;
     using SingleFileContext = DummyFileContext<DummySingleFileManager>;
 
-    using SingleFileNewEntryHandler = Draupnir::Handlers::GenericMenuEntryHandler<
+    using SingleFileNewEntryHandler = Draupnir::Handlers::GenericMenuEntryHandlerTemplate<
         SingleFileContext,Draupnir::Ui::FileNewEntry
     >;
-    using MultipleFileNewEntryHandler = Draupnir::Handlers::GenericMenuEntryHandler<
+    using MultipleFileNewEntryHandler = Draupnir::Handlers::GenericMenuEntryHandlerTemplate<
         MultipleFileContext,Draupnir::Ui::FileNewEntry
     >;
 

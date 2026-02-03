@@ -2,7 +2,7 @@
  **********************************************************************************************************************
  *
  * draupnir-lib
- * Copyright (C) 2025 Ivan Odinets <i_odinets@protonmail.com>
+ * Copyright (C) 2025-2026 Ivan Odinets <i_odinets@protonmail.com>
  *
  * This file is part of draupnir-lib
  *
@@ -25,7 +25,7 @@
 #ifndef SETTINGTEMPLATE_H
 #define SETTINGTEMPLATE_H
 
-#include "draupnir/settings_registry/utils/SettingTraitValidator.h"
+#include "draupnir/settings_registry/concepts/SettingTraitConcept.h"
 
 namespace Draupnir::Settings {
 
@@ -44,7 +44,7 @@ namespace Draupnir::Settings {
  *
  *           The wrapper stores the actual value as a public data member. */
 
-template<class SettingTrait>
+template<SettingTraitConcept SettingTrait>
 class SettingTemplate
 {
 public:
@@ -54,12 +54,7 @@ public:
     /*! @brief Constructs the setting with its default value. */
     SettingTemplate() :
         value{SettingTrait::defaultValue()}
-    {
-        static_assert(SettingTraitValidator::has_valueType<SettingTrait>(),
-                "To be used as SettingTemplate argument SettingTrait must expose stored Value type.");
-        static_assert(SettingTraitValidator::has_defaultValue<SettingTrait>(),
-                "To be used as Setting template argument SettingTrait must provide static Value defaultValue() method.");
-    }
+    {}
 
     /*! @brief Current in-memory value of the setting.
      * @note Initialized to the trait’s defaultValue(). */

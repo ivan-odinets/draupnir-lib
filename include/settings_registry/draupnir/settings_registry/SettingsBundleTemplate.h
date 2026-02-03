@@ -2,7 +2,7 @@
  **********************************************************************************************************************
  *
  * draupnir-lib
- * Copyright (C) 2025 Ivan Odinets <i_odinets@protonmail.com>
+ * Copyright (C) 2025-2026 Ivan Odinets <i_odinets@protonmail.com>
  *
  * This file is part of draupnir-lib
  *
@@ -29,6 +29,7 @@
 
 #include <QDebug>
 
+#include "draupnir/settings_registry/concepts/SettingTraitConcept.h"
 #include "draupnir/settings_registry/core/SettingTemplate.h"
 #include "draupnir/settings_registry/utils/SettingTraitSerializer.h"
 
@@ -45,6 +46,18 @@
 
 namespace Draupnir::Settings
 {
+
+template<SettingTraitConcept... Traits>
+class SettingsBundleTemplate;
+
+template<class C>
+concept SettingsBundleConcept =
+    requires { draupnir::utils::is_instantiation_of_v<C,Draupnir::Settings::SettingsBundleTemplate>; };
+
+template<class C>
+concept HasNestedSettingsBundle =
+    requires { typename C::SettingsBundle; } &&
+    draupnir::utils::is_instantiation_of_v<typename C::SettingsBundle,Draupnir::Settings::SettingsBundleTemplate>;
 
 /*! @class SettingsBundleTemplate draupnir/SettingsBundleTemplate.h
  *  @ingroup SettingsRegistry
@@ -72,7 +85,7 @@ namespace Draupnir::Settings
  * @todo Add interface for partial updating of the settings. E.g. when the setting has sth like QStringList type - not replace
  *       the variable, but use append method and than write to the backend. */
 
-template<class... SettingTraits>
+template<SettingTraitConcept... SettingTraits>
 class SettingsBundleTemplate
 {
     using SettingTemplatePtrTuple = std::tuple<SettingTemplate<SettingTraits>*...>;
@@ -100,14 +113,14 @@ public:
     /*! @brief Checks at compile time whether the bundle contains the given trait.
      *  @tparam Trait A trait to check.
      *  @return true If Trait is in SettingTraits... and false Otherwise */
-    template<class Trait>
+    template<SettingTraitConcept Trait>
     static constexpr bool contains() {
         return draupnir::utils::is_type_in_tuple_v<SettingTemplate<Trait>*,SettingTemplatePtrTuple>;
     }
 
     /*! @brief Static template constexpr variable containing `true` if this instantiation of the @ref Draupnir::Settings::SettingsBundle
      *         template contains the specified Trait. */
-    template<class Trait>
+    template<SettingTraitConcept Trait>
     static constexpr bool contains_v = contains<Trait>();
 
     /*! @brief Returns whether the bundle is empty.
@@ -176,7 +189,7 @@ public:
     /*! @brief Shortcut to get a SettingsBundle for a specific subset of traits. Equivalent to
      *         getSettingsBundle<SettingsBundle<SubsetOfTraits...>>().
      *  @tparam SubsetOfTraits One or more traits that exist within this registry. */
-    template<class... SubsetOfTraits>
+    template<SettingTraitConcept... SubsetOfTraits>
     SettingsBundleTemplate<SubsetOfTraits...> getSettingBundleForTraits() {
         static_assert(SettingsBundleTemplate<SubsetOfTraits...>::template canBeFullyPopulatedFrom<SettingsBundleTemplate<SettingTraits...>>(),
                 "Requested Bundle can not be fully populated by this SettingsBundle<SettingTraits...> instance.");
@@ -189,7 +202,7 @@ public:
     /*! @brief Returns a const reference to the value associated with a specific SettingTrait.
      *  @tparam Trait Must be one of the traits in the bundle.
      *  @return Const reference to the setting's value. */
-    template<class Trait>
+    template<SettingTraitConcept Trait>
     const typename Trait::Value& get() const {
         static_assert(draupnir::utils::is_one_of_v<Trait,SettingTraits...>,
                 "Specified Trait is not a member of SettingTraits... pack.");
@@ -202,7 +215,7 @@ public:
     /*! @brief Sets and persists the value of a specific SettingTrait.
      *  @tparam Trait Must be one of the traits in the bundle.
      *  @param value New value to store. */
-    template<class Trait>
+    template<SettingTraitConcept Trait>
     void set(const typename Trait::Value& value) {
         static_assert(draupnir::utils::is_one_of_v<Trait,SettingTraits...>,
                 "Specified Trait is not a member of SettingTraits... pack.");
@@ -214,10 +227,10 @@ public:
     }
 
 protected:
-    template<class...>
+    template<SettingTraitConcept...>
     friend class SettingsBundleTemplate;
 
-    template<class...>
+    template<SettingTraitConcept...>
     friend class SettingsRegistryTemplate;
 
     /*! @brief Internal constructor. Called by SettingsRegistry when initializing the bundle.
@@ -233,7 +246,7 @@ protected:
     /*! @brief Registers a setting by pointer (called by SettingsRegistry).
      *  @tparam Trait Must be a trait declared in this bundle.
      *  @param setting Pointer to SettingTemplate<Trait> owned by SettingsRegistry. */
-    template<class Trait>
+    template<SettingTraitConcept Trait>
     void registerSetting(SettingTemplate<Trait>* setting) {
         static_assert(contains<Trait>(),
                       "Specified Trait is not contained within this SettingBundle.");
@@ -343,7 +356,7 @@ public:
 protected:
     friend class SettingsBundleTemplateTest;
 
-    template<class...>
+    template<SettingTraitConcept...>
     friend class SettingsRegistryTemplate;
 
     SettingsBundleTemplate(Backend*) {};

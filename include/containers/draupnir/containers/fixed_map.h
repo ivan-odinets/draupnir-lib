@@ -2,7 +2,7 @@
  **********************************************************************************************************************
  *
  * draupnir-lib
- * Copyright (C) 2025 Ivan Odinets <i_odinets@protonmail.com>
+ * Copyright (C) 2025-2026 Ivan Odinets <i_odinets@protonmail.com>
  *
  * This file is part of draupnir-lib
  *
@@ -27,7 +27,6 @@
 
 #include <array>
 #include <cassert>
-#include <functional>
 
 #include "draupnir/utils/template_constructors.h"
 
@@ -53,8 +52,7 @@ namespace draupnir::containers {
  * @note The container size and key set are defined at compile-time.
  *
  * @todo Improve container performance for cases when: keys array specified consists of integer sequence (or enum with
- *       increment of the values); array specified is list of boolean flags.
- * @todo Extend documentation for this class usage. And maybe add simple example program to the specific examples directory. */
+ *       increment of the values); array specified is list of boolean flags. */
 
 template<const auto& keys_array, class value_type>
 class fixed_map

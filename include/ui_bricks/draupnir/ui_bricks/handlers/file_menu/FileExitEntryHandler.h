@@ -2,7 +2,7 @@
  **********************************************************************************************************************
  *
  * draupnir-lib
- * Copyright (C) 2025 Ivan Odinets <i_odinets@protonmail.com>
+ * Copyright (C) 2025-2026 Ivan Odinets <i_odinets@protonmail.com>
  *
  * This file is part of draupnir-lib
  *
@@ -25,7 +25,7 @@
 #ifndef FILEEXITENTRYHANDLER_H
 #define FILEEXITENTRYHANDLER_H
 
-#include "draupnir/ui_bricks/handlers/templates/ActionHandler.h"
+#include "draupnir/ui_bricks/handlers/templates/ActionHandlerTemplate.h"
 
 #include <QApplication>
 
@@ -35,27 +35,25 @@ namespace Draupnir::Handlers
 {
 
 template<class FileContext,class MenuEntry>
-class GenericMenuEntryHandler;
+class GenericMenuEntryHandlerTemplate;
 
 /*! @class GenericMenuEntryHandler<FileContext, Draupnir::Ui::ExitApplicationEntry>
- *  @headerfile draupnir/handlers/file_menu/FileExitEntryHandler.h
- *  @ingroup HandlerTemplates
- *  @brief Specialization of the menu entry handler for "Exit Application" actions.
+ *  @headerfile draupnir/ui_bricks/handlers/file_menu/FileExitEntryHandler.h
+ *  @ingroup UiBricks
+ *  @tparam UnusedContext A context class required to have same interface for all handlers. In this case - unused.
+ *  @brief Specialization of the menu entry handler for "Exit Application" action.
  *
  *  @details This template specialization handles the "Exit Application" action in a file menu or similar context. It inherits
- *           QAction connection logic from ActionHandler, and provides a concrete slot (`onTriggered()`) that, when called,
- *           simply terminates the application by invoking `qApp->quit()`.
- *
- *  @tparam FileContext A context class that provides access to file management and application state. */
+ *           `QAction` connection logic from @ref Draupnir::Handlers::ActionHandler, and provides a concrete slot (`onTriggered()`)
+ *           that, when called, simply terminates the application by invoking `qApp->quit()`. */
 
-template<class FileContext>
-class GenericMenuEntryHandler<FileContext,Draupnir::Ui::ExitApplicationEntry> :
-        public ActionHandler<GenericMenuEntryHandler<FileContext,Draupnir::Ui::ExitApplicationEntry>>
+template<class UnusedContext>
+class GenericMenuEntryHandlerTemplate<UnusedContext,Draupnir::Ui::ExitApplicationEntry> :
+    public ActionHandlerTemplate<GenericMenuEntryHandlerTemplate<UnusedContext,Draupnir::Ui::ExitApplicationEntry>>
 {
 public:
-    /*! @brief Constructs the handler. Context is required by interface but not used directly.
-     *  @param context Reference to the file context. */
-    GenericMenuEntryHandler(FileContext&) {};
+    /*! @brief Constructs the handler. Context is required by interface but not used directly. */
+    GenericMenuEntryHandlerTemplate() {};
 
     /*! @brief Slot called when the "Exit Application" menu entry is triggered. Simply requests the application to quit. */
     void onTriggered() {

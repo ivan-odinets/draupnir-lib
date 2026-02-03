@@ -37,27 +37,19 @@
 #include <QDialog>
 
 /*! @class HelpSource
- *  @brief This is a test HelpSource for the HelpMenuEntriesHandler.
- *
- * @todo Pur this class into some resonable place. */
+ *  @brief This is a test HelpSource for the HelpMenuEntriesHandler. */
 
 class HelpSource
 {
 public:
-    static QString aboutAppText() {
-        return QString{"About These \"Awesome\" Test"};
-    }
+    static QString aboutAppText() { return QString{"About These \"Awesome\" Test"}; }
 
-    static QDialog* createHelpDialog() {
-        return new QDialog;
-    }
+    static QDialog* createHelpDialog() { return new QDialog; }
 };
 
 
-/*! @class FileMenuEntriesHandlerIT
- *  @brief This is a test class for testing basic functionality of the FileMenuEntriesHandler
- *
- * @todo Implement this test to check successfull compilation. */
+/*! @class HelpMenuEntriesHandlerIT
+ *  @brief This is a test class for testing basic functionality of the HelpMenuEntriesHandlerIT */
 
 class HelpMenuEntriesHandlerIT : public QObject
 {

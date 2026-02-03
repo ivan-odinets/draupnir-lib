@@ -39,7 +39,7 @@ class FileSaveAsEntryHandlerTest final : public QObject
 public:
     using FileContext = DummyFileContext<DummySingleFileManager>;
 
-    using FileSaveAsEntryHandler = Draupnir::Handlers::GenericMenuEntryHandler<
+    using FileSaveAsEntryHandler = Draupnir::Handlers::GenericMenuEntryHandlerTemplate<
         FileContext,Draupnir::Ui::FileSaveAsEntry
     >;
 

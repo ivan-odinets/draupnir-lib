@@ -6,6 +6,9 @@ TEMPLATE = app
 
 DEFINES += DRAUPNIR_SETTINGS_USE_CUSTOM
 
+QMAKE_CXXFLAGS += -std=c++20
+CONFIG      += c++20
+
 # Modules
 include(../../../../modules/UiBricks.pri)
 

@@ -2,7 +2,7 @@
  **********************************************************************************************************************
  *
  * draupnir-lib
- * Copyright (C) 2025 Ivan Odinets <i_odinets@protonmail.com>
+ * Copyright (C) 2025-2026 Ivan Odinets <i_odinets@protonmail.com>
  *
  * This file is part of draupnir-lib
  *
@@ -26,15 +26,42 @@
 #include <QCoreApplication>
 
 /*! @class FileMenuEntriesHandlerIT
- *  @brief This is a test class for testing basic functionality of the FileMenuEntriesHandler
- *
- * @todo Implement this test to check at least successfull compilation. */
+ *  @brief This is a test class for testing basic functionality of the FileMenuEntriesHandler */
+
+#include "draupnir/ui_bricks/handlers/file_menu/FileMenuEntriesHandler.h"
+#include "draupnir/utils/type_list.h"
+
+#include "draupnir-test/mocks/DummyFileContext.h"
+#include "draupnir-test/mocks/DummySingleFileManager.h"
+#include "draupnir-test/mocks/MockSettingsTemplate.h"
 
 class FileMenuEntriesHandlerIT : public QObject
 {
     Q_OBJECT
 public:
+    using SettingsLst = draupnir::utils::type_list<
+        Draupnir::Settings::LastUsedDirectorySetting
+    >;
+
+    typename SettingsLst::convert_to_t<
+        MockSettingsTemplate
+    > settings;
+
+    typename SettingsLst::convert_to_t<
+        Draupnir::Settings::SettingsRegistryTemplate
+    > settingsRegistry;
+
+   Draupnir::Handlers::FileMenuHandler<
+       DummySingleFileManager,
+       Draupnir::Ui::FileNewEntry,Draupnir::Ui::FileOpenEntry,Draupnir::Ui::FileSaveAsEntry
+   > handler;
+
+    FileMenuEntriesHandlerIT() {
+       settingsRegistry.setBackend(&settings);
+    }
+
 private slots:
+    void test_something() {};
 };
 
 QTEST_MAIN(FileMenuEntriesHandlerIT)

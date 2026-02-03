@@ -32,9 +32,7 @@
 namespace Draupnir::Ui {
 
 /*! @class MenuEntriesContainerTest tests/ui_bricks/unit/MenuEntriesContainerTest/MenuEntriesContainerTest.cpp
- *  @brief Test class for the MenuEntriesContainer.
- *
- * @todo Refractor this test so that it will have better readability. */
+ *  @brief Test class for the MenuEntriesContainer. */
 
 class MenuEntriesContainerTest final : public QObject
 {

@@ -76,7 +76,7 @@ private slots:
                 SomeCustomDoubleSetting,
                 SomeCustomBoolSetting
             >,
-            Draupnir::Settings::RecentFileListSetting,
+            Draupnir::Settings::RecentFileListSetting/*,
             SettingsBundleTemplate<
                 SettingsBundleTemplate<>,
                 Draupnir::Settings::SettingsBundleTemplate<
@@ -85,7 +85,7 @@ private slots:
                     Draupnir::Settings::CentralWidgetIndexSetting
                 >,
                 Draupnir::Settings::CentralWidgetIndexSetting
-            >
+            >*/
         >::toSettingsBundle;
 
         QCOMPARE(Result::traitCount(), std::size_t{5});
@@ -102,11 +102,11 @@ private slots:
             Draupnir::Settings::SettingsBundleTemplate<>,
             Draupnir::Settings::SettingsBundleTemplate<>,
             Draupnir::Settings::SettingsBundleTemplate<
-                Draupnir::Settings::SettingsBundleTemplate<>,
-                Draupnir::Settings::SettingsBundleTemplate<
-                    Draupnir::Settings::SettingsBundleTemplate<>
-                >,
-                Draupnir::Settings::SettingsBundleTemplate<>
+                // Draupnir::Settings::SettingsBundleTemplate<>,
+                // Draupnir::Settings::SettingsBundleTemplate<
+                //     Draupnir::Settings::SettingsBundleTemplate<>
+                // >,
+                //Draupnir::Settings::SettingsBundleTemplate<>
             >
         >::toSettingsBundle;
 

@@ -1,4 +1,5 @@
 /*! @defgroup MenuTemplates
+ *  @ingroup UiBricks
  *  @brief This module contains strongly-typed, generic, and extensible system for describing Qt menu elements.
  *  @details Classes within this module are located in the namespace Draupnir::Menus.
  *           ### Overview
@@ -79,14 +80,4 @@
  *           @code
  *           using MySubmenu = CustomMenuEntryTrait<myDisplayName, MyCustomMenuWidget>;
  *           @endcode
- *           Then, simply add your trait(s) to Draupnir::Menus::MenuTemplate or Draupnir::Menus::MenuBarTemplate.
- *
- * @todo Restructure the sources within include and src dirs.
- * @todo Integrate @ref MessageSystem with @ref HandlerTemplates and @ref MenuTemplates better.
- * @todo Add list of available entities.
- * @todo Add better examples.
- * @todo Add checks in the *.pri file. If the qt gui / widgets are not enabled - show reasonable error and abort compilation. */
-
-/*! @namespace Draupnir::Menus
- *  @ingroup MenuTemplates
- *  @brief Namespace containing classes from the MenuTemplates module. */
+ *           Then, simply add your trait(s) to Draupnir::Menus::MenuTemplate or Draupnir::Menus::MenuBarTemplate. */

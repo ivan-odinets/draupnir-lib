@@ -34,14 +34,24 @@
 // SettingsMenu
 #include "draupnir/ui_bricks/traits/menu_entries/SettingsMenuEntries.h"
 #include "draupnir/ui_bricks/ui/menus/MenuTemplate.h"
+#include "draupnir/ui_bricks/utils/MenuEntryToTraitMapper.h"
 
-#include "draupnir/ui_bricks/handlers/settings_menu/SettingsMenuEntriesHandler.h"
-
-// Test things
-#include "draupnir-test/handlers/settings_menu/SomeCheckableSettingsEntryHandler.h"
-#include "draupnir-test/mocks/MockSettingsTemplate.h"
 #include "draupnir-test/traits/entries/SomeCheckableMenuEntry.h"
 #include "draupnir-test/traits/settings/SomeCustomBoolSetting.h"
+
+#include "draupnir/ui_bricks/handlers/settings_menu/SettingsMenuHandlerTemplate.h"
+
+
+template<>
+struct MapMenuEntry<SomeCustomCheckableMenuEntry> {
+    using MappedEntry = SomeCustomCheckableMenuEntry;
+    using ToTrait = SomeCustomBoolSetting;
+};
+
+
+// Test things
+#include "draupnir-test/mocks/MockSettingsTemplate.h"
+
 
 /*! @class SettingsMenuEntriesHandlerGeneralIT
  *  @headerfile tests/handler_templates/SettingsMenuEntriesHandler/GeneralIT/SettingsMenuEntriesHandlerGeneralIT.cpp
@@ -76,7 +86,7 @@ public:
     >;
     SettingsMenu menu;
 
-    using SettingsMenuHandler = Draupnir::Handlers::SettingsMenuEntriesHandler<
+    using SettingsMenuHandler = Draupnir::Handlers::SettingsMenuHandler<
         SettingsRegistry,
         SomeCustomCheckableMenuEntry,
         Draupnir::Ui::StartHiddenMenuEntry,
@@ -99,7 +109,7 @@ private slots:
         QAction* minimizeOnCloseAction = menu.get<Draupnir::Ui::MinimizeOnCloseEntry>();
         QCOMPARE(minimizeOnCloseAction->isChecked(), false);
 
-        handler.setRegistry(&registry);
+        handler.loadSettings(&registry);
 
         QVERIFY(customAction->isChecked() == true);
         QVERIFY(minimizeOnCloseAction->isChecked() == false);

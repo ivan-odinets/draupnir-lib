@@ -2,7 +2,7 @@
  **********************************************************************************************************************
  *
  * draupnir-lib
- * Copyright (C) 2025 Ivan Odinets <i_odinets@protonmail.com>
+ * Copyright (C) 2025-2026 Ivan Odinets <i_odinets@protonmail.com>
  *
  * This file is part of draupnir-lib
  *
@@ -36,8 +36,8 @@
 #endif
 
 #include "draupnir/settings_registry/SettingsBundleTemplate.h"
+#include "draupnir/settings_registry/concepts/SettingTraitConcept.h"
 #include "draupnir/settings_registry/core/SettingTemplate.h"
-#include "draupnir/settings_registry/utils/SettingTraitValidator.h"
 #include "draupnir/settings_registry/utils/SettingTraitSerializer.h"
 
 #include "draupnir/utils/type_presense.h"
@@ -85,7 +85,7 @@ namespace Draupnir::Settings
  * @todo Add interface for partial updating of the settings. E.g. when the setting has sth like QStringList type - not replace
  *       the variable, but use append method and than write to the backend. */
 
-template<class... Traits>
+template<SettingTraitConcept... Traits>
 class SettingsRegistryTemplate
 {
 #if defined(DRAUPNIR_SETTINGS_USE_QSETTINGS)
@@ -104,18 +104,18 @@ class SettingsRegistryTemplate
 public:
     /*! @brief Checks at compile time whether a specific SettingTrait is part of this registry.
      *  @tparam SettingTrait A trait to check for. */
-    template<class SettingTrait>
+    template<SettingTraitConcept SettingTrait>
     static constexpr bool contains() { return draupnir::utils::is_type_in_tuple_v<SettingTemplate<SettingTrait>,AbstractSettingsTuple>; }
 
     /*! @brief Static constexpr template variable containing `true` if this @ref SettingsRegistryTemplate instantiation contains
      *         the specified SettingTrait.
      *  @tparam SettingTrait - trait to be checked. */
-    template<class SettingTrait>
+    template<SettingTraitConcept SettingTrait>
     static constexpr bool contains_v = contains<SettingTrait>();
 
     /*! @brief Checks at compile time whether a specific SettingTrait is part of this registry.
      *  @tparam SettingTrait A trait to check for. */
-    template<class SettingTrait>
+    template<SettingTraitConcept SettingTrait>
     [[deprecated]] static constexpr bool containsSetting() {
         return draupnir::utils::is_type_in_tuple_v<SettingTemplate<SettingTrait>,AbstractSettingsTuple>;
     }
@@ -201,7 +201,7 @@ public:
     /*! @brief Retrieves a SettingsBundle pre-filled with settings from this registry.
      *  @tparam Bundle A concrete instantiation of SettingsBundle<Ts...>
      *  @return An initialized SettingsBundle with pointers to internal AbstractSetting<T> instances. */
-    template<class Bundle>
+    template<SettingsBundleConcept Bundle>
     Bundle getSettingsBundle() {
         static_assert(Bundle::template canBeFullyPopulatedFrom<SettingsRegistryTemplate<Traits...>>(),
                 "Requested Bundle can not be fully populated by this SettingsRegistry<Traits...> instance.");
@@ -216,7 +216,7 @@ public:
     /*! @brief Shortcut to get a SettingsBundle for a specific subset of traits. Equivalent to
      *         getSettingBundle<SettingsBundle<SubsetOfTraits...>>().
      *  @tparam SubsetOfTraits One or more traits that exist within this registry. */
-    template<class... SubsetOfTraits>
+    template<SettingTraitConcept... SubsetOfTraits>
     SettingsBundleTemplate<SubsetOfTraits...> getSettingBundleForTraits() {
         static_assert(SettingsBundleTemplate<SubsetOfTraits...>::template canBeFullyPopulatedFrom<SettingsRegistryTemplate<Traits...>>(),
                 "Requested Bundle can not be fully populated by this SettingsRegistry<Traits...> instance.");
@@ -229,7 +229,7 @@ public:
     /*! @brief Gets the value of a specific setting.
      *  @tparam SettingTrait Trait present in the registry.
      *  @return const reference to the setting's stored value. */
-    template<class SettingTrait>
+    template<SettingTraitConcept SettingTrait>
     const typename SettingTrait::Value& get() const {
         static_assert(contains<SettingTrait>(),
                 "SettingTrait specified is not registered within this SettingsRegistry.");
@@ -241,7 +241,7 @@ public:
     /*! @brief Sets and persists a new value for a specific setting.
      *  @tparam SettingTrait Trait present in the registry.
      *  @param value New value to store and persist. */
-    template<class SettingTrait>
+    template<SettingTraitConcept SettingTrait>
     void set(const typename SettingTrait::Value& value) {
         static_assert(contains<SettingTrait>(),
                 "SettingTrait specified is not registered within this SettingsRegistry.");
@@ -274,11 +274,11 @@ private:
     inline void _printAllToDebugImpl() {
         using Trait = typename _TraitForIndex<Index>::type;
 
-        if constexpr (SettingTraitValidator::has_key<Trait>()) {
+//        if constexpr (SettingTraitValidator::has_key<Trait>()) {
             qDebug() << "["<<Index<<"] key = "<<Trait::key()<<" value = "<<std::get<Index>(m_settings).value;
-        } else {
-            qDebug() << "["<<Index<<"] custom thing...";
-        }
+//        } else {
+//     qDebug() << "["<<Index<<"] custom thing...";
+// }
 
         if constexpr (Index + 1 < std::tuple_size<AbstractSettingsTuple>::value)
             _printAllToDebugImpl<Index+1>();

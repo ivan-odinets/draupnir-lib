@@ -2,7 +2,7 @@
  **********************************************************************************************************************
  *
  * draupnir-lib
- * Copyright (C) 2025 Ivan Odinets <i_odinets@protonmail.com>
+ * Copyright (C) 2026 Ivan Odinets <i_odinets@protonmail.com>
  *
  * This file is part of draupnir-lib
  *
@@ -22,26 +22,38 @@
  *
  */
 
-#ifndef SETTINGTRAITFORENTRY_H
-#define SETTINGTRAITFORENTRY_H
+#ifndef SETTINGSVALUEUSERINPUT_H
+#define SETTINGSVALUEUSERINPUT_H
+
+#include <QApplication>
+#include <QInputDialog>
+
+#include <optional>
 
 namespace Draupnir::Handlers
 {
 
-/*! @struct SettingTraitForEntry draupnir/utils/SettingTraitForEntry.h
- *  @ingroup HandlerTemplates
- *  @brief This is a base case of SettingTraitForEntry structure which is mapping a menu entry to its setting trait.
- *
- *  @details Used to provides a compile-time association between the menu entry trait and the corresponding setting
- *           trait. This mapping is required by SettingsMenuEntriesHandler to resolve the correct value type and
- *           persistence key. */
+template<class SettingTrait,class Value>
+class SettingsValueUserInput;
 
-template<class Entry>
-struct SettingTraitForEntry
+template<class SettingTrait>
+class SettingsValueUserInput<SettingTrait,QString>
 {
-    using type = void;
+public:
+    static std::optional<QString> getValue(const QString& oldValue) {
+        bool ok = false;
+        const QString& result = QInputDialog::getText(
+            qApp->activeWindow(),
+            qApp->applicationName(),
+            qApp->applicationName(),
+            QLineEdit::Normal,
+            oldValue,
+            &ok
+        );
+        return (ok) ? std::optional<QString>{result} : std::nullopt;
+    }
 };
 
 };
 
-#endif // SETTINGTRAITFORENTRY_H
+#endif // SETTINGSVALUEUSERINPUT_H

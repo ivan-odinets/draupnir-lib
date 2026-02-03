@@ -25,65 +25,24 @@
 #ifndef HELPMENUENTRIESHANDLER_H
 #define HELPMENUENTRIESHANDLER_H
 
-#include "draupnir/ui_bricks/handlers/templates/GenericMenuEntriesHandler.h"
-#include "draupnir/ui_bricks/traits/menu_entries/HelpMenuEntries.h"
+#include "draupnir/ui_bricks/handlers/templates/MenuHandlerTemplate.h"
+
+#include "draupnir/ui_bricks/handlers/help_menu/AboutAppEntryHandler.h"
 #include "draupnir/ui_bricks/handlers/help_menu/AboutDraupnirLibEntryHandler.h"
 #include "draupnir/ui_bricks/handlers/help_menu/AboutQtEntryHandler.h"
+#include "draupnir/ui_bricks/handlers/help_menu/HelpEntryHandler.h"
+
 
 namespace Draupnir::Handlers {
 
-/*! @class HelpMenuEntriesHandler
- *  @headerfile draupnir/handlers/help_menu/HelpMenuEntriesHandler.h
- *  @ingroup HandlerTemplates
+/*! @headerfile draupnir/handlers/help_menu/HelpMenuEntriesHandler.h
+ *  @ingroup UiBricks
  *  @brief Composite handler for help-related menu entries.
  *  @tparam HelpSource - The context type providing data and methods needed by help menu entry handlers.
- *  @tparam HandledEntries - Variadic parameter pack listing all handled help menu entry trait types (e.g., AboutAppMenuTrait).
- *
- *  @details Inherits from GenericMenuEntriesHandler and aggregates handlers for all specified help menu entries. This class
- *           acts as a convenience alias to group together various help-related actions (e.g., "About App", "About Qt", "Help
- *           Entry") under a common context.
- *
- *           Inherits all behavior from GenericMenuEntriesHandler (instantiates a handler for each HandledEntry). You are
- *           expected to specify as HandledEntries the traits corresponding to all help menu entries you want to handle.
- *
- * @todo Add static_asserts to verify the Help source.
- * @todo Add at least compilation test. */
+ *  @tparam HandledEntries - Variadic parameter pack listing all handled help menu entry trait types (e.g., AboutAppMenuTrait). */
 
-template<class HelpSource, class... HandledEntries>
-class HelpMenuEntriesHandler :
-        public GenericMenuEntriesHandler<HelpMenuEntriesHandler<HelpSource,HandledEntries...>,HandledEntries...>
-{
-    /*! @struct has_createHelpDialog
-     *  @brief Trait to check whether HelpContext defines a static method createHelpDialog() returning QDialog* or derived. */
-    template<class, class = std::void_t<>>
-    struct has_createHelpDialog : std::false_type {};
-
-    template<class Class>
-    struct has_createHelpDialog<
-        Class,
-        std::void_t<decltype(
-            std::is_base_of_v<QDialog,std::remove_pointer_t<decltype(Class::createHelpDialog())>> ||
-            std::is_same_v<QDialog,std::remove_pointer_t<decltype(Class::createHelpDialog())>>
-        )>
-    > : std::true_type {};
-
-public:
-    HelpMenuEntriesHandler() :
-        GenericMenuEntriesHandler<HelpMenuEntriesHandler<HelpSource,HandledEntries...>,HandledEntries...>()
-    {}
-
-    template<bool cond = draupnir::utils::is_one_of_v<Draupnir::Ui::AboutAppMenuTrait,HandledEntries...>>
-    static std::enable_if_t<cond,QString>
-    aboutAppText() {
-        return HelpSource::aboutAppText();
-    }
-
-    template<bool cond = draupnir::utils::is_one_of_v<Draupnir::Ui::HelpEntryMenuTrait,HandledEntries...>>
-    static std::enable_if_t<cond,QDialog*>
-    createHelpDialog() {
-        return HelpSource::createHelpDialog();
-    }
-};
+template<class HelpContext, class... HandledEntries>
+using HelpMenuEntriesHandler = MenuHandlerTemplate<HelpContext,GenericMenuEntryHandlerTemplate,HandledEntries...>;
 
 } // namespace Draupnir::Menus
 

@@ -74,10 +74,11 @@
         $$PWD/../include/settings_registry/draupnir/settings_registry/traits/settings/main_window/WindowSizeSetting.h \
         $$PWD/../include/settings_registry/draupnir/settings_registry/traits/settings/templates/SettingTraitTemplate.h \
         $$PWD/../include/settings_registry/draupnir/settings_registry/utils/SettingTraitSerializer.h \
-        $$PWD/../include/settings_registry/draupnir/settings_registry/utils/SettingTraitValidator.h \
         $$PWD/../include/settings_registry/draupnir/settings_registry/traits/settings/templates/SizeSettingTraitTemplate.h \
         $$PWD/../include/settings_registry/draupnir/settings_registry/utils/SettingsTraitsConcatenator.h \
-        $$PWD/../include/settings_registry/draupnir/settings_registry/utils/ValueSerializer.h
+        $$PWD/../include/settings_registry/draupnir/settings_registry/utils/ValueSerializer.h \
+        $$PWD/../include/settings_registry/draupnir/settings_registry/concepts/SettingTraitConcept.h \
+        $$PWD/../include/settings_registry/draupnir/settings_registry/utils/OptionalSettingsBundle.h
 
     DISTFILES += \
         $$PWD/../docs/pages/SettingsRegistry.dox

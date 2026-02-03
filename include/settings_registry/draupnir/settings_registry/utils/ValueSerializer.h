@@ -52,9 +52,7 @@ namespace Draupnir::Settings
  * @note The backend is expected to provide:
  *       - bool contains(const QString&) const;
  *       - QVariant value(const QString&) const;
- *       - void setValue(const QString&, const QVariant&);
- *
- * @todo Add test for this class. */
+ *       - void setValue(const QString&, const QVariant&); */
 
 template<class Backend, class Value>
 class ValueSerializer

@@ -53,9 +53,7 @@
  *           It is safe to include the Utils.pri file more than one time to *.pro.
  *
  * @note Snake-case is used for naming of classes and namespaces within this module to emphasise that these classes are
- *       pure-C++ and can be used without Qt.
- *
- * @todo Try to add some nice and functional way how to execute specific function on startup. */
+ *       pure-C++ and can be used without Qt. */
 
 /*! @namespace draupnir::utils
  *  @ingroup Utils

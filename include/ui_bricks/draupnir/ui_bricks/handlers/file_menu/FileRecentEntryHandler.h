@@ -2,7 +2,7 @@
  **********************************************************************************************************************
  *
  * draupnir-lib
- * Copyright (C) 2025 Ivan Odinets <i_odinets@protonmail.com>
+ * Copyright (C) 2025-2026 Ivan Odinets <i_odinets@protonmail.com>
  *
  * This file is part of draupnir-lib
  *
@@ -25,20 +25,18 @@
 #ifndef FILERECENTENTRYHANDLER_H
 #define FILERECENTENTRYHANDLER_H
 
-#include "draupnir/ui_bricks/handlers/templates/ActionHandler.h"
+#include "draupnir/ui_bricks/handlers/templates/CustomEntryHandler.h"
 
 #include <QMessageBox>
 
 #include "draupnir/settings_registry/SettingsBundleTemplate.h"
-#include "draupnir/ui_bricks/traits/menu_entries/FileMenuEntries.h"
 #include "draupnir/settings_registry/traits/settings/files/RecentFilesListSetting.h"
-#include "draupnir/handlers/templates/CustomMenuHandler.h"
-#include "draupnir/utils/FileManagerValidator.h"
+#include "draupnir/ui_bricks/traits/menu_entries/FileMenuEntries.h"
 
 namespace Draupnir::Handlers {
 
 template<class Context, class Entry>
-class GenericMenuEntryHandler;
+class GenericMenuEntryHandlerTemplate;
 
 /*! @class GenericMenuEntryHandler<FileContext, Draupnir::Ui::RecentFileEntry>
  *  @headerfile draupnir/handlers/file_menu/FileRecentEntryHandler.h
@@ -68,25 +66,20 @@ class GenericMenuEntryHandler;
  *       - `openFile(const QFileInfo&)`
  *       - `hasNothingOpened()`
  *       - `isCurrentFileSaved()`
- *       - Static method `canHaveMultipleFilesOpened()`.
- *
- * @todo Write a test for this class. */
+ *       - Static method `canHaveMultipleFilesOpened()`. */
 
 template<class FileContext>
-class GenericMenuEntryHandler<FileContext,Draupnir::Ui::RecentFileEntry> :
-        public CustomMenuHandler<GenericMenuEntryHandler<FileContext,Draupnir::Ui::RecentFileEntry>,Draupnir::Ui::RecentFileEntry>
+class GenericMenuEntryHandlerTemplate<FileContext,Draupnir::Ui::RecentFileEntry> :
+    public CustomEntryHandler<GenericMenuEntryHandlerTemplate<FileContext,Draupnir::Ui::RecentFileEntry>,Draupnir::Ui::RecentFileEntry>
 {
 public:
     using SettingsBundle = Settings::SettingsBundleTemplate<Settings::RecentFileListSetting>;
 
     /*! @brief Constructs the handler, asserting FileManager compliance.
      *  @param context Reference to the file context. */
-    GenericMenuEntryHandler(FileContext& context) :
+    GenericMenuEntryHandlerTemplate(FileContext& context) :
         m_context(context)
-    {
-        static_assert(FileManagerValidator::has_openFile<typename FileContext::FileManager>::value,
-                "FileManager should have void openFile(const QFileInfo& ) method");
-    }
+    {}
 
     /*! @brief Connects this handler to the RecentFilesMenu's selection signal.
      *  @param entry Pointer to the RecentFilesMenu instance. */
@@ -142,9 +135,9 @@ public:
     void onSettingsLoaded() {
         const QStringList files = m_context.template getSetting<Draupnir::Settings::RecentFileListSetting>();
 
-        auto menu = CustomMenuHandler<GenericMenuEntryHandler<FileContext,Draupnir::Ui::RecentFileEntry>,Draupnir::Ui::RecentFileEntry>::menu();
+        auto menu = CustomEntryHandler<GenericMenuEntryHandlerTemplate<FileContext,Draupnir::Ui::RecentFileEntry>,Draupnir::Ui::RecentFileEntry>::menu();
 
-        CustomMenuHandler<GenericMenuEntryHandler<FileContext,Draupnir::Ui::RecentFileEntry>,Draupnir::Ui::RecentFileEntry>::menu()->loadRecentFiles(files);
+        CustomEntryHandler<GenericMenuEntryHandlerTemplate<FileContext,Draupnir::Ui::RecentFileEntry>,Draupnir::Ui::RecentFileEntry>::menu()->loadRecentFiles(files);
     }
 
 private:

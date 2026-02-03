@@ -2,7 +2,7 @@
  **********************************************************************************************************************
  *
  * draupnir-lib
- * Copyright (C) 2025 Ivan Odinets <i_odinets@protonmail.com>
+ * Copyright (C) 2025-2026 Ivan Odinets <i_odinets@protonmail.com>
  *
  * This file is part of draupnir-lib
  *
@@ -25,20 +25,22 @@
 #ifndef FILESAVEENTRYHANDLER_H
 #define FILESAVEENTRYHANDLER_H
 
-#include "draupnir/ui_bricks/handlers/templates/ActionHandler.h"
+#include "draupnir/ui_bricks/handlers/templates/ActionHandlerTemplate.h"
 
+#include "draupnir/ui_bricks/concepts/FileContextConcept.h"
+#include "draupnir/ui_bricks/concepts/FileManagerConcept.h"
 #include "draupnir/ui_bricks/traits/menu_entries/FileMenuEntries.h"
-#include "draupnir/ui_bricks/utils/FileManagerValidator.h"
 
 namespace Draupnir::Handlers
 {
 
 template<class Context, class Entry>
-class GenericMenuEntryHandler;
+class GenericMenuEntryHandlerTemplate;
 
 /*! @class GenericMenuEntryHandler<FileContext,Draupnir::Ui::FileSaveEntry>
  *  @headerfile draupnir/handlers/file_menu/FileSaveEntryHandler.h
- *  @ingroup HandlerTemplates
+ *  @ingroup UiBricks
+ *  @tparam FileContext Context class providing file management interface.
  *  @brief Specialization of the menu entry handler for "Save File" actions.
  *
  *  @details This template specialization handles the "Save" menu action in file-related menus. It inherits QAction connection
@@ -51,35 +53,23 @@ class GenericMenuEntryHandler;
  *             filename.
  *
  *           At construction, a static assertion enforces that the FileManager type provided by FileContext implements the
- *           required `saveCurrentFile()` method.
- *
- *  @tparam FileContext Context class providing file management interface.
- *
- * @note This handler expects FileContext to provide:
- *   - `fileManager()`: Returns a pointer to the FileManager.
- *   - `onSaveFileAs()`: Initiates the "Save As" flow.
- *   - FileManager must implement `saveCurrentFile()` and `currentFileHasName()`.
- *
- * @todo Write a test for this class. */
+ *           required `saveCurrentFile()` method. */
 
-template<class FileContext>
-class GenericMenuEntryHandler<FileContext,Draupnir::Ui::FileSaveEntry> :
-        public ActionHandler<GenericMenuEntryHandler<FileContext,Draupnir::Ui::FileSaveEntry>>
+template<class Context>
+class GenericMenuEntryHandlerTemplate<Context,Draupnir::Ui::FileSaveEntry> :
+    public ActionHandlerTemplate<GenericMenuEntryHandlerTemplate<Context,Draupnir::Ui::FileSaveEntry>>
 {
 public:
-    /*! @brief Constructs the handler, statically asserting FileManager interface compliance.
+    /*! @brief Constructs the handler, statically asserting `FileManager` interface compliance.
      *  @param context Reference to the file context. */
-    GenericMenuEntryHandler(FileContext& context) :
-        m_context(context)
-    {
-        static_assert(FileManagerValidator::has_saveCurrentFile<typename FileContext::FileManager>::value,
-                "FileManager must have saveCurrentFile method");
-    };
+    GenericMenuEntryHandlerTemplate(Context& context) :
+        m_context{context}
+    {};
+
     /*! @brief Slot called when the "Save File" menu entry is triggered. If the current file has a name, saves directly;
      *         otherwise, initiates "Save As". */
     void onTriggered() {
-        Q_ASSERT_X(m_context.fileManager() != nullptr,"FileMenuEntriesHandler::onSaveFile",
-                   "FileManager must be specified before.");
+        Q_ASSERT(m_context.fileManager());
 
         if (m_context.fileManager()->currentFileHasName()) {
             m_context.fileManager()->saveCurrentFile();
@@ -89,7 +79,7 @@ public:
     }
 
 private:
-    FileContext& m_context;
+    Context& m_context;
 };
 
 }; // namespace Draupnir::Menus

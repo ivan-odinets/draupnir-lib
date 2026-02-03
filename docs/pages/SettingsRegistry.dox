@@ -87,13 +87,8 @@
  *               >();
  *
  *               qDebug() << bundle.get<CacheDirectorySetting>();
- *               @endcode
- *
- * @todo Restructure the sources within include and src dirs.
- * @todo Add to the documentation list of the available entitities.
- * @todo Add to the documentation how to override the default setting values. And make a test covering this feature.
- * @todo Make *.pri file smarter. If required QT things are not enabled - show reasonable error. */
+ *               @endcode */
 
 /*! @namespace Draupnir::Settings
  *  @ingroup SettingsRegistry
- *  @brief Namespace containing classes from the ProxyHelper module. */
+ *  @brief Namespace containing classes from the SettingsRegistry module. */

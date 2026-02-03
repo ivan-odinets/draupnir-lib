@@ -25,7 +25,7 @@
 #include <QtTest>
 #include <QCoreApplication>
 
-#include "draupnir/ui/menus/NotificationTypeMenu.h"
+#include "draupnir/message_system/ui/menus/NotificationTypeMenu.h"
 
 namespace Draupnir::Messages
 {

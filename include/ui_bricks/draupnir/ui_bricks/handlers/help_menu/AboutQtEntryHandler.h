@@ -2,7 +2,7 @@
  **********************************************************************************************************************
  *
  * draupnir-lib
- * Copyright (C) 2025 Ivan Odinets <i_odinets@protonmail.com>
+ * Copyright (C) 2025-2026 Ivan Odinets <i_odinets@protonmail.com>
  *
  * This file is part of draupnir-lib
  *
@@ -33,7 +33,7 @@ namespace Draupnir::Handlers
 {
 
 template<class Context,class HandledEntry>
-class GenericMenuEntryHandler;
+class GenericMenuEntryHandlerTemplate;
 
 /*! @class GenericHelpMenuEntryHandler<HelpContext, Draupnir::Ui::AboutQtMenuTrait>
  *  @headerfile draupnir/handlers/help_menu/AboutQtEntryHandler.h
@@ -43,21 +43,16 @@ class GenericMenuEntryHandler;
  *
  *  @details This specialization handles the AboutQtMenuTrait entry by connecting its QAction::triggered() signal directly to
  *           QApplication::aboutQt. It ignores the provided - HelpContext because no contextual data is required to show
- *           the standard Qt “About” dialog.
- *
- * @note The connection is made without an explicit QObject context; lifetime of aboutQtAction must be managed externally.
- *       If you need automatic disconnection on destruction, connect with a suitable QObject context or manage the connection handle.
- * @note The slot QApplication::aboutQt is invoked on qApp; ensure this code runs on the GUI thread. */
+ *           the standard Qt “About” dialog. */
 
 template<class HelpContext>
-class GenericMenuEntryHandler<HelpContext,Draupnir::Ui::AboutQtMenuTrait>
+class GenericMenuEntryHandlerTemplate<HelpContext,Draupnir::Ui::AboutQtMenuTrait>
 {
 public:
-    /*! @brief Constructs the handler.
-     *  @param HelpContext Reference to a help context. Not used by this specialization. */
-    GenericMenuEntryHandler(HelpContext&) {}
+    /*! @brief Constructs the handler. */
+    GenericMenuEntryHandlerTemplate() {}
 
-    /*! @brief Connects the provided QAction to QApplication::aboutQt.
+    /*! @brief Connects the provided `QAction` to `QApplication::aboutQt`.
      *  @param entry Pointer to the action representing the "About Qt" menu item. */
     void connect(QAction* entry) {
         QObject::connect(entry,   &QAction::triggered,

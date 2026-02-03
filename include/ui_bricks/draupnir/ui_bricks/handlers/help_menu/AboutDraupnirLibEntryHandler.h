@@ -2,7 +2,7 @@
  **********************************************************************************************************************
  *
  * draupnir-lib
- * Copyright (C) 2025 Ivan Odinets <i_odinets@protonmail.com>
+ * Copyright (C) 2025-2026 Ivan Odinets <i_odinets@protonmail.com>
  *
  * This file is part of draupnir-lib
  *
@@ -25,41 +25,37 @@
 #ifndef ABOUTDRAUPNIRLIBENTRYHANDLER_H
 #define ABOUTDRAUPNIRLIBENTRYHANDLER_H
 
-#include "draupnir/ui_bricks/handlers/templates/ActionHandler.h"
-#include "draupnir/ui_bricks/traits/menu_entries/HelpMenuEntries.h"
+#include "draupnir/ui_bricks/handlers/templates/ActionHandlerTemplate.h"
 
 #include <QMessageBox>
 #include <QPointer>
 
+#include "draupnir/ui_bricks/traits/menu_entries/HelpMenuEntries.h"
 #include "draupnir/utils/ResourceHelper.h"
 
 namespace Draupnir::Handlers
 {
 
 template<class Context,class HandledEntry>
-class GenericMenuEntryHandler;
+class GenericMenuEntryHandlerTemplate;
 
 /*! @class GenericHelpMenuEntryHandler<HelpContext, Draupnir::Ui::AboutDraupnirLibMenuTrait>
- *  @ingroup HandlerTemplates
+ *  @ingroup UiBricks
  *  @headerfile draupnir/handlers/help_menu/AboutDraupnirLibEntryHandler.h
- *  @brief Partial specialization that wires a QAction to the standard dialog About Draupnir Lib.
- *  @tparam HelpContext Any type representing the help/“About” handling context (unused in this specialization).
- *
- * @note The connection is made without an explicit QObject context; lifetime of QAction must be managed externally. */
+ *  @brief Partial specialization that wires a `QAction` to the standard dialog About Draupnir Lib.
+ *  @tparam `HelpContext` Any type representing the help/“About” handling context (unused in this specialization). */
 
 template<class HelpContext>
-class GenericMenuEntryHandler<HelpContext,Draupnir::Ui::AboutDraupnirLibMenuTrait> :
-        public ActionHandler<GenericMenuEntryHandler<HelpContext,Draupnir::Ui::AboutDraupnirLibMenuTrait>>
+class GenericMenuEntryHandlerTemplate<HelpContext,Draupnir::Ui::AboutDraupnirLibMenuTrait> :
+    public ActionHandlerTemplate<GenericMenuEntryHandlerTemplate<HelpContext,Draupnir::Ui::AboutDraupnirLibMenuTrait>>
 {
 public:
-    /*! @brief Constructs the handler.
-     *  @param HelpContext Reference to a help context. Not used by this specialization. */
-    GenericMenuEntryHandler(HelpContext&) :
+    /*! @brief Constructs the handler. */
+    GenericMenuEntryHandlerTemplate() :
         p_msgBox{nullptr}
     {}
 
-    /*! @brief This method will be executed when user clicks on the About Draupnir Lib QAction.
-     * @todo Write a bit more extended text. */
+    /*! @brief This method will be executed when user clicks on the About Draupnir Lib QAction. */
     void onTriggered() {
         if (!p_msgBox.isNull()) {
             p_msgBox->raise();

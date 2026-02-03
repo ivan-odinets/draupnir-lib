@@ -31,8 +31,8 @@
 #include "draupnir-test/mocks/DummyMultipleFileManager.h"
 #include "draupnir-test/mocks/DummySingleFileManager.h"
 
-/*! @class FileNewEntryHandlerTest
- *  @brief This is a test class for testing basic functionality of the FileNewEntryHandler */
+/*! @class FileOpenEntryHandlerTest
+ *  @brief This is a test class for testing basic functionality of the FileOpenEntryHandlerTest*/
 
 class FileOpenEntryHandlerTest final : public QObject
 {
@@ -41,10 +41,10 @@ public:
     using MultipleFileContext = DummyFileContext<DummyMultipleFileManager>;
     using SingleFileContext = DummyFileContext<DummySingleFileManager>;
 
-    using SingleFileOpenEntryHandler = Draupnir::Handlers::GenericMenuEntryHandler<
+    using SingleFileOpenEntryHandler = Draupnir::Handlers::GenericMenuEntryHandlerTemplate<
         SingleFileContext,Draupnir::Ui::FileOpenEntry
     >;
-    using MultipleFileOpenEntryHandler = Draupnir::Handlers::GenericMenuEntryHandler<
+    using MultipleFileOpenEntryHandler = Draupnir::Handlers::GenericMenuEntryHandlerTemplate<
         MultipleFileContext,Draupnir::Ui::FileOpenEntry
     >;
 

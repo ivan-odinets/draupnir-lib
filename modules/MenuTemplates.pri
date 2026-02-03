@@ -34,4 +34,8 @@
         $$PWD/../docs/pages/MenuTemplates.dox
 }
 
+HEADERS += \
+    $$PWD/../include/ui_bricks/draupnir/ui_bricks/utils/MenuEntriesConcatenator.h \
+    $$PWD/../include/ui_bricks/draupnir/ui_bricks/utils/MenuEntryTraitValidator.h
+
 

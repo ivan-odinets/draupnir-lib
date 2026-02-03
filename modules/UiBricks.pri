@@ -9,6 +9,8 @@
     include(SettingsRegistry.pri)
     include(DraupnirResources.pri)
 
+    DEFINES += DRAUPNIR_RELAXED_MENU_TEMPLATE_HANDLERS
+
     INCLUDEPATH += $$PWD/../include/ui_bricks
 
     HEADERS += \
@@ -17,7 +19,13 @@
         $$PWD/../include/ui_bricks/draupnir/ui_bricks/animations/FadeOut.h \
         $$PWD/../include/ui_bricks/draupnir/ui_bricks/animations/ParralelAnimationTemplate.h \
         $$PWD/../include/ui_bricks/draupnir/ui_bricks/animations/ShrinkToCenter.h \
+        $$PWD/../include/ui_bricks/draupnir/ui_bricks/concepts/FileManagerConcept.h \
         $$PWD/../include/ui_bricks/draupnir/ui_bricks/core/ViewManager.h \
+        $$PWD/../include/ui_bricks/draupnir/ui_bricks/handlers/settings_menu/SettingsMenuHandlerTemplate.h \
+        $$PWD/../include/ui_bricks/draupnir/ui_bricks/handlers/templates/ActionHandlerTemplate.h \
+        $$PWD/../include/ui_bricks/draupnir/ui_bricks/handlers/templates/CustomEntryHandler.h \
+        $$PWD/../include/ui_bricks/draupnir/ui_bricks/handlers/templates/GenericMenuEntryHandlerTemplate.h \
+        $$PWD/../include/ui_bricks/draupnir/ui_bricks/handlers/templates/MenuHandlerTemplate.h \
         $$PWD/../include/ui_bricks/draupnir/ui_bricks/ui/TrayIcon.h \
         $$PWD/../include/ui_bricks/draupnir/ui_bricks/utils/CheckableUiElementHelper.h \
         $$PWD/../include/ui_bricks/draupnir/ui_bricks/ui/widgets/FixedCentralTabWidgetTemplate.h \
@@ -62,18 +70,14 @@
         $$PWD/../include/ui_bricks/draupnir/ui_bricks/handlers/help_menu/AboutQtEntryHandler.h \
         $$PWD/../include/ui_bricks/draupnir/ui_bricks/handlers/help_menu/HelpEntryHandler.h \
         $$PWD/../include/ui_bricks/draupnir/ui_bricks/handlers/help_menu/HelpMenuEntriesHandler.h \
-        $$PWD/../include/ui_bricks/draupnir/ui_bricks/handlers/settings_menu/MinimizeOnCloseEntryHandler.h \
-        $$PWD/../include/ui_bricks/draupnir/ui_bricks/handlers/settings_menu/MinimizeToTrayEntryHandler.h \
-        $$PWD/../include/ui_bricks/draupnir/ui_bricks/handlers/settings_menu/SettingsCheckableEntryHandler.h \
-        $$PWD/../include/ui_bricks/draupnir/ui_bricks/handlers/settings_menu/SettingsMenuEntriesHandler.h \
-        $$PWD/../include/ui_bricks/draupnir/ui_bricks/handlers/settings_menu/StartHiddenEntryHandler.h \
-        $$PWD/../include/ui_bricks/draupnir/ui_bricks/handlers/templates/ActionHandler.h \
-        $$PWD/../include/ui_bricks/draupnir/ui_bricks/handlers/templates/CheckableActionHandler.h \
-        $$PWD/../include/ui_bricks/draupnir/ui_bricks/handlers/templates/CustomMenuHandler.h \
-        $$PWD/../include/ui_bricks/draupnir/ui_bricks/handlers/templates/GenericMenuEntriesHandler.h \
-        $$PWD/../include/ui_bricks/draupnir/ui_bricks/handlers/templates/GenericMenuEntryHandler.h \
-        $$PWD/../include/ui_bricks/draupnir/ui_bricks/utils/FileManagerValidator.h \
-        $$PWD/../include/ui_bricks/draupnir/ui_bricks/utils/SettingTraitForEntry.h
+        $$PWD/../include/ui_bricks/draupnir/ui_bricks/concepts/FileContextConcept.h \
+        $$PWD/../include/ui_bricks/draupnir/ui_bricks/concepts/MenuEntryConcept.h \
+        $$PWD/../include/ui_bricks/draupnir/ui_bricks/handlers/file_menu/FileMenuContext.h \
+        $$PWD/../include/ui_bricks/draupnir/ui_bricks/handlers/settings_menu/SettingsContext.h \
+        $$PWD/../include/ui_bricks/draupnir/ui_bricks/handlers/settings_menu/SettingsMenuEntryHandlerTemplate.h \
+        $$PWD/../include/ui_bricks/draupnir/ui_bricks/utils/MenuEntriesConcatenator.h \
+        $$PWD/../include/ui_bricks/draupnir/ui_bricks/utils/MenuEntryToTraitMapper.h \
+        $$PWD/../include/ui_bricks/draupnir/ui_bricks/utils/SettingsValueUserInput.h
 
     SOURCES += \
         $$PWD/../src/ui_bricks/draupnir/ui/TrayIcon.cpp \

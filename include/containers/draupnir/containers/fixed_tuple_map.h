@@ -2,7 +2,7 @@
  **********************************************************************************************************************
  *
  * draupnir-lib
- * Copyright (C) 2025 Ivan Odinets <i_odinets@protonmail.com>
+ * Copyright (C) 2025-2026 Ivan Odinets <i_odinets@protonmail.com>
  *
  * This file is part of draupnir-lib
  *
@@ -28,8 +28,6 @@
 #include "draupnir/containers/fixed_map.h"
 
 #include <tuple>
-#include <type_traits>
-#include <functional>
 
 #include "draupnir/utils/type_presense.h"
 
@@ -46,9 +44,7 @@ namespace draupnir::containers
  *           each specified type. It provides convenient accessors for getting and setting individual tuple elements by
  *           type, as well as functional iteration over all tuples.
  *
- * @note The container size and key set are defined at compile-time.
- *
- * @todo Extend documentation for this class usage. And maybe add simple example program to the specific examples directory. */
+ * @note The container size and key set are defined at compile-time. */
 
 template<const auto& keys_array,class... value_types>
 class fixed_tuple_map : public fixed_map<keys_array,std::tuple<value_types...> >

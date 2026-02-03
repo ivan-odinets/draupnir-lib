@@ -2,7 +2,7 @@
  **********************************************************************************************************************
  *
  * draupnir-lib
- * Copyright (C) 2025 Ivan Odinets <i_odinets@protonmail.com>
+ * Copyright (C) 2025-2026 Ivan Odinets <i_odinets@protonmail.com>
  *
  * This file is part of draupnir-lib
  *
@@ -25,7 +25,7 @@
 #ifndef FILEOPENENTRYHANDLER_H
 #define FILEOPENENTRYHANDLER_H
 
-#include "draupnir/ui_bricks/handlers/templates/ActionHandler.h"
+#include "draupnir/ui_bricks/handlers/templates/ActionHandlerTemplate.h"
 
 #include <QDir>
 #include <QMessageBox>
@@ -33,12 +33,11 @@
 #include "draupnir/settings_registry/SettingsBundleTemplate.h"
 #include "draupnir/ui_bricks/traits/menu_entries/FileMenuEntries.h"
 #include "draupnir/settings_registry/traits/settings/files/LastUsedDirectorySetting.h"
-#include "draupnir/ui_bricks/utils/FileManagerValidator.h"
 
 namespace Draupnir::Handlers {
 
 template<class Context, class Entry>
-class GenericMenuEntryHandler;
+class GenericMenuEntryHandlerTemplate;
 
 /*! @class GenericMenuEntryHandler<FileContext,Draupnir::Ui::FileOpenEntry>
  *  @headerfile draupnir/handlers/file_menu/FileOpenEntryHandler.h
@@ -66,13 +65,11 @@ class GenericMenuEntryHandler;
  *       - void openFile(const QFileInfo&);
  *       - void openFiles(const QStringList&);
  *       - bool hasNothingOpened();
- *       - bool isCurrentFileSaved();
- *
- * @todo Write a test for this class. */
+ *       - bool isCurrentFileSaved(); */
 
 template<class FileContext>
-class GenericMenuEntryHandler<FileContext,Draupnir::Ui::FileOpenEntry> :
-        public ActionHandler<GenericMenuEntryHandler<FileContext,Draupnir::Ui::FileOpenEntry>>
+class GenericMenuEntryHandlerTemplate<FileContext,Draupnir::Ui::FileOpenEntry> :
+    public ActionHandlerTemplate<GenericMenuEntryHandlerTemplate<FileContext,Draupnir::Ui::FileOpenEntry>>
 {
 public:
     using SettingsBundle = Settings::SettingsBundleTemplate<Settings::LastUsedDirectorySetting>;
@@ -80,18 +77,10 @@ public:
     /*! @brief Constructs the handler, checks file manager interface compliance. Performs a static_assert to ensure FileManager
      *         has openFile method.
      *  @param context Reference to file context. */
-    GenericMenuEntryHandler(FileContext& context) :
-        m_context(context)
-    {
-        if constexpr (FileContext::FileManager::canOpenMultipleFilesAtOnce()) {
-            static_assert(FileManagerValidator::has_openFiles<typename FileContext::FileManager>::value,
-                    "FileManager should have void openFiles(const QStringList& ) method");
-        } else {
-            static_assert(FileManagerValidator::has_openFile<typename FileContext::FileManager>::value,
-                    "FileManager should have void openFile(const QFileInfo& ) method");
-        }
-    };
-
+    GenericMenuEntryHandlerTemplate(FileContext& context) :
+        m_context{context}
+    {}
+\
     /*! @brief Slot called when the "File → Open" action is triggered. Handles all required prompting and opens selected files
      *         accordingly. */
     void onTriggered() {

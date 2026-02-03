@@ -18,11 +18,7 @@
  *           # SettingsRegistry module is added witith the UiBricks.pri
  *           include(draupnir-lib/modules/UiBricks.pri)
  *           @endcode
- *           It is safe to include the UiBricks.pri file more than one time to *.pro.
- *
- * @todo Extend documentation.
- * @todo Make *.pri file smarter. If required QT things are not enabled - show reasonable error.
- * @todo Add templated MainWindow class / classes. */
+ *           It is safe to include the UiBricks.pri file more than one time to *.pro. */
 
 /*! @namespace Draupnir::Ui
  *  @ingroup UiBricks

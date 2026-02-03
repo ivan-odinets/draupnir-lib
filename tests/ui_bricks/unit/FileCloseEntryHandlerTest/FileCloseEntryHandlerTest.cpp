@@ -33,18 +33,39 @@
 /*! @class FileCloseEntryHandlerTest
  *  @brief This is a test class for testing basic functionality of the FileCloseEntryHandler. */
 
+class WrongManager {};
+
+class WrongContext {};
+
+class ContextWithWrongManager {
+public:
+    static int askUser(const QString&, const QString&, QMessageBox::StandardButtons) { return -1; }
+
+    using FileManager = WrongManager;
+};
+
 class FileCloseEntryHandlerTest : public QObject
 {
     Q_OBJECT
 public:
     using FileContext = DummyFileContext<DummySingleFileManager>;
 
-    using FileCloseEntryHandler = Draupnir::Handlers::GenericMenuEntryHandler<
+    using FileCloseEntryHandler = Draupnir::Handlers::GenericMenuEntryHandlerTemplate<
         FileContext,Draupnir::Ui::FileCloseEntry
     >;
 
     FileContext dummyContext;
     FileCloseEntryHandler handler{dummyContext};
+
+    // When uncommented - this will result in static_assert
+    // using Broken = Draupnir::Handlers::GenericMenuEntryHandlerTemplate<
+    //     WrongContext,Draupnir::Ui::FileCloseEntry
+    //     >;
+    // Broken b;
+    // using Broken = Draupnir::Handlers::GenericMenuEntryHandlerTemplate<
+    //     ContextWithWrongManager,Draupnir::Ui::FileCloseEntry
+    // >;
+    // Broken b;
 
 private slots:
     void test_close_when_nothing_opened() {

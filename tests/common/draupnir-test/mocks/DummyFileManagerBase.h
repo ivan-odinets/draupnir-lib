@@ -61,6 +61,12 @@ public:
     void newFile() { newFile_callCount++; }
 
     void openFile(const QFileInfo&) {};
+
+    QString openDialogTitle() { return QString{}; }
+
+    QString supportedExtensions() { return QString{}; }
+
+    QString saveDialogTitle() { return QString{}; }
 };
 
 #endif // DUMMYFILEMANAGERBASE_H

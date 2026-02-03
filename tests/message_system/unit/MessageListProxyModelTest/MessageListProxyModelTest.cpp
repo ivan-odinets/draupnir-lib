@@ -25,10 +25,10 @@
 #include <QtTest>
 #include <QCoreApplication>
 
-#include "draupnir/core/Message.h"
-#include "draupnir/models/MessageListModel.h"
-#include "draupnir/models/MessageListProxyModel.h"
-#include "draupnir/traits/messages/DefaultMessageTraits.h" // IWYU pragma: keep
+#include "draupnir/message_system/core/Message.h"
+#include "draupnir/message_system/models/MessageListModel.h"
+#include "draupnir/message_system/models/MessageListProxyModel.h"
+#include "draupnir/message_system/traits/messages/DefaultMessageTraits.h" // IWYU pragma: keep
 
 namespace Draupnir::Messages
 {

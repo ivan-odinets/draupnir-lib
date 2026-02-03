@@ -43,6 +43,7 @@ namespace Draupnir::Ui {
  *  @tparam Entries...  Variadic trait parameter pack describing menu entries.
  *
  * @todo Write reasonable documentation and example of tha usage of this template.
+ * @todo Maybe this class should be moved to the "submenus" directory ?
  * @todo Add a test to check this functionality. */
 
 template<auto displayNameFunction, class... Entries>

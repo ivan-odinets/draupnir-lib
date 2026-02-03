@@ -21,10 +21,7 @@
  *           @endcode
  *
  * @warning Things from this module were added to the draupnir-lib for fun. Reasonable usage may be possible, but not
- *          guaranteed.
- *
- * @todo Add bool maybeTrue(bool val) method, which should change reasonable bool input to some random value.
- * @todo Add void random_sort(...) method, which should sort container in a unoptimal way. */
+ *          guaranteed. */
 
 /*! @namespace Draupnir::Loptr
  *  @ingroup Loptr

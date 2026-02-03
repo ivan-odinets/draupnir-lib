@@ -18,10 +18,7 @@
  *           # Dependencies are added witith the HandlerTemplates.pri
  *           include(draupnir-lib/modules/HandlerTemplates.pri)
  *           @endcode
- *           It is safe to include the HandlerTemplates.pri file more than one time to *.pro.
- *
- * @todo Restructure the sources within include and src dirs.
- * @todo Write reasonable documentation page for the HandlerTemplates module. */
+ *           It is safe to include the HandlerTemplates.pri file more than one time to *.pro. */
 
 /*! @namespace Draupnir::Handlers
  *  @ingroup HandlerTemplates

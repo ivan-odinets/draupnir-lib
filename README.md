@@ -12,31 +12,9 @@ The project is named after Odin’s legendary ring Draupnir - a symbol of endles
 
 This repository is actively developed and refactored. APIs are not frozen, and backwards-incompatible changes may (and will) appear without notice until v1.0.0 will be tagged and released.
 
-## Highlights
-
-- **Header-only containers** – e.g. `fixed_map` and `fixed_tuple_map` for compile-time associative data.
-- **Application settings infrastructure** – thin wrappers around `QSettings` to keep persistent configuration in sync.
-- **Templates for menus and menu handlers** - creating menus using templates and create handlers to this templte menus using another templates.
-- **Message system** – templates and widgets to surface notifications to the end user.
-- **Proxy helper utilities** – reusable dialogs and widgets for configuring `QNetworkProxy` instances.
-- **UI bricks and utilities** – small components to reduce boilerplate when building Qt interfaces.
-
-## Repository layout
-
-| Path / module         | Description |
-|-----------------------|-------------|
-| `include/containers`  | Header-only utilities such as `fixed_map` and supporting traits. |
-| `include/handler_templates` | Template implementations of menu handlers and supporting policies. |
-| `include/message_system` | Glue code that combines handlers, UI builders, and message traits. |
-| `include/proxy_helper` | Proxy helper utilities and Qt widgets. |
-| `include/settings_registry` | Helpers for registering and validating application settings. |
-| `include/ui_bricks` | Small reusable Qt UI components. |
-| `modules/*.pri` | Qt project include (`.pri`) files to import individual modules into a `.pro` project. |
-| `tests/` | Qt Test projects covering containers, handlers, message system, proxy helper, and more. |
-
 ### Requirements
 
-- A C++17-capable compiler (tested with GCC)
+- A C++20-capable compiler (tested with GCC)
 - Qt 5.15 or newer (Qt 6 is supported by most modules, but specific widgets may still rely on Qt 5 APIs).
 - CMake or qmake, depending on how you prefer to integrate the modules.
 

@@ -2,7 +2,7 @@
  **********************************************************************************************************************
  *
  * draupnir-lib
- * Copyright (C) 2025 Ivan Odinets <i_odinets@protonmail.com>
+ * Copyright (C) 2025-2026 Ivan Odinets <i_odinets@protonmail.com>
  *
  * This file is part of draupnir-lib
  *
@@ -31,11 +31,15 @@
 #include <QDebug>
 #include <QObject>
 
+#include "draupnir/ui_bricks/concepts/MenuEntryConcept.h"
 #include "draupnir/utils/type_presense.h"
 
 class QMenu;
 
 namespace Draupnir::Ui {
+
+template<class...>
+class MenuTemplate;
 
 /*! @class MenuEntriesContainer draupnir/ui_bricks/core/MenuEntriesContainer.h
  *  @ingroup UiBricks
@@ -50,18 +54,6 @@ namespace Draupnir::Ui {
 template<class... Entries>
 class MenuEntriesContainer
 {
-    /*! @brief Checks that static QString Entry::displayName() is well-formed and returns QString. */
-    template<class, class = std::void_t<>>
-    struct has_displayName : std::false_type {};
-
-    template<class Entry>
-    struct has_displayName<
-        Entry,
-        std::void_t<decltype(
-            std::is_same_v<QString,decltype(Entry::displayName())>
-        )>
-    > : std::true_type {};
-
 public:
     /*! @brief Constructor. Creates all menu elements specified in the Entries parameter pack. The elements are created
      *         via the Entry::createElement() static method. */
@@ -162,7 +154,7 @@ private:
         if constexpr (std::is_same_v<typename First::Type, QMenu> || std::is_base_of_v<QMenu, typename First::Type>) {
             std::get<Index>(m_elements)->setTitle(First::displayName());
         } else if constexpr (std::is_same_v<typename First::Type, QAction> || std::is_base_of_v<QAction, typename First::Type>) {
-            if constexpr (has_displayName<First>::value)
+            if constexpr (MenuEntry::HasDisplayNameMethod<First>)
                 std::get<Index>(m_elements)->setText(First::displayName());
         } else {
             static_assert(
@@ -213,7 +205,7 @@ private:
         if constexpr (std::is_same_v<typename First::Type, QMenu> || std::is_base_of_v<QMenu, typename First::Type>) {
             std::get<Index>(m_elements)->setTitle(First::displayName());
         } else if constexpr (std::is_same_v<typename First::Type, QAction> || std::is_base_of_v<QAction, typename First::Type>) {
-            if constexpr (has_displayName<First>::value)
+            if constexpr (MenuEntry::HasDisplayNameMethod<First>)
                 std::get<Index>(m_elements)->setText(First::displayName());
         } else {
             static_assert(

@@ -2,7 +2,7 @@
  **********************************************************************************************************************
  *
  * draupnir-lib
- * Copyright (C) 2025 Ivan Odinets <i_odinets@protonmail.com>
+ * Copyright (C) 2025-2026 Ivan Odinets <i_odinets@protonmail.com>
  *
  * This file is part of draupnir-lib
  *
@@ -28,7 +28,7 @@
 #include <type_traits>
 
 #include "draupnir/settings_registry/SettingsRegistryTemplate.h"
-#include "draupnir/settings_registry/utils/SettingTraitValidator.h"
+#include "draupnir/settings_registry/concepts/SettingTraitConcept.h"
 
 #include "draupnir/utils/template_detectors.h"
 
@@ -91,7 +91,7 @@ private:
         class T,
         bool = has_settingsBundle_v<T>,
         bool = draupnir::utils::is_instantiation_of_v<T,SettingsBundleTemplate>,
-        bool = SettingTraitValidator::isValidSettingTrait<T>()
+        bool = SettingTraitConcept<T>
     >
     struct convertToBundle { using type = Settings::SettingsBundleTemplate<>; };
 
@@ -107,6 +107,10 @@ private:
     /*! @brief Specialization: `T` is a valid setting trait. Wraps the trait into a single-trait bundle @ref SettingsBundleTemplate. */
     template<class T>
     struct convertToBundle<T, false, false, true> { using type = SettingsBundleTemplate<T>; };
+
+    /*! @brief Specialization: `T` is some random thing. */
+    template<class T>
+    struct convertToBundle<T, false, false, false> { using type = SettingsBundleTemplate<>; };
 
     /*! @brief Convenience alias for the result of @ref convertToBundle. */
     template<class T>

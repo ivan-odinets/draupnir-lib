@@ -2,7 +2,7 @@
  **********************************************************************************************************************
  *
  * draupnir-lib
- * Copyright (C) 2025 Ivan Odinets <i_odinets@protonmail.com>
+ * Copyright (C) 2025-2026 Ivan Odinets <i_odinets@protonmail.com>
  *
  * This file is part of draupnir-lib
  *
@@ -25,8 +25,8 @@
 #ifndef SETTINGTRAITSERIALIZER_H
 #define SETTINGTRAITSERIALIZER_H
 
-#include "SettingTraitValidator.h"
-#include "ValueSerializer.h"
+#include "draupnir/settings_registry/concepts/SettingTraitConcept.h"
+#include "draupnir/settings_registry/utils/ValueSerializer.h"
 
 namespace Draupnir::Settings
 {
@@ -58,7 +58,7 @@ namespace Draupnir::Settings
  *           - `static Value get(Backend* settings);`
  *           - `static void set(Backend* settings, const Value& value);` */
 
-template<class Backend, class SettingTrait>
+template<class Backend, SettingTraitConcept SettingTrait>
 class SettingTraitSerializer
 {
 public:
@@ -68,13 +68,6 @@ public:
      *  @param settings Pointer to the backend (must not be nullptr).
      *  @return The stored value if present and valid, otherwise the trait's default. */
     inline static Value get(Backend* settings) {
-        static_assert(SettingTraitValidator::has_valueType<SettingTrait>(),
-                      "SettingTrait must provide `using Value = ...`.");
-        static_assert(SettingTraitValidator::has_key<SettingTrait>(),
-                      "SettingTrait must provide static method `key()`.");
-        static_assert(SettingTraitValidator::has_defaultValue<SettingTrait>(),
-                      "SettingTrait must provide static method `defaultValue()`.");
-
         Q_ASSERT_X(settings, "SettingTraitSerializer<SettingTrait>::get",
                    "Provided settings backend pointer is nullptr.");
 
@@ -85,13 +78,6 @@ public:
      *  @param settings Pointer to the backend (must not be nullptr).
      *  @param value    The value to persist. */
     inline static void set(Backend* settings, const Value& value) {
-        static_assert(SettingTraitValidator::has_valueType<SettingTrait>(),
-                      "SettingTrait must provide `using Value = ...`.");
-        static_assert(SettingTraitValidator::has_key<SettingTrait>(),
-                      "SettingTrait must provide static method `key()`.");
-        static_assert(SettingTraitValidator::has_defaultValue<SettingTrait>(),
-                      "SettingTrait must provide static method `defaultValue()`.");
-
         Q_ASSERT_X(settings, "SettingTraitSerializer<SettingTrait>::set",
                    "Provided settings backend pointer is nullptr.");
 

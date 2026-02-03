@@ -2,7 +2,7 @@
  **********************************************************************************************************************
  *
  * draupnir-lib
- * Copyright (C) 2025 Ivan Odinets <i_odinets@protonmail.com>
+ * Copyright (C) 2025-2026 Ivan Odinets <i_odinets@protonmail.com>
  *
  * This file is part of draupnir-lib
  *
@@ -25,7 +25,7 @@
 #ifndef HELPENTRYHANDLER_H
 #define HELPENTRYHANDLER_H
 
-#include "draupnir/ui_bricks/handlers/templates/ActionHandler.h"
+#include "draupnir/ui_bricks/handlers/templates/ActionHandlerTemplate.h"
 
 #include <QDialog>
 #include <QPointer>
@@ -36,11 +36,11 @@ namespace Draupnir::Handlers
 {
 
 template<class Context,class HandledEntry>
-class GenericMenuEntryHandler;
+class GenericMenuEntryHandlerTemplate;
 
 /*! @class GenericHelpMenuEntryHandler<HelpContext, Draupnir::Ui::HelpEntryMenuTrait>
  *  @headerfile draupnir/handlers/help_menu/HelpEntryHandler.h
- *  @ingroup HandlerTemplates
+ *  @ingroup UiBricks
  *  @brief Specialization of the menu entry handler for HelpEntryMenuTrait
  *  @tparam HelpContext A class providing a static method `createHelpDialog()` that returns either a QDialog* or a type
  *          derived from QDialog.
@@ -50,18 +50,15 @@ class GenericMenuEntryHandler;
  *           static factory method on the provided HelpContext.
  *
  *           Only one instance of the dialog is created and reused on subsequent triggers. The handler uses QPointer to
- *           safely manage the dialog lifetime, even if the dialog is closed externally.
- *
- * @todo Make GenericMenuEntryHandler for the Help Menu: CRTP with user override. static_assert if sth is wrong.
- * @todo Is this should be contextless? */
+ *           safely manage the dialog lifetime, even if the dialog is closed externally. */
 
 template<class HelpContext>
-class GenericMenuEntryHandler<HelpContext,Draupnir::Ui::HelpEntryMenuTrait> :
-        public ActionHandler<GenericMenuEntryHandler<HelpContext,Draupnir::Ui::HelpEntryMenuTrait>>
+class GenericMenuEntryHandlerTemplate<HelpContext,Draupnir::Ui::HelpEntryMenuTrait> :
+    public ActionHandlerTemplate<GenericMenuEntryHandlerTemplate<HelpContext,Draupnir::Ui::HelpEntryMenuTrait>>
 {
 private:
     /*! @struct has_createHelpDialog
-     *  @brief Trait to check whether HelpContext defines a static method createHelpDialog() returning QDialog* or derived. */
+     *  @brief Trait to check whether HelpContext defines a static method `createHelpDialog()` returning `QDialog*` or derived. */
     template<class, class = std::void_t<>>
     struct has_createHelpDialog : std::false_type {};
 
@@ -77,12 +74,12 @@ private:
 public:
     /*! @brief Constructs the handler. Performs a static_assert to ensure that HelpContext provides a valid createHelpDialog method.
      *  @param Unused Reference to the help context (required for interface compatibility). */
-    GenericMenuEntryHandler(HelpContext&) :
+    GenericMenuEntryHandlerTemplate() :
         p_helpDialog{nullptr}
     {
         static_assert(has_createHelpDialog<HelpContext>::value,
-                "Provided HelpContext template argument must have HelpContext::createHelpDialog() static method "
-                "returning either pointer to the QDialog or class derived from it.");
+            "Provided HelpContext template argument must have HelpContext::createHelpDialog() static method "
+            "returning either pointer to the QDialog or class derived from it.");
     };
 
     /*! @brief Slot called when the help menu entry is triggered. Shows the dialog provided by HelpContext::createHelpDialog().

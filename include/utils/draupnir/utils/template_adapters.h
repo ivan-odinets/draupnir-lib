@@ -56,6 +56,17 @@ struct is_instantiation {
     struct of : draupnir::utils::is_instantiation_of<T,Template> {};
 };
 
+/*! @struct is_auto_instantiation draupnir/utils/template_adapters.h
+ *  @ingroup Utils
+ *  @brief Builds a unary predicate that checks if type is instantiation of a fixed template.
+ *  @tparam Template    Reference template to compare against. */
+
+template<template<auto...> class AutoTemplate>
+struct is_auto_instantiation {
+    template<class T>
+    struct of : draupnir::utils::is_auto_instantiation_of<T,AutoTemplate> {};
+};
+
 }; // namespace draupnir::utils
 
 #endif // TEMPLATE_ADAPTERS_H

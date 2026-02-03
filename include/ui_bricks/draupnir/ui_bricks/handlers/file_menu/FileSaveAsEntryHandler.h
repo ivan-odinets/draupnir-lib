@@ -2,7 +2,7 @@
  **********************************************************************************************************************
  *
  * draupnir-lib
- * Copyright (C) 2025 Ivan Odinets <i_odinets@protonmail.com>
+ * Copyright (C) 2025-2026 Ivan Odinets <i_odinets@protonmail.com>
  *
  * This file is part of draupnir-lib
  *
@@ -25,17 +25,17 @@
 #ifndef FILESAVEASENTRYHANDLER_H
 #define FILESAVEASENTRYHANDLER_H
 
-#include "draupnir/ui_bricks/handlers/templates/ActionHandler.h"
-#include "draupnir/ui_bricks/traits/menu_entries/FileMenuEntries.h"
+#include "draupnir/ui_bricks/handlers/templates/ActionHandlerTemplate.h"
 
 #include "draupnir/settings_registry/SettingsBundleTemplate.h"
 #include "draupnir/settings_registry/traits/settings/files/LastUsedDirectorySetting.h"
+#include "draupnir/ui_bricks/traits/menu_entries/FileMenuEntries.h"
 
 namespace Draupnir::Handlers
 {
 
 template<class Context, class Entry>
-class GenericMenuEntryHandler;
+class GenericMenuEntryHandlerTemplate;
 
 /*! @class GenericMenuEntryHandler<FileContext, Draupnir::Ui::FileSaveAsEntry>
  *  @headerfile draupnir/handlers/file_menu/FileSaveAsEntryHandler.h
@@ -60,23 +60,22 @@ class GenericMenuEntryHandler;
  *   - FileManager must implement `hasNothingOpened()` and `saveCurrentFileAs(const QString&)`. */
 
 template<class FileContext>
-class GenericMenuEntryHandler<FileContext,Draupnir::Ui::FileSaveAsEntry> :
-        public ActionHandler<GenericMenuEntryHandler<FileContext,Draupnir::Ui::FileSaveAsEntry>>
+class GenericMenuEntryHandlerTemplate<FileContext,Draupnir::Ui::FileSaveAsEntry> :
+    public ActionHandlerTemplate<GenericMenuEntryHandlerTemplate<FileContext,Draupnir::Ui::FileSaveAsEntry>>
 {
 public:
     using SettingsBundle = Settings::SettingsBundleTemplate<Settings::LastUsedDirectorySetting>;
 
     /*! @brief Constructs the handler with the given context reference.
      *  @param context Reference to the file context. */
-    GenericMenuEntryHandler(FileContext& context) :
+    GenericMenuEntryHandlerTemplate(FileContext& context) :
         m_context(context)
     {}
 
     /*! @brief Slot called when the "Save As" menu entry is triggered. Opens a dialog for file selection and saves the file
      *         with the selected name. */
     void onTriggered() {
-        Q_ASSERT_X(m_context.fileManager(),"GenericMenuEntryHandler<FileContext,FileSaveAsEntry>::onTriggered",
-                   "FileManager must be specified before by using FileMenuEntriesHandler::setFileManager method");
+        Q_ASSERT(m_context.fileManager());
 
         if (m_context.fileManager()->hasNothingOpened())
             return;

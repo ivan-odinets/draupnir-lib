@@ -2,7 +2,7 @@
  **********************************************************************************************************************
  *
  * draupnir-lib
- * Copyright (C) 2025 Ivan Odinets <i_odinets@protonmail.com>
+ * Copyright (C) 2025-2026 Ivan Odinets <i_odinets@protonmail.com>
  *
  * This file is part of draupnir-lib
  *
@@ -25,112 +25,125 @@
 #ifndef FILENEWENTRYHANDLER_H
 #define FILENEWENTRYHANDLER_H
 
-#include "draupnir/ui_bricks/handlers/templates/ActionHandler.h"
+#include "draupnir/ui_bricks/handlers/templates/ActionHandlerTemplate.h"
 
-#include <QDebug>
 #include <QMessageBox>
 
+#include "draupnir/ui_bricks/concepts/FileManagerConcept.h"
 #include "draupnir/ui_bricks/traits/menu_entries/FileMenuEntries.h"
-#include "draupnir/ui_bricks/utils/FileManagerValidator.h"
 
 namespace Draupnir::Handlers
 {
 
-template<class FileContext,class MenuEntry>
-class GenericMenuEntryHandler;
+template<class Context,class MenuEntry>
+class GenericMenuEntryHandlerTemplate;
 
-/*! @class GenericMenuEntryHandler<FileContext,Draupnir::Ui::FileNewEntry>
- *  @headerfile draupnir/handlers/file_menu/FileNewEntryHandler.h
- *  @ingroup HandlerTemplates
- *  @brief Specialization for handling the "File → New" menu action.
- *  @tparam FileContext The context class providing access to the FileManager and UI helpers (such as askUser).
+/*! @class GenericMenuEntryHandlerTemplate<FileContext, Draupnir::Ui::FileNewEntry>
+ *  @headerfile draupnir/ui_bricks/handlers/file_menu/FileNewEntryHandler.h
+ *  @ingroup UiBricks
+ *  @brief Handles the **File → New** menu action.
+ *  @tparam FileContext Context type that provides access to a FileManager instance and (optionally) UI helpers used in
+ *          single-file workflow.
  *
- *  @details This handler implements the logic for creating a new file based on the capabilities of the associated FileManager.
- *           It respects both single-file and multi-file workflows by querying FileManager::canHaveMultipleFilesOpened() at
- *           compile time.
+ *  @details This handler supports two workflows depending on the compile-time capability flag: `FileContext::FileManager::canHaveMultipleFilesOpened()`.
  *
- *           The behavior is the following:
- *           - If FileManager allows multiple files to be opened (canHaveMultipleFilesOpened() returns true), a new file is
- *             always created (FileManager::newFile()).
- *           - If only a single file may be opened at a time:
- *             - If no file is open: just create a new file.
- *             - If an opened file is present and saved: prompts user for confirmation before replacing the file.
- *             - If the opened file has unsaved changes: prompts user to save, discard, or cancel, and acts accordingly.
- *           - All user interactions are handled via FileContext::askUser.
+ *           ### Multi-file workflow
+ *           If `FileManager::canHaveMultipleFilesOpened()` exists and returns `true` at compile time, the handler always creates a
+ *           new file by calling `FileManager::newFile()`. No additional checks or prompts are performed.
  *
- * @note FileManager must provide the following API:
- *       - static constexpr bool canHaveMultipleFilesOpened();
- *       - void newFile();
- *       - bool hasNothingOpened();
- *       - bool isCurrentFileSaved();
+ *           ### Single-file workflow
+ *           If `FileManager::canHaveMultipleFilesOpened()` is not available or returns `false`, the handler assumes that only
+ *           one file can be open at a time and performs user-friendly replacement logic:
+ *           - If nothing is opened (`FileManager::hasNothingOpened()` returns `true`) → creates a new file immediately.
+ *           - If a file is opened and already saved (`FileManager::isCurrentFileSaved()` returns `true`) → asks the user for
+ *             confirmation via `FileContext::askUser(...)`.
+ *           - If a file is opened and has unsaved changes → asks the user whether to **Save**, **Discard**, or **Cancel**.
+ *           - **Save** triggers `FileContext::onSaveFile()` and then creates the new file.
+ *           - **Discard** creates the new file immediately.
+ *           - **Cancel** aborts the operation.
  *
- * @todo Write a test for this class. */
+ *           Runtime safety: `fileManager()` is expected to return a non-null pointer. The handler checks this via `Q_ASSERT_X`
+ *           before performing any logic.
+ *
+ *           Required API (always):
+ *           `FileContext` must provide:
+ *           - `using FileManager = ...;`
+ *           - `FileManager* fileManager();`
+ *           `FileContext::FileManager` must provide:
+ *           - `void newFile();`
+ *
+ *           Required API (only for single-file workflow):
+ *           - If `FileManager::canHaveMultipleFilesOpened()` is missing or yields `false`, the following additional API is required.
+ *             `FileManager` must provide:
+ *             - `bool hasNothingOpened();`
+ *             - `bool isCurrentFileSaved();`
+ *             `FileContext` must provide:
+ *             - `static int askUser(QString title, QString message, QMessageBox::StandardButtons buttons);`
+ *             - `void onSaveFile();` */
 
-template<class FileContext>
-class GenericMenuEntryHandler<FileContext,Draupnir::Ui::FileNewEntry> :
-        public ActionHandler<GenericMenuEntryHandler<FileContext,Draupnir::Ui::FileNewEntry>>
+template<class Context>
+class GenericMenuEntryHandlerTemplate<Context,Draupnir::Ui::FileNewEntry> :
+    public ActionHandlerTemplate<GenericMenuEntryHandlerTemplate<Context,Draupnir::Ui::FileNewEntry>>
 {
 public:
     /*! @brief Constructs the handler.
      *  @param context Reference to the file context. */
-    GenericMenuEntryHandler(FileContext& context) :
-        m_context(context)
-    {
-        static_assert(FileManagerValidator::has_newFile<typename FileContext::FileManager>::value,
-                "FileManager must have newFile() method.");
-        static_assert(FileManagerValidator::has_hasNothingOpened<typename FileContext::FileManager>::value,
-                "FileManager must have hasNothingOpened method.");
-        static_assert(FileManagerValidator::has_isCurrentFileSaved<typename FileContext::FileManager>::value,
-                "FileManager must have isCurrentFileSaved method.");
-    }
+    GenericMenuEntryHandlerTemplate(Context& context) :
+        m_context{context}
+    {}
 
     /*! @brief Slot called when the "File → New" action is triggered. Implements logic for creating a new file, prompting the
      *         user if needed. */
     void onTriggered() {
-        Q_ASSERT_X(m_context.fileManager() != nullptr,"FileMenuEntriesHandler::onNewFile",
-                   "FileManager must be specified before.");
-
-        if constexpr (FileContext::FileManager::canHaveMultipleFilesOpened()) {
+        Q_ASSERT_X(m_context.fileManager() != nullptr,
+            "GenericMenuEntryHandlerTemplate<FileContext,Draupnir::Ui::FileNewEntry>::onTriggered",
+            "FileManager must be specified before.");
+        if constexpr (FileManagerConcept::CanHaveMultipleFilesOpened<typename Context::FileManager>) {
             m_context.fileManager()->newFile();
         } else {
+            const bool hasNothingOpened = m_context.fileManager()->hasNothingOpened();
             // If we have nothing opened - open the new file.
-            if (m_context.fileManager()->hasNothingOpened()) {
+            if (hasNothingOpened) {
                 m_context.fileManager()->newFile();
                 return;
             }
 
+            const bool isCurrentFileSaved = m_context.fileManager()->isCurrentFileSaved();
             // If we have sth opened, and saved
-            if ( (!m_context.fileManager()->hasNothingOpened()) && m_context.fileManager()->isCurrentFileSaved()) {
-                const int userSelection = FileContext::askUser(
+            if (isCurrentFileSaved) {
+                const int userSelection = Context::askUser(
                     QObject::tr("Replace current file?"),
                     QObject::tr("This action will close current file and create a new one. Continue?"),
                     QMessageBox::Yes | QMessageBox::Cancel
-                );
+                    );
 
                 if (userSelection == QMessageBox::Yes)
                     m_context.fileManager()->newFile();
-            }
-
-            // If we have sth opened, BUT not saved
-            if ( (!m_context.fileManager()->hasNothingOpened()) && (!m_context.fileManager()->isCurrentFileSaved()) ) {
-                const int userSelection = FileContext::askUser(
+                else
+                    return;
+            } else {
+                // If we have sth opened, BUT not saved
+                const int userSelection = Context::askUser(
                     QObject::tr("Replace current file?"),
                     QObject::tr("Current file was modified. Do you want to save your changes or discard them?"),
                     QMessageBox::Discard | QMessageBox::Save | QMessageBox::Cancel
-                );
+                    );
 
                 if (userSelection == QMessageBox::Discard) {
                     m_context.fileManager()->newFile();
                 } else if (userSelection == QMessageBox::Save) {
                     m_context.onSaveFile();
                     m_context.fileManager()->newFile();
+                } else {
+                    return;
                 }
             }
         }
     }
 
 private:
-    FileContext& m_context;
+    Context& m_context;
+
 };
 
 }; // namespace Draupnir::Menus

@@ -2,7 +2,7 @@
  **********************************************************************************************************************
  *
  * draupnir-lib
- * Copyright (C) 2025 Ivan Odinets <i_odinets@protonmail.com>
+ * Copyright (C) 2025-2026 Ivan Odinets <i_odinets@protonmail.com>
  *
  * This file is part of draupnir-lib
  *
@@ -34,29 +34,29 @@
 namespace draupnir::utils
 {
 
-/*! @struct is_instantiation_of draupnir/utils/template_detectors.h
+/*! @struct is_type_instantiation_of draupnir/utils/template_detectors.h
  *  @ingroup Utils
- *  @brief Type trait that determines whether a given type @p T is an instantiation of the class template @p Template.
+ *  @brief Type trait that determines whether a given type `T` is an instantiation of the class template `Template`.
  *  @tparam T        Type to be inspected.
  *  @tparam Template Class template to compare against.
  *
- *  @details Primary template: yields `std::false_type` for all combinations of @p T and @p Template. A partial specialization
- *           is provided for the case when @p T is of the form `Template<Args...>` for some type pack `Args...`. In that case
+ *  @details Primary template: yields `std::false_type` for all combinations of `T` and `Template`. A partial specialization
+ *           is provided for the case when `T` is of the form `Template<Args...>` for some type pack `Args...`. In that case
  *           the trait evaluates to `std::true_type`.
  *
  *           Example:
  *           @code
  *           using TupleOne = std::tuple<int, double>;
  *
- *           static_assert(is_instantiation_of<TupleOne, std::tuple>::value, "");
- *           static_assert(!is_instantiation_of<int, std::tuple>::value, "");
+ *           static_assert(is_type_instantiation_of<TupleOne, std::tuple>::value, "");
+ *           static_assert(!is_type_instantiation_of<int, std::tuple>::value, "");
  *           @endcode */
 
 template<typename T, template<typename...> class Template>
-struct is_instantiation_of : std::false_type {};
+struct is_type_instantiation_of : std::false_type {};
 
-/*! @struct is_instantiation_of draupnir/utils/template_detectors.h
- *  @brief Partial specialization of @ref draupnir::utils::is_instantiation_of for types of the form `Template<Args...>`.
+/*! @struct is_type_instantiation_of draupnir/utils/template_detectors.h
+ *  @brief Partial specialization of @ref draupnir::utils::is_type_instantiation_of for types of the form `Template<Args...>`.
  *  @tparam Template Class template that accepts one or more type parameters.
  *  @tparam Args...  Template argument types used to instantiate @p Template.
  *
@@ -64,7 +64,12 @@ struct is_instantiation_of : std::false_type {};
  *           arguments `Args...`, and evaluates to `std::true_type`. */
 
 template<template<typename...> class Template, typename... Args>
-struct is_instantiation_of<Template<Args...>, Template> : std::true_type {};
+struct is_type_instantiation_of<Template<Args...>, Template> : std::true_type {};
+
+/*! @brief Alias of is_type_instantiation_of. */
+
+template<typename T, template<typename...> class Template>
+using is_instantiation_of = is_type_instantiation_of<T,Template>;
 
 /*! @ingroup Utils
  *  @brief Convenience variable template for @ref draupnir::utils::is_instantiation_of.
@@ -74,6 +79,39 @@ struct is_instantiation_of<Template<Args...>, Template> : std::true_type {};
 
 template<typename T, template<typename...> class Template>
 inline constexpr bool is_instantiation_of_v = is_instantiation_of<T,Template>::value;
+
+/*! @struct is_auto_instantiation_of draupnir/utils/template_detectors.h
+ *  @ingroup Utils
+ *  @brief Type trait that determines whether a given type `T` is an instantiation of the class template `Template`.
+ *  @tparam T        Type to be inspected.
+ *  @tparam Template Class template to compare against.
+ *
+ *  @details Primary template: yields `std::false_type` for all combinations of `T` and `Template`. A partial specialization
+ *           is provided for the case when `T` is of the form `Template<Args...>` for some value pack `Args...`. In that case
+ *           the trait evaluates to `std::true_type`. */
+
+template<typename T, template<auto...> class AutoTemplate>
+struct is_auto_instantiation_of : std::false_type {};
+
+/*! @struct is_instantiation_of_auto draupnir/utils/template_detectors.h
+ *  @brief Partial specialization of @ref draupnir::utils::is_auto_instantiation_of for types of the form `Template<Args...>`.
+ *  @tparam Template Class template that accepts one or more value parameters.
+ *  @tparam Args...  Template argument types used to instantiate `Template`.
+ *
+ *  @details This specialization matches exactly when the inspected type `T` is an instantiation of `Template` with some value
+ *           arguments `Args...`, and evaluates to `std::true_type`. */
+
+template<template<auto...> class AutoTemplate, auto... Args>
+struct is_auto_instantiation_of<AutoTemplate<Args...>,AutoTemplate> : std::true_type {};
+
+/*! @ingroup Utils
+ *  @brief Convenience variable template for @ref draupnir::utils::is_auto_instantiation_of.
+ *
+ *  @details Evaluates to `true` if `T` is an instantiation of the class template `AutoTemplate` with some value arguments,
+ *           and `false` otherwise. */
+
+template<typename T, template<auto...> class AutoTemplate>
+inline constexpr bool is_auto_instantiation_of_v = is_auto_instantiation_of<T,AutoTemplate>::value;
 
 /*! @struct is_template draupnir/utils/template_detectors.h
  *  @ingroup Utils
@@ -182,6 +220,32 @@ public:
 
 template<template<class...> class TemplateBase, class Derived>
 inline constexpr bool is_template_base_of_v = is_template_base_of<TemplateBase,Derived>::value;
+
+/*! @struct is_t1a1_template_base_of draupnir/utils/template_detectors.h
+ *  @ingroup Utils
+ *  @brief Checks whether a given class template is a (direct or indirect) base of a derived type.
+ *  @tparam TemplateBase Class template of the form `template<class...> class TemplateBase`.
+ *  @tparam Derived      Concrete type that is tested against `TemplateBase<...>` bases. */
+
+template<template<class,auto> class TemplateBase,class Derived>
+struct is_t1a1_template_base_of
+{
+private:
+    template<class C,auto V>
+    static constexpr std::true_type test(TemplateBase<C,V>*);
+
+    static constexpr std::false_type test(...);
+public:
+    /*! @brief Boolean shortcut for the result of the trait. `true` if `Derived` is derived from some `TemplateBase<class,auto>`,
+     *         `false` otherwise. */
+    static constexpr bool value = decltype(test(std::declval<Derived*>()))::value;
+};
+
+/*! @brief Convenience variable template for @ref is_t1a1_template_base_of. Evaluates to `true` if `Derived` is derived from some
+ *         instantiation of `TemplateBase`, and `false` otherwise. */
+
+template<template<class,auto> class TemplateBase,class Derived>
+inline constexpr bool is_t1a1_template_base_of_v = is_t1a1_template_base_of<TemplateBase,Derived>::value;
 
 /*! @struct is_pair_of_ptr draupnir/utils/template_detectors.h
  *  @ingroup Utils
