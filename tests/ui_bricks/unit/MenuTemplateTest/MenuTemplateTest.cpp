@@ -2,7 +2,7 @@
  **********************************************************************************************************************
  *
  * draupnir-lib
- * Copyright (C) 2025 Ivan Odinets <i_odinets@protonmail.com>
+ * Copyright (C) 2025-2026 Ivan Odinets <i_odinets@protonmail.com>
  *
  * This file is part of draupnir-lib
  *
@@ -22,19 +22,19 @@
  *
  */
 
-#include <QtTest>
-#include <QCoreApplication>
-
 #include "draupnir/ui_bricks/ui/menus/MenuTemplate.h"
+
+#include <QCoreApplication>
+#include <QtTest>
+
 #include "draupnir/ui_bricks/traits/menu_entries/FileMenuEntries.h"
 #include "draupnir/ui_bricks/traits/menu_entries/decoration/SeparatorEntry.h"
 
 namespace Draupnir::Ui {
 
 /*! @class MenuTemplateTest tests/ui_bricks/unit/MenuTemplateTest/MenuTemplate.cpp
- *  @brief Test class for the MenuTemplate.
- *
- * @todo Refractor this test so that it will have better readability. */
+ *  @brief Test class for the @ref Draupnir::Ui::MenuTemplate.
+ * @todo Extend this test. */
 
 class MenuTemplateTest final : public QObject
 {
@@ -43,21 +43,21 @@ public:
     MenuTemplateTest() = default;
     ~MenuTemplateTest() = default;
 
+    MenuTemplate<
+        FileNewEntry,
+        FileOpenEntry,
+        SeparatorEntry,
+        ExitApplicationEntry
+    > simpleFlatMenu;
+
 private slots:
     void test_initialization() {
-        MenuTemplate<
-            FileNewEntry,
-            FileOpenEntry,
-            SeparatorEntry,
-            ExitApplicationEntry
-        > testMenu;
-
-        QCOMPARE(testMenu.count(), 4);
-        QVERIFY(testMenu.contains<FileNewEntry>());
-        QVERIFY(testMenu.contains<FileOpenEntry>());
-        QVERIFY(testMenu.contains<SeparatorEntry>());
-        QVERIFY(testMenu.contains<ExitApplicationEntry>());
-        QVERIFY(!testMenu.contains<FileSaveEntry>());
+        QCOMPARE(simpleFlatMenu.entriesCount(), 4);
+        QVERIFY(simpleFlatMenu.contains<FileNewEntry>());
+        QVERIFY(simpleFlatMenu.contains<FileOpenEntry>());
+        QVERIFY(simpleFlatMenu.contains<SeparatorEntry>());
+        QVERIFY(simpleFlatMenu.contains<ExitApplicationEntry>());
+        QVERIFY(!simpleFlatMenu.contains<FileSaveEntry>());
     }
 };
 

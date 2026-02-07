@@ -25,6 +25,7 @@
 #ifndef SETTINGSMENUENTRYHANDLERTEMPLATE_H
 #define SETTINGSMENUENTRYHANDLERTEMPLATE_H
 
+#include "draupnir/ui_bricks/concepts/MenuEntryConcept.h"
 #include "draupnir/ui_bricks/handlers/templates/ActionHandlerTemplate.h"
 #include "draupnir/ui_bricks/utils/MenuEntryToTraitMapper.h"
 #include "draupnir/ui_bricks/utils/SettingsValueUserInput.h"
@@ -33,7 +34,13 @@ namespace Draupnir::Handlers
 {
 
 template<class SettingsContext, class SettingsMenuEntry>
-class SettingsMenuEntryHandlerTemplate :
+class SettingsMenuEntryHandlerTemplate {
+    static_assert(!std::is_same_v<SettingsMenuEntry,SettingsMenuEntry>);
+};
+
+template<class SettingsContext, class SettingsMenuEntry>
+    requires Draupnir::Ui::MenuEntry::IsActionEntry<SettingsMenuEntry>
+class SettingsMenuEntryHandlerTemplate<SettingsContext,SettingsMenuEntry> :
     public ActionHandlerTemplate<SettingsMenuEntryHandlerTemplate<SettingsContext,SettingsMenuEntry>>
 {
     using SettingTrait = typename MapMenuEntry<SettingsMenuEntry>::ToTrait;

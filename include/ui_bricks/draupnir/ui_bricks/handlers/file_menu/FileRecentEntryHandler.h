@@ -25,8 +25,6 @@
 #ifndef FILERECENTENTRYHANDLER_H
 #define FILERECENTENTRYHANDLER_H
 
-#include "draupnir/ui_bricks/handlers/templates/CustomEntryHandler.h"
-
 #include <QMessageBox>
 
 #include "draupnir/settings_registry/SettingsBundleTemplate.h"
@@ -69,8 +67,7 @@ class GenericMenuEntryHandlerTemplate;
  *       - Static method `canHaveMultipleFilesOpened()`. */
 
 template<class FileContext>
-class GenericMenuEntryHandlerTemplate<FileContext,Draupnir::Ui::RecentFileEntry> :
-    public CustomEntryHandler<GenericMenuEntryHandlerTemplate<FileContext,Draupnir::Ui::RecentFileEntry>,Draupnir::Ui::RecentFileEntry>
+class GenericMenuEntryHandlerTemplate<FileContext,Draupnir::Ui::RecentFileEntry>
 {
 public:
     using SettingsBundle = Settings::SettingsBundleTemplate<Settings::RecentFileListSetting>;
@@ -83,7 +80,9 @@ public:
 
     /*! @brief Connects this handler to the RecentFilesMenu's selection signal.
      *  @param entry Pointer to the RecentFilesMenu instance. */
-    void connectImplementation(Draupnir::Ui::RecentFilesMenu* entry) {
+    void connect(Draupnir::Ui::RecentFilesMenu* entry) {
+        p_menu = entry;
+
         QObject::connect(entry, &Draupnir::Ui::RecentFilesMenu::recentFileSelected, [this](const QFileInfo& fileInfo){
             onRecentFileSelected(fileInfo);
         });
@@ -133,14 +132,13 @@ public:
     }
 
     void onSettingsLoaded() {
-        const QStringList files = m_context.template getSetting<Draupnir::Settings::RecentFileListSetting>();
-
-        auto menu = CustomEntryHandler<GenericMenuEntryHandlerTemplate<FileContext,Draupnir::Ui::RecentFileEntry>,Draupnir::Ui::RecentFileEntry>::menu();
-
-        CustomEntryHandler<GenericMenuEntryHandlerTemplate<FileContext,Draupnir::Ui::RecentFileEntry>,Draupnir::Ui::RecentFileEntry>::menu()->loadRecentFiles(files);
+        p_menu->loadRecentFiles(
+            m_context.template getSetting<Draupnir::Settings::RecentFileListSetting>()
+        );
     }
 
 private:
+    Ui::RecentFilesMenu* p_menu;
     FileContext& m_context;
 };
 

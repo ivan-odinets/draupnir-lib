@@ -2,7 +2,7 @@
  **********************************************************************************************************************
  *
  * draupnir-lib
- * Copyright (C) 2025-2026 Ivan Odinets <i_odinets@protonmail.com>
+ * Copyright (C) 2026 Ivan Odinets <i_odinets@protonmail.com>
  *
  * This file is part of draupnir-lib
  *
@@ -22,31 +22,34 @@
  *
  */
 
-#ifndef SETTINGSMENUTEMPLATE_H
-#define SETTINGSMENUTEMPLATE_H
+#ifndef ACTIONHANDLERCONCEPT_H
+#define ACTIONHANDLERCONCEPT_H
 
-#include "draupnir/ui_bricks/ui/menus/MenuTemplate.h"
+#include <concepts>
 
-namespace Draupnir::Ui
+namespace Draupnir::Handlers {
+
+namespace ActionHandler
 {
 
-template<class... Entries>
-class SettingsMenuTemplate
-{
-public:
-    using Type = MenuTemplate<Entries...>;
-
-    static Type* createElement(QWidget* parent = nullptr) {
-        return new MenuTemplate<Entries...>{displayName(),parent};
-    }
-
-    /*! @brief Returns the display name for the menu template.
-     *  @return Localized `QString`. */
-    static QString displayName() {
-        return QObject::tr("Settings");
-    }
+template<class Handler>
+concept HasRuntimeOnTriggeredWithBool = requires(Handler& handler, bool b) {
+    { handler.onTriggered(b) } -> std::same_as<void>;
 };
 
-}; // namespace Draupnir::Ui
+template<class Handler>
+concept HasRuntimeOnTriggered = requires(Handler& handler) {
+    { handler.onTriggered() } -> std::same_as<void>;
+};
 
-#endif // SETTINGSMENUTEMPLATE_H
+}; // namespace Draupnir::Handlers::ActionHandler
+
+template<class Handler>
+concept ActionHandlerConcept = (
+    (ActionHandler::HasRuntimeOnTriggered<Handler> ? 1 : 0) +
+    (ActionHandler::HasRuntimeOnTriggeredWithBool<Handler> ? 1 : 0)
+) == 1;
+
+}; // namespace Draupnir::Handlers
+
+#endif // ACTIONHANDLERCONCEPT_H

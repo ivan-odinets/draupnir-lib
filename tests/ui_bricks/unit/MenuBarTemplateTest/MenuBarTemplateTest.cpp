@@ -2,7 +2,7 @@
  **********************************************************************************************************************
  *
  * draupnir-lib
- * Copyright (C) 2025 Ivan Odinets <i_odinets@protonmail.com>
+ * Copyright (C) 2025-2026 Ivan Odinets <i_odinets@protonmail.com>
  *
  * This file is part of draupnir-lib
  *
@@ -22,17 +22,18 @@
  *
  */
 
-#include <QtTest>
-#include <QCoreApplication>
-
 #include "draupnir/ui_bricks/ui/menus/MenuBarTemplate.h"
+
+#include <QCoreApplication>
+#include <QtTest>
+
 #include "draupnir/ui_bricks/traits/menu_entries/FileMenuEntries.h"
 #include "draupnir/ui_bricks/traits/menu_entries/decoration/SeparatorEntry.h"
 
 namespace Draupnir::Ui {
 
 /*! @class MenuBarTemplateTest tests/ui_bricks/unit/MenuBarTemplateTest/MenuBarTemplateTest.cpp
- *  @brief Test class for the MenuBarTemplate. */
+ *  @brief Test class for the @ref Draupnir::Ui::MenuBarTemplate. */
 
 class MenuBarTemplateTest final : public QObject
 {
@@ -50,7 +51,7 @@ private slots:
             ExitApplicationEntry
         > testMenuBar;
 
-        QCOMPARE(testMenuBar.count(), 4);
+        QCOMPARE(testMenuBar.entriesCount(), 4);
         QVERIFY(testMenuBar.contains<FileNewEntry>());
         QVERIFY(testMenuBar.contains<FileOpenEntry>());
         QVERIFY(testMenuBar.contains<SeparatorEntry>());

@@ -27,28 +27,9 @@
 
 #include <QAction>
 
+#include "draupnir/ui_bricks/concepts/ActionHandlerConcept.h"
+
 namespace Draupnir::Handlers {
-
-namespace ActionHandler
-{
-
-template<class Handler>
-concept HasRuntimeOnTriggeredWithBool = requires(Handler& handler, bool b) {
-    { handler.onTriggered(b) } -> std::same_as<void>;
-};
-
-template<class Handler>
-concept HasRuntimeOnTriggered = requires(Handler& handler) {
-    { handler.onTriggered() } -> std::same_as<void>;
-};
-
-}; // namespace ActionHandlerConcepts
-
-template<class Handler>
-concept ActionHandlerConcept = (
-    (ActionHandler::HasRuntimeOnTriggered<Handler> ? 1 : 0) +
-    (ActionHandler::HasRuntimeOnTriggeredWithBool<Handler> ? 1 : 0)
-) == 1;
 
 /*! @class ActionHandlerTemplate draupnir/ui_bricks/handlers/templates/ActionHandlerTemplate.h
  *  @ingroup UiBricks

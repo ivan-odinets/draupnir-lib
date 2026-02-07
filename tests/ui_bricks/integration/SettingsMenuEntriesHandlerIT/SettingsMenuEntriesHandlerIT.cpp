@@ -103,10 +103,10 @@ public:
 private slots:
 
     void test_initialization() {
-        QAction* customAction = menu.get<SomeCustomCheckableMenuEntry>();
+        QAction* customAction = menu.getUiElement<SomeCustomCheckableMenuEntry>();
         QCOMPARE(customAction->isChecked(), false);
 
-        QAction* minimizeOnCloseAction = menu.get<Draupnir::Ui::MinimizeOnCloseEntry>();
+        QAction* minimizeOnCloseAction = menu.getUiElement<Draupnir::Ui::MinimizeOnCloseEntry>();
         QCOMPARE(minimizeOnCloseAction->isChecked(), false);
 
         handler.loadSettings(&registry);
@@ -116,7 +116,7 @@ private slots:
     }
 
     void test_actionTriggering() {
-        QAction* minimizeOnCloseAction = menu.get<Draupnir::Ui::MinimizeOnCloseEntry>();
+        QAction* minimizeOnCloseAction = menu.getUiElement<Draupnir::Ui::MinimizeOnCloseEntry>();
         QVERIFY(minimizeOnCloseAction->isChecked() == registry.template get<Draupnir::Settings::MainWindow::MinimizeOnCloseSetting>());
 
         minimizeOnCloseAction->triggered(true);

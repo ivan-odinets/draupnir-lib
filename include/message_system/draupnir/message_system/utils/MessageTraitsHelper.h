@@ -2,7 +2,7 @@
  **********************************************************************************************************************
  *
  * draupnir-lib
- * Copyright (C) 2025 Ivan Odinets <i_odinets@protonmail.com>
+ * Copyright (C) 2025-2026 Ivan Odinets <i_odinets@protonmail.com>
  *
  * This file is part of draupnir-lib
  *
@@ -25,6 +25,7 @@
 #ifndef MESSAGETRAITSHELPER_H
 #define MESSAGETRAITSHELPER_H
 
+#include "draupnir/message_system/concepts/MessageTraitConcept.h"
 #include "draupnir/message_system/core/MessageType.h"
 #include "draupnir/message_system/core/MessageHandlerTemplate.h"
 #include "draupnir/message_system/core/MessageUiBuilderTemplate.h"
@@ -37,7 +38,7 @@ namespace Draupnir::Messages
  *  @brief This class is a helper class to work with `MessageTraits...` template packs.
  *  @tparam Args... A pack of MessageTraits. */
 
-template<class... Args>
+template<MessageTraitConcept... Args>
 class MessageTraitsHelper
 {
 public:

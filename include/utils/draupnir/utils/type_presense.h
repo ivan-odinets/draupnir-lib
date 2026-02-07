@@ -94,6 +94,32 @@ struct is_template_instantiation_present : std::disjunction<is_instantiation_of<
 template<template<typename...> typename Template, typename... Args>
 inline constexpr bool is_template_instantiation_present_v = is_template_instantiation_present<Template,Args...>::value;
 
+/*! @struct is_a1tp_instantiation_present draupnir/utils/type_presense.h
+ *  @ingroup Utils
+ *  @brief Type trait that checks whether at least one of the provided types is an instantiation of a given class template.
+ *  @tparam Template Class template to search for.
+ *  @tparam Args...  Types to be inspected.
+ *
+ *  @details This trait leverages @ref draupnir::utils::is_a1tp_instantiation_of to determine whether any of the types in the
+ *           parameter pack `Args...` is an instantiation of the class template `Template`.
+ *
+ *           Formally, it evaluates to `std::true_type` if there exists at least one type `T` in `Args...` such that:
+ *           `is_a1tp_instantiation_of<T, Template>::value == true`
+ *
+ *           If none of the types in `Args...` is an instantiation of `Template`, the trait evaluates to `std::false_type`.
+ *           If `Args...` is an empty parameter pack, the result is also `std::false_type`. */
+
+template<template<auto,class...> typename Template, typename... Args>
+struct is_a1tp_instantiation_present : std::disjunction<is_a1tp_instantiation_of<Args,Template>...> {};
+
+/*! @ingroup Utils
+ *  @brief Convenience variable template for @ref draupnir::utils::is_template_instantiation_present. Evaluates to `true`
+ *         if at least one of the types in @p Args... is an instantiation of the class template @p Template, and `false`
+ *         otherwise. */
+
+template<template<auto,class...> typename Template, typename... Args>
+inline constexpr bool is_a1tp_instantiation_present_v = is_a1tp_instantiation_present<Template,Args...>::value;
+
 /*! @struct is_one_of draupnir/utils/type_presense.h
  *  @ingroup Utils
  *  @tparam T      The type to test.

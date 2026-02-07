@@ -2,7 +2,7 @@
  **********************************************************************************************************************
  *
  * draupnir-lib
- * Copyright (C) 2025 Ivan Odinets <i_odinets@protonmail.com>
+ * Copyright (C) 2025-2026 Ivan Odinets <i_odinets@protonmail.com>
  *
  * This file is part of draupnir-lib
  *
@@ -22,17 +22,22 @@
  *
  */
 
-#include <QtTest>
-#include <QCoreApplication>
-
 #include "draupnir/ui_bricks/core/MenuEntriesContainer.h"
+
+#include <QCoreApplication>
+#include <QtTest>
+
 #include "draupnir/ui_bricks/traits/menu_entries/FileMenuEntries.h"
 #include "draupnir/ui_bricks/traits/menu_entries/decoration/SeparatorEntry.h"
+#include "draupnir/ui_bricks/traits/menu_entries/templates/MenuTemplateEntry.h"
+
+#include "draupnir-test/helpers/TypeHelpers.h"
 
 namespace Draupnir::Ui {
 
 /*! @class MenuEntriesContainerTest tests/ui_bricks/unit/MenuEntriesContainerTest/MenuEntriesContainerTest.cpp
- *  @brief Test class for the MenuEntriesContainer. */
+ *  @brief Test class for the @ref Draupnir::Ui::MenuEntriesContainer.
+ * @todo Move DummyUiElement to some better place. */
 
 class MenuEntriesContainerTest final : public QObject
 {
@@ -47,38 +52,71 @@ public:
         QList<QMenu*> menusAdded;
     };
 
-    MenuEntriesContainerTest() = default;
-    ~MenuEntriesContainerTest() = default;
+    MenuEntriesContainer<
+        FileNewEntry, FileOpenEntry,
+        RecentFileEntry
+    > flatContainer;
+
+    MenuEntriesContainer<
+        FileNewEntry,
+        MenuTemplateEntry<[]() { return QString{}; },
+            FileOpenEntry, FileNewEntry
+        >,
+        MenuTemplateEntry<[]() { return QString{}; },
+            FileSaveEntry, MenuTemplateEntry<[]() { return QString{}; },
+                FileSaveEntry,FileNewEntry,
+                MenuTemplateEntry<[]() { return QString{}; },FileSaveAsEntry>
+            >
+        >
+    > randomNestedContainer;
 
 private slots:
     void test_initialization() {
-        MenuEntriesContainer<
-            FileNewEntry, FileOpenEntry,
-            RecentFileEntry
-        > randomContainer;
+        QCOMPARE(flatContainer.entriesCount(),3);
+        QCOMPARE(flatContainer.getUiElement<0>(), flatContainer.getUiElement<FileNewEntry>());
+        QCOMPARE(flatContainer.getUiElement<1>(), flatContainer.getUiElement<FileOpenEntry>());
+        QCOMPARE(flatContainer.getUiElement<2>(), flatContainer.getUiElement<RecentFileEntry>());
+    }
 
-        QCOMPARE(randomContainer.count(),3);
-        QCOMPARE(randomContainer.get<0>(), randomContainer.get<FileNewEntry>());
-        QCOMPARE(randomContainer.get<1>(), randomContainer.get<FileOpenEntry>());
-        QCOMPARE(randomContainer.get<2>(), randomContainer.get<RecentFileEntry>());
+    void test_recursiveEntryCount() {
+        QCOMPARE(randomNestedContainer.recursiveEntriesCount<FileNewEntry>(),3);
+        QCOMPARE(randomNestedContainer.recursiveEntriesCount<FileOpenEntry>(),1);
+        QCOMPARE(randomNestedContainer.recursiveEntriesCount<FileSaveEntry>(),2);
+        QCOMPARE(randomNestedContainer.recursiveEntriesCount<FileSaveAsEntry>(),1);
+        QCOMPARE(randomNestedContainer.recursiveEntriesCount<ExitApplicationEntry>(),0);
+
+        QCOMPARE(randomNestedContainer.recursiveEntriesCount_v<FileNewEntry>,3);
+        QCOMPARE(randomNestedContainer.recursiveEntriesCount_v<FileOpenEntry>,1);
+        QCOMPARE(randomNestedContainer.recursiveEntriesCount_v<FileSaveEntry>,2);
+        QCOMPARE(randomNestedContainer.recursiveEntriesCount_v<FileSaveAsEntry>,1);
+        QCOMPARE(randomNestedContainer.recursiveEntriesCount_v<ExitApplicationEntry>,0);
+    }
+
+    void test_getAllInstances() {
+        auto allNewFilesTuple = randomNestedContainer.recursiveGetAllUiElements<FileNewEntry>();
+        QCOMPARE(std::tuple_size<decltype(allNewFilesTuple)>(), randomNestedContainer.recursiveEntriesCount<FileNewEntry>());
+
+        std::apply([](auto&... element) {
+            auto compareOne = [](auto&& e) { QCOMPARE(e->text(), FileNewEntry::displayName()); };
+            (..., compareOne(element));
+        }, allNewFilesTuple);
+
+        [[maybe_unused]] auto emptyTuple = randomNestedContainer.getAllUiElements<ExitApplicationEntry>();
+        QCOMPARE(std::tuple_size<decltype(emptyTuple)>(),0);
+        TYPE_COMPARE(decltype(emptyTuple),std::tuple<>);
     }
 
     void test_connectionViaOnMethod() {
-        MenuEntriesContainer<
-            FileNewEntry, FileOpenEntry,
-            RecentFileEntry
-        > randomContainer;
-
-        QAction* newAction = randomContainer.get<FileNewEntry>();
-        QAction* openAction = randomContainer.get<FileOpenEntry>();
+        QAction* newAction = flatContainer.getUiElement<FileNewEntry>();
+        QAction* openAction = flatContainer.getUiElement<FileOpenEntry>();
 
         int newClickCount = 0;
-        randomContainer.on<FileNewEntry>([&newClickCount](){
+        flatContainer.on<FileNewEntry>([&newClickCount](){
             newClickCount++;
         });
 
         int openClickCount = 0;
-        randomContainer.on<FileOpenEntry>([&openClickCount](){
+        flatContainer.on<FileOpenEntry>([&openClickCount](){
             openClickCount++;
         });
 
@@ -96,10 +134,10 @@ private slots:
         MenuEntriesContainer<
             FileNewEntry, FileOpenEntry, SeparatorEntry,
             RecentFileEntry
-        > randomContainer;
+        > flatContainer;
 
         DummyUiElement dummyUi;
-        randomContainer.populateUiElement(&dummyUi);
+        flatContainer.populateUiElement(&dummyUi);
 
         QCOMPARE(dummyUi.actionsAdded.count(), 3);
         QCOMPARE(dummyUi.menusAdded.count(), 1);

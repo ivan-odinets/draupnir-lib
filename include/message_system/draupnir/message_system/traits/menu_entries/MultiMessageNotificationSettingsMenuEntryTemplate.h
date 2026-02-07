@@ -2,7 +2,7 @@
  **********************************************************************************************************************
  *
  * draupnir-lib
- * Copyright (C) 2025-2026 Ivan Odinets <i_odinets@protonmail.com>
+ * Copyright (C) 2026 Ivan Odinets <i_odinets@protonmail.com>
  *
  * This file is part of draupnir-lib
  *
@@ -22,31 +22,22 @@
  *
  */
 
-#ifndef SETTINGSMENUTEMPLATE_H
-#define SETTINGSMENUTEMPLATE_H
+#ifndef MULTIMESSAGENOTIFICATIONSETTINGSMENUENTRYTEMPLATE_H
+#define MULTIMESSAGENOTIFICATIONSETTINGSMENUENTRYTEMPLATE_H
 
-#include "draupnir/ui_bricks/ui/menus/MenuTemplate.h"
+#include "draupnir/message_system/traits/menu_entries/MessageNotificationSettingsEntryTemplate.h"
 
-namespace Draupnir::Ui
+namespace Draupnir::Messages
 {
 
-template<class... Entries>
-class SettingsMenuTemplate
-{
-public:
-    using Type = MenuTemplate<Entries...>;
+template<class... MessageTraits>
+class MultiMessageNotificationSettingsMenuEntryTemplate :
+    public Draupnir::Ui::MenuTemplateEntry<
+        []() { return QObject::tr("Notifications"); },
+        MessageNotificationSettingsEntryTemplate<MessageTraits>...
+    >
+{};
 
-    static Type* createElement(QWidget* parent = nullptr) {
-        return new MenuTemplate<Entries...>{displayName(),parent};
-    }
+}; // namespace Draupnir::Messages
 
-    /*! @brief Returns the display name for the menu template.
-     *  @return Localized `QString`. */
-    static QString displayName() {
-        return QObject::tr("Settings");
-    }
-};
-
-}; // namespace Draupnir::Ui
-
-#endif // SETTINGSMENUTEMPLATE_H
+#endif // MULTIMESSAGENOTIFICATIONSETTINGSMENUENTRYTEMPLATE_H

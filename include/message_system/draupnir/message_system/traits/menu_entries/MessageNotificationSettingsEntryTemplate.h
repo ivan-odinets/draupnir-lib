@@ -2,7 +2,7 @@
  **********************************************************************************************************************
  *
  * draupnir-lib
- * Copyright (C) 2025 Ivan Odinets <i_odinets@protonmail.com>
+ * Copyright (C) 2025-2026 Ivan Odinets <i_odinets@protonmail.com>
  *
  * This file is part of draupnir-lib
  *
@@ -22,41 +22,41 @@
  *
  */
 
-#ifndef NOTIFICATIONSSETTINGSMENUENTRYTEMPLATE_H
-#define NOTIFICATIONSSETTINGSMENUENTRYTEMPLATE_H
+#ifndef MESSAGENOTIFICATIONSETTINGSENTRYTEMPLATE_H
+#define MESSAGENOTIFICATIONSETTINGSENTRYTEMPLATE_H
 
-#include "draupnir/message_system/core/AbstractMessageUiBuilder.h"
-#include "draupnir/message_system/ui/NotificationSettingsMenuEntriesContext.h"
+#include "draupnir/message_system/concepts/MessageTraitConcept.h"
+#include "draupnir/message_system/ui/menus/NotificationTypeMenu.h"
+#include "draupnir/ui_bricks/traits/menu_entries/templates/MenuTemplateEntry.h"
 
 namespace Draupnir::Messages
 {
 
-/*! @class NotificationsSettingsMenuEntryTemplate draupnir/message_system/traits/menu_entries/NotificationsSettingsMenuEntryTemplate.h
+/*! @class MessageNotificationSettingsEntryTemplate draupnir/message_system/traits/menu_entries/MessageNotificationSettingsEntryTemplate.h
  *  @ingroup MessageSystem
  *  @brief Trait template for notification settings menu entries.
  *  @tparam MessageTrait A message trait class that defines metadata for a specific message type.
  *
  *  @details This template provides a static interface for generating `QMenu` entries corresponding to a specific message type’s
- *           notification settings. It uses the global UI builder registered in @ref NotificationSettingsMenuContext to create
- *           an appropriate @ref NotificationTypeMenu widget for the message type.
+ *           notification settings.
  *
  *           The provided `MessageTrait` must contain:
  *           - `static constexpr MessageType type` — unique identifier for the message type;
  *           - `static QString displayName()` — user-visible name for the message type. */
 
-template<class MessageTrait>
-class NotificationsSettingsMenuEntryTemplate
+template<MessageTraitConcept MessageTrait>
+class MessageNotificationSettingsEntryTemplate
 {
 public:
-    /*! @brief Type alias for the widget produced by this entry (always QMenu). */
-    using Type = QMenu;
+    /*! @brief Type alias for the widget produced by this entry. */
+    using Type = NotificationTypeMenu;
 
     /*! @brief Returns a new instance of the @ref Draupnir::Messages::NotificationTypeMenu with the display name.
      *  @param parent Optional parent widget.
      *  @return Pointer to newly created @ref Draupnir::Messages::NotificationTypeMenu.
      * @note Title of the menu will be set using MessageTrait::displayName(). */
-    static QMenu* createElement(QWidget* parent = nullptr) {
-        auto* result = NotificationSettingsMenuContext::uiBuilder()->createNotificationSettingsMenu(MessageTrait::type, parent);
+    static NotificationTypeMenu* createElement(QWidget* parent = nullptr) {
+        auto* result = new NotificationTypeMenu{parent};
         result->setTitle(MessageTrait::displayName());
         return result;
     }
@@ -70,4 +70,4 @@ public:
 
 }; // namespace Draupnir::Messages
 
-#endif // NOTIFICATIONSSETTINGSMENUENTRYTEMPLATE_H
+#endif // MESSAGENOTIFICATIONSETTINGSENTRYTEMPLATE_H

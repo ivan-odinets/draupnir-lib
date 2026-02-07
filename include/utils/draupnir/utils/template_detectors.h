@@ -113,6 +113,40 @@ struct is_auto_instantiation_of<AutoTemplate<Args...>,AutoTemplate> : std::true_
 template<typename T, template<auto...> class AutoTemplate>
 inline constexpr bool is_auto_instantiation_of_v = is_auto_instantiation_of<T,AutoTemplate>::value;
 
+/*! @struct is_a1tp_instantiation_of draupnir/utils/template_detectors.h
+ *  @ingroup Utils
+ *  @brief Type trait that determines whether a given type `T` is an instantiation of the template `Template`.
+ *  @tparam T        Type to be inspected.
+ *  @tparam Template Class template to compare against.
+ *
+ *  @details Primary template: yields `std::false_type` for all combinations of `T` and `Template`. A partial specialization
+ *           is provided for the case when `T` is of the form `Template<auto,class...>` for some value and type pack. In that case
+ *           the trait evaluates to `std::true_type`. */
+
+template<typename T, template<auto,class...> class Template>
+struct is_a1tp_instantiation_of : std::false_type {};
+
+/*! @struct is_a1tp_of_auto draupnir/utils/template_detectors.h
+ *  @brief Partial specialization of @ref draupnir::utils::is_a1tp_instantiation_of for types of the form `Template<auto,class...>`.
+ *  @tparam Template Class template that accepts one or more value parameters.
+ *  @tparam Value    Template argument values used to instantiate `Template`.
+ *  @tparam Args...  Template argument types used to instantiate `Template`.
+ *
+ *  @details This specialization matches exactly when the inspected type `T` is an instantiation of `Template` with some Value argument
+ *           and type arguments `Args...`, and evaluates to `std::true_type`. */
+
+template<template<auto,class...> class Template, auto Value, class... Args>
+struct is_a1tp_instantiation_of<Template<Value,Args...>,Template> : std::true_type {};
+
+/*! @ingroup Utils
+ *  @brief Convenience variable template for @ref draupnir::utils::is_a1tp_instantiation_of.
+ *
+ *  @details Evaluates to `true` if `T` is an instantiation of the class template `Template` with one value arguments and type pack.
+ *           Evaluates to `false` otherwise. */
+
+template<typename T, template<auto,class...> class Template>
+inline constexpr bool is_a1tp_instantiation_of_v = is_a1tp_instantiation_of<T,Template>::value;
+
 /*! @struct is_template draupnir/utils/template_detectors.h
  *  @ingroup Utils
  *  @brief Helper-adapter that turns a class template into a unary predicate for @ref is_instantiation_of.

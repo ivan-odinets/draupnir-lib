@@ -23,7 +23,6 @@
         $$PWD/../include/ui_bricks/draupnir/ui_bricks/core/ViewManager.h \
         $$PWD/../include/ui_bricks/draupnir/ui_bricks/handlers/settings_menu/SettingsMenuHandlerTemplate.h \
         $$PWD/../include/ui_bricks/draupnir/ui_bricks/handlers/templates/ActionHandlerTemplate.h \
-        $$PWD/../include/ui_bricks/draupnir/ui_bricks/handlers/templates/CustomEntryHandler.h \
         $$PWD/../include/ui_bricks/draupnir/ui_bricks/handlers/templates/GenericMenuEntryHandlerTemplate.h \
         $$PWD/../include/ui_bricks/draupnir/ui_bricks/handlers/templates/MenuHandlerTemplate.h \
         $$PWD/../include/ui_bricks/draupnir/ui_bricks/ui/TrayIcon.h \
@@ -77,7 +76,8 @@
         $$PWD/../include/ui_bricks/draupnir/ui_bricks/handlers/settings_menu/SettingsMenuEntryHandlerTemplate.h \
         $$PWD/../include/ui_bricks/draupnir/ui_bricks/utils/MenuEntriesConcatenator.h \
         $$PWD/../include/ui_bricks/draupnir/ui_bricks/utils/MenuEntryToTraitMapper.h \
-        $$PWD/../include/ui_bricks/draupnir/ui_bricks/utils/SettingsValueUserInput.h
+        $$PWD/../include/ui_bricks/draupnir/ui_bricks/utils/SettingsValueUserInput.h \
+        $$PWD/../include/ui_bricks/draupnir/ui_bricks/concepts/ActionHandlerConcept.h
 
     SOURCES += \
         $$PWD/../src/ui_bricks/draupnir/ui/TrayIcon.cpp \
@@ -87,6 +87,7 @@
     DISTFILES += \
         $$PWD/../docs/pages/UiBricks.dox
 }
+
 
 
 

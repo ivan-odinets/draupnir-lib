@@ -10,5 +10,7 @@ TEMPLATE = app
 # Modules
 include(../../../../modules/MenuTemplates.pri)
 
+include(../../../common/TypeHelpers.pri)
+
 SOURCES +=  MenuEntriesContainerTest.cpp
 

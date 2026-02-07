@@ -41,7 +41,7 @@
 #include "draupnir/message_system/core/Notification.h"     // IWYU pragma: keep
 
 // Traits to be used with MenuTemplate / MenuBarTemplate
-#include "draupnir/message_system/traits/menu_entries/GlobalNotificationSettingsMenuEntry.h"       // IWYU pragma: keep
-#include "draupnir/message_system/traits/menu_entries/NotificationsSettingsMenuEntryTemplate.h"    // IWYU pragma: keep
+#include "draupnir/message_system/traits/menu_entries/MultiMessageNotificationSettingsMenuEntryTemplate.h" // IWYU pragma: keep
+#include "draupnir/message_system/traits/menu_entries/MessageNotificationSettingsEntryTemplate.h"    // IWYU pragma: keep
 
 #endif // MESSAGESYSTEM_H

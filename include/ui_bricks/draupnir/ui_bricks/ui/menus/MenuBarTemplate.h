@@ -2,7 +2,7 @@
  **********************************************************************************************************************
  *
  * draupnir-lib
- * Copyright (C) 2025 Ivan Odinets <i_odinets@protonmail.com>
+ * Copyright (C) 2025-2026 Ivan Odinets <i_odinets@protonmail.com>
  *
  * This file is part of draupnir-lib
  *
@@ -26,6 +26,7 @@
 #define MENUBARTEMPLATE_H
 
 #include <QMenuBar>
+
 #include <QEvent>
 
 #include "draupnir/ui_bricks/core/MenuEntriesContainer.h"
@@ -42,93 +43,47 @@ namespace Draupnir::Ui {
  *  @tparam Entries... Variadic parameter pack of menu entry traits/classes, each describing a QMenu, QAction, or descendant type. */
 
 template<class... Entries>
-class MenuBarTemplate final : public QMenuBar
+class MenuBarTemplate final :
+    public QMenuBar,
+    public MenuEntriesContainer<Entries...>
 {
 public:
+    using FirstSubmenuEntries = typename MenuEntriesContainer<Entries...>::EntriesList::template filter_if_t<MenuEntry::IsMenuTemplateEntryAdapter>;
+
+    using FirstActionsEntries = typename MenuEntriesContainer<Entries...>::EntriesList::template filter_if_t<MenuEntry::IsActionEntryAdapter>;
+
     /*! @brief Constructs a menu bar with the given parent and automatically populates itself with the entries described by Entries...
      *  @param parent Optional parent widget. */
     explicit MenuBarTemplate(QWidget* parent = nullptr) :
-        QMenuBar{parent}
+        QMenuBar{parent},
+        MenuEntriesContainer<Entries...>{}
     {
-        m_container.populateUiElement(this);
+        MenuEntriesContainer<Entries...>::populateUiElement(this);
     }
 
-    /*! @brief Final trivial destructor. */
+    /*! @brief Trivial final destructor. */
     ~MenuBarTemplate() final = default;
 
-    /*! @brief Static method which returns the number of traits within this @ref MenuBarTemplate instantiation.
-     *  @return Number of elements as constexpr int. */
-    static constexpr int count() { return MenuEntriesContainer<Entries...>::count(); }
+    /*! @brief Returns a tuple of pointers to all UI elements for which exposed `Type` is `QAction` (shallow, no recursion).
+     *  @return std::tuple<...> containing pointers to matched UI elements, in the same order as `Entries...`
+     *  @details Each matched element is returned as a pointer. Non-matching entries contribute an empty tuple.
+     * @note This does NOT traverse nested MenuTemplate entries.*/
+    auto getFirstActions() { return MenuEntriesContainer<Entries...>::template getAllUiElementsIf<MenuEntry::IsActionEntryAdapter>(); }
 
-    /*! @brief Static constexpr field containing the number of traits within this @ref MenuBarTemplate instantiation. */
-    static constexpr int count_v = count();
-
-    /*! @brief Runtime method which returns the number of traits within this @ref MenuBarTemplate instantiation.
-     *  @return Number of elements as constexpr int (always equals count()). */
-    constexpr int instanceCount() const { return count(); }
-
-    /*! @brief Returns true if specified entry is present within this @ref MenuBarTemplate instantiation.
-     *  @tparam Entry - menu entry trait to be checked. */
-    template<class Entry>
-    static constexpr bool contains() { return MenuEntriesContainer<Entries...>::template contains<Entry>(); }
-
-    /*! @brief Static constexpr template variable containing `true` if this @ref MenuBarTemplate instantiation contains
-     *         the specified Entry.
-     *  @tparam Entry - menu entry trait to be checked. */
-    template<class Entry>
-    static constexpr bool contains_v = contains<Entry>();
-
-    /*! @brief Runtime method which returns `true` if the specified Entry is present within this @ref MenuBarTemplate.
-     *  @tparam Entry - menu entry trait to be checked. */
-    template<class Entry>
-    constexpr bool instanceContains() { return contains<Entry>(); }
-
-    /*! @brief Provides access to the entry at the specified compile-time index.
-     *  @tparam Index Compile-time index (0-based).
-     *  @return Pointer to the element at the specified index.
-     * @note Throws static_assert if Index is out of bounds. */
-    template<std::size_t Index>
-    auto get() {
-        static_assert(Index < sizeof...(Entries), "Index is out of bounds in MenuBarTemplate.");
-        return m_container.template get<Index>();
-    }
-    template<std::size_t Index>
-    auto get() const {
-        static_assert(Index < sizeof...(Entries), "Index is out of bounds in MenuBarTemplate.");
-        return m_container.template get<Index>();
-    }
-
-    /*! @brief Provides access to the entry matching the specified Entry trait.
-     *  @tparam Entry The trait class of the desired entry.
-     *  @return Pointer to the element matching Entry.
-     * @note Throws static_assert if Entry is not present in Entries... */
-    template<class Entry>
-    auto get() {
-        static_assert(contains<Entry>(), "Entry specified is not present within this MenuBarTemplate.");
-        return m_container.template get<Entry>();
-    }
-    template<class Entry>
-    auto get() const {
-        static_assert(contains<Entry>(), "Entry specified is not present within this MenuBarTemplate.");
-        return m_container.template get<Entry>();
-    }
-
-    /*! @brief Allows connecting to the QAction-based Entry triggered signal. */
-    template<class Entry, class... Args>
-    QMetaObject::Connection on(Args... args) {
-        static_assert(contains<Entry>(), "Entry specified is not present within this MenuBarTemplate.");
-        return m_container.template on<Entry,Args...>(args...);
-    }
+    /*! @brief Returns a tuple of pointers to all UI elements for which exposed `Type` is @ref Draupnir::Ui::MenuTemplate instantiation
+     *         (shallow, no recursion).
+     *  @return std::tuple<...> containing pointers to matched UI elements, in the same order as `Entries...`
+     *  @details Each matched element is returned as a pointer. Non-matching entries contribute an empty tuple.
+     * @note This does NOT traverse nested MenuTemplate entries.*/
+    auto getFirstSubmenus() { return MenuEntriesContainer<Entries...>::template getAllUiElementsIf<MenuEntry::IsMenuTemplateEntryAdapter>(); }
 
 protected:
-    MenuEntriesContainer<Entries...> m_container;
-
     /*! @brief Qt event handler, automatically retranslates all entry texts when language changes.
      *  @param event The event pointer. */
     void changeEvent(QEvent* event) final {
-        if (event->type() == QEvent::LanguageChange) {
-            m_container.retranslateEntries();
-        }
+        if (event->type() == QEvent::LanguageChange)
+            MenuEntriesContainer<Entries...>::retranslateEntries();
+
         QMenuBar::changeEvent(event);
     }
 };

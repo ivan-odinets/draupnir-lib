@@ -123,7 +123,7 @@ private:
     template<class Thing, class = void>
     struct _HandledThing {
         static inline constexpr bool isValidThing =
-            MenuEntry::HasEntryType<Thing> &&
+            MenuEntry::HasSupportedEntryType<Thing> &&
             MenuEntry::HasDisplayNameMethod<Thing>;
 
         static_assert(isValidThing);

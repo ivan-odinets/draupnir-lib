@@ -45,9 +45,7 @@
         $$PWD/../include/message_system/draupnir/message_system/core/MessageUiBuilderTemplate.h \
         $$PWD/../include/message_system/draupnir/message_system/core/Notification.h \
         $$PWD/../include/message_system/draupnir/message_system/models/MessageListModel.h \
-        $$PWD/../include/message_system/draupnir/message_system/traits/menu_entries/GlobalNotificationSettingsMenuEntry.h \
-        $$PWD/../include/message_system/draupnir/message_system/traits/menu_entries/NotificationsSettingsMenuEntryTemplate.h \
-        $$PWD/../include/message_system/draupnir/message_system/ui/NotificationSettingsMenuEntriesContext.h \
+        $$PWD/../include/message_system/draupnir/message_system/traits/menu_entries/MessageNotificationSettingsEntryTemplate.h \
         $$PWD/../include/message_system/draupnir/message_system/models/MessageListProxyModel.h \
         $$PWD/../include/message_system/draupnir/message_system/traits/messages/DebugMessageTrait.h \
         $$PWD/../include/message_system/draupnir/message_system/traits/messages/DefaultMessageTraits.h \
@@ -74,8 +72,12 @@
         $$PWD/../include/message_system/draupnir/message_system/ui/windows/MessageDisplayDialog.h \
         $$PWD/../include/message_system/draupnir/message_system/ui/windows/MessageSystemConfigDialog.h \
         $$PWD/../include/message_system/draupnir/message_system/utils/MessageTraitsHelper.h \
-        $$PWD/../include/message_system/draupnir/message_system/traits/widgets/LogWidgetTrait.h
+        $$PWD/../include/message_system/draupnir/message_system/traits/widgets/LogWidgetTrait.h \
+        $$PWD/../include/message_system/draupnir/message_system/concepts/MessageTraitConcept.h \
+        $$PWD/../include/message_system/draupnir/message_system/handlers/settings_menu/MessageNotificationSettingsHandler.h \
+        $$PWD/../include/message_system/draupnir/message_system/traits/menu_entries/MultiMessageNotificationSettingsMenuEntryTemplate.h
 
     DISTFILES += \
         $$PWD/../docs/pages/MessageSystem.dox
 }
+

@@ -44,7 +44,9 @@ namespace Draupnir::Handlers
 {
 
 /*! @class MenuHandlerTemplate draupnir/ui_bricks/handlers/templates/MenuHandlerTemplate.h
- *  @brief This is a class. */
+ *  @brief This is a class.
+ * @todo Allow changing "connection mode" - "one entry per handler" vs "all entries of type per handler".
+ * @todo Write documentation for this class.*/
 
 template<class UserContext, template<class,class> class HandlerTemplate, class... MenuEntries>
 class MenuHandlerTemplate
@@ -135,7 +137,7 @@ public:
     }
 
     template<class SettingsSource>
-    void loadSettings(SettingsSource source) {
+    void loadSettings(SettingsSource* source) {
         m_filels.context.loadSettings(source);
 
         _onSettingsLoadedImpl<MenuEntries...>();
@@ -151,8 +153,11 @@ private:
 
     template<class MenuContainer, class FirstEntry, class... RestEntries>
     void _connectActionsImpl(MenuContainer* container) {
-        if constexpr (MenuContainer::template contains<FirstEntry>()) {
-            getHandlerForEntry<FirstEntry>().connect(container->template get<FirstEntry>());
+        if constexpr (MenuContainer::template recursiveContains<FirstEntry>()) {
+            auto entries = container->template recursiveGetAllUiElements<FirstEntry>();
+            std::apply([this](auto&... element) {
+                (..., getHandlerForEntry<FirstEntry>().connect(element));
+            }, entries);
         }
 
         if constexpr (sizeof...(RestEntries) > 0)
@@ -161,9 +166,7 @@ private:
 
     template<class FirstEntry, class... RestEntries>
     void _onSettingsLoadedImpl() {
-        using FirstHandler = HandlerTemplate<_RealContext,FirstEntry>;
-
-        if constexpr (RequireUpdateUponSettingsLoading<FirstHandler>) {
+        if constexpr (RequireUpdateUponSettingsLoading<HandlerTemplate<_RealContext,FirstEntry>>) {
             getHandlerForEntry<FirstEntry>().onSettingsLoaded();
         }
 

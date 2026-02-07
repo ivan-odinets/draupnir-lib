@@ -8,7 +8,7 @@ CONFIG      += c++20
 TEMPLATE = app
 
 # Modules
-include(../../../../modules/MenuTemplates.pri)
+include(../../../../modules/UiBricks.pri)
 
 SOURCES +=  \
     MenuBarTemplateTest.cpp
