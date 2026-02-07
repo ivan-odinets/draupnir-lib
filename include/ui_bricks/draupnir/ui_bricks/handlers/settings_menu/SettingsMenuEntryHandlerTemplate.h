@@ -60,9 +60,9 @@ public:
     void onTriggered() requires(!boolSettingHandled) {
         if constexpr (!std::is_same_v<SettingsValue,bool>) {
             const SettingsValue oldValue = m_context.template get<SettingTrait>();
-            std::optional<SettingsValue> result = SettingsValueUserInput<SettingTrait,SettingsValue>(oldValue);
+            std::optional<SettingsValue> result = SettingsValueUserInput<SettingTrait,SettingsValue>::getValue(oldValue);
             if (result.has_value()) {
-                m_context.template set<SettingTrait>(result);
+                m_context.template set<SettingTrait>(result.value());
             }
         }
     }

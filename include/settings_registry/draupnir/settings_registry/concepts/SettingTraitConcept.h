@@ -39,27 +39,54 @@ namespace SettingTrait
 
 /*! @headerfile draupnir/settings_registry/concepts/SettingTraitConcept.h
  *  @ingroup SettingsRegistry
- *  @brief This concept requires type C to have tested Value type. */
+ *  @brief This concept requires type Candidate to have tested Value type. */
 
-template<class C>
-concept HasValueType = requires { typename C::Value; };
+template<class Candidate>
+concept HasValueType = requires { typename Candidate::Value; };
 
 /*! @headerfile draupnir/settings_registry/concepts/SettingTraitConcept.h
  *  @ingroup SettingsRegistry
- *  @brief This concept requires type C to have public static method `QString C::key()`*/
+ *  @brief This concept requires type Candidate to have public static method `QString Candidate::key()`*/
 
-template<class C>
+template<class Candidate>
 concept HasKeyMethod = requires {
-    { C::key() } -> std::convertible_to<QString>;
+    { Candidate::key() } -> std::convertible_to<QString>;
 };
 
 /*! @headerfile draupnir/settings_registry/concepts/SettingTraitConcept.h
  *  @ingroup SettingsRegistry
- *  @brief This concept requires type C to have public static method `typename C::Value C::defaultValue()`*/
+ *  @brief This concept requires type `Candidate` to have public static method `typename Candidate::Value Candidate::defaultValue()`*/
 
-template<class C>
+template<class Candidate>
 concept HasDefaultValueMethod = requires {
-    { C::defaultValue() } -> std::convertible_to<typename C::Value>;
+    { Candidate::defaultValue() } -> std::convertible_to<typename Candidate::Value>;
+};
+
+/*! @headerfile draupnir/settings_registry/concepts/SettingTraitConcept.h
+ *  @ingroup SettingsRegistry
+ *  @brief This concept requires type `Candidate` to have public static method `typename Candidate::Value Candidate::minimalValue()`*/
+
+template<class Candidate>
+concept HasMinimalValue = requires {
+    { Candidate::minimalValue() } -> std::same_as<typename Candidate::Value>;
+};
+
+/*! @headerfile draupnir/settings_registry/concepts/SettingTraitConcept.h
+ *  @ingroup SettingsRegistry
+ *  @brief This concept requires type `Candidate` to have public static method `typename Candidate::Value Candidate::maximalValue()`*/
+
+template<class Candidate>
+concept HasMaximalValue = requires {
+    { Candidate::maximalValue() } -> std::same_as<typename Candidate::Value>;
+};
+
+/*! @headerfile draupnir/settings_registry/concepts/SettingTraitConcept.h
+ *  @ingroup SettingsRegistry
+ *  @brief This concept requires type `Candidate` to have public static method `QString Candidate::settingDescription()` */
+
+template<class Candidate>
+concept HasSettingDescription = requires {
+    { Candidate::settingDescription() } -> std::same_as<QString>;
 };
 
 }; // namespace SettingTrait
@@ -70,11 +97,11 @@ concept HasDefaultValueMethod = requires {
  *         @ref Draupnir::Settings::SettingTrait::HasKeyMethod, @ref Draupnir::Settings::SettingTrait::HasDefaultValueMethod.
  *         Every type to be used as SettingTrait - must fulfill these requirements. */
 
-template<class C>
+template<class Candidate>
 concept SettingTraitConcept =
-    SettingTrait::HasValueType<C> &&
-    SettingTrait::HasKeyMethod<C> &&
-    SettingTrait::HasDefaultValueMethod<C>;
+    SettingTrait::HasValueType<Candidate> &&
+    SettingTrait::HasKeyMethod<Candidate> &&
+    SettingTrait::HasDefaultValueMethod<Candidate>;
 
 }; // namespace Draupnir::Settings
 

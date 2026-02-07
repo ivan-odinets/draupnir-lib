@@ -87,8 +87,3 @@
     DISTFILES += \
         $$PWD/../docs/pages/UiBricks.dox
 }
-
-
-
-
-
