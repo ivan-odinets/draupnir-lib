@@ -2,7 +2,7 @@
  **********************************************************************************************************************
  *
  * draupnir-lib
- * Copyright (C) 2025 Ivan Odinets <i_odinets@protonmail.com>
+ * Copyright (C) 2025-2026 Ivan Odinets <i_odinets@protonmail.com>
  *
  * This file is part of draupnir-lib
  *
@@ -22,26 +22,30 @@
  *
  */
 
-#ifndef CENTRALWIDGETFEATURETEMPLATE_H
-#define CENTRALWIDGETFEATURETEMPLATE_H
+#ifndef USEMENUBAR_H
+#define USEMENUBAR_H
+
+class QMenuBar;
 
 #include "draupnir/settings_registry/utils/SettingsTraitsConcatenator.h"
 
 namespace Draupnir::Ui::MainWindow
 {
 
-template<class WidgetClass>
-class CentralWidgetFeatureTemplate
+template<class Candidate>
+concept IsQMenuBarBased =
+    std::is_base_of_v<QMenuBar,Candidate>;
+
+template<IsQMenuBarBased MenuBarImplementation>
+struct UseMenuBar
 {
-public:
-    using SettingsBundle = typename Draupnir::Settings::SettingsTraitsConcatenator<WidgetClass>::toSettingsBundle;
+    using SettingsBundle = typename Draupnir::Settings::SettingsTraitsConcatenator<MenuBarImplementation>::toSettingsBundle;
 
-    static constexpr bool hasState_v = true;
+    using MenuBar = MenuBarImplementation;
 
-    using CentralWidget = WidgetClass;
-    CentralWidget* widget{ nullptr };
+    MenuBarImplementation* state{nullptr};
 };
 
 }; // namespace Draupnir::Ui
 
-#endif // CENTRALWIDGETFEATURETEMPLATE_H
+#endif // USEMENUBAR_H

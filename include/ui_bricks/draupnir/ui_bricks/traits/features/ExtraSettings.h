@@ -2,7 +2,7 @@
  **********************************************************************************************************************
  *
  * draupnir-lib
- * Copyright (C) 2025 Ivan Odinets <i_odinets@protonmail.com>
+ * Copyright (C) 2025-2026 Ivan Odinets <i_odinets@protonmail.com>
  *
  * This file is part of draupnir-lib
  *
@@ -30,7 +30,7 @@
 namespace Draupnir::Ui::MainWindow
 {
 
-/*! @class ExtraSettings include/draupnir/traits/features/ExtraSettings.h
+/*! @struct ExtraSettings include/draupnir/traits/features/ExtraSettings.h
  *  @ingroup UiBricks
  *  @brief Feature that contributes arbitrary user-defined settings to MainWindowTemplate.
  *  @tparam Things...   List of types settings from which should be included in the @ref Draupnir::Ui::MainWindowTemplate::SettingsBundle
@@ -38,11 +38,11 @@ namespace Draupnir::Ui::MainWindow
  *                      custom type which exposes `SettingsBundle` alias.
  *
  *  @details This feature does not define any runtime behavior and does not store state. It only contributes additional setting
- *           traits into the aggregated @ref Draupnir::Ui::MainWindowTemplate::SettingsBundle via the usual SettingsTraitsConcatenator.
+ *           traits into the aggregated @ref Draupnir::Ui::MainWindowTemplate::SettingsBundle via the usual `SettingsTraitsConcatenator`.
  *
  *           Typical use case:
  *           - you want the main window to know about some custom settings (e.g. @c MyApp::Settings::SidebarWidthSetting),
- *           - but you do not need a full-blown “feature” with its own logic.
+ *           - but you do not need a full-blown "feature" with its own logic.
  *
  *           Example:
  *           @code
@@ -54,12 +54,11 @@ namespace Draupnir::Ui::MainWindow
  *                   MyApp::Settings::LastOpenedPageSetting
  *               >
  *           >;
- * @endcode */
+ *           @endcode */
 
 template<class... Things>
-class ExtraSettings
+struct ExtraSettings
 {
-public:
     using SettingsBundle = typename Draupnir::Settings::SettingsTraitsConcatenator<Things...>::toSettingsBundle;
 };
 

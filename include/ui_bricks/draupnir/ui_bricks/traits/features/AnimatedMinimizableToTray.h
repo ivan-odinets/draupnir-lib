@@ -2,7 +2,7 @@
  **********************************************************************************************************************
  *
  * draupnir-lib
- * Copyright (C) 2025 Ivan Odinets <i_odinets@protonmail.com>
+ * Copyright (C) 2025-2026 Ivan Odinets <i_odinets@protonmail.com>
  *
  * This file is part of draupnir-lib
  *
@@ -31,7 +31,7 @@
 namespace Draupnir::Ui::MainWindow
 {
 
-/*! @class AnimatedMinimizableToTray draupnir/ui_bricks/traits/features/AnimatedMinimizableToTray.h
+/*! @struct AnimatedMinimizableToTray draupnir/ui_bricks/traits/features/AnimatedMinimizableToTray.h
  *  @ingroup UiBricks
  *  @brief Feature that enables "minimize to tray" behavior with a custom animation.
  *  @tparam AnimationTemplate     Animation type that will be used when the window is minimized to tray. The 'AnimationTemplate'
@@ -62,9 +62,8 @@ namespace Draupnir::Ui::MainWindow
  *           @endcode */
 
 template<class AnimationTemplate>
-class AnimatedMinimizableToTray
+struct AnimatedMinimizableToTray
 {
-public:
     /*! @brief Settings bundle contributed by this feature. Adds @ref Draupnir::Settings::MainWindow::MinimizeToTraySetting, which
      *         controls whether the window should be minimized to tray instead of being minimized/hidden in the usual way. */
     using SettingsBundle = Draupnir::Settings::SettingsBundleTemplate<

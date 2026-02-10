@@ -2,7 +2,7 @@
  **********************************************************************************************************************
  *
  * draupnir-lib
- * Copyright (C) 2025 Ivan Odinets <i_odinets@protonmail.com>
+ * Copyright (C) 2025-2026 Ivan Odinets <i_odinets@protonmail.com>
  *
  * This file is part of draupnir-lib
  *
@@ -31,7 +31,7 @@
 namespace Draupnir::Ui::MainWindow
 {
 
-/*! @class RememberWindowSize draupnir/ui_bricks/traits/features/RememberWindowSize.h
+/*! @struct RememberWindowSize draupnir/ui_bricks/traits/features/RememberWindowSize.h
  *  @ingroup UiBricks
  *  @brief Feature that persists and restores the main window size.
  *  @details This feature is a simple, stateless marker that:
@@ -51,21 +51,16 @@ namespace Draupnir::Ui::MainWindow
  *               Draupnir::Ui::MainWindow::MinimizableOnClose,
  *               Draupnir::Ui::MainWindow::MinimizableToTray
  *           >;
- *           @endcode
- *
- * @note This feature does not declare `hasState_v` and therefore is not stored in the internal @c FeaturesStateTuple. It
- *       can be freely combined with other window-related features. */
+ *           @endcode */
 
-class RememberWindowSize
+struct RememberWindowSize
 {
-public:
     /*! @brief Settings contributed by this feature. Adds @ref Draupnir::Settings::MainWindow::WindowSizeSetting to the main
      *         window’s `SettingsBundle`, allowing the window size to be saved and restored across application runs. */
     using SettingsBundle = Draupnir::Settings::SettingsBundleTemplate<
         Draupnir::Settings::MainWindow::WindowSizeSetting
     >;
 };
-
 
 }; // namespace Draupnir::Ui::MainWindow
 

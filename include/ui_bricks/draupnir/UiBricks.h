@@ -45,7 +45,7 @@
 #include "draupnir/ui_bricks/traits/features/ExtraSettings.h"             // IWYU pragma: keep
 #include "draupnir/ui_bricks/traits/features/MinimizableToTray.h"         // IWYU pragma: keep
 #include "draupnir/ui_bricks/traits/features/MinimizableOnClose.h"        // IWYU pragma: keep
-#include "draupnir/ui_bricks/traits/features/TrayIconSupported.h"         // IWYU pragma: keep
+#include "draupnir/ui_bricks/traits/features/UseTrayIcon.h"         // IWYU pragma: keep
 #include "draupnir/ui_bricks/traits/features/RememberWindowSize.h"        // IWYU pragma: keep
 
 // Traits - Menu Entries

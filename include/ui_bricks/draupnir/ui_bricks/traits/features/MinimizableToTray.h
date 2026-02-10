@@ -2,7 +2,7 @@
  **********************************************************************************************************************
  *
  * draupnir-lib
- * Copyright (C) 2025 Ivan Odinets <i_odinets@protonmail.com>
+ * Copyright (C) 2025-2026 Ivan Odinets <i_odinets@protonmail.com>
  *
  * This file is part of draupnir-lib
  *
@@ -25,15 +25,13 @@
 #ifndef MINIMIZABLETOTRAY_H
 #define MINIMIZABLETOTRAY_H
 
-#include <optional>
-
 #include "draupnir/settings_registry/SettingsBundleTemplate.h"
 #include "draupnir/settings_registry/traits/settings/main_window/MinimizeToTraySetting.h"
 
 namespace Draupnir::Ui::MainWindow
 {
 
-/*! @class MinimizableToTray draupnir/ui_bricks/traits/features/MinimizableToTray.h
+/*! @struct MinimizableToTray draupnir/ui_bricks/traits/features/MinimizableToTray.h
  *  @ingroup UiBricks
  *  @brief Feature that enables "minimize to tray" behavior for @ref Draupnir::Ui::MainWindowTemplate.
  *  @details This feature is a simple, stateless marker that:
@@ -54,12 +52,9 @@ namespace Draupnir::Ui::MainWindow
  *               Draupnir::Ui::MainWindow::TrayIconSupported<Draupnir::Ui::TrayIcon>,
  *               Draupnir::Ui::MainWindow::RememberWindowSize
  *           >;
- *           @endcode
- *
- * @note This feature does not declare `hasState_v` and therefore does not participate in the internal `FeaturesStateTuple`.
- *       It is purely a type-level flag plus a settings contribution. */
+ *           @endcode */
 
-class MinimizableToTray
+struct MinimizableToTray
 {
 public:
     /*! @brief Settings contributed by this feature. Adds @ref Draupnir::Settings::MainWindow::MinimizeToTraySetting to the main window’s

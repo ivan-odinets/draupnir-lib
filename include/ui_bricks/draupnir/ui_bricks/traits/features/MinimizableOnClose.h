@@ -2,7 +2,7 @@
  **********************************************************************************************************************
  *
  * draupnir-lib
- * Copyright (C) 2025 Ivan Odinets <i_odinets@protonmail.com>
+ * Copyright (C) 2025-2026 Ivan Odinets <i_odinets@protonmail.com>
  *
  * This file is part of draupnir-lib
  *
@@ -31,7 +31,7 @@
 namespace Draupnir::Ui::MainWindow
 {
 
-/*! @class MinimizableOnClose draupnir/ui_bricks/traits/features/MinimizableOnClose.h
+/*! @struct MinimizableOnClose draupnir/ui_bricks/traits/features/MinimizableOnClose.h
  *  @ingroup UiBricks
  *  @brief Feature that turns the "close" action into "minimize" for @ref Draupnir::Ui::MainWindowTemplate.
  *  @details This feature is a stateless marker that:
@@ -51,14 +51,10 @@ namespace Draupnir::Ui::MainWindow
  *               Draupnir::Ui::MainWindow::MinimizableToTray,
  *               Draupnir::Ui::MainWindow::TrayIconSupported<Draupnir::Ui::TrayIcon>
  *           >;
- *           @endcode
- *
- * @note This feature does not declare `hasState_v` and therefore is not stored in the internal `FeaturesStateTuple`. It lives purely
- *       at the type level and via its @ref SettingsBundle contribution. */
+ *           @endcode */
 
-class MinimizableOnClose
+struct MinimizableOnClose
 {
-public:
     /*! @brief Settings contributed by this feature. Adds @ref Draupnir::Settings::MainWindow::MinimizeOnCloseSetting to the main
      *         window’s @ref SettingsBundle. When this setting is `true`, the window will be minimized instead of closed on a
      *         close request. */

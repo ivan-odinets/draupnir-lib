@@ -35,6 +35,11 @@
 namespace Draupnir::Ui
 {
 
+template<class Candidate>
+concept Showable = requires(Candidate candidate) {
+    { candidate.show() } -> std::same_as<void>;
+};
+
 /*! @class ViewManager draupnir/ui_bricks/core/ViewManager.h
  *  @ingroup UiBricks
  *  @brief Manages the main UI components such as `MainWindow` and `TrayIcon`.
@@ -58,27 +63,15 @@ namespace Draupnir::Ui
 template<class MainWindowClass, class TrayIconClass>
 class ViewManager
 {
-    /*! @brief Trait to check if a class provides `void show()` method. */
-    template<class, class = std::void_t<>>
-    struct has_show : std::false_type {};
-
-    template<class T>
-    struct has_show<
-        T,
-        std::void_t<decltype(
-            std::is_same_v<void,decltype(std::declval<T>().show())>
-        )>
-    > : std::true_type {};
-
     /*! @brief Trait to check if a class provides `void setTrayIcon(TrayIconClass*)` method. */
     template<class, class = std::void_t<>>
-    struct has_setTrayIcon : std::false_type {};
+    struct supportsTrayIcon : std::false_type {};
 
     template<class T>
-    struct has_setTrayIcon<
+    struct supportsTrayIcon<
         T,
         std::void_t<decltype(
-            std::is_same_v<void,decltype(std::declval<T>().template setTrayIcon<TrayIconClass>(std::declval<TrayIconClass*>()))>
+            std::is_same_v<void,decltype(std::declval<T>().template registerTrayIcon<TrayIconClass>(std::declval<TrayIconClass*>()))>
         )>
     > : std::true_type {};
 
@@ -111,9 +104,9 @@ public:
     ViewManager() :
         m_elementsTuple{}
     {
-        static_assert(has_show<MainWindowClass>(),
+        static_assert(Showable<MainWindowClass>,
                 "Provided MainWindowClass argument must have void show() method.");
-        static_assert(has_show<TrayIconClass>(),
+        static_assert(Showable<TrayIconClass>,
                 "Provided TrayIconClass argument must have void show() method.");
     }
 
@@ -129,7 +122,8 @@ public:
      *                            but @ref Draupnir::Settings::SettingsBundleTemplate can be used as well. The povided SettingsSource
      *                            must be capable to populate `SettingsBundle` of the `ViewManager` object.
      *  @param settings Pointer to a SettingsSource instance.
-     *  @details This must be called exactly once before calling `showUi()` method. Will assert if called more than once. */
+     *  @details This must be called exactly once before calling `showUi()` method. Will assert if called more than once.
+     * @todo As other `loadSettings`-methods this needs to be standartized. */
     template<class SettingsSource>
     void loadSettings(SettingsSource* settings) {
         static_assert(SettingsBundle::template canBeFullyPopulatedFrom<SettingsSource>(),
@@ -180,8 +174,8 @@ public:
         std::get<MainWindowClass*>(m_elementsTuple) = new MainWindowClass{};
         std::get<TrayIconClass*>(m_elementsTuple) = new TrayIconClass;
 
-        if constexpr (has_setTrayIcon<MainWindowClass>::value) {
-            std::get<MainWindowClass*>(m_elementsTuple)->setTrayIcon(
+        if constexpr (supportsTrayIcon<MainWindowClass>::value) {
+            std::get<MainWindowClass*>(m_elementsTuple)->registerTrayIcon(
                 std::get<TrayIconClass*>(m_elementsTuple)
             );
         }

@@ -2,7 +2,7 @@
  **********************************************************************************************************************
  *
  * draupnir-lib
- * Copyright (C) 2025 Ivan Odinets <i_odinets@protonmail.com>
+ * Copyright (C) 2025-2026 Ivan Odinets <i_odinets@protonmail.com>
  *
  * This file is part of draupnir-lib
  *
@@ -22,8 +22,8 @@
  *
  */
 
-#ifndef TRAYICONSUPPORTED_H
-#define TRAYICONSUPPORTED_H
+#ifndef USETRAYICON_H
+#define USETRAYICON_H
 
 #include <QSystemTrayIcon>
 
@@ -31,7 +31,11 @@
 namespace Draupnir::Ui::MainWindow
 {
 
-/*! @class TrayIconSupported draupnir/ui_bricks/traits/features/TrayIconSupported.h
+template<class Candidate>
+concept IsQSystemTrayBased =
+    std::is_base_of_v<QSystemTrayIcon,Candidate>;
+
+/*! @struct UseTrayIcon draupnir/ui_bricks/traits/features/UseTrayIcon.h
  *  @ingroup UiBricks
  *  @brief Feature that adds system tray icon support to @ref Draupnir::Ui::MainWindowTemplate.
  *  @tparam IconClass   Type used to represent the tray icon. By default this is `QSystemTrayIcon`, but any compatible type can be
@@ -39,43 +43,22 @@ namespace Draupnir::Ui::MainWindow
  *                      etc.).
  *
  *  @details This feature is a stateful feature (declares `hasState_v = true`) and therefore its instance is stored inside @ref
- *           Draupnir::Ui::MainWindowTemplate’s internal `FeaturesStateTuple`.
- *
- *           Example usage with MainWindowTemplate:
- *           @code
- *           using MainWindowBase = Draupnir::Ui::MainWindowTemplate<
- *              Draupnir::Ui::MainWindow::TrayIconSupported<>,
- *              Draupnir::Ui::MainWindow::MinimizableToTray,
- *              Draupnir::Ui::MainWindow::RememberWindowSize
- *           >;
- *
- *           // Somewhere in initialization code:
- *           QSystemTrayIcon* tray = new QSystemTrayIcon{QIcon(":/icons/app"), mainWindow};
- *           mainWindow->setTrayIcon(tray);
- *           @endcode */
+ *           Draupnir::Ui::MainWindowTemplate’s internal `_FeaturesStateTuple`. */
 
-template<class IconClass = QSystemTrayIcon>
-class TrayIconSupported
+template<IsQSystemTrayBased IconClass = QSystemTrayIcon>
+struct UseTrayIcon
 {
-public:
-    /*! @brief Marks this feature as stateful.
-     *  @details Because `hasState_v` is `true`, @ref Draupnir::Ui::MainWindowTemplate will store an instance of @ref TrayIconSupported
-     *           inside its `FeaturesStateTuple` and use it to keep track of the tray icon pointer. */
-    static inline constexpr bool hasState_v = true;
-
     /*! @brief Alias for the tray icon type used by this feature. */
     using TrayIcon = IconClass;
 
     /*! @brief Pointer to the tray icon instance associated with the main window.
-     *  @details This pointer is typically set by @ref MainWindowTemplate::setTrayIcon() and may be used later to:
-     *           - hide or show the tray icon;
-     *           - connect to tray-icon signals;
-     *           - customize tray behavior per window.
+     *  @details This pointer is used by MainWindowTemplate to: hide or show the tray icon; connect to tray-icon signals; customize
+     *           tray behavior per window.
      *
      *           The lifetime of the pointed-to object is managed by the caller; the feature itself does not own the icon. */
-    TrayIcon* icon { nullptr };
+    TrayIcon* state { nullptr };
 };
 
 }; // namespace Draupnir::Ui::MainWindow
 
-#endif // TRAYICONSUPPORTED_H
+#endif // USETRAYICON_H

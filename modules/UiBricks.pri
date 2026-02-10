@@ -25,6 +25,9 @@
         $$PWD/../include/ui_bricks/draupnir/ui_bricks/handlers/templates/ActionHandlerTemplate.h \
         $$PWD/../include/ui_bricks/draupnir/ui_bricks/handlers/templates/GenericMenuEntryHandlerTemplate.h \
         $$PWD/../include/ui_bricks/draupnir/ui_bricks/handlers/templates/MenuHandlerTemplate.h \
+        $$PWD/../include/ui_bricks/draupnir/ui_bricks/traits/features/UseCentralWidget.h \
+        $$PWD/../include/ui_bricks/draupnir/ui_bricks/traits/features/UseMenuBar.h \
+        $$PWD/../include/ui_bricks/draupnir/ui_bricks/traits/features/UseTrayIcon.h \
         $$PWD/../include/ui_bricks/draupnir/ui_bricks/ui/TrayIcon.h \
         $$PWD/../include/ui_bricks/draupnir/ui_bricks/utils/CheckableUiElementHelper.h \
         $$PWD/../include/ui_bricks/draupnir/ui_bricks/ui/widgets/FixedCentralTabWidgetTemplate.h \
@@ -37,7 +40,6 @@
         $$PWD/../include/ui_bricks/draupnir/ui_bricks/traits/features/MinimizableOnClose.h \
         $$PWD/../include/ui_bricks/draupnir/ui_bricks/traits/features/MinimizableToTray.h \
         $$PWD/../include/ui_bricks/draupnir/ui_bricks/traits/features/RememberWindowSize.h \
-        $$PWD/../include/ui_bricks/draupnir/ui_bricks/traits/features/TrayIconSupported.h \
         $$PWD/../include/ui_bricks/draupnir/ui_bricks/traits/menu_entries/FileMenuEntries.h \
         $$PWD/../include/ui_bricks/draupnir/ui_bricks/traits/menu_entries/HelpMenuEntries.h \
         $$PWD/../include/ui_bricks/draupnir/ui_bricks/traits/menu_entries/SettingsMenuEntries.h \
@@ -52,8 +54,6 @@
         $$PWD/../include/ui_bricks/draupnir/ui_bricks/ui/menus/MenuTemplate.h \
         $$PWD/../include/ui_bricks/draupnir/ui_bricks/ui/menus/RecentFilesMenu.h \
         $$PWD/../include/ui_bricks/draupnir/ui_bricks/core/MenuEntriesContainer.h \
-        $$PWD/../include/ui_bricks/draupnir/ui_bricks/traits/features/CentralWidgetFeatureTemplate.h \
-        $$PWD/../include/ui_bricks/draupnir/ui_bricks/traits/features/MenuBarFeatureTemplate.h \
         $$PWD/../include/ui_bricks/draupnir/ui_bricks/traits/menu_entries/submenus/HelpMenuTemplate.h \
         $$PWD/../include/ui_bricks/draupnir/ui_bricks/traits/menu_entries/submenus/SettingsMenuTemplate.h \
         $$PWD/../include/ui_bricks/draupnir/ui_bricks/handlers/file_menu/FileCloseEntryHandler.h \
@@ -77,7 +77,8 @@
         $$PWD/../include/ui_bricks/draupnir/ui_bricks/utils/MenuEntriesConcatenator.h \
         $$PWD/../include/ui_bricks/draupnir/ui_bricks/utils/MenuEntryToTraitMapper.h \
         $$PWD/../include/ui_bricks/draupnir/ui_bricks/utils/SettingsValueUserInput.h \
-        $$PWD/../include/ui_bricks/draupnir/ui_bricks/concepts/ActionHandlerConcept.h
+        $$PWD/../include/ui_bricks/draupnir/ui_bricks/concepts/ActionHandlerConcept.h \
+        $$PWD/../include/ui_bricks/draupnir/ui_bricks/traits/features/ClosureConfirmation.h
 
     SOURCES += \
         $$PWD/../src/ui_bricks/draupnir/ui/TrayIcon.cpp \

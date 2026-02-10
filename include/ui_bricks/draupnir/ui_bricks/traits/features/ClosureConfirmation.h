@@ -2,7 +2,7 @@
  **********************************************************************************************************************
  *
  * draupnir-lib
- * Copyright (C) 2025 Ivan Odinets <i_odinets@protonmail.com>
+ * Copyright (C) 2026 Ivan Odinets <i_odinets@protonmail.com>
  *
  * This file is part of draupnir-lib
  *
@@ -22,27 +22,40 @@
  *
  */
 
-#ifndef MENUBARFEATURETEMPLATE_H
-#define MENUBARFEATURETEMPLATE_H
+#ifndef CLOSURECONFIRMATION_H
+#define CLOSURECONFIRMATION_H
 
-#include "draupnir/ui_bricks/ui/menus/MenuBarTemplate.h"
-#include "draupnir/settings_registry/utils/SettingsTraitsConcatenator.h"
+#include <concepts>
+
+#include <QApplication>
+#include <QMessageBox>
 
 namespace Draupnir::Ui::MainWindow
 {
 
-template<class MenuBarClass>
-class MenuBarFeatureTemplate
-{
-public:
-    using SettingsBundle = typename Draupnir::Settings::SettingsTraitsConcatenator<MenuBarClass>::toSettingsBundle;
-
-    static constexpr bool hasState_v = true;
-
-    using MenuBar = MenuBarClass;
-    MenuBar* menuBar{nullptr};
+template<class Candidate>
+concept CanConfirmWindowClosure = requires(Candidate c) {
+    { c.canWindowBeClosed() } -> std::same_as<bool>;
 };
 
-}; // namespace Draupnir::Ui
+class DefaultClosureConfirmer
+{
+public:
+    bool canWindowBeClosed() {
+        QMessageBox messageBox{qApp->activeWindow()};
+        messageBox.setWindowTitle(qApp->applicationName());
+        messageBox.setText(QObject::tr("Are you sure want to continue?"));
+        messageBox.setStandardButtons(QMessageBox::Ok | QMessageBox::Cancel);
+        return (messageBox.exec() == QMessageBox::Ok);
+    }
+};
 
-#endif // MENUBARFEATURETEMPLATE_H
+template<CanConfirmWindowClosure Confirmer = DefaultClosureConfirmer>
+struct ClosureConfirmation
+{
+    Confirmer state;
+};
+
+};
+
+#endif // CLOSURECONFIRMATION_H
