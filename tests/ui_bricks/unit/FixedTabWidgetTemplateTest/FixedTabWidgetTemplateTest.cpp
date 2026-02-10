@@ -27,7 +27,7 @@
 
 #include "draupnir/SettingsRegistry.h"
 
-#include "draupnir/settings_registry/traits/settings/CentralWidgetIndexSetting.h"
+#include "draupnir/ui_bricks/traits/settings/CentralWidgetIndexSetting.h"
 
 #include "draupnir/ui_bricks/ui/widgets/FixedCentralTabWidgetTemplate.h"
 #include "draupnir/ui_bricks/ui/widgets/FixedTabWidgetTemplate.h"

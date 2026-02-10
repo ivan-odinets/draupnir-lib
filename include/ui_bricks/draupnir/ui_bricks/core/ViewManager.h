@@ -30,7 +30,7 @@
 #include <QSystemTrayIcon>
 
 #include "draupnir/settings_registry/utils/SettingsTraitsConcatenator.h"
-#include "draupnir/settings_registry/traits/settings/main_window/StartHiddenSetting.h"
+#include "draupnir/ui_bricks/traits/settings/main_window/StartHiddenSetting.h"
 
 namespace Draupnir::Ui
 {

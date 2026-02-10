@@ -25,13 +25,13 @@
 #include <QtTest>
 #include <QCoreApplication>
 
-#include "draupnir/settings_registry/traits/settings/CentralWidgetIndexSetting.h"
 #include "draupnir/settings_registry/traits/settings/files/LastUsedDirectorySetting.h"
 #include "draupnir/settings_registry/traits/settings/files/RecentFilesListSetting.h"
 #include "draupnir/settings_registry/utils/SettingsTraitsConcatenator.h"
 
 #include "draupnir-test/traits/settings/SomeCustomDoubleSetting.h"
 #include "draupnir-test/traits/settings/SomeCustomBoolSetting.h"
+#include "draupnir-test/traits/settings/SomeRandomWidgetIndexSetting.h"
 
 class ClassWithBundle
 {
@@ -71,8 +71,7 @@ private slots:
     void test_complex_bundle_building() {
         using Result = Draupnir::Settings::SettingsTraitsConcatenator<
             Draupnir::Settings::SettingsBundleTemplate<
-                Draupnir::Settings::CentralWidgetIndexSetting,
-                Draupnir::Settings::LastUsedDirectorySetting,
+                SomeRandomWidgetIndexSetting,
                 SomeCustomDoubleSetting,
                 SomeCustomBoolSetting
             >,
@@ -88,12 +87,10 @@ private slots:
             >*/
         >::toSettingsBundle;
 
-        QCOMPARE(Result::traitCount(), std::size_t{5});
+        QCOMPARE(Result::traitCount(), std::size_t{4});
         QCOMPARE(Result::contains<SomeCustomBoolSetting>(), true);
         QCOMPARE(Result::contains<SomeCustomDoubleSetting>(), true);
-        QCOMPARE(Result::contains<Draupnir::Settings::CentralWidgetIndexSetting>(), true);
-        QCOMPARE(Result::contains<Draupnir::Settings::RecentFileListSetting>(), true);
-        QCOMPARE(Result::contains<Draupnir::Settings::LastUsedDirectorySetting>(), true);
+        QCOMPARE(Result::contains<SomeRandomWidgetIndexSetting>(), true);
     }
 
     void test_empty_bundle_merge() {
@@ -134,13 +131,13 @@ private slots:
             ClassWithoutBundle,
             Draupnir::Settings::SettingsBundleTemplate<>,
             OtherClassWithBundle,
-            Draupnir::Settings::CentralWidgetIndexSetting
+            SomeRandomWidgetIndexSetting
         >::toSettingsRegistry;
 
         QCOMPARE(Result::contains<SomeCustomBoolSetting>(),true);
         QCOMPARE(Result::contains<SomeCustomDoubleSetting>(),true);
         QCOMPARE(Result::contains<Draupnir::Settings::LastUsedDirectorySetting>(),true);
-        QCOMPARE(Result::contains<Draupnir::Settings::CentralWidgetIndexSetting>(),true);
+        QCOMPARE(Result::contains<SomeRandomWidgetIndexSetting>(),true);
         QCOMPARE(Result::contains<Draupnir::Settings::RecentFileListSetting>(),true);
     }
 };

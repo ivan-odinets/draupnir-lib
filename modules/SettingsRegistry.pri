@@ -65,13 +65,8 @@
         $$PWD/../include/settings_registry/draupnir/settings_registry/SettingsBundleTemplate.h \
         $$PWD/../include/settings_registry/draupnir/settings_registry/SettingsRegistryTemplate.h \
         $$PWD/../include/settings_registry/draupnir/settings_registry/core/SettingTemplate.h \
-        $$PWD/../include/settings_registry/draupnir/settings_registry/traits/settings/CentralWidgetIndexSetting.h \
         $$PWD/../include/settings_registry/draupnir/settings_registry/traits/settings/files/LastUsedDirectorySetting.h \
         $$PWD/../include/settings_registry/draupnir/settings_registry/traits/settings/files/RecentFilesListSetting.h \
-        $$PWD/../include/settings_registry/draupnir/settings_registry/traits/settings/main_window/MinimizeOnCloseSetting.h \
-        $$PWD/../include/settings_registry/draupnir/settings_registry/traits/settings/main_window/MinimizeToTraySetting.h \
-        $$PWD/../include/settings_registry/draupnir/settings_registry/traits/settings/main_window/StartHiddenSetting.h \
-        $$PWD/../include/settings_registry/draupnir/settings_registry/traits/settings/main_window/WindowSizeSetting.h \
         $$PWD/../include/settings_registry/draupnir/settings_registry/traits/settings/templates/SettingTraitTemplate.h \
         $$PWD/../include/settings_registry/draupnir/settings_registry/utils/SettingTraitSerializer.h \
         $$PWD/../include/settings_registry/draupnir/settings_registry/traits/settings/templates/SizeSettingTraitTemplate.h \

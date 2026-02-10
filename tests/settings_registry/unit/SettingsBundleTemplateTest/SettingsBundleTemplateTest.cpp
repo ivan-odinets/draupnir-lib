@@ -26,13 +26,13 @@
 #include <QCoreApplication>
 
 #include "draupnir/settings_registry/SettingsRegistryTemplate.h"
-#include "draupnir/settings_registry/traits/settings/CentralWidgetIndexSetting.h"
 #include "draupnir/settings_registry/traits/settings/files/LastUsedDirectorySetting.h"
 #include "draupnir/settings_registry/traits/settings/files/RecentFilesListSetting.h"
 
 #include "draupnir-test/mocks/MockSettingsTemplate.h"
 #include "draupnir-test/traits/settings/SomeCustomDoubleSetting.h"
 #include "draupnir-test/traits/settings/SomeCustomBoolSetting.h"
+#include "draupnir-test/traits/settings/SomeRandomWidgetIndexSetting.h"
 
 namespace Draupnir::Settings
 {
@@ -48,8 +48,7 @@ public:
 ///@name Tested types
 ///@{
     using MockSettings = MockSettingsTemplate<
-        Draupnir::Settings::CentralWidgetIndexSetting,
-        Draupnir::Settings::LastUsedDirectorySetting,
+        SomeRandomWidgetIndexSetting,
         SomeCustomDoubleSetting,
         SomeCustomBoolSetting
     >;
@@ -57,21 +56,19 @@ public:
     using EmptyBundle = Draupnir::Settings::SettingsBundleTemplate<>;
 
     using SettingsRegistry = Draupnir::Settings::SettingsRegistryTemplate<
-        Draupnir::Settings::CentralWidgetIndexSetting,
-        Draupnir::Settings::LastUsedDirectorySetting,
+        SomeRandomWidgetIndexSetting,
         SomeCustomDoubleSetting,
         SomeCustomBoolSetting
     >;
 
     using SettingsBundle = Draupnir::Settings::SettingsBundleTemplate<
-        Draupnir::Settings::CentralWidgetIndexSetting,
-        Draupnir::Settings::LastUsedDirectorySetting,
+        SomeRandomWidgetIndexSetting,
         SomeCustomDoubleSetting,
         SomeCustomBoolSetting
     >;
 
     using RandomPopulatableBundle = Draupnir::Settings::SettingsBundleTemplate<
-        SomeCustomDoubleSetting, Draupnir::Settings::CentralWidgetIndexSetting
+        SomeCustomDoubleSetting, SomeRandomWidgetIndexSetting
     >;
     using RandomUnpopulatableBundle = Draupnir::Settings::SettingsBundleTemplate<
         SomeCustomBoolSetting, Draupnir::Settings::RecentFileListSetting
@@ -145,24 +142,24 @@ private slots:
         SettingsBundle populatedBundle = settingsRegistry.getSettingsBundle<SettingsBundle>();
 
         // Verify that we don't have the test values
-        QVERIFY(populatedBundle.template get<Draupnir::Settings::CentralWidgetIndexSetting>() != testInteger);
+        QVERIFY(populatedBundle.template get<SomeRandomWidgetIndexSetting>() != testInteger);
         QVERIFY(populatedBundle.template get<SomeCustomDoubleSetting>() != testDouble);
-        QVERIFY(dummySettingsSource.template get<Draupnir::Settings::CentralWidgetIndexSetting>() != testInteger);
+        QVERIFY(dummySettingsSource.template get<SomeRandomWidgetIndexSetting>() != testInteger);
         QVERIFY(dummySettingsSource.template get<SomeCustomDoubleSetting>() != testDouble);
 
         // Set something
-        populatedBundle.template set<Draupnir::Settings::CentralWidgetIndexSetting>(testInteger);
+        populatedBundle.template set<SomeRandomWidgetIndexSetting>(testInteger);
         populatedBundle.template set<SomeCustomDoubleSetting>(testDouble);
         // Check if SettingsRegistry::get method is returning what expected
-        QCOMPARE(populatedBundle.template get<Draupnir::Settings::CentralWidgetIndexSetting>(), testInteger);
+        QCOMPARE(populatedBundle.template get<SomeRandomWidgetIndexSetting>(), testInteger);
         QCOMPARE(populatedBundle.template get<SomeCustomDoubleSetting>(), testDouble);
 
         // Check if values were indeed written to the backend
-        QCOMPARE(dummySettingsSource.template get<Draupnir::Settings::CentralWidgetIndexSetting>(), testInteger);
+        QCOMPARE(dummySettingsSource.template get<SomeRandomWidgetIndexSetting>(), testInteger);
         QCOMPARE(dummySettingsSource.template get<SomeCustomDoubleSetting>(), testDouble);
 
         // Reset things through the registry
-        populatedBundle.template set<Draupnir::Settings::CentralWidgetIndexSetting>(Draupnir::Settings::CentralWidgetIndexSetting::defaultValue());
+        populatedBundle.template set<SomeRandomWidgetIndexSetting>(SomeRandomWidgetIndexSetting::defaultValue());
         populatedBundle.template set<SomeCustomDoubleSetting>(SomeCustomDoubleSetting::defaultValue());
     }
 
@@ -174,20 +171,20 @@ private slots:
         RandomPopulatableBundle subBundle = populatedBundle.getSettingsBundle<RandomPopulatableBundle>();
 
         // Verify that we don't have the test values
-        QVERIFY(subBundle.template get<Draupnir::Settings::CentralWidgetIndexSetting>() != testInteger);
+        QVERIFY(subBundle.template get<SomeRandomWidgetIndexSetting>() != testInteger);
         QVERIFY(subBundle.template get<SomeCustomDoubleSetting>() != testDouble);
-        QVERIFY(dummySettingsSource.template get<Draupnir::Settings::CentralWidgetIndexSetting>() != testInteger);
+        QVERIFY(dummySettingsSource.template get<SomeRandomWidgetIndexSetting>() != testInteger);
         QVERIFY(dummySettingsSource.template get<SomeCustomDoubleSetting>() != testDouble);
 
         // Write to subbundle
-        subBundle.template set<Draupnir::Settings::CentralWidgetIndexSetting>(testInteger);
+        subBundle.template set<SomeRandomWidgetIndexSetting>(testInteger);
         subBundle.template set<SomeCustomDoubleSetting>(testDouble);
         // Check if SettingsRegistry::get method is returning what expected
-        QCOMPARE(subBundle.template get<Draupnir::Settings::CentralWidgetIndexSetting>(), testInteger);
+        QCOMPARE(subBundle.template get<SomeRandomWidgetIndexSetting>(), testInteger);
         QCOMPARE(subBundle.template get<SomeCustomDoubleSetting>(), testDouble);
 
         // Check if values were indeed written to the backend
-        QCOMPARE(dummySettingsSource.template get<Draupnir::Settings::CentralWidgetIndexSetting>(), testInteger);
+        QCOMPARE(dummySettingsSource.template get<SomeRandomWidgetIndexSetting>(), testInteger);
         QCOMPARE(dummySettingsSource.template get<SomeCustomDoubleSetting>(), testDouble);
     }
 };

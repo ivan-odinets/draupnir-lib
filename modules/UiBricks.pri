@@ -29,6 +29,11 @@
         $$PWD/../include/ui_bricks/draupnir/ui_bricks/traits/features/UseMenuBar.h \
         $$PWD/../include/ui_bricks/draupnir/ui_bricks/traits/features/UseTrayIcon.h \
         $$PWD/../include/ui_bricks/draupnir/ui_bricks/ui/TrayIcon.h \
+        $$PWD/../include/ui_bricks/draupnir/ui_bricks/traits/settings/CentralWidgetIndexSetting.h \
+        $$PWD/../include/ui_bricks/draupnir/ui_bricks/traits/settings/main_window/MinimizeOnCloseSetting.h \
+        $$PWD/../include/ui_bricks/draupnir/ui_bricks/traits/settings/main_window/MinimizeToTraySetting.h \
+        $$PWD/../include/ui_bricks/draupnir/ui_bricks/traits/settings/main_window/WindowSizeSetting.h \
+        $$PWD/../include/ui_bricks/draupnir/ui_bricks/traits/settings/main_window/StartHiddenSetting.h \
         $$PWD/../include/ui_bricks/draupnir/ui_bricks/utils/CheckableUiElementHelper.h \
         $$PWD/../include/ui_bricks/draupnir/ui_bricks/ui/widgets/FixedCentralTabWidgetTemplate.h \
         $$PWD/../include/ui_bricks/draupnir/ui_bricks/ui/widgets/FixedTabWidget.h \

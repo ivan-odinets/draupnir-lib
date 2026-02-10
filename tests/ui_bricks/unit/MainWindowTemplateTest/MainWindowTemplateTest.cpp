@@ -121,7 +121,8 @@ private slots:
 
     void test_window_minimize_to_tray() {
         auto* window = new Draupnir::Ui::MainWindowTemplate<
-            Draupnir::Ui::MainWindow::MinimizableToTray
+            Draupnir::Ui::MainWindow::MinimizableToTray,
+            Draupnir::Ui::MainWindow::UseTrayIcon<>
         >;
         window->setAttribute(Qt::WA_DontShowOnScreen);
         window->loadSettings(&registry);
@@ -155,11 +156,11 @@ private slots:
             Draupnir::Ui::MainWindow::MinimizableOnClose,
             Draupnir::Ui::MainWindow::MinimizableToTray,
             Draupnir::Ui::MainWindow::RememberWindowSize,
-            Draupnir::Ui::MainWindow::TrayIconSupported<Draupnir::Ui::TrayIcon>
+            Draupnir::Ui::MainWindow::UseTrayIcon<Draupnir::Ui::TrayIcon>
         > window;
         window.setAttribute(Qt::WA_DontShowOnScreen);
         window.loadSettings(&registry);
-        window.setTrayIcon(&trayIcon);
+        window.registerTrayIcon(&trayIcon);
 
         window.show();
         QVERIFY(window.isVisible());

@@ -26,7 +26,7 @@
 #define REMEMBERWINDOWSIZE_H
 
 #include "draupnir/settings_registry/SettingsBundleTemplate.h"
-#include "draupnir/settings_registry/traits/settings/main_window/WindowSizeSetting.h"
+#include "draupnir/ui_bricks/traits/settings/main_window/WindowSizeSetting.h"
 
 namespace Draupnir::Ui::MainWindow
 {

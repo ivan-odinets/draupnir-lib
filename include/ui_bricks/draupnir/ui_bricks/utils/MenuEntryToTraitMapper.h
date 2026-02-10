@@ -1,9 +1,9 @@
 #ifndef MENUENTRYTOTRAITMAPPER_H
 #define MENUENTRYTOTRAITMAPPER_H
 
-#include "draupnir/settings_registry/traits/settings/main_window/MinimizeOnCloseSetting.h"
-#include "draupnir/settings_registry/traits/settings/main_window/MinimizeToTraySetting.h"
-#include "draupnir/settings_registry/traits/settings/main_window/StartHiddenSetting.h"
+#include "draupnir/ui_bricks/traits/settings/main_window/MinimizeOnCloseSetting.h"
+#include "draupnir/ui_bricks/traits/settings/main_window/MinimizeToTraySetting.h"
+#include "draupnir/ui_bricks/traits/settings/main_window/StartHiddenSetting.h"
 
 #include "draupnir/ui_bricks/traits/menu_entries/SettingsMenuEntries.h"
 

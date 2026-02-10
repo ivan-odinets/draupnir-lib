@@ -26,13 +26,11 @@
 #include <QCoreApplication>
 
 #include "draupnir/settings_registry/SettingsRegistryTemplate.h"
-#include "draupnir/settings_registry/traits/settings/CentralWidgetIndexSetting.h"
-#include "draupnir/settings_registry/traits/settings/files/LastUsedDirectorySetting.h"
-#include "draupnir/settings_registry/traits/settings/files/RecentFilesListSetting.h"
 
 #include "draupnir-test/mocks/MockSettingsTemplate.h"
 #include "draupnir-test/traits/settings/SomeCustomDoubleSetting.h"
 #include "draupnir-test/traits/settings/SomeCustomBoolSetting.h"
+#include "draupnir-test/traits/settings/SomeRandomWidgetIndexSetting.h"
 
 /*! @class SettingsRegistryIT tests/settings_registry/integration/SettingsRegistryIT/SettingsRegistryIT.cpp
  *  @brief This is a very basic test for SettingsRegistryTemplate and related things.
@@ -48,23 +46,19 @@ public:
 ///@name Tested types
 ///@{
     using MockSettings = MockSettingsTemplate<
-        Draupnir::Settings::CentralWidgetIndexSetting,
-        Draupnir::Settings::LastUsedDirectorySetting,
         SomeCustomDoubleSetting,
         SomeCustomBoolSetting
     >;
 
     using SettingsRegistry = Draupnir::Settings::SettingsRegistryTemplate<
-        Draupnir::Settings::CentralWidgetIndexSetting,
-        Draupnir::Settings::LastUsedDirectorySetting,
         SomeCustomDoubleSetting,
         SomeCustomBoolSetting
     >;
     using RandomPopulatableBundle = Draupnir::Settings::SettingsBundleTemplate<
-        SomeCustomDoubleSetting, Draupnir::Settings::CentralWidgetIndexSetting
+        SomeCustomDoubleSetting
     >;
     using RandomUnpopulatableBundle = Draupnir::Settings::SettingsBundleTemplate<
-        SomeCustomBoolSetting, Draupnir::Settings::RecentFileListSetting
+        SomeCustomBoolSetting, SomeRandomWidgetIndexSetting
     >;
 ///@}
 
@@ -85,7 +79,7 @@ private slots:
     void test_constexpr_methods() {
         // Contains
         QCOMPARE(decltype(testedRegistry)::template contains<SomeCustomDoubleSetting>(), true);
-        QCOMPARE(decltype(testedRegistry)::template contains<Draupnir::Settings::RecentFileListSetting>(), false);
+        QCOMPARE(decltype(testedRegistry)::template contains<SomeRandomWidgetIndexSetting>(), false);
 
         // If stuff is empry or not?
         QCOMPARE(Draupnir::Settings::SettingsRegistryTemplate<>::isEmpty(), true);
@@ -114,56 +108,50 @@ private slots:
         QVERIFY(otherRegistry.isLoaded());
 
         // By default we should have the default values.
-        QCOMPARE(testedRegistry.get<Draupnir::Settings::CentralWidgetIndexSetting>(),
-                 Draupnir::Settings::CentralWidgetIndexSetting::defaultValue());
+        QCOMPARE(testedRegistry.get<SomeCustomBoolSetting>(),
+                 SomeCustomBoolSetting::defaultValue());
         QCOMPARE(testedRegistry.get<SomeCustomDoubleSetting>(),
                  SomeCustomDoubleSetting::defaultValue());
     }
 
     void test_set_and_get() {
         double testDouble = M_E;
-        int testInteger = 42;
 
         // Verify that we don't have the test values
-        QVERIFY(testedRegistry.template get<Draupnir::Settings::CentralWidgetIndexSetting>() != testInteger);
         QVERIFY(testedRegistry.template get<SomeCustomDoubleSetting>() != testDouble);
-        QVERIFY(dummySettingsSource.template get<Draupnir::Settings::CentralWidgetIndexSetting>() != testInteger);
         QVERIFY(dummySettingsSource.template get<SomeCustomDoubleSetting>() != testDouble);
 
         // Set something
-        testedRegistry.template set<Draupnir::Settings::CentralWidgetIndexSetting>(testInteger);
         testedRegistry.template set<SomeCustomDoubleSetting>(testDouble);
 
         // Check if SettingsRegistry::get method is returning what expected
-        QCOMPARE(testedRegistry.template get<Draupnir::Settings::CentralWidgetIndexSetting>(), testInteger);
         QCOMPARE(testedRegistry.template get<SomeCustomDoubleSetting>(), testDouble);
 
         // Check if values were indeed written to the backend
-        QCOMPARE(dummySettingsSource.template get<Draupnir::Settings::CentralWidgetIndexSetting>(), testInteger);
+
         QCOMPARE(dummySettingsSource.template get<SomeCustomDoubleSetting>(), testDouble);
     }
 
     void test_bundle_functionality() {
         auto bundleByTrait = testedRegistry.template getSettingBundleForTraits<
-            SomeCustomDoubleSetting,Draupnir::Settings::LastUsedDirectorySetting
+            SomeCustomDoubleSetting,SomeCustomBoolSetting
         >();
 
         // Check if bundle reports the same as registry
-        QCOMPARE(bundleByTrait.template get<Draupnir::Settings::LastUsedDirectorySetting>(),
-                 testedRegistry.template get<Draupnir::Settings::LastUsedDirectorySetting>());
+        QCOMPARE(bundleByTrait.template get<SomeCustomBoolSetting>(),
+                 testedRegistry.template get<SomeCustomBoolSetting>());
         QCOMPARE(bundleByTrait.template get<SomeCustomDoubleSetting>(),
                  testedRegistry.template get<SomeCustomDoubleSetting>());
 
         // Check if by any magic within bundle / registry wrong value is present
         QString testString = "Hello SettingsRegistry!";
-        QVERIFY(bundleByTrait.template get<Draupnir::Settings::LastUsedDirectorySetting>() != testString);
-        QVERIFY(testedRegistry.template get<Draupnir::Settings::LastUsedDirectorySetting>() != testString);
+        QVERIFY(bundleByTrait.template get<SomeCustomBoolSetting>() != testString);
+        QVERIFY(testedRegistry.template get<SomeCustomBoolSetting>() != testString);
 
         // write to bundle and check again
-        bundleByTrait.template set<Draupnir::Settings::LastUsedDirectorySetting>(testString);
-        QCOMPARE(bundleByTrait.get<Draupnir::Settings::LastUsedDirectorySetting>(),
-                 testString);
-        QCOMPARE(testedRegistry.template get<Draupnir::Settings::LastUsedDirectorySetting>(), testString);
+        bundleByTrait.template set<SomeCustomBoolSetting>(false);
+        QCOMPARE(bundleByTrait.get<SomeCustomBoolSetting>(),false);
+        QCOMPARE(testedRegistry.template get<SomeCustomBoolSetting>(), false);
 
         // Check if by any magic within bundle / resgistry wrong value is present
         double testDouble = M_PI * M_E;
