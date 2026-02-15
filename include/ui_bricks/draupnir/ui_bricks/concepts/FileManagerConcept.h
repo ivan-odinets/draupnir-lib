@@ -25,15 +25,13 @@
 #ifndef FILEMANAGERCONCEPT_H
 #define FILEMANAGERCONCEPT_H
 
-#include <type_traits>
-
 #include <QString>
 #include <QFileInfo>
 
 namespace Draupnir::Handlers
 {
 
-/*! @class FileManagerConcept draupnir/ui_bricks/concepts/FileManagerConcept.h
+/*! @namespace FileManagerConcept draupnir/ui_bricks/concepts/FileManagerConcept.h
  *  @ingroup UiBricks
  *  @brief This is concept namespace. */
 

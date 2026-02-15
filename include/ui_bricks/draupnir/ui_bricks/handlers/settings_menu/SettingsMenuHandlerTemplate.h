@@ -30,7 +30,6 @@
 #include "draupnir/ui_bricks/handlers/settings_menu/SettingsContext.h"
 #include "draupnir/ui_bricks/handlers/settings_menu/SettingsMenuEntryHandlerTemplate.h"
 
-
 namespace Draupnir::Handlers
 {
 

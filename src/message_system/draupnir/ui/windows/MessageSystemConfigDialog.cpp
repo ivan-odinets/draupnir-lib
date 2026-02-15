@@ -34,14 +34,14 @@ namespace Draupnir::Messages
 MessageSystemConfigDialog::MessageSystemConfigDialog(AbstractMessageUiBuilder* uiBuilder,QWidget* parent) :
     QDialog{parent},
     p_uiBuilder{uiBuilder},
-    w_mainWidget{new CentralWidget{
-        nullptr,
-        p_uiBuilder->createNotificationSettingsWidgetAsInterface(),
-        p_uiBuilder->createAbstractMessageTypesSelectorWidget(),
-        new MessageFieldsSelectorWidget,
-    }},
+    w_mainWidget{new CentralWidget{}},
     p_buttons{new QDialogButtonBox{QDialogButtonBox::Ok}}
 {
+    w_mainWidget->setWidgetForTrait<NotificationSettingsEditorTrait>(
+        p_uiBuilder->createNotificationSettingsWidgetAsInterface());
+    w_mainWidget->setWidgetForTrait<MessageTypesSelectorTrait>(
+        p_uiBuilder->createAbstractMessageTypesSelectorWidget());
+
     // Setup dialog layout
     QVBoxLayout* mainLayout = new QVBoxLayout;
     mainLayout->addWidget(w_mainWidget);

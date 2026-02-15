@@ -164,6 +164,23 @@ struct is_template
     struct instantiated_as : is_instantiation_of<T,Template> {};
 };
 
+/*! @struct is_a1tp_template draupnir/utils/template_detectors.h
+ *  @ingroup Utils
+ *  @brief Helper-adapter that turns a class template into a unary predicate for @ref is_a1tp_instantiation_of.
+ *  @tparam Template    Class template of the form `template<auto,class...> class Template`.
+ *
+ *  @details This helper is convenient when an API expects a unary type trait of the form `template<class> class Pred`, but you
+ *           conceptually want to test "is this type an instantiation of this template?".
+ *
+ *           Given a template `Template`, the nested template @ref is_a1tp_template::instantiated_as defines a trait `instantiated_as<T>`
+ *           which is simply an alias for @ref draupnir::utils::is_instantiation_of<T, Template>. */
+template<template<auto,class...> class Template>
+struct is_a1tp_template
+{
+    template<class T>
+    struct instantiated_as : is_a1tp_instantiation_of<T,Template> {};
+};
+
 /*! @struct is_pair draupnir/utils/template_detectors.h
  *  @ingroup Utils
  *  @brief Type trait to detect whether a type is a `std::pair`.

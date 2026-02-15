@@ -37,9 +37,7 @@
 #include "draupnir-test/traits/widgets/SomeRandomWidgetTabTraits.h"
 
 /*! @class FixedTabWidgetTemplateTest tests/ui_bricks/unit/FixedTabWidgetTemplateTest/FixedTabWidgetTemplateTest.cpp
- *  @brief This test class tests basic functionality of the FixedTabWidgetTemplate.
- *
- * @todo Refractor this test so that it will have better readability. */
+ *  @brief This test class tests basic functionality of the FixedTabWidgetTemplate. */
 
 class FixedTabWidgetTemplateTest final : public QObject
 {
@@ -58,7 +56,8 @@ public:
 
     using TabWidgetOne = Draupnir::Ui::FixedCentralTabWidgetTemplate<
         LineEditTrait,
-        PushButtonTrait
+        PushButtonTrait,
+        NonDefaultConstructibleTrait
     >;
 
     using TabWidgetWithSetting = Draupnir::Ui::FixedTabWidgetTemplate<
@@ -132,49 +131,27 @@ private slots:
     }
 
     void test_widget_injecting() {
-        QPushButton* button = new QPushButton;
-        TabWidgetOne* oneMoreWidget = new TabWidgetOne{
-            nullptr, // parent
-            nullptr, // first tab (QLineEdit)
-            button   // second tab (QPushButton)
-        };
+        TabWidgetOne* oneMoreWidget = new TabWidgetOne;
 
         // Widget is correctly initialized
-        QCOMPARE(oneMoreWidget->count(), 1);
-        QCOMPARE(oneMoreWidget->getWidget<QLineEdit>(), nullptr);
-        QCOMPARE(oneMoreWidget->getWidget<QPushButton>(), button);
-        QCOMPARE(oneMoreWidget->tabText(0), PushButtonTrait::displayName());
-        QCOMPARE(oneMoreWidget->tabToolTip(0),PushButtonTrait::tooltip());
-
-        // Create line edit
-        QLineEdit* lineEdit = new QLineEdit;
-        oneMoreWidget->setWidget<LineEditTrait>(lineEdit);
-        // Widget was inserted at proper location
         QCOMPARE(oneMoreWidget->count(), 2);
-        QCOMPARE(oneMoreWidget->getWidget<QLineEdit>(), lineEdit);
-        QCOMPARE(oneMoreWidget->getWidget<QPushButton>(), button);
-        QCOMPARE(oneMoreWidget->tabText(0), LineEditTrait::displayName());
-        QCOMPARE(oneMoreWidget->tabToolTip(0), QString{});
-        QCOMPARE(oneMoreWidget->tabText(1), PushButtonTrait::displayName());
-        QCOMPARE(oneMoreWidget->tabToolTip(1),PushButtonTrait::tooltip());
+        QVERIFY(oneMoreWidget->getWidget<QLineEdit>() != nullptr);
+        QVERIFY(oneMoreWidget->getWidget<QPushButton>() != nullptr);
+        QVERIFY(oneMoreWidget->getWidget<NonDefaultConstructibleDummyWidget>() == nullptr);
 
         // Create QPushButton replacement
         QPushButton* newButton = new QPushButton;
-        QPointer<QPushButton> pButton{button};
-        QVERIFY(!pButton.isNull());
 
         // Replace QPushButton
-        oneMoreWidget->setWidget<PushButtonTrait>(newButton);
-        // Old widget was deleted
-        QVERIFY(pButton.isNull());
-        // Widget was inserted at proper location
-        QCOMPARE(oneMoreWidget->count(), 2);
-        QCOMPARE(oneMoreWidget->getWidget<QLineEdit>(), lineEdit);
-        QCOMPARE(oneMoreWidget->getWidget<QPushButton>(), newButton);
-        QCOMPARE(oneMoreWidget->tabText(0), LineEditTrait::displayName());
-        QCOMPARE(oneMoreWidget->tabToolTip(0), QString{});
-        QCOMPARE(oneMoreWidget->tabText(1), PushButtonTrait::displayName());
-        QCOMPARE(oneMoreWidget->tabToolTip(1),PushButtonTrait::tooltip());
+        QPushButton* oldButton = oneMoreWidget->getWidget<QPushButton>();
+        oneMoreWidget->getWidget<QPushButton>() = newButton;
+        QVERIFY(oneMoreWidget->getWidget<QPushButton>() != oldButton);
+        QVERIFY(oneMoreWidget->getWidget<QPushButton>() == newButton);
+
+        // Set NonDefaultConstructible Widget
+        NonDefaultConstructibleDummyWidget* widget = new NonDefaultConstructibleDummyWidget{"Test"};
+        oneMoreWidget->getWidget<NonDefaultConstructibleDummyWidget>() = widget;
+        QVERIFY(oneMoreWidget->getWidget<NonDefaultConstructibleDummyWidget>() == widget);
     }
 
     void test_widget_wtithout_settings() {

@@ -25,12 +25,14 @@
 #ifndef FIXEDTABWIDGETTEMPLATE_H
 #define FIXEDTABWIDGETTEMPLATE_H
 
-#include <QAction>
-
 #include "draupnir/ui_bricks/ui/widgets/FixedTabWidget.h"
 
+#include <QAction>
+
+#include "draupnir/settings_registry/concepts/SettingTraitConcept.h"
 #include "draupnir/settings_registry/utils/SettingsTraitsConcatenator.h"
-#include "draupnir/utils/index_of.h"
+#include "draupnir/ui_bricks/concepts/TabTraitConcept.h"
+#include "draupnir/utils/type_list.h"
 
 namespace Draupnir::Ui
 {
@@ -61,48 +63,34 @@ namespace Draupnir::Ui
  *               static QString tooltip() { return "Modify application settings"; }
  *           };
  *           @endcode
- *
- * @todo Add possibility to aggregate settings from TabTraits (or in particular - nested widget).
- * @todo Improve constructor so that: If widget described by the TabTrait is default constructible - than construct it. If not -
- *       use nullptr as placeholder. */
+ * @todo Add possibility to obtain several widgets via one call (e.g. getAll<TextEditTrait>()). Return as std::tuple. */
 
-template<class WidgetIndexSetting, class... TabTraits>
+template<class WidgetIndexSetting, TabTraitConcept... TabTraits>
 class FixedTabWidgetTemplate final : public FixedTabWidget
 {
 public:
-//    using SettingsBundle = std::conditional_t<
-//        std::is_same_v<WidgetIndexSetting,void>,
-//        Settings::SettingsBundleTemplate<>,
-//        Draupnir::Settings::SettingsBundleTemplate<WidgetIndexSetting>
-//    >;
-    using SettingsBundle = typename Draupnir::Settings::SettingsTraitsConcatenator<WidgetIndexSetting,typename TabTraits::Widget...>::toSettingsBundle;
+    /*! @brief type_list of TabTraits... objects. */
+    using TabList = draupnir::utils::type_list<TabTraits...>;
+
+    /*! @brief Aggregated SettingsBundleTemplate for settings being used within this widget and widgets for its tabs. */
+    using SettingsBundle = typename Draupnir::Settings::SettingsTraitsConcatenator<
+        WidgetIndexSetting,
+        typename TabTraits::Widget...>
+    ::toSettingsBundle;
 
     /*! @brief Constructs tab widgets from default constructors.
      *  @param parent Optional parent widget. */
     explicit FixedTabWidgetTemplate(QWidget* parent = nullptr) :
         FixedTabWidget{parent},
-        m_widgets{std::make_tuple(new typename TabTraits::Widget...)}
+        m_widgets{std::make_tuple(_createWidgetOrNullptr<TabTraits>()...)}
     {
         static_assert(sizeof...(TabTraits) > 0,"Empty list of widgets is not allowed.");
 
         _setupTabsImpl<0,TabTraits...>();
     }
 
-    /*! @brief Constructs the widget with externally provided tab widgets.
-     *  @param parent Optional parent widget.
-     *  @param widgets Widget instances to be used for the tabs (must match TabTraits::Widget types).
-     * @note You can pass `nullptr` for any widget to skip adding the corresponding tab. */
-    explicit FixedTabWidgetTemplate(QWidget* parent, typename TabTraits::Widget*... widgets) :
-        FixedTabWidget{parent},
-        m_widgets{std::forward_as_tuple(widgets...)}
-    {
-        static_assert(sizeof...(TabTraits) > 0,"Empty list of widgets is not allowed.");
-
-        _setupTabsImpl<0,TabTraits...>();
-    }
-
-    /*! @brief Destructor. Saves the active tab index to settings (if loaded).
-     *  @details The index is written via WidgetIndexSetting into the SettingsBundle.*/
+    /*! @brief Destructor. Saves the active tab index to settings (if loaded). The index is written via `WidgetIndexSetting`
+     *         into the SettingsBundle.*/
     virtual ~FixedTabWidgetTemplate() override final {
         if constexpr (!SettingsBundle::isEmpty()) {
             Q_ASSERT_X(m_settings.isValid(),"FixedTabWidgetTemplate::~FixedTabWidgetTemplate",
@@ -114,11 +102,13 @@ public:
     /*! @brief Loads UI state from SettingsRegistry.
      *  @param registry Pointer to the settings registry instance.
      *  @details Loads the saved active tab index using WidgetIndexSetting and applies it to the tab widget. Must be called
-     *           once after construction, before user interaction. */
-    template<class SettingsRegistry, bool isEnabled = !SettingsBundle::isEmpty()>
-    std::enable_if_t<isEnabled,void> loadSettings(SettingsRegistry* registry) {
+     *           once after construction, before user interaction.
+     * @todo As other `loadSettings`-methods this needs to be standartized.
+     * @todo Add settings loading for subwidgets. */
+    template<class SettingsRegistry>
+    void loadSettings(SettingsRegistry* registry) requires(!SettingsBundle::isEmpty()) {
         static_assert(SettingsBundle::template canBeFullyPopulatedFrom<SettingsRegistry>(),
-        "Provided SettingsRegistry can not populate the SettingsBundle (missing WidgetIndexSetting).");
+                      "Provided SettingsRegistry can not populate the SettingsBundle.");
         Q_ASSERT_X(registry,"FixedTabWidget::loadSettings",
                    "Specified SettingsRegistry* pointer is nullptr");
         Q_ASSERT_X(!m_settings.isValid(),"FixedTabWidget::loadSettings",
@@ -132,7 +122,7 @@ public:
      *  @tparam Widget Type of the widget (must match one of TabTraits::Widget).
      *  @return Stored widget pointer of given type.*/
     template<class Widget>
-    Widget* getWidget() {
+    auto& getWidget() {
         return std::get<Widget*>(m_widgets);
     }
 
@@ -140,8 +130,17 @@ public:
      *  @tparam Index Index of the tab.
      *  @return Stored widget pointer at the specified index.*/
     template<std::size_t Index>
-    auto* getWidget() {
+    auto& getWidget() {
         return std::get<Index>(m_widgets);
+    }
+
+    /*! @brief Returns the widget pointer at given TabTrait
+     *  @tparam Index Index of the tab.
+     *  @return Stored widget pointer at the specified index.*/
+    template<TabTraitConcept Tab>
+    auto& getWidgetByTrait() {
+        static_assert(draupnir::utils::is_one_of_v<Tab,TabTraits...>);
+        return std::get<TabList::template index_of_v<Tab>>();
     }
 
     /*! @brief Replaces the widget at specified tab index.
@@ -149,39 +148,39 @@ public:
      *  @param widget New widget to insert.
      *  @details The old widget will be deleted via delete. The new widget will be inserted into the tab with the same
      *           label (and tooltip, if supported). Can be used for dynamic replacement of tab content. */
-    template<class TabTrait>
-    void setWidget(typename TabTrait::Widget* widget) {
-        static_assert(draupnir::utils::is_one_of_v<TabTrait,TabTraits...>,
-                "TabTrait specified is not present within the TabTraits... pack");
-        constexpr int Index = draupnir::utils::index_of<TabTrait,TabTraits...>::value;
+    template<TabTraitConcept Tab>
+    void setWidgetForTrait(typename Tab::Widget* widget) {
+        static_assert(draupnir::utils::is_one_of_v<Tab,TabTraits...>,
+                      "TabTrait specified is not present within the TabTraits... pack");
+        constexpr int Index = TabList::template index_of_v<Tab>;
 
         if (std::get<Index>(m_widgets) != nullptr) {
             QTabWidget::removeTab(Index);
             delete std::get<Index>(m_widgets);
         }
-        QTabWidget::insertTab(Index,widget,TabTrait::displayName());
+        QTabWidget::insertTab(Index,widget,Tab::displayName());
 
-        if constexpr (has_tooltip<TabTrait>::value) {
-            QTabWidget::setTabToolTip(Index,TabTrait::tooltip());
+        if constexpr (TabTrait::HasTooltip<Tab>) {
+            QTabWidget::setTabToolTip(Index,Tab::tooltip());
         }
 
         std::get<Index>(m_widgets) = widget;
     }
 
 private:
-    template<class T, class = void>
-    struct has_tooltip : std::false_type {};
-
-    template<class T>
-    struct has_tooltip<
-        T,
-        std::void_t<decltype(
-            std::is_same_v<QString,decltype(T::tooltip())>
-        )>
-    > : std::true_type {};
-
     SettingsBundle m_settings;
     std::tuple<typename TabTraits::Widget*...> m_widgets;
+
+    /*! @brief If TabTrait::Widget is default constructible - creates it. If it requires constructor arguments - returns
+     *         nullptr. */
+    template<class TabTrait>
+    inline typename TabTrait::Widget* _createWidgetOrNullptr() {
+        if constexpr (std::is_default_constructible_v<typename TabTrait::Widget>) {
+            return new typename TabTrait::Widget;
+        } else {
+            return nullptr;
+        }
+    }
 
     /*! @brief Internal recursive helper that adds each tab widget with its label.
      *  @tparam Index Current tab index.
@@ -189,15 +188,14 @@ private:
      *  @tparam Rest Remaining traits. */
     template<std::size_t Index, class First, class... Rest>
     inline void _setupTabsImpl() {
-        if (std::get<Index>(m_widgets)) {
-            const int tabIndex = QTabWidget::addTab(
-                std::get<Index>(m_widgets),
-                First::displayName()
-            );
+        // This is called only during setup. So if within std::tuple is nullptr - than this widget
+        // is nullptr and not default constructible. Thus we need to iterate only for those tuple
+        // elements which widgets are default constructible.
+        if (std::is_default_constructible_v<typename First::Widget>) {
+            const int tabIndex = QTabWidget::addTab(std::get<Index>(m_widgets),First::displayName());
 
-            if constexpr (has_tooltip<First>::value) {
+            if constexpr (TabTrait::HasTooltip<First>)
                 QTabWidget::setTabToolTip(tabIndex,First::tooltip());
-            }
         }
 
         if constexpr (sizeof...(Rest) > 0)
@@ -216,7 +214,7 @@ private:
     inline void _retranslateTabsImpl() {
         QTabWidget::setTabText(Index,First::displayName());
 
-        if constexpr (has_tooltip<First>::value) {
+        if constexpr (TabTrait::HasTooltip<First>) {
             QTabWidget::setTabToolTip(Index,First::tooltip());
         }
 
@@ -225,6 +223,6 @@ private:
     }
 };
 
-};
+}; // namespace Draupnir::Ui
 
 #endif // FIXEDTABWIDGETTEMPLATE_H

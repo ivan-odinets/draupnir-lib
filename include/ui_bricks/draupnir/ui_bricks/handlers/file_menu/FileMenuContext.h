@@ -41,8 +41,7 @@ namespace Draupnir::Handlers
 {
 
 /*! @class GenericFileMenuContext draupnir/ui_bricks/handlers/file_menu/GenericFileMenuContext.h
- *  @brief This is a generic context template to be used within FileMenuEntriesHandler.
- * @todo Validate FileManager through concepts. */
+ *  @brief This is a generic context template to be used within FileMenuEntriesHandler. */
 
 template<class FileManagerClass, class... Entries>
 class GenericFileMenuContext :
@@ -171,7 +170,7 @@ public:
      *  @return Decision indicating whether to proceed, save, or cancel.
      * @todo Make this method dependent on the list of traits. */
     ReplaceDecision confirmReplaceIfNeeded() {
-        if (p_fileManager->hasNothcingOpened())
+        if (p_fileManager->hasNothingOpened())
             return ReplaceDecision::Proceed;
 
         if (fileManager()->isCurrentFileSaved()) {

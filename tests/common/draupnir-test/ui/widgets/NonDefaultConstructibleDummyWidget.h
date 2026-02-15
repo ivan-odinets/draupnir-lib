@@ -22,44 +22,20 @@
  *
  */
 
-#ifndef FILECONTEXTCONCEPT_H
-#define FILECONTEXTCONCEPT_H
+#ifndef NONDEFAULTCONSTRUCTIBLEDUMMYWIDGET_H
+#define NONDEFAULTCONSTRUCTIBLEDUMMYWIDGET_H
 
-#include <QMessageBox>
-#include <QString>
+#include <QWidget>
 
-namespace Draupnir::Handlers
+class NonDefaultConstructibleDummyWidget : public QWidget
 {
-
-namespace FileContext
-{
-
-template<class Context>
-concept HasFileManagerType = requires { typename Context::FileManager; };
-
-template<class Context>
-concept HasFileManagerMethod = requires (Context context) {
-    { context.fileManager() } -> std::same_as<typename Context::FileManager*>;
+    Q_OBJECT
+public:
+    explicit NonDefaultConstructibleDummyWidget(const QString& random, QWidget* parent = nullptr) :
+        QWidget{}
+    {
+        Q_UNUSED(random);
+    }
 };
 
-template<class Context>
-concept HasAskUserMethod = requires {
-    { Context::askUser(std::declval<QString>(), std::declval<QString>(), std::declval<QMessageBox::StandardButtons>()) }
-    -> std::same_as<int>;
-};
-
-template<class Manager>
-concept HasOnSaveFileMethod = requires(Manager manager) {
-    { manager.onSaveFile() } -> std::same_as<void>;
-};
-
-template<class Manager>
-concept HasOnSaveFileAsMethod = requires(Manager manager) {
-    { manager.onSaveFileAs() } -> std::same_as<void>;
-};
-
-};
-
-}; // namespace Draupnir::Handlers
-
-#endif // FILECONTEXTCONCEPT_H
+#endif // NONDEFAULTCONSTRUCTIBLEDUMMYWIDGET_H

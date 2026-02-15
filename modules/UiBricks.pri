@@ -83,7 +83,9 @@
         $$PWD/../include/ui_bricks/draupnir/ui_bricks/utils/MenuEntryToTraitMapper.h \
         $$PWD/../include/ui_bricks/draupnir/ui_bricks/utils/SettingsValueUserInput.h \
         $$PWD/../include/ui_bricks/draupnir/ui_bricks/concepts/ActionHandlerConcept.h \
-        $$PWD/../include/ui_bricks/draupnir/ui_bricks/traits/features/ClosureConfirmation.h
+        $$PWD/../include/ui_bricks/draupnir/ui_bricks/traits/features/ClosureConfirmation.h \
+        $$PWD/../include/ui_bricks/draupnir/ui_bricks/concepts/HelpContextConcept.h \
+        $$PWD/../include/ui_bricks/draupnir/ui_bricks/concepts/TabTraitConcept.h
 
     SOURCES += \
         $$PWD/../src/ui_bricks/draupnir/ui/TrayIcon.cpp \

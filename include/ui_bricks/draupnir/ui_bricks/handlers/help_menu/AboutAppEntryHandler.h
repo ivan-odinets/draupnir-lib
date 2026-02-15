@@ -28,7 +28,9 @@
 #include "draupnir/ui_bricks/handlers/templates/ActionHandlerTemplate.h"
 
 #include <QMessageBox>
+#include <QPointer>
 
+#include "draupnir/ui_bricks/concepts/HelpContextConcept.h"
 #include "draupnir/ui_bricks/traits/menu_entries/HelpMenuEntries.h"
 
 namespace Draupnir::Handlers
@@ -53,45 +55,45 @@ class GenericMenuEntryHandlerTemplate;
  *           The handler sets the dialog’s parent to the active window, applies the current application icon, and expands
  *           the dialog for better readability. */
 
-template<class HelpContext>
-class GenericMenuEntryHandlerTemplate<HelpContext,Draupnir::Ui::AboutAppMenuTrait> :
-    public ActionHandlerTemplate<GenericMenuEntryHandlerTemplate<HelpContext,Draupnir::Ui::AboutAppMenuTrait>>
+template<class Context>
+class GenericMenuEntryHandlerTemplate<Context,Draupnir::Ui::AboutAppMenuTrait> :
+    public ActionHandlerTemplate<GenericMenuEntryHandlerTemplate<Context,Draupnir::Ui::AboutAppMenuTrait>>
 {
-private:
-    /*! @struct has_aboutAppText
-     *  @brief Trait to check whether HelpContext defines a static method `aboutAppText()` returning `QString`. */
-    template<class, class = std::void_t<>>
-    struct has_aboutAppText : std::false_type {};
-
-    template<class Class>
-    struct has_aboutAppText<
-        Class,
-        std::void_t<decltype(
-            std::is_same_v<QString,decltype(Class::aboutAppText())>
-        )>
-    > : std::true_type {};
-
 public:
     /*! @brief Constructs the handler.
      * @note Performs a static_assert to ensure that HelpContext provides the required static method. */
     GenericMenuEntryHandlerTemplate() {
-        static_assert(has_aboutAppText<HelpContext>::value,
+        static_assert(Draupnir::Ui::HelpContext::HasAboutAppText<Context>,
             "Provided HelpContext template argument must have QString HelpContext::aboutAppText() static method.");
     }
 
     /*! @brief Slot called when the "About" menu entry is triggered. Shows a QMessageBox with application info. The message text
-     *         is taken from HelpContext::aboutAppText(). The dialog uses rich text formatting and adapts its size for readability.
-     * @todo Make the About App dialog window non-blocking and show only one window per trigger. */
+     *         is taken from HelpContext::aboutAppText(). The dialog uses rich text formatting and adapts its size for readability. */
     void onTriggered() {
-        QMessageBox msgBox;
-        msgBox.setWindowTitle(    QObject::tr("About %1").arg(qApp->applicationName()));
-        msgBox.setIconPixmap(     qApp->windowIcon().pixmap(128,128));
-        msgBox.setWindowIcon(     qApp->windowIcon());
-        msgBox.setSizePolicy(     QSizePolicy::Expanding,QSizePolicy::Minimum);
-        msgBox.setTextFormat(     Qt::RichText);
-        msgBox.setText(           HelpContext::aboutAppText());
-        msgBox.exec();
+        if (p_dialog) {
+            p_dialog->raise();
+            p_dialog->activateWindow();
+            p_dialog->showNormal();
+            return;
+        }
+
+        QMessageBox* msgBox = new QMessageBox;
+        msgBox->setWindowModality(Qt::NonModal);
+        msgBox->setAttribute(Qt::WA_DeleteOnClose);
+
+        msgBox->setWindowTitle(    QObject::tr("About %1").arg(qApp->applicationName()));
+        msgBox->setIconPixmap(     qApp->windowIcon().pixmap(128,128));
+        msgBox->setWindowIcon(     qApp->windowIcon());
+        msgBox->setSizePolicy(     QSizePolicy::Expanding,QSizePolicy::Minimum);
+        msgBox->setTextFormat(     Qt::RichText);
+        msgBox->setText(           Context::aboutAppText());
+
+        p_dialog = msgBox;
+        p_dialog->show();
     }
+
+private:
+    QPointer<QDialog> p_dialog;
 };
 
 };

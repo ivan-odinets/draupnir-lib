@@ -59,15 +59,14 @@ public:
 
     /*! @brief Helper method to create and connect a new checkable UI element.
      *  @param callable Slot to call on toggled/triggered(bool).
-     *  @return A new DisplayUiElement* properly connected and checkable.
-     * @todo Create a universal template-based analogue of this method. */
+     *  @return A new DisplayUiElement* properly connected and checkable. */
     template<typename F>
-    static UiElement* createConnectedUiElement(/*std::function<void(bool)>*/F callable) {
+    static UiElement* createConnectedUiElement(F&& callable) {
         UiElement* result = new UiElement{};
         if constexpr (std::is_same_v<UiElement,QAction>)
             result->setCheckable(true);
 
-        QObject::connect(result, singalAddress, callable);
+        QObject::connect(result, singalAddress, std::forward<F>(callable));
 
         return result;
     }

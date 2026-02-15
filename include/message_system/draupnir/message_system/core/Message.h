@@ -30,6 +30,7 @@
 #include <QIcon>
 #include <QList>
 
+#include "draupnir/message_system/concepts/MessageTraitConcept.h"
 #include "draupnir/utils/advance_enum.h"
 
 namespace Draupnir::Messages
@@ -83,9 +84,8 @@ public:
     /*! @brief Static template method to create @ref Message objects from specified `MessageTrait`.
      *  @tparam MessageTrait trait representing a @ref Message to be created.
      *  @param text text of a @ref Message.
-     * @note Memory is allocated by using new operator. Caller to be responsible for propper memory handling.
-     * @todo static_assert to verify MessageTrait. */
-    template<class MessageTrait>
+     * @note Memory is allocated by using new operator. Caller to be responsible for propper memory handling. */
+    template<MessageTraitConcept MessageTrait>
     static Message* fromTrait(const QString& text) {
         return new Message{MessageTrait::type, MessageTrait::icon(), MessageTrait::displayName(), text};
     }
@@ -94,9 +94,8 @@ public:
      *  @tparam MessageTrait trait representing a @ref Message to be created.
      *  @param brief brief of a Message.
      *  @param text text of a Message.
-     * @note Memory is allocated by using new operator. Caller to be responsible for propper memory handling.
-     * @todo static_assert to verify MessageTrait. */
-    template<class MessageTrait>
+     * @note Memory is allocated by using new operator. Caller to be responsible for propper memory handling. */
+    template<MessageTraitConcept MessageTrait>
     static Message* fromTrait(const QString& brief, const QString& text) {
         return new Message{MessageTrait::type, MessageTrait::icon(), brief, text};
     }

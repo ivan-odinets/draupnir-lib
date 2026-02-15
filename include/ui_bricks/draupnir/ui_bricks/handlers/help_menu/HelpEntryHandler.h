@@ -30,6 +30,7 @@
 #include <QDialog>
 #include <QPointer>
 
+#include "draupnir/ui_bricks/concepts/HelpContextConcept.h"
 #include "draupnir/ui_bricks/traits/menu_entries/HelpMenuEntries.h"
 
 namespace Draupnir::Handlers
@@ -52,32 +53,17 @@ class GenericMenuEntryHandlerTemplate;
  *           Only one instance of the dialog is created and reused on subsequent triggers. The handler uses QPointer to
  *           safely manage the dialog lifetime, even if the dialog is closed externally. */
 
-template<class HelpContext>
-class GenericMenuEntryHandlerTemplate<HelpContext,Draupnir::Ui::HelpEntryMenuTrait> :
-    public ActionHandlerTemplate<GenericMenuEntryHandlerTemplate<HelpContext,Draupnir::Ui::HelpEntryMenuTrait>>
+template<class Context>
+class GenericMenuEntryHandlerTemplate<Context,Draupnir::Ui::HelpEntryMenuTrait> :
+    public ActionHandlerTemplate<GenericMenuEntryHandlerTemplate<Context,Draupnir::Ui::HelpEntryMenuTrait>>
 {
-private:
-    /*! @struct has_createHelpDialog
-     *  @brief Trait to check whether HelpContext defines a static method `createHelpDialog()` returning `QDialog*` or derived. */
-    template<class, class = std::void_t<>>
-    struct has_createHelpDialog : std::false_type {};
-
-    template<class Class>
-    struct has_createHelpDialog<
-        Class,
-        std::void_t<decltype(
-            std::is_base_of_v<QDialog,std::remove_pointer_t<decltype(Class::createHelpDialog())>> ||
-            std::is_same_v<QDialog,std::remove_pointer_t<decltype(Class::createHelpDialog())>>
-        )>
-    > : std::true_type {};
-
 public:
     /*! @brief Constructs the handler. Performs a static_assert to ensure that HelpContext provides a valid createHelpDialog method.
      *  @param Unused Reference to the help context (required for interface compatibility). */
     GenericMenuEntryHandlerTemplate() :
         p_helpDialog{nullptr}
     {
-        static_assert(has_createHelpDialog<HelpContext>::value,
+        static_assert(Draupnir::Ui::HelpContext::HasCreateHelpDialog<Context>,
             "Provided HelpContext template argument must have HelpContext::createHelpDialog() static method "
             "returning either pointer to the QDialog or class derived from it.");
     };
@@ -91,7 +77,7 @@ public:
             return;
         }
 
-        p_helpDialog = HelpContext::createHelpDialog();
+        p_helpDialog = Context::createHelpDialog();
         p_helpDialog->setParent(qApp->activeWindow());
         p_helpDialog->setAttribute(Qt::WA_DeleteOnClose);
         p_helpDialog->show();

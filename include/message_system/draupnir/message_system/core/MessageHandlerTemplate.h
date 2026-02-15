@@ -44,7 +44,6 @@ namespace Draupnir::Messages
  *           Draupnir::Messages::AbstractMessageUiBuilder / @ref Draupnir::Messages::MessageUiBuilderTemplate so that UI
  *           elements reflect and modify the same notification policy map. */
 
-
 template<class... MessageTraits>
 class MessageHandlerTemplate final : public AbstractMessageHandler
 {

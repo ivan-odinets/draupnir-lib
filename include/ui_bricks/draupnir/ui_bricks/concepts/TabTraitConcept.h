@@ -22,44 +22,41 @@
  *
  */
 
-#ifndef FILECONTEXTCONCEPT_H
-#define FILECONTEXTCONCEPT_H
+#ifndef TABTRAITCONCEPT_H
+#define TABTRAITCONCEPT_H
 
-#include <QMessageBox>
 #include <QString>
 
-namespace Draupnir::Handlers
+class QWidget;
+
+namespace Draupnir::Ui
 {
 
-namespace FileContext
+namespace TabTrait
 {
 
-template<class Context>
-concept HasFileManagerType = requires { typename Context::FileManager; };
+template<class Candidate>
+concept HasWidgetType =
+    requires { typename Candidate::Widget; } &&
+    std::is_base_of_v<QWidget,typename Candidate::Widget>;
 
-template<class Context>
-concept HasFileManagerMethod = requires (Context context) {
-    { context.fileManager() } -> std::same_as<typename Context::FileManager*>;
+template<class Candidate>
+concept HasDisplayName = requires {
+    { Candidate::displayName() } -> std::convertible_to<QString>;
 };
 
-template<class Context>
-concept HasAskUserMethod = requires {
-    { Context::askUser(std::declval<QString>(), std::declval<QString>(), std::declval<QMessageBox::StandardButtons>()) }
-    -> std::same_as<int>;
+template<class Candidate>
+concept HasTooltip = requires {
+    { Candidate::tooltip() } -> std::convertible_to<QString>;
 };
 
-template<class Manager>
-concept HasOnSaveFileMethod = requires(Manager manager) {
-    { manager.onSaveFile() } -> std::same_as<void>;
-};
+}; // namespace Draupnir::Ui::TabTrait
 
-template<class Manager>
-concept HasOnSaveFileAsMethod = requires(Manager manager) {
-    { manager.onSaveFileAs() } -> std::same_as<void>;
-};
+template<class Candidate>
+concept TabTraitConcept =
+    TabTrait::HasWidgetType<Candidate> &&
+    TabTrait::HasDisplayName<Candidate>;
 
-};
+}; // namespace Draupnir::Ui
 
-}; // namespace Draupnir::Handlers
-
-#endif // FILECONTEXTCONCEPT_H
+#endif // TABTRAITCONCEPT_H

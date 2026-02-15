@@ -2,7 +2,7 @@
  **********************************************************************************************************************
  *
  * draupnir-lib
- * Copyright (C) 2025 Ivan Odinets <i_odinets@protonmail.com>
+ * Copyright (C) 2025-2026 Ivan Odinets <i_odinets@protonmail.com>
  *
  * This file is part of draupnir-lib
  *
@@ -48,6 +48,17 @@ struct PushButtonTrait
 
     static QString tooltip() {
         return QString{"tooltip"};
+    }
+};
+
+#include "draupnir-test/ui/widgets/NonDefaultConstructibleDummyWidget.h"
+
+struct NonDefaultConstructibleTrait
+{
+    using Widget = NonDefaultConstructibleDummyWidget;
+
+    static QString displayName() {
+        return QString{"Random"};
     }
 };
 

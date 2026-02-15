@@ -22,44 +22,33 @@
  *
  */
 
-#ifndef FILECONTEXTCONCEPT_H
-#define FILECONTEXTCONCEPT_H
+#ifndef HELPCONTEXTCONCEPT_H
+#define HELPCONTEXTCONCEPT_H
 
-#include <QMessageBox>
+#include <concepts>
+
 #include <QString>
 
-namespace Draupnir::Handlers
+class QDialog;
+
+namespace Draupnir::Ui
 {
 
-namespace FileContext
+namespace HelpContext
 {
 
-template<class Context>
-concept HasFileManagerType = requires { typename Context::FileManager; };
-
-template<class Context>
-concept HasFileManagerMethod = requires (Context context) {
-    { context.fileManager() } -> std::same_as<typename Context::FileManager*>;
+template<class Candidate>
+concept HasAboutAppText = requires {
+    { Candidate::aboutAppText() } -> std::convertible_to<QString>;
 };
 
-template<class Context>
-concept HasAskUserMethod = requires {
-    { Context::askUser(std::declval<QString>(), std::declval<QString>(), std::declval<QMessageBox::StandardButtons>()) }
-    -> std::same_as<int>;
+template<class Candidate>
+concept HasCreateHelpDialog = requires {
+    { Candidate::createHelpDialog() } -> std::convertible_to<QDialog*>;
 };
 
-template<class Manager>
-concept HasOnSaveFileMethod = requires(Manager manager) {
-    { manager.onSaveFile() } -> std::same_as<void>;
-};
+}; // namespace Draupnir::Ui::HelpContext
 
-template<class Manager>
-concept HasOnSaveFileAsMethod = requires(Manager manager) {
-    { manager.onSaveFileAs() } -> std::same_as<void>;
-};
+}; // namespace Draupnir::Ui
 
-};
-
-}; // namespace Draupnir::Handlers
-
-#endif // FILECONTEXTCONCEPT_H
+#endif // HELPCONTEXTCONCEPT_H
