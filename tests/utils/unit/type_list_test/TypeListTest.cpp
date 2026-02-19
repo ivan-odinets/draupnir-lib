@@ -138,6 +138,14 @@ private slots:
         // FirstList::get_t<1000>;
     }
 
+    void test_get_template_instantiation_or_void() {
+        using ExpectedTuple = std::tuple<int,char,long>;
+        TYPE_COMPARE(ListWithTemplates::get_template_instantiation_or_void_t<std::tuple>,ExpectedTuple);
+        TYPE_COMPARE(ListWithTemplates::get_template_instantiation_or_void_t<std::vector>,std::vector<int>);
+        TYPE_COMPARE(ListWithTemplates::get_template_instantiation_or_void_t<std::list>,void);
+        TYPE_COMPARE(ListWithTemplates::get_template_instantiation_or_void_t<std::map>,void);
+    }
+
     void test_appending_types() {
         // Appending using append_t "method"
         using listWithAppendedQString = ListOfDoubles::append_t<QString>;
