@@ -2,7 +2,7 @@
  **********************************************************************************************************************
  *
  * draupnir-lib
- * Copyright (C) 2025 Ivan Odinets <i_odinets@protonmail.com>
+ * Copyright (C) 2025-2026 Ivan Odinets <i_odinets@protonmail.com>
  *
  * This file is part of draupnir-lib
  *
@@ -28,7 +28,7 @@
 #include <QListView>
 
 #include "draupnir/message_system/core/MessageType.h"
-#include "draupnir/message_system/core/Message.h"
+#include "draupnir/message_system/core/MessageFields.h"
 
 namespace Draupnir::Messages
 {
@@ -75,14 +75,14 @@ public:
     bool isMessageTypeDisplayed(MessageType messageType);
 
     /*! @brief Sets what fields of the @ref Draupnir::Messages::Message objects should be displayed within this widget. */
-    void setDisplayedMessageFieldsMask(std::underlying_type_t<Message::Fields> fields);
+    void setDisplayedMessageFieldsMask(MessageFields fields);
 
     /*! @brief This method returns mask of the parts of the @ref Draupnir::Messages::Message object which are marked as
      *         displayed within the @ref Draupnir::Messages::MessageListView widget. */
-    std::underlying_type_t<Message::Fields> displayedMessageFieldsMask() const;
+    MessageFields displayedMessageFieldsMask() const;
 
     /*! @brief Returns true if specified field of the @ref Draupnir::Messages::Message object is displayed. */
-    bool isMessageFieldDisplayed(Message::Fields field) const;
+    bool isMessageFieldDisplayed(MessageField field) const;
 
 signals:
     /*! @brief This signal is emitted when a visibility of specific @ref Draupnir::Messages::MessageType has changed. */
@@ -90,7 +90,7 @@ signals:
 
     /*! @brief This signal is emitted when a visibility of specific field of @ref Draupnir::Messages::Message object
      *         has changed. */
-    void messageFieldVisibilityChanged(Draupnir::Messages::Message::Fields field, bool isVisible);
+    void messageFieldVisibilityChanged(Draupnir::Messages::MessageField field, bool isVisible);
 
 protected:
     /*! @brief Override this to show @ref Draupnir::Messages::MessageDisplayDialog by double click. */
@@ -104,7 +104,7 @@ public slots:
     /*! @todo This method is used to toggle visibility of the different fields of of the @ref Draupnir::Message::Message
      *        objects.
      * @note After triggering - signal @ref Draupnir::Messages::MessageListView::messageFieldVisibilityChanged is emited. */
-    void setMessageFieldDisplayed(Message::Fields field, bool isVisible);
+    void setMessageFieldDisplayed(MessageField field, bool isVisible);
 
 private:
     MessageListModel* p_messageList;

@@ -2,7 +2,7 @@
  **********************************************************************************************************************
  *
  * draupnir-lib
- * Copyright (C) 2025 Ivan Odinets <i_odinets@protonmail.com>
+ * Copyright (C) 2025-2206 Ivan Odinets <i_odinets@protonmail.com>
  *
  * This file is part of draupnir-lib
  *
@@ -32,17 +32,18 @@
 
 class QDialogButton;
 
-#include "draupnir/message_system/core/Message.h"
+#include "draupnir/message_system/core/MessageFields.h"
+#include "draupnir/message_system/traits/settings/MessageSystemConfigDialogSettings.h"
 #include "draupnir/message_system/traits/widgets/MessageFieldsSelectorTrait.h"
 #include "draupnir/message_system/traits/widgets/MessageTypesSelectorTrait.h"
 #include "draupnir/message_system/traits/widgets/NotificationSettingsEditorWidgetTrait.h"
-
 #include "draupnir/ui_bricks/ui/widgets/FixedTabWidgetTemplate.h"
 
-namespace Draupnir::Messages {
+namespace Draupnir::Messages
+{
     class AbstractMessageUiBuilder;
     class AbstractNotificationSettingsWidget;
-}
+}; // namespace Draupnir::Messages
 
 namespace Draupnir::Messages
 {
@@ -60,9 +61,32 @@ class MessageSystemConfigDialog : public QDialog
 {
     Q_OBJECT
 
+    using CentralWidget = Draupnir::Ui::FixedTabWidgetTemplate<
+        MessageSystemConfigDialogSettings::WidgetIndexSetting,
+        NotificationSettingsEditorTrait,
+        MessageTypesSelectorTrait,
+        MessageFieldsSelectorTrait
+    >;
+
 public:
+    using SettingsBundle = Draupnir::Settings::SettingsTraitsConcatenator<
+        CentralWidget
+    >::toSettingsBundle;
+
     /*! @brief Trivial destructor. */
     ~MessageSystemConfigDialog() = default;
+
+    /*! @brief Loads UI state from SettingsRegistry.
+     *  @param registry Pointer to the settings registry instance.
+     * @todo As other `loadSettings`-methods this needs to be standartized. */
+    template<class SettingsRegistry>
+    void loadSettings(SettingsRegistry* registry) requires(!SettingsBundle::isEmpty()) {
+        static_assert(SettingsBundle::template canBeFullyPopulatedFrom<SettingsRegistry>(),
+                      "Provided SettingsRegistry can not populate the SettingsBundle.");
+        Q_ASSERT_X(registry,"MessageSystemConfigDialog::loadSettings",
+                   "Specified SettingsRegistry* pointer is nullptr");
+        w_mainWidget->template loadSettings<SettingsRegistry>(registry);
+    }
 
     /*! @brief Display the notification type for a specific message type.
      *  @param type The message type identifier.
@@ -80,13 +104,13 @@ public:
     /*! @brief Updates internal @ref Draupnir::Messages::MessageFieldsSelectorWidget according to the specified mask.
      *  @param mask Bitmask of fields to be shown.
      * @note No signals are emitted after calling this method. */
-    void setDisplayedMessageFieldsMask(const std::underlying_type_t<Message::Fields> mask) {
+    void setDisplayedMessageFieldsMask(const MessageFields mask) {
         w_mainWidget->getWidget<MessageFieldsSelectorWidget>()->setDisplayedMessageFieldsMask(mask);
     }
 
     /*! @brief This method returns mask of the fields of the @ref Draupnir::Messages::Message object which are marked as
      *         displayed. */
-    std::underlying_type_t<Message::Fields> displayedMessageFieldsMask() const {
+    MessageFields displayedMessageFieldsMask() const {
         return w_mainWidget->getWidget<MessageFieldsSelectorWidget>()->displayedMessageFieldsMask();
     }
 
@@ -94,14 +118,14 @@ public:
      *  @param field Field to modify.
      *  @param isShown Whether the field should be marked as visible.
      * @note No signals are emitted after calling this method. */
-    void setMessagePartDisplayed(Message::Fields field, bool isShown) {
+    void setMessagePartDisplayed(MessageField field, bool isShown) {
         w_mainWidget->getWidget<MessageFieldsSelectorWidget>()->setMessageFieldDisplayed(field,isShown);
     }
 
     /*! @brief Returns whether specific element of @ref Draupnir::Messages::Message objects is marked as visible.
      *  @param field Field to query.
      *  @return True if field is visible. */
-    bool isMessagePartDisplayed(Message::Fields field) const {
+    bool isMessagePartDisplayed(MessageField field) const {
         return w_mainWidget->getWidget<MessageFieldsSelectorWidget>()->isMessageFieldDisplayed(field);
     }
 
@@ -139,7 +163,7 @@ signals:
     /*! @brief Emitted when user toggles visibility of a message type.
      *  @param messageType The message type being toggled.
      *  @param isVisible New visibility state. */
-    void messageFieldVisibilityChanged(Draupnir::Messages::Message::Fields field, bool isVisible);
+    void messageFieldVisibilityChanged(Draupnir::Messages::MessageField field, bool isVisible);
 
     /*! @brief Emitted when user toggles field visibility.
      *  @param field The field whose visibility changed.
@@ -155,13 +179,6 @@ protected:
     explicit MessageSystemConfigDialog(AbstractMessageUiBuilder* uiBuilder, QWidget* parent = nullptr);
 
 private:
-    using CentralWidget = Draupnir::Ui::FixedTabWidgetTemplate<
-        void,
-        NotificationSettingsEditorTrait,
-        MessageTypesSelectorTrait,
-        MessageFieldsSelectorTrait
-    >;
-
     AbstractMessageUiBuilder* p_uiBuilder;
     CentralWidget* w_mainWidget;
     QDialogButtonBox* p_buttons;

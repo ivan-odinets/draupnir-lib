@@ -27,7 +27,8 @@
         $$PWD/../src/message_system/draupnir/ui/widgets/NotificationTypeComboBox.cpp \
         $$PWD/../src/message_system/draupnir/ui/windows/MessageDisplayDialog.cpp \
         $$PWD/../src/message_system/draupnir/ui/widgets/MessageFieldsSelectorWidget.cpp \
-        $$PWD/../src/message_system/draupnir/ui/windows/MessageSystemConfigDialog.cpp
+        $$PWD/../src/message_system/draupnir/ui/windows/MessageSystemConfigDialog.cpp \
+        $$PWD/../src/message_system/draupnir/core/Message.cpp
 
     HEADERS += \
         $$PWD/../include/message_system/draupnir/MessageSystem.h \
@@ -75,9 +76,10 @@
         $$PWD/../include/message_system/draupnir/message_system/traits/widgets/LogWidgetTrait.h \
         $$PWD/../include/message_system/draupnir/message_system/concepts/MessageTraitConcept.h \
         $$PWD/../include/message_system/draupnir/message_system/handlers/settings_menu/MessageNotificationSettingsHandler.h \
-        $$PWD/../include/message_system/draupnir/message_system/traits/menu_entries/MultiMessageNotificationSettingsMenuEntryTemplate.h
+        $$PWD/../include/message_system/draupnir/message_system/traits/menu_entries/MultiMessageNotificationSettingsMenuEntryTemplate.h \
+        $$PWD/../include/message_system/draupnir/message_system/core/MessageFields.h \
+        $$PWD/../include/message_system/draupnir/message_system/traits/settings/MessageSystemConfigDialogSettings.h
 
     DISTFILES += \
         $$PWD/../docs/pages/MessageSystem.dox
 }
-

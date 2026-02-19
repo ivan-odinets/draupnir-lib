@@ -2,7 +2,7 @@
  **********************************************************************************************************************
  *
  * draupnir-lib
- * Copyright (C) 2025 Ivan Odinets <i_odinets@protonmail.com>
+ * Copyright (C) 2025-2026 Ivan Odinets <i_odinets@protonmail.com>
  *
  * This file is part of draupnir-lib
  *
@@ -31,7 +31,7 @@ namespace Draupnir::Messages
 
 MessageListProxyModel::MessageListProxyModel(QObject* parent) :
     QSortFilterProxyModel{parent},
-    m_displayedMessageFieldsMask{Message::All},
+    m_displayedMessageFieldsMask{MessageField::All},
     m_displayedMessageTypesMask{MessageType::AllMessages}
 {}
 
@@ -58,20 +58,17 @@ void MessageListProxyModel::setMessageTypeDisplayed(MessageType type, bool isVis
     invalidateFilter();
 }
 
-void MessageListProxyModel::setDisplayedMessageFieldsMask(std::underlying_type_t<Message::Fields> mask)
+void MessageListProxyModel::setDisplayedMessageFieldsMask(MessageFields mask)
 {
     m_displayedMessageFieldsMask = mask;
 }
 
-void MessageListProxyModel::setMessageFieldDisplayed(Message::Fields field, bool isVisible)
+void MessageListProxyModel::setMessageFieldDisplayed(MessageField field, bool isVisible)
 {
     if (isMessageFieldDisplayed(field) == isVisible)
         return;
 
-    if (isVisible)
-        m_displayedMessageFieldsMask |= field;
-    else
-        m_displayedMessageFieldsMask &= ~field;
+    m_displayedMessageFieldsMask.setFlag(field,isVisible);
 
     emit dataChanged(
         index(0,0),
@@ -93,7 +90,7 @@ QVariant MessageListProxyModel::data(const QModelIndex &index, int role) const
             return message->getViewString(this->m_displayedMessageFieldsMask);
         }
         case Qt::DecorationRole:{
-            return isMessageFieldDisplayed(Message::Icon) ? message->icon() : QIcon{};
+            return isMessageFieldDisplayed(MessageField::Icon) ? message->icon() : QIcon{};
         }
         case Qt::ToolTipRole:{
             return message->what();

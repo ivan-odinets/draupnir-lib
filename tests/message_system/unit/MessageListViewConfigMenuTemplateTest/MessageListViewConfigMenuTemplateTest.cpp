@@ -2,7 +2,7 @@
  **********************************************************************************************************************
  *
  * draupnir-lib
- * Copyright (C) 2025 Ivan Odinets <i_odinets@protonmail.com>
+ * Copyright (C) 2025-2026 Ivan Odinets <i_odinets@protonmail.com>
  *
  * This file is part of draupnir-lib
  *
@@ -41,7 +41,7 @@ class MessageListViewConfigMenuTemplateTest final : public QObject
     Q_OBJECT
 public:
     MessageListViewConfigMenuTemplateTest() {
-        qRegisterMetaType<Draupnir::Messages::Message::Fields>();
+        qRegisterMetaType<Draupnir::Messages::MessageFields>();
         qRegisterMetaType<Draupnir::Messages::MessageType>();
     };
     ~MessageListViewConfigMenuTemplateTest() final = default;
@@ -68,12 +68,12 @@ private slots:
 
     void test_initialization() {
         // Message parts. Bu default none should be selected
-        QCOMPARE(abstractTestMenu->displayedMessageFieldsMask(), Draupnir::Messages::Message::Fields::None);
-        QCOMPARE(abstractTestMenu->isMessageFieldDisplayed(Draupnir::Messages::Message::Brief), false);
-        QCOMPARE(abstractTestMenu->isMessageFieldDisplayed(Draupnir::Messages::Message::What), false);
-        QCOMPARE(abstractTestMenu->isMessageFieldDisplayed(Draupnir::Messages::Message::Icon), false);
-        QCOMPARE(abstractTestMenu->isMessageFieldDisplayed(Draupnir::Messages::Message::DateTime), false);
-        QCOMPARE(abstractTestMenu->isMessageFieldDisplayed(Draupnir::Messages::Message::All), false);
+        QCOMPARE(abstractTestMenu->displayedMessageFieldsMask(), Draupnir::Messages::MessageField::None);
+        QCOMPARE(abstractTestMenu->isMessageFieldDisplayed(Draupnir::Messages::MessageField::Brief), false);
+        QCOMPARE(abstractTestMenu->isMessageFieldDisplayed(Draupnir::Messages::MessageField::What), false);
+        QCOMPARE(abstractTestMenu->isMessageFieldDisplayed(Draupnir::Messages::MessageField::Icon), false);
+        QCOMPARE(abstractTestMenu->isMessageFieldDisplayed(Draupnir::Messages::MessageField::DateTime), false);
+        QCOMPARE(abstractTestMenu->isMessageFieldDisplayed(Draupnir::Messages::MessageField::All), false);
 
         // Message types. By default none should be selected
         QCOMPARE(abstractTestMenu->displayedMessageTypesMask(), MessageType{Draupnir::Messages::MessageType::None});
@@ -89,38 +89,40 @@ private slots:
         QSignalSpy messageTypeVisibilityChangedSpy{ abstractTestMenu, &AbstractMessageListViewConfigMenu::messageTypeVisibilityChanged };
 
         // Verify initial state.
-        QVERIFY(abstractTestMenu->displayedMessageFieldsMask() == Draupnir::Messages::Message::Fields::None);
+        QVERIFY(abstractTestMenu->displayedMessageFieldsMask() == Draupnir::Messages::MessageField::None);
 
         // Select some random field to be displayed
-        abstractTestMenu->setMessageFieldDisplayed(Draupnir::Messages::Message::Icon, true);
+        abstractTestMenu->setMessageFieldDisplayed(Draupnir::Messages::MessageField::Icon, true);
         // Check if everything is updated properly.
-        QCOMPARE(abstractTestMenu->displayedMessageFieldsMask(), Draupnir::Messages::Message::Icon);
-        QVERIFY(abstractTestMenu->isMessageFieldDisplayed(Draupnir::Messages::Message::Icon));
+        qDebug() << abstractTestMenu->displayedMessageFieldsMask();
+        qDebug() << Draupnir::Messages::MessageField::Icon;
+        QCOMPARE(abstractTestMenu->displayedMessageFieldsMask(), Draupnir::Messages::MessageField::Icon);
+        QVERIFY(abstractTestMenu->isMessageFieldDisplayed(Draupnir::Messages::MessageField::Icon));
 
         // Select some other random field to be displayed
-        abstractTestMenu->setMessageFieldDisplayed(Draupnir::Messages::Message::Brief, true);
+        abstractTestMenu->setMessageFieldDisplayed(Draupnir::Messages::MessageField::Brief, true);
         // Check if everything is still updated properly
-        QCOMPARE(abstractTestMenu->displayedMessageFieldsMask(), Draupnir::Messages::Message::Icon | Draupnir::Messages::Message::Brief);
-        QVERIFY(abstractTestMenu->isMessageFieldDisplayed(Draupnir::Messages::Message::Icon));
-        QVERIFY(abstractTestMenu->isMessageFieldDisplayed(Draupnir::Messages::Message::Brief));
+        QCOMPARE(abstractTestMenu->displayedMessageFieldsMask(), Draupnir::Messages::MessageField::Icon | Draupnir::Messages::MessageField::Brief);
+        QVERIFY(abstractTestMenu->isMessageFieldDisplayed(Draupnir::Messages::MessageField::Icon));
+        QVERIFY(abstractTestMenu->isMessageFieldDisplayed(Draupnir::Messages::MessageField::Brief));
 
         // Select all of the fields manually
-        abstractTestMenu->setMessageFieldDisplayed(Draupnir::Messages::Message::Brief, true);
-        abstractTestMenu->setMessageFieldDisplayed(Draupnir::Messages::Message::What, true);
-        abstractTestMenu->setMessageFieldDisplayed(Draupnir::Messages::Message::Icon, true);
-        abstractTestMenu->setMessageFieldDisplayed(Draupnir::Messages::Message::DateTime, true);
+        abstractTestMenu->setMessageFieldDisplayed(Draupnir::Messages::MessageField::Brief, true);
+        abstractTestMenu->setMessageFieldDisplayed(Draupnir::Messages::MessageField::What, true);
+        abstractTestMenu->setMessageFieldDisplayed(Draupnir::Messages::MessageField::Icon, true);
+        abstractTestMenu->setMessageFieldDisplayed(Draupnir::Messages::MessageField::DateTime, true);
         // Check that All action is checked
         QCOMPARE(abstractTestMenu->m_messageFieldsContainer.showAllUiElement()->isChecked(), true);
 
         // Deselect one of the fields manually
-        abstractTestMenu->setMessageFieldDisplayed(Draupnir::Messages::Message::Brief, false);
+        abstractTestMenu->setMessageFieldDisplayed(Draupnir::Messages::MessageField::Brief, false);
         // Check that All action is unchecked
         QCOMPARE(abstractTestMenu->m_messageFieldsContainer.showAllUiElement()->isChecked(), false);
 
         // Deselect rest of the fields
-        abstractTestMenu->setMessageFieldDisplayed(Draupnir::Messages::Message::What, false);
-        abstractTestMenu->setMessageFieldDisplayed(Draupnir::Messages::Message::Icon, false);
-        abstractTestMenu->setMessageFieldDisplayed(Draupnir::Messages::Message::DateTime, false);
+        abstractTestMenu->setMessageFieldDisplayed(Draupnir::Messages::MessageField::What, false);
+        abstractTestMenu->setMessageFieldDisplayed(Draupnir::Messages::MessageField::Icon, false);
+        abstractTestMenu->setMessageFieldDisplayed(Draupnir::Messages::MessageField::DateTime, false);
         // Check that All action is still unchecked
         QCOMPARE(abstractTestMenu->m_messageFieldsContainer.showAllUiElement()->isChecked(), false);
 
@@ -189,44 +191,44 @@ private slots:
         QSignalSpy messageTypeVisibilityChangedSpy{ abstractTestMenu, &AbstractMessageListViewConfigMenu::messageTypeVisibilityChanged };
 
         // Check initial state.
-        QVERIFY(abstractTestMenu->displayedMessageFieldsMask() == Message::Fields::None);
+        QVERIFY(abstractTestMenu->displayedMessageFieldsMask() == MessageField::None);
 
         // Select some random message field
-        abstractTestMenu->m_messageFieldsContainer.getUiElement(Message::Fields::Icon)->trigger();
+        abstractTestMenu->m_messageFieldsContainer.getUiElement(MessageField::Icon)->trigger();
 
         // Check if proper signals were emitted
         QTRY_COMPARE(messageFieldVisibilityChangedSpy.count(), 1);
         QTRY_COMPARE(messageTypeVisibilityChangedSpy.count(), 0);
         QList<QVariant> signalArgs = messageFieldVisibilityChangedSpy.takeFirst();
-        QCOMPARE(signalArgs[0].value<Draupnir::Messages::Message::Fields>(), Draupnir::Messages::Message::Fields::Icon);
+        QCOMPARE(signalArgs[0].value<Draupnir::Messages::MessageField>(), Draupnir::Messages::MessageField::Icon);
         QCOMPARE(signalArgs[1].value<bool>(), true);
 
         // Kind-of pre-select some fields
-        abstractTestMenu->setMessageFieldDisplayed(Draupnir::Messages::Message::Brief, true);
-        abstractTestMenu->setMessageFieldDisplayed(Draupnir::Messages::Message::What, true);
-        abstractTestMenu->setMessageFieldDisplayed(Draupnir::Messages::Message::Icon, true);
+        abstractTestMenu->setMessageFieldDisplayed(Draupnir::Messages::MessageField::Brief, true);
+        abstractTestMenu->setMessageFieldDisplayed(Draupnir::Messages::MessageField::What, true);
+        abstractTestMenu->setMessageFieldDisplayed(Draupnir::Messages::MessageField::Icon, true);
 
         // Trigger All action
         abstractTestMenu->m_messageFieldsContainer.showAllUiElement()->trigger();
         // Check if the UI is updated
-        QCOMPARE(abstractTestMenu->isMessageFieldDisplayed(Message::Fields::Brief), true);
-        QCOMPARE(abstractTestMenu->isMessageFieldDisplayed(Message::Fields::What), true);
-        QCOMPARE(abstractTestMenu->isMessageFieldDisplayed(Message::Fields::Icon), true);
-        QCOMPARE(abstractTestMenu->isMessageFieldDisplayed(Message::Fields::DateTime), true);
+        QCOMPARE(abstractTestMenu->isMessageFieldDisplayed(MessageField::Brief), true);
+        QCOMPARE(abstractTestMenu->isMessageFieldDisplayed(MessageField::What), true);
+        QCOMPARE(abstractTestMenu->isMessageFieldDisplayed(MessageField::Icon), true);
+        QCOMPARE(abstractTestMenu->isMessageFieldDisplayed(MessageField::DateTime), true);
         // Check if proper signals were emitted
         QTRY_COMPARE(messageFieldVisibilityChangedSpy.count(), 1);
         QTRY_COMPARE(messageTypeVisibilityChangedSpy.count(), 0);
         signalArgs = messageFieldVisibilityChangedSpy.takeFirst();
-        QCOMPARE(signalArgs[0].value<Draupnir::Messages::Message::Fields>(), Message::Fields::DateTime);
+        QCOMPARE(signalArgs[0].value<Draupnir::Messages::MessageField>(), MessageField::DateTime);
         QCOMPARE(signalArgs[1].value<bool>(), true);
 
         // Check if we uncheck All action properly
         abstractTestMenu->m_messageFieldsContainer.showAllUiElement()->trigger();
         // Check if the UI is updated
-        QCOMPARE(abstractTestMenu->isMessageFieldDisplayed(Message::Fields::Brief), false);
-        QCOMPARE(abstractTestMenu->isMessageFieldDisplayed(Message::Fields::What), false);
-        QCOMPARE(abstractTestMenu->isMessageFieldDisplayed(Message::Fields::Icon), false);
-        QCOMPARE(abstractTestMenu->isMessageFieldDisplayed(Message::Fields::DateTime), false);
+        QCOMPARE(abstractTestMenu->isMessageFieldDisplayed(MessageField::Brief), false);
+        QCOMPARE(abstractTestMenu->isMessageFieldDisplayed(MessageField::What), false);
+        QCOMPARE(abstractTestMenu->isMessageFieldDisplayed(MessageField::Icon), false);
+        QCOMPARE(abstractTestMenu->isMessageFieldDisplayed(MessageField::DateTime), false);
 
         // Check if proper signals were emitted
         QTRY_COMPARE(messageFieldVisibilityChangedSpy.count(), 4);

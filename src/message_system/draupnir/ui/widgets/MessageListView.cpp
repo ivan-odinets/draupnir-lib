@@ -2,7 +2,7 @@
  **********************************************************************************************************************
  *
  * draupnir-lib
- * Copyright (C) 2025 Ivan Odinets <i_odinets@protonmail.com>
+ * Copyright (C) 2025-2026 Ivan Odinets <i_odinets@protonmail.com>
  *
  * This file is part of draupnir-lib
  *
@@ -28,7 +28,6 @@
 #include <QMouseEvent>
 
 #include "draupnir/message_system/models/MessageListModel.h"
-
 #include "draupnir/message_system/models/MessageListProxyModel.h"
 #include "draupnir/message_system/ui/windows/MessageDisplayDialog.h"
 
@@ -78,17 +77,17 @@ bool MessageListView::isMessageTypeDisplayed(MessageType messageType)
     return p_messageListProxyModel->isMessageTypeDisplayed(messageType);
 }
 
-void MessageListView::setDisplayedMessageFieldsMask(std::underlying_type_t<Message::Fields> fields)
+void MessageListView::setDisplayedMessageFieldsMask(MessageFields fields)
 {
     p_messageListProxyModel->setDisplayedMessageFieldsMask(fields);
 }
 
-std::underlying_type_t<Message::Fields> MessageListView::displayedMessageFieldsMask() const
+MessageFields MessageListView::displayedMessageFieldsMask() const
 {
     return p_messageListProxyModel->displayedMessageFieldsMask();
 }
 
-bool MessageListView::isMessageFieldDisplayed(Message::Fields field) const
+bool MessageListView::isMessageFieldDisplayed(MessageField field) const
 {
     return p_messageListProxyModel->isMessageFieldDisplayed(field);
 }
@@ -124,7 +123,7 @@ void MessageListView::setMessageTypeDisplayed(MessageType type, bool displayed)
     emit messageTypeVisibilityChanged(type,displayed);
 }
 
-void MessageListView::setMessageFieldDisplayed(Message::Fields field, bool isVisible)
+void MessageListView::setMessageFieldDisplayed(MessageField field, bool isVisible)
 {
     p_messageListProxyModel->setMessageFieldDisplayed(field, isVisible);
     emit messageFieldVisibilityChanged(field, isVisible);

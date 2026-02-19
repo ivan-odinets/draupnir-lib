@@ -2,7 +2,7 @@
  **********************************************************************************************************************
  *
  * draupnir-lib
- * Copyright (C) 2025 Ivan Odinets <i_odinets@protonmail.com>
+ * Copyright (C) 2025-2026 Ivan Odinets <i_odinets@protonmail.com>
  *
  * This file is part of draupnir-lib
  *
@@ -27,7 +27,7 @@
 
 #include <QSortFilterProxyModel>
 
-#include "draupnir/message_system/core/Message.h"
+#include "draupnir/message_system/core/MessageFields.h"
 #include "draupnir/message_system/core/MessageType.h"
 
 namespace Draupnir::Messages
@@ -69,16 +69,16 @@ public:
     bool isMessageTypeDisplayed(MessageType messageType) { return m_displayedMessageTypesMask & messageType; }
 
     /*! @brief Sets what fields of @ref Draupnir::Messages::Message objects will be displayed. */
-    void setDisplayedMessageFieldsMask(std::underlying_type_t<Message::Fields> mask);
+    void setDisplayedMessageFieldsMask(MessageFields mask);
 
     /*! @brief Returns what fields of @ref Draupnir::Messages::Message objects will be displayed. */
-    std::underlying_type_t<Message::Fields> displayedMessageFieldsMask() const { return m_displayedMessageFieldsMask; }
+    MessageFields displayedMessageFieldsMask() const { return m_displayedMessageFieldsMask; }
 
     /*! @brief Sets if specific field of @ref Draupnir::Messages::Message object will be displayed. */
-    void setMessageFieldDisplayed(Message::Fields field, bool isVisible);
+    void setMessageFieldDisplayed(MessageField field, bool isVisible);
 
     /*! @brief Returns `true` if specific field of @ref Draupnir::Messages::Message object is displayed. */
-    bool isMessageFieldDisplayed(Message::Fields field) const { return m_displayedMessageFieldsMask & field; }
+    bool isMessageFieldDisplayed(MessageField field) const { return m_displayedMessageFieldsMask.testFlag(field); }
 
     /*! @brief This method is used to adjust displayed data in accordance to configured fields mask. */
     QVariant data(const QModelIndex &index, int role = Qt::DisplayRole) const final;
@@ -89,7 +89,7 @@ protected:
     bool filterAcceptsRow(int source_row, const QModelIndex &source_parent) const final;
 
 private:
-    std::underlying_type_t<Message::Fields> m_displayedMessageFieldsMask;
+    MessageFields m_displayedMessageFieldsMask;
     MessageType m_displayedMessageTypesMask;
 };
 

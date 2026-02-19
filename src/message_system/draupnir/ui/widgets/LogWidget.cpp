@@ -2,7 +2,7 @@
  **********************************************************************************************************************
  *
  * draupnir-lib
- * Copyright (C) 2025 Ivan Odinets <i_odinets@protonmail.com>
+ * Copyright (C) 2025-2026 Ivan Odinets <i_odinets@protonmail.com>
  *
  * This file is part of draupnir-lib
  *
@@ -123,6 +123,7 @@ void LogWidget::_onConfigureClicked()
     p_configurationDialog->setWindowIcon(qApp->windowIcon());
     p_configurationDialog->setWindowTitle(tr("Configure Messages - ").append(qApp->applicationName()));
     p_configurationDialog->setAttribute(Qt::WA_DeleteOnClose);
+    p_configurationDialog->loadSettings(&m_settingsBundle);
 
     // Display current config of the LogWidget
     p_configurationDialog->setDisplayedMessageFieldsMask(w_messagesListView->displayedMessageFieldsMask());
@@ -227,7 +228,7 @@ void LogWidget::_onMessageTypeFilterChanged(MessageType,bool)
     m_settingsBundle.template set<DisplayedMessageTypesSetting>(w_messagesListView->displayedMessageTypesMask().id());
 }
 
-void LogWidget::_onMessageFieldVisibilityChanged(Draupnir::Messages::Message::Fields, bool)
+void LogWidget::_onMessageFieldVisibilityChanged(Draupnir::Messages::MessageField, bool)
 {
     using namespace Draupnir::Messages::Settings::LogWidget;
     m_settingsBundle.template set<DisplayedMessageFieldsSetting>(w_messagesListView->displayedMessageFieldsMask());

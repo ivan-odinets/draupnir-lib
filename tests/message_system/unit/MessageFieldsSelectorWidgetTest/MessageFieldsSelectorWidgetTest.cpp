@@ -2,7 +2,7 @@
  **********************************************************************************************************************
  *
  * draupnir-lib
- * Copyright (C) 2025 Ivan Odinets <i_odinets@protonmail.com>
+ * Copyright (C) 2025-2026 Ivan Odinets <i_odinets@protonmail.com>
  *
  * This file is part of draupnir-lib
  *
@@ -38,7 +38,8 @@ class MessageFieldsSelectorWidgetTest final : public QObject
     Q_OBJECT
 public:
     MessageFieldsSelectorWidgetTest() {
-        qRegisterMetaType<Draupnir::Messages::Message::Fields>();
+        qRegisterMetaType<Draupnir::Messages::MessageFields>();
+        qRegisterMetaType<Draupnir::Messages::MessageField>();
     };
     ~MessageFieldsSelectorWidgetTest() final = default;
 
@@ -55,12 +56,12 @@ private slots:
 
     void test_initialization() {
         // Message fields. Bu default none should be selected
-        QCOMPARE(widget->displayedMessageFieldsMask(), Draupnir::Messages::Message::Fields::None);
-        QCOMPARE(widget->isMessageFieldDisplayed(Draupnir::Messages::Message::Brief), false);
-        QCOMPARE(widget->isMessageFieldDisplayed(Draupnir::Messages::Message::What), false);
-        QCOMPARE(widget->isMessageFieldDisplayed(Draupnir::Messages::Message::Icon), false);
-        QCOMPARE(widget->isMessageFieldDisplayed(Draupnir::Messages::Message::DateTime), false);
-        QCOMPARE(widget->isMessageFieldDisplayed(Draupnir::Messages::Message::All), false);
+        QCOMPARE(widget->displayedMessageFieldsMask(), Draupnir::Messages::MessageField::None);
+        QCOMPARE(widget->isMessageFieldDisplayed(Draupnir::Messages::MessageField::Brief), false);
+        QCOMPARE(widget->isMessageFieldDisplayed(Draupnir::Messages::MessageField::What), false);
+        QCOMPARE(widget->isMessageFieldDisplayed(Draupnir::Messages::MessageField::Icon), false);
+        QCOMPARE(widget->isMessageFieldDisplayed(Draupnir::Messages::MessageField::DateTime), false);
+        QCOMPARE(widget->isMessageFieldDisplayed(Draupnir::Messages::MessageField::All), false);
     }
 
     void test_setting_displayed_message_fields() {
@@ -68,38 +69,38 @@ private slots:
         QSignalSpy messageFieldVisibilityChangedSpy{ widget, &MessageFieldsSelectorWidget::messageFieldVisibilityChanged };
 
         // Verify initial state.
-        QVERIFY(widget->displayedMessageFieldsMask() == Draupnir::Messages::Message::Fields::None);
+        QVERIFY(widget->displayedMessageFieldsMask() == Draupnir::Messages::MessageField::None);
 
         // Select some random field to be displayed
-        widget->setMessageFieldDisplayed(Draupnir::Messages::Message::Icon, true);
+        widget->setMessageFieldDisplayed(Draupnir::Messages::MessageField::Icon, true);
         // Check if everything is updated properly.
-        QCOMPARE(widget->displayedMessageFieldsMask(), Draupnir::Messages::Message::Icon);
-        QVERIFY(widget->isMessageFieldDisplayed(Draupnir::Messages::Message::Icon));
+        QCOMPARE(widget->displayedMessageFieldsMask(), Draupnir::Messages::MessageField::Icon);
+        QVERIFY(widget->isMessageFieldDisplayed(Draupnir::Messages::MessageField::Icon));
 
         // Select some other random field to be displayed
-        widget->setMessageFieldDisplayed(Draupnir::Messages::Message::Brief, true);
+        widget->setMessageFieldDisplayed(Draupnir::Messages::MessageField::Brief, true);
         // Check if everything is still updated properly
-        QCOMPARE(widget->displayedMessageFieldsMask(), Draupnir::Messages::Message::Icon | Draupnir::Messages::Message::Brief);
-        QVERIFY(widget->isMessageFieldDisplayed(Draupnir::Messages::Message::Icon));
-        QVERIFY(widget->isMessageFieldDisplayed(Draupnir::Messages::Message::Brief));
+        QCOMPARE(widget->displayedMessageFieldsMask(), Draupnir::Messages::MessageField::Icon | Draupnir::Messages::MessageField::Brief);
+        QVERIFY(widget->isMessageFieldDisplayed(Draupnir::Messages::MessageField::Icon));
+        QVERIFY(widget->isMessageFieldDisplayed(Draupnir::Messages::MessageField::Brief));
 
         // Select all of the fields manually
-        widget->setMessageFieldDisplayed(Draupnir::Messages::Message::Brief, true);
-        widget->setMessageFieldDisplayed(Draupnir::Messages::Message::What, true);
-        widget->setMessageFieldDisplayed(Draupnir::Messages::Message::Icon, true);
-        widget->setMessageFieldDisplayed(Draupnir::Messages::Message::DateTime, true);
+        widget->setMessageFieldDisplayed(Draupnir::Messages::MessageField::Brief, true);
+        widget->setMessageFieldDisplayed(Draupnir::Messages::MessageField::What, true);
+        widget->setMessageFieldDisplayed(Draupnir::Messages::MessageField::Icon, true);
+        widget->setMessageFieldDisplayed(Draupnir::Messages::MessageField::DateTime, true);
         // Check that All action is checked
         QCOMPARE(widget->m_messageFieldsContainer.showAllUiElement()->isChecked(), true);
 
         // Deselect one of the fields manually
-        widget->setMessageFieldDisplayed(Draupnir::Messages::Message::Brief, false);
+        widget->setMessageFieldDisplayed(Draupnir::Messages::MessageField::Brief, false);
         // Check that All action is unchecked
         QCOMPARE(widget->m_messageFieldsContainer.showAllUiElement()->isChecked(), false);
 
         // Deselect rest of the fields
-        widget->setMessageFieldDisplayed(Draupnir::Messages::Message::What, false);
-        widget->setMessageFieldDisplayed(Draupnir::Messages::Message::Icon, false);
-        widget->setMessageFieldDisplayed(Draupnir::Messages::Message::DateTime, false);
+        widget->setMessageFieldDisplayed(Draupnir::Messages::MessageField::What, false);
+        widget->setMessageFieldDisplayed(Draupnir::Messages::MessageField::Icon, false);
+        widget->setMessageFieldDisplayed(Draupnir::Messages::MessageField::DateTime, false);
         // Check that All action is still unchecked
         QCOMPARE(widget->m_messageFieldsContainer.showAllUiElement()->isChecked(), false);
 
@@ -112,42 +113,42 @@ private slots:
         QSignalSpy messageFieldVisibilityChangedSpy{ widget, &MessageFieldsSelectorWidget::messageFieldVisibilityChanged };
 
         // Check initial state.
-        QVERIFY(widget->displayedMessageFieldsMask() == Message::Fields::None);
+        QVERIFY(widget->displayedMessageFieldsMask() == MessageField::None);
 
         // Select some random message field
-        widget->m_messageFieldsContainer.getUiElement(Message::Fields::Icon)->click();
+        widget->m_messageFieldsContainer.getUiElement(MessageField::Icon)->click();
 
         // Check if proper signals were emitted
         QTRY_COMPARE(messageFieldVisibilityChangedSpy.count(), 1);
         QList<QVariant> signalArgs = messageFieldVisibilityChangedSpy.takeFirst();
-        QCOMPARE(signalArgs[0].value<Draupnir::Messages::Message::Fields>(), Draupnir::Messages::Message::Fields::Icon);
+        QCOMPARE(signalArgs[0].value<Draupnir::Messages::MessageField>(), Draupnir::Messages::MessageField::Icon);
         QCOMPARE(signalArgs[1].value<bool>(), true);
 
         // Kind-of pre-select some fields
-        widget->setMessageFieldDisplayed(Draupnir::Messages::Message::Brief, true);
-        widget->setMessageFieldDisplayed(Draupnir::Messages::Message::What, true);
-        widget->setMessageFieldDisplayed(Draupnir::Messages::Message::Icon, true);
+        widget->setMessageFieldDisplayed(Draupnir::Messages::MessageField::Brief, true);
+        widget->setMessageFieldDisplayed(Draupnir::Messages::MessageField::What, true);
+        widget->setMessageFieldDisplayed(Draupnir::Messages::MessageField::Icon, true);
 
         // Trigger All action
         widget->m_messageFieldsContainer.showAllUiElement()->click();
         // Check if the UI is updated
-        QCOMPARE(widget->isMessageFieldDisplayed(Message::Fields::Brief), true);
-        QCOMPARE(widget->isMessageFieldDisplayed(Message::Fields::What), true);
-        QCOMPARE(widget->isMessageFieldDisplayed(Message::Fields::Icon), true);
-        QCOMPARE(widget->isMessageFieldDisplayed(Message::Fields::DateTime), true);
+        QCOMPARE(widget->isMessageFieldDisplayed(MessageField::Brief), true);
+        QCOMPARE(widget->isMessageFieldDisplayed(MessageField::What), true);
+        QCOMPARE(widget->isMessageFieldDisplayed(MessageField::Icon), true);
+        QCOMPARE(widget->isMessageFieldDisplayed(MessageField::DateTime), true);
         // Check if proper signals were emitted
         QTRY_COMPARE(messageFieldVisibilityChangedSpy.count(), 1);
         signalArgs = messageFieldVisibilityChangedSpy.takeFirst();
-        QCOMPARE(signalArgs[0].value<Draupnir::Messages::Message::Fields>(), Message::Fields::DateTime);
+        QCOMPARE(signalArgs[0].value<Draupnir::Messages::MessageField>(), MessageField::DateTime);
         QCOMPARE(signalArgs[1].value<bool>(), true);
 
         // Check if we uncheck All action properly
         widget->m_messageFieldsContainer.showAllUiElement()->click();
         // Check if the UI is updated
-        QCOMPARE(widget->isMessageFieldDisplayed(Message::Fields::Brief), false);
-        QCOMPARE(widget->isMessageFieldDisplayed(Message::Fields::What), false);
-        QCOMPARE(widget->isMessageFieldDisplayed(Message::Fields::Icon), false);
-        QCOMPARE(widget->isMessageFieldDisplayed(Message::Fields::DateTime), false);
+        QCOMPARE(widget->isMessageFieldDisplayed(MessageField::Brief), false);
+        QCOMPARE(widget->isMessageFieldDisplayed(MessageField::What), false);
+        QCOMPARE(widget->isMessageFieldDisplayed(MessageField::Icon), false);
+        QCOMPARE(widget->isMessageFieldDisplayed(MessageField::DateTime), false);
 
         // Check if proper signals were emitted
         QTRY_COMPARE(messageFieldVisibilityChangedSpy.count(), 4);

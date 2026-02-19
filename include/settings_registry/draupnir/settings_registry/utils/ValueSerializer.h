@@ -2,7 +2,7 @@
  **********************************************************************************************************************
  *
  * draupnir-lib
- * Copyright (C) 2025 Ivan Odinets <i_odinets@protonmail.com>
+ * Copyright (C) 2025-2026 Ivan Odinets <i_odinets@protonmail.com>
  *
  * This file is part of draupnir-lib
  *
@@ -26,6 +26,9 @@
 #define VALUESERIALIZER_H
 
 #include <QVariant>
+
+#include "draupnir/settings_registry/utils/EnumFlagsSerializer.h"
+#include "draupnir/utils/flags.h"
 
 namespace Draupnir::Settings
 {
@@ -86,7 +89,32 @@ public:
 
         backend->setValue(key,QVariant::fromValue(value));
     }
+};
 
+template<class Backend, class Enum>
+class ValueSerializer<Backend, draupnir::utils::enum_flags<Enum>>
+{
+public:
+    using Value = draupnir::utils::enum_flags<Enum>;
+
+    static inline Value get(Backend* backend, const QString& key, const Value& defaultValue) {
+        Q_ASSERT_X(backend, "ValueSerializer<Backend,Value>::get",
+                   "Provided Backend* pointer is nullptr");
+
+        if (!backend->contains(key))
+            return defaultValue;
+
+        const QString valueString = backend->value(key).toString();
+        const std::optional<Value> maybeValue = EnumFlagsSerializer<Value>::fromConfigString(valueString);
+        return (maybeValue.has_value()) ? maybeValue.value() : defaultValue;
+    }
+
+    static inline void set(Backend* backend, const QString& key, const Value& value) {
+        Q_ASSERT_X(backend, "ValueSerializer<Backend,Value>::set",
+                   "Provided Backend* pointer is nullptr");
+
+        backend->setValue(key,EnumFlagsSerializer<Value>::toConfigString(value));
+    }
 };
 
 };

@@ -22,29 +22,31 @@
  *
  */
 
-#ifndef TYPE_DETECTORS_H
-#define TYPE_DETECTORS_H
+#ifndef MESSAGESYSTEMCONFIGDIALOGSETTINGS_H
+#define MESSAGESYSTEMCONFIGDIALOGSETTINGS_H
 
-#include <type_traits>
+#include <QString>
 
-namespace draupnir::utils
+namespace Draupnir::Messages
 {
 
-template<typename T>
-struct is_integer : std::bool_constant<
-    std::is_same_v<T,char> || std::is_same_v<T,unsigned char> ||
-    std::is_same_v<T,short> || std::is_same_v<T,unsigned short> ||
-    std::is_same_v<T,int> || std::is_same_v<T,unsigned int> ||
-    std::is_same_v<T,long> || std::is_same_v<T,unsigned long> ||
-    std::is_same_v<T,long long> || std::is_same_v<T,unsigned long long>
-> {};
+namespace MessageSystemConfigDialogSettings
+{
 
-template<class Candidate>
-concept integer_concept = is_integer<Candidate>::value;
+struct WidgetIndexSetting
+{
+    /*! @brief Underlying value type. */
+    using Value = int;
 
-template<class Candidate>
-concept enum_concept = std::is_enum_v<Candidate>;
+    /*! @brief Return the persistent storage key ("message_system_config_dialog/active_widget_index"). */
+    static QString key() { return "message_system_config_dialog/active_widget_index"; }
 
+    /*! @brief Return the default value - 0. */
+    static int defaultValue() { return 0; }
 };
 
-#endif // TYPE_DETECTORS_H
+}; // namespace MessageSystemConfigDialogSettings
+
+}; // namespace Draupnir::Messages
+
+#endif // MESSAGESYSTEMCONFIGDIALOGSETTINGS_H

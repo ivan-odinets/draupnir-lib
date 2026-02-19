@@ -2,7 +2,7 @@
  **********************************************************************************************************************
  *
  * draupnir-lib
- * Copyright (C) 2025 Ivan Odinets <i_odinets@protonmail.com>
+ * Copyright (C) 2025-2026 Ivan Odinets <i_odinets@protonmail.com>
  *
  * This file is part of draupnir-lib
  *
@@ -36,10 +36,8 @@
 namespace Draupnir::Messages
 {
 
-/*! @class MessageSystemGeneralIT tests/message_system/GeneralIT/MessageSystemGeneralIT.cpp
- *  @brief This test class tests basic functionality of the MessageSystem.
- *
- * @todo Refractor this test so that it will have better readability. */
+/*! @class MessageSystemGeneralIT tests/message_system/MessageSystemGeneralIT/MessageSystemIT.cpp
+ *  @brief This test class tests basic functionality of the MessageSystem. */
 
 class MessageSystemGeneralIT : public QObject
 {

@@ -2,7 +2,7 @@
  **********************************************************************************************************************
  *
  * draupnir-lib
- * Copyright (C) 2025 Ivan Odinets <i_odinets@protonmail.com>
+ * Copyright (C) 2025-2026 Ivan Odinets <i_odinets@protonmail.com>
  *
  * This file is part of draupnir-lib
  *
@@ -59,14 +59,14 @@ public:
      *         checkboxes will be marked.
      * @note No signals are emitted after calling this method.
      * @see Draupnir::Messages::MessageFieldsSelectorBase */
-    void setDisplayedMessageFieldsMask(const std::underlying_type_t<Message::Fields> mask) {
+    void setDisplayedMessageFieldsMask(const MessageFields mask) {
         m_messageFieldsContainer.setDisplayedMask(mask);
     }
 
     /*! @brief This method returns mask of the parts of the @ref Draupnir::Messages::Message object which are marked as
      *         displayed within the @ref Draupnir::Messages::MessageListView widget.
      * @see Draupnir::Messages::MessageFieldsSelectorBase */
-    std::underlying_type_t<Message::Fields> displayedMessageFieldsMask() const {
+    MessageFields displayedMessageFieldsMask() const {
         return m_messageFieldsContainer.displayedMask();
     }
 
@@ -75,19 +75,19 @@ public:
      *  @param isShown Whether the field should be marked as visible.
      * @note No signals are emitted after calling this method.
      * @see Draupnir::Messages::MessageFieldsSelectorBase */
-    void setMessageFieldDisplayed(Message::Fields field, bool isShown) {
+    void setMessageFieldDisplayed(MessageField field, bool isShown) {
         m_messageFieldsContainer.setFlagDisplayed(field, isShown);
     }
 
     /*! @brief Returns whether specific @ref Draupnir::Messages::Message::Fields is marked as visible.
      *  @param field Field to query.
      * @see Draupnir::Messages::MessageFieldsSelectorBase */
-    bool isMessageFieldDisplayed(Message::Fields field) const {
+    bool isMessageFieldDisplayed(MessageField field) const {
         return m_messageFieldsContainer.isFlagDisplayed(field);
     }
 
     /*! @brief Returns QAction representing specific Message::Fields key. */
-    QAction* getActionForField(Message::Fields field) {
+    QAction* getActionForField(MessageField field) {
         return m_messageFieldsContainer.getUiElement(field);
     }
 
@@ -125,7 +125,7 @@ signals:
     /*! @brief Emitted when user toggles message field visibility via `QAction`.
      *  @param field The field whose visibility changed.
      *  @param isVisible Whether the field is now visible. */
-    void messageFieldVisibilityChanged(Draupnir::Messages::Message::Fields field, bool isVisible);
+    void messageFieldVisibilityChanged(Draupnir::Messages::MessageField field, bool isVisible);
 
     /*! @brief Emitted when user toggles visibility of a message type via `QAction`.
      *  @param messageType The message type being toggled.

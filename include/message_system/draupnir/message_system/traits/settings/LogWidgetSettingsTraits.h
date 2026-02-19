@@ -2,7 +2,7 @@
  **********************************************************************************************************************
  *
  * draupnir-lib
- * Copyright (C) 2025 Ivan Odinets <i_odinets@protonmail.com>
+ * Copyright (C) 2025-2026 Ivan Odinets <i_odinets@protonmail.com>
  *
  * This file is part of draupnir-lib
  *
@@ -25,12 +25,15 @@
 #ifndef LOGWIDGETSETTINGSTRAITS_H
 #define LOGWIDGETSETTINGSTRAITS_H
 
-#include "draupnir/message_system/core/Message.h"
+#include <QSize>
+
+#include "draupnir/message_system/core/MessageFields.h"
 #include "draupnir/message_system/core/MessageType.h"
 
 /*! @file draupnir/message_system/traits/settings/LogWidgetSettingsTraits.h
  *  @ingroup MessageSystem
- *  @brief This file contains setting traits for the @ref Draupnir::Messages::LogWidget. */
+ *  @brief This file contains setting traits for the @ref Draupnir::Messages::LogWidget.
+ * @todo Split this file into more suitable files. */
 
 /*! @namespace Draupnir::Messages::Settings
  *  @ingroup MessageSystem
@@ -89,13 +92,13 @@ struct DisplayedMessageTypesSetting
 struct DisplayedMessageFieldsSetting
 {
     /*! @brief Underlying value type. */
-    using Value = std::underlying_type_t<Message::Fields>;
+    using Value = MessageFields;
 
     /*! @brief Return the persistent key as a `QString`. */
     static QString key() { return QString{"log_widget/meddsge_fields_shown"}; }
 
     /*! @brief Return the default value. */
-    static auto defaultValue() { return Message::Fields::All; }
+    static auto defaultValue() { return MessageFields{MessageField::All}; }
 };
 
 }; // namespace MessageListView

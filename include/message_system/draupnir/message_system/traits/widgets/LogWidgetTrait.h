@@ -2,7 +2,7 @@
  **********************************************************************************************************************
  *
  * draupnir-lib
- * Copyright (C) 2025 Ivan Odinets <i_odinets@protonmail.com>
+ * Copyright (C) 2025-2026 Ivan Odinets <i_odinets@protonmail.com>
  *
  * This file is part of draupnir-lib
  *
@@ -32,8 +32,8 @@ namespace Draupnir::Messages
 
 /*! @struct LogWidgetTrait draupnir/message_system/traits/widgets/LogWidgetTrait.h
  *  @ingroup MessageSystem
- *  @brief This is a widget trait.
- * @todo Write reasonable documentation. */
+ *  @brief This widget trait should be used within @ref Draupnir::Ui::FixedTabWidgetTemplate. When uset it will add a tab
+ *         with @ref Draupnir::Messages::LogWidget. */
 
 struct LogWidgetTrait
 {

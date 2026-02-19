@@ -2,7 +2,7 @@
  **********************************************************************************************************************
  *
  * draupnir-lib
- * Copyright (C) 2025 Ivan Odinets <i_odinets@protonmail.com>
+ * Copyright (C) 2025-2026 Ivan Odinets <i_odinets@protonmail.com>
  *
  * This file is part of draupnir-lib
  *
@@ -34,17 +34,17 @@ class QPushButton;
 class QSlider;
 class QToolButton;
 
-#include "draupnir/SettingsRegistry.h"
-
 #include "draupnir/message_system/core/MessageType.h"
+#include "draupnir/settings_registry/utils/SettingsTraitsConcatenator.h"
 #include "draupnir/message_system/traits/settings/LogWidgetSettingsTraits.h"
+#include "draupnir/message_system/ui/windows/MessageSystemConfigDialog.h"
+#include "draupnir/settings_registry/SettingsBundleTemplate.h"
 
 namespace Draupnir::Messages
 {
 
 class AbstractMessageListViewConfigMenu;
 class AbstractMessageUiBuilder;
-class MessageSystemConfigDialog;
 class MessageListModel;
 class MessageListView;
 
@@ -75,11 +75,12 @@ class LogWidget : public QWidget
 public:
     /*! @brief Alias for @ref Draupnir::Settings::SettingsBundleTemplate instantiation, which holds settings traits being
      *         used by this @ref LogWidget. */
-    using SettingsBundle = Draupnir::Settings::SettingsBundleTemplate<
+    using SettingsBundle = Draupnir::Settings::SettingsTraitsConcatenator<
         Draupnir::Messages::Settings::LogWidget::IconSizeSetting,
         Draupnir::Messages::Settings::LogWidget::DisplayedMessageFieldsSetting,
-        Draupnir::Messages::Settings::LogWidget::DisplayedMessageTypesSetting
-    >;
+        Draupnir::Messages::Settings::LogWidget::DisplayedMessageTypesSetting,
+        Draupnir::Messages::MessageSystemConfigDialog
+    >::toSettingsBundle;
 
     /*! @brief Default constructor. Accepts pointer to parent `QWidget` object and creates @ref LogWidget, which needs to be
      *         configured.
@@ -156,7 +157,7 @@ private slots:
     void _onMessageTypeFilterChanged(MessageType,bool);
 
     /*! @brief This private slot handles changes of displayed message fields. */
-    void _onMessageFieldVisibilityChanged(Draupnir::Messages::Message::Fields field, bool isDisplayed);
+    void _onMessageFieldVisibilityChanged(Draupnir::Messages::MessageField field, bool isDisplayed);
 
     /*! @brief This private slot handles movement of the icon size selector slider. */
     void _onIconSizeChange(int newSize);

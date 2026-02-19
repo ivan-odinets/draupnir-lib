@@ -2,7 +2,7 @@
  **********************************************************************************************************************
  *
  * draupnir-lib
- * Copyright (C) 2025 Ivan Odinets <i_odinets@protonmail.com>
+ * Copyright (C) 2025-2026 Ivan Odinets <i_odinets@protonmail.com>
  *
  * This file is part of draupnir-lib
  *
@@ -26,7 +26,7 @@
 #define MESSAGEFIELDSSELECTORBASE_H
 
 #include "draupnir/containers/fixed_map.h"  // IWYU pragma: keep
-#include "draupnir/message_system/core/Message.h"
+#include "draupnir/message_system/core/MessageFields.h"
 #include "draupnir/ui_bricks/utils/CheckableUiElementHelper.h"
 
 namespace Draupnir::Messages
@@ -45,7 +45,7 @@ public:
     /*! @brief Constructs the selector logic and initializes all UI elements. Individual elements and the "All" selector are
      *         allocated and connected. At construction time, all fields are considered hidden. */
     MessageFieldsSelectorBase() :
-        m_displayedMask{Message::Fields::None},
+        m_displayedMask{MessageField::None},
         w_showAllUiElement{nullptr}
     {
         static_assert(std::is_same_v<UiElement,QAction> || std::is_same_v<UiElement,QCheckBox>,
@@ -66,46 +66,41 @@ public:
 
     /*! @brief This method is used to set the callback function, which will be invoked when user will check / uncheck UiElement
      *         for certain flag. */
-    void onElementInteracted(std::function<void(Message::Fields,bool)> callback) { m_callback = callback; }
+    void onElementInteracted(std::function<void(MessageField,bool)> callback) { m_callback = callback; }
 
     /*! @brief Sets the current mask of visible elements. All UI elements are updated to reflect the new state.
      *  @param mask New mask to set.
      * @note No callback called when calling this method. */
-    void setDisplayedMask(std::underlying_type_t<Message::Fields> mask) {
+    void setDisplayedMask(MessageFields mask) {
         m_displayedMask = mask;
 
         m_uiElementMap.for_each_pair([this,mask](auto& pair){
-            pair.second->setChecked(mask & pair.first);
+            pair.second->setChecked(mask.testFlag(pair.first));
         });
 
         _updateShowAllAction();
     }
 
     /*! @brief Returns the current mask of displayed message fields. */
-    std::underlying_type_t<Message::Fields> displayedMask() const { return m_displayedMask; }
+    MessageFields displayedMask() const { return m_displayedMask; }
 
     /*! @brief Sets visibility of an individual UiElement. Also updates "All" selector.
      *  @param field Field to update.
      *  @param isShown Whether the field should be visible. */
-    void setFlagDisplayed(Message::Fields field, bool isShown) {
-        if (isShown)
-            m_displayedMask |= field;
-        else
-            m_displayedMask &= ~field;
-
+    void setFlagDisplayed(MessageField field, bool isShown) {
+        m_displayedMask.setFlag(field,isShown);
         m_uiElementMap[field]->setChecked(isShown);
-
         _updateShowAllAction();
     }
 
     /*! @brief Returns true if the specified field is currently marked as displayed. */
-    bool isFlagDisplayed(Message::Fields field) const { return m_displayedMask & field; }
+    bool isFlagDisplayed(MessageField field) const { return m_displayedMask.testFlag(field); }
 
     /*! @brief Returns a pointer to the "All fields" UI element. */
     UiElement* showAllUiElement() { return w_showAllUiElement; }
 
     /*! @brief Returns a pointer to a UiElement for a specific Message::Fields entry. */
-    UiElement* getUiElement(Message::Fields field) { return m_uiElementMap[field]; }
+    UiElement* getUiElement(MessageField field) { return m_uiElementMap[field]; }
 
     /*! @brief Iterates over all field-related UI elements. Allows client code to add them into layouts or menus.
      *  @param callable Function to call with each DisplayUiElement*. */
@@ -117,7 +112,7 @@ public:
     void retranslateUiElements() {
         w_showAllUiElement->setText(QObject::tr("All"));
         m_uiElementMap.for_each_pair([](auto& pair){
-            pair.second->setText(Message::fieldsDisplayString(pair.first));
+            pair.second->setText(fieldsDisplayString(pair.first));
         });
     }
 
@@ -125,34 +120,32 @@ private:
     friend class MessageListViewConfigMenuTemplateTest;
 
     /*! @brief Current field visibility mask. */
-    std::underlying_type_t<Message::Fields> m_displayedMask;
+    MessageFields m_displayedMask;
 
     /*! @brief "All fields" selector UI element. */
     UiElement* w_showAllUiElement;
 
     /*! @brief Map from message field → UI element. */
     draupnir::containers::fixed_map<
-            Message::individualFieldsArray,
-            UiElement*
+        individualFieldsArray,
+        UiElement*
     > m_uiElementMap;
-    std::function<void(Message::Fields, bool)> m_callback;
+    std::function<void(MessageField, bool)> m_callback;
 
     /*! @brief Internal slot handler for a single field UI element being toggled. */
-    void _handleUiElementUserInteraction(Message::Fields field, bool isChecked) {
-        if (isChecked)
-            m_displayedMask |= field;
-        else
-            m_displayedMask &= ~field;
+    void _handleUiElementUserInteraction(MessageField field, bool isChecked) {
+        m_displayedMask.setFlag(field,isChecked);
 
         Q_ASSERT(m_callback);
+        _updateShowAllAction();
         m_callback(field,isChecked);
     }
 
     /*! @brief Internal slot handler for the "All" field toggler being changed. */
     void _handleShowAllUserInteraction(bool isChecked) {
         m_displayedMask = (isChecked) ?
-            Message::Fields::All :
-            Message::Fields::None;
+            MessageField::All :
+            MessageField::None;
 
         m_uiElementMap.for_each_pair([this,isChecked](auto& pair){
             if (isChecked != pair.second->isChecked()) {
@@ -166,7 +159,7 @@ private:
     /*! @brief Updates the "All" selector checkbox to match current state. Will be checked only if all individual fields
      *         are selected. */
     void _updateShowAllAction() {
-        w_showAllUiElement->setChecked((m_displayedMask == Message::Fields::All));
+        w_showAllUiElement->setChecked((m_displayedMask == MessageField::All));
     }
 };
 
