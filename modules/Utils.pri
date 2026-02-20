@@ -23,7 +23,8 @@
         $$PWD/../include/utils/draupnir/utils/type_if.h \
         $$PWD/../include/utils/draupnir/utils/type_list.h \
         $$PWD/../include/utils/draupnir/utils/type_name_utils.h \
-        $$PWD/../include/utils/draupnir/utils/type_presense.h
+        $$PWD/../include/utils/draupnir/utils/type_presense.h \
+        $$PWD/../include/utils/draupnir/utils/conditional_type_extractors.h
 
     DISTFILES += \
         $$PWD/../docs/pages/Utils.dox

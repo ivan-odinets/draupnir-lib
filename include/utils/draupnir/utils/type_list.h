@@ -25,12 +25,11 @@
 #ifndef TYPE_LIST_H
 #define TYPE_LIST_H
 
-#include <iostream>
-
 #include "draupnir/utils/class_marcos.h"
 #include "draupnir/utils/index_of.h"
 #include "draupnir/utils/template_adapters.h"
 #include "draupnir/utils/type_if.h"
+#include "draupnir/utils/type_extractors.h"
 #include "draupnir/utils/type_presense.h"
 
 namespace draupnir::utils
@@ -179,6 +178,20 @@ protected:
         static_assert(Index < sizeof...(Ts),
             "type_list<class... Ts>::get - Index out of range.");
 
+        using result = void;
+    };
+
+    template<template<class...> class Template,
+        bool extractOrNot = draupnir::utils::is_template_instantiation_present_v<Template,Ts...>>
+    struct get_template_instantiation_or_void;
+
+    template<template<class...> class Template>
+    struct get_template_instantiation_or_void<Template,true> {
+        using result = typename draupnir::utils::get_template_instantiation_t<Template,Ts...>;
+    };
+
+    template<template<class...> class Template>
+    struct get_template_instantiation_or_void<Template,false> {
         using result = void;
     };
 
@@ -666,6 +679,14 @@ public:
     template<std::size_t Index>
     using get_t = typename get<Index,0,Ts...>::result;
 
+    /*! @brief Retrieves the instantiation of a given template<class..> class Template if it is present within a @ref type_list
+     *         or void otherwise.
+     *  @tparam Template template instantiation of which should be extracted.
+     *  @details Alias to the nested `result` of the internal @ref type_list::get_template_instantiation_or_void metafunction.
+     *           If instantiation of a template `Template` is present in a list - returns it. If not - returns void. */
+    template<template<class...> class Template>
+    using get_template_instantiation_or_void_t = typename get_template_instantiation_or_void<Template>::result;
+
     /*! @brief Appends a type or another type_list to the end of this list.
      *  @tparam Type Either a single type or an instantiation of @ref type_list.
      *  @details If `Type` is a plain type, the result is a new @ref type_list with `Type` appended after `Ts...`. If `Type` is itself
@@ -879,6 +900,8 @@ struct type_list_merge<type_list<FirstTs...>,type_list<SecondTs...>>
  *  @details Equivalent to `typename type_list_merge<First,Second>::result`. */
 template<class First, class Second>
 using type_list_merge_t = typename type_list_merge<First,Second>::result;
+
+
 
 }; // namespace draupnir::utils
 
