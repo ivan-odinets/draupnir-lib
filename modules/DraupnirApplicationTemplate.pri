@@ -10,13 +10,10 @@
     INCLUDEPATH += $$PWD/../include/application_template
 
     HEADERS += \
-
+        $$PWD/../include/application_template/draupnir/ApplicationTemplate.h \
+        $$PWD/../include/application_template/draupnir/application_template/utils/MenuBarHandlersHelper.h \
+        $$PWD/../include/application_template/draupnir/application_template/utils/UiMainEntryHelper.h
 }
-
-HEADERS += \
-    $$PWD/../include/application_template/draupnir/ApplicationTemplate.h \
-    $$PWD/../include/application_template/draupnir/application_template/utils/MenuBarHandlersHelper.h \
-    $$PWD/../include/application_template/draupnir/application_template/utils/UiMainEntryHelper.h
 
 
 
