@@ -25,37 +25,28 @@
 #ifndef SETTINGSBUNDLETEMPLATE_H
 #define SETTINGSBUNDLETEMPLATE_H
 
+#include <iostream>
 #include <tuple>
 
 #include <QDebug>
 
+#include "draupnir/settings_registry/concepts/SettingsBundleConcept.h"
 #include "draupnir/settings_registry/concepts/SettingTraitConcept.h"
 #include "draupnir/settings_registry/core/SettingTemplate.h"
+#include "draupnir/settings_registry/utils/SettingTraitPrinter.h"
 #include "draupnir/settings_registry/utils/SettingTraitSerializer.h"
 #include "draupnir/utils/type_presense.h"
 
 #if defined(DRAUPNIR_SETTINGS_USE_QSETTINGS)
     #include <QSettings>
 #elif defined(DRAUPNIR_SETTINGS_USE_APPSETTINGS)
-    #include "draupnir/settings_registru/core/AppSettings.h"
+    #include "draupnir/settings_registry/core/AppSettings.h"
 #elif defined(DRAUPNIR_SETTINGS_USE_CUSTOM)
     #include "draupnir/settings_registry/core/SettingsBackendInterface.h"
 #endif // DRAUPNIR_SETTINGS_USE_QSETTINGS || DRAUPNIR_SETTINGS_USE_APPSETTINGS
 
 namespace Draupnir::Settings
 {
-
-template<SettingTraitConcept... Traits>
-class SettingsBundleTemplate;
-
-template<class C>
-concept SettingsBundleConcept =
-    requires { draupnir::utils::is_instantiation_of_v<C,Draupnir::Settings::SettingsBundleTemplate>; };
-
-template<class C>
-concept HasNestedSettingsBundle =
-    requires { typename C::SettingsBundle; } &&
-    draupnir::utils::is_instantiation_of_v<typename C::SettingsBundle,Draupnir::Settings::SettingsBundleTemplate>;
 
 /*! @class SettingsBundleTemplate draupnir/SettingsBundleTemplate.h
  *  @ingroup SettingsRegistry
@@ -81,8 +72,7 @@ concept HasNestedSettingsBundle =
  *        allow verifying whether a bundle matches a given registry.
  *
  * @todo Add interface for partial updating of the settings. E.g. when the setting has sth like QStringList type - not replace
- *       the variable, but use append method and than write to the backend.
- * @todo Move SettingsBundle concepts to better place. */
+ *       the variable, but use append method and than write to the backend. */
 
 template<SettingTraitConcept... SettingTraits>
 class SettingsBundleTemplate
@@ -164,14 +154,16 @@ public:
     /*! @brief Returns the pointer to the enabled Backend. */
     Backend* settings() { return p_backend; }
 
-    /*! @brief Prints all keys and values in the bundle using qDebug(). Intended for quick inspection and debugging.
-     * @todo Make final version of this method and (maybe?) make it available only in debug builds. */
-    void printAllToDebug() const {
-        Q_ASSERT_X(isValid(), "SettingsBundle<SettingsTraits...>::printAllToDebug",
-                   "This method must be called only for valid SettingsBundle objects.");
+    /*! @brief Prints all settings in the bundle to an arbitrary output stream-like object.
+     *  @tparam Output Stream-like type that supports `operator<<` for the emitted pieces.
+     *  @param output  Output sink (e.g. `QDebug` from `qDebug()/qInfo()`).
+     * @note The output object must support chaining via `operator<<`. */
+    template<class Output>
+    void printTo(Output&& output) {
+        Q_ASSERT_X(isValid(), "SettingsBundleTemplate<SettingsTraits...>::printTo",
+                   "This method must be called only for valid SettingsBundleTemplate objects.");
 
-        qDebug() << "SettingsBundle<SettingsTraits...>::printAllToDebug()";
-        _debugPrintAllImpl<SettingTraits...>();
+        (SettingTraitPrinter<SettingTraits>::template print<Output>(std::forward<Output>(output), get<SettingTraits>()), ... );
     }
 
     template<class Bundle>
@@ -263,15 +255,6 @@ private:
     /*! @brief Tuple of non-owning pointers to AbstractSetting<Trait> for each registered trait. */
     SettingTemplatePtrTuple m_settingTemplatePtrTuple;
 
-    /*! @brief Implementation detail: recursive debug print for each trait in the bundle. */
-    template<class First, class... Rest>
-    inline void _debugPrintAllImpl() {
-        qDebug() << "    "<< First::key() << " = " << std::get<SettingTemplate<First>*>(m_settingTemplatePtrTuple)->value;
-
-        if constexpr (sizeof...(Rest) > 0)
-            _debugPrintAllImpl<Rest...>();
-    }
-
     /*! @brief Populates a SettingsBundle by assigning internal trait pointers.
      *  @tparam Bundle Target bundle type. */
     template<class Bundle,class First, class... Rest>
@@ -283,11 +266,6 @@ private:
         if constexpr (sizeof...(Rest) > 0)
             _populateSettingBundle<Bundle,Rest...>(bundle);
     }
-
-    template<class T>
-    struct always_false : std::false_type {};
-
-    template<class T> struct print;
 
     template<class Source, class First,class... Rest>
     static constexpr bool _canBePopulatedFromImpl() {

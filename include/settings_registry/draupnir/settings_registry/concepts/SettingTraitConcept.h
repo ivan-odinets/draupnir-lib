@@ -94,11 +94,22 @@ concept HasSettingDescription = requires {
 /*! @headerfile draupnir/settings_registry/concepts/SettingTraitConcept.h
  *  @ingroup SettingsRegistry
  *  @brief This concept is combination of three other concepts: @ref Draupnir::Settings::SettingTrait::HasValueType,
+ *         @ref Draupnir::Settings::SettingTrait::HasDefaultValueMethod. Every type to be used as SettingTrait - must
+ *         fulfill these requirements. */
+
+template<class Candidate>
+concept SettingTraitConcept =
+    SettingTrait::HasValueType<Candidate> &&
+    SettingTrait::HasDefaultValueMethod<Candidate>;
+
+/*! @headerfile draupnir/settings_registry/concepts/SettingTraitConcept.h
+ *  @ingroup SettingsRegistry
+ *  @brief This concept is combination of three other concepts: @ref Draupnir::Settings::SettingTrait::HasValueType,
  *         @ref Draupnir::Settings::SettingTrait::HasKeyMethod, @ref Draupnir::Settings::SettingTrait::HasDefaultValueMethod.
  *         Every type to be used as SettingTrait - must fulfill these requirements. */
 
 template<class Candidate>
-concept SettingTraitConcept =
+concept PrimitiveSettingTraitConcept =
     SettingTrait::HasValueType<Candidate> &&
     SettingTrait::HasKeyMethod<Candidate> &&
     SettingTrait::HasDefaultValueMethod<Candidate>;

@@ -26,42 +26,51 @@
 #define SETTINGTRAITSERIALIZER_H
 
 #include "draupnir/settings_registry/concepts/SettingTraitConcept.h"
-#include "draupnir/settings_registry/utils/ValueSerializer.h"
+#include "draupnir/settings_registry/concepts/SettingsBackendConcept.h"
+#include "draupnir/settings_registry/utils/EnumFlagsSerializer.h"
+#include "draupnir/utils/flags.h"
 
 namespace Draupnir::Settings
 {
 
-/*! @class SettingTraitSerializer draupnir/setting_resgistry/utils/SettingTraitSerializer.h
+/*! @class SettingTraitSerializer draupnir/settings_registry/utils/SettingTraitSerializer.h
  *  @ingroup SettingsRegistry
- *  @brief Type-safe bridge for serializing and deserializing a specific SettingTrait using a backend.
- *  @tparam Backend       Type of the backend used for persistence (e.g., AppSettings, QSettings).
- *  @tparam SettingTrait  A trait that describes a setting, including its value type, key, and default value.
+ *  @brief Type-safe bridge for serializing and deserializing a specific `SettingTrait` using a backend.
+ *  @tparam Backend Backend type used for persistence (e.g., `AppSettings`, `QSettings` wrapper).
+ *  @tparam SettingTrait Trait that describes a setting (at minimum provides `Value` and `defaultValue()`).
  *
- *  @details This class defines the default serialization logic for settings represented by a specific `SettingTrait`. It
- *           delegates low-level reading/writing to `ValueSerializer`, and extracts metadata (key, type, default) from the
- *           trait.
+ *  @details This template is intentionally forward-declared to allow custom specializations for non-primitive or multi-key
+ *           settings.
  *
- *           ### Requirements for SettingTrait:
- *           The SettingTrait must define the following:
- *           - `using Value`                        — the C++ type of the value (e.g., bool, int, QString, enum, ...);
- *           - `static QString key()`              — the storage key used in the backend;
- *           - `static Value defaultValue()`       — the default value if none is stored.
+ *           ## Default implementation
+ *           A default implementation is provided only when `SettingTrait` satisfies @ref PrimitiveSettingTraitConcept, i.e.
+ *           it defines:
+ *           - `using Value`
+ *           - `static QString key()`
+ *           - `static Value defaultValue()`
  *
- *           ### Serialization Logic:
- *           - `get()` loads the value from the backend using the trait's key. If missing or invalid, returns the trait's
- *              default value.
- *           - `set()` stores the value into the backend under the trait's key.
+ *           The default implementation:
+ *           - `get()` reads value from backend by `SettingTrait::key()`. If missing or invalid, returns `defaultValue()`.
+ *           - `set()` writes value to backend under `SettingTrait::key()`.
  *
- *           ### Customization:
- *           For complex types or multi-key settings, specialize this template. A specialization must implement the same static
- *           interface:
+ *           ## Enum-flags special handling
+ *           If `draupnir::utils::enum_flags_concept<typename SettingTrait::Value>` is satisfied, the value is stored as a
+ *           string using @ref EnumFlagsSerializer.
+ *
+ *           ## Customization
+ *           For complex types (e.g. multi-key settings, custom validation, non-QVariant-storable values), provide a full
+ *           specialization:
  *           - `static Value get(Backend* settings);`
  *           - `static void set(Backend* settings, const Value& value);`
  *
- * @todo Unite this entity with @ref ValueSerializer. */
+ *  @note Default implementation assumes that `Backend` provides `contains(key)`, `value(key)`, `setValue(key, QVariant)`. */
 
-template<class Backend, SettingTraitConcept SettingTrait>
-class SettingTraitSerializer
+template<SettingsBackendConcept Backend, SettingTraitConcept SettingTrait>
+class SettingTraitSerializer;
+
+template<SettingsBackendConcept Backend, PrimitiveSettingTraitConcept SettingTrait>
+    requires(!draupnir::utils::enum_flags_concept<typename SettingTrait::Value>)
+class SettingTraitSerializer<Backend,SettingTrait>
 {
 public:
     using Value = typename SettingTrait::Value;
@@ -70,20 +79,60 @@ public:
      *  @param settings Pointer to the backend (must not be nullptr).
      *  @return The stored value if present and valid, otherwise the trait's default. */
     inline static Value get(Backend* settings) {
-        Q_ASSERT_X(settings, "SettingTraitSerializer<SettingTrait>::get",
-                   "Provided settings backend pointer is nullptr.");
+        Q_ASSERT_X(settings, "SettingTraitSerializer<Backend,SettingTrait>::get",
+                   "Provided settings pointer is nullptr.");
 
-        return ValueSerializer<Backend,Value>::get(settings,SettingTrait::key(),SettingTrait::defaultValue());
+        if (!settings->contains(SettingTrait::key()))
+            return SettingTrait::defaultValue();
+
+        const QVariant value = settings->value(SettingTrait::key());
+        if (value.canConvert<Value>())
+            return value.value<Value>();
+        else
+            return SettingTrait::defaultValue();
     }
 
     /*! @brief Stores the setting value into the backend.
      *  @param settings Pointer to the backend (must not be nullptr).
-     *  @param value    The value to persist. */
+     *  @param value The value to persist. */
     inline static void set(Backend* settings, const Value& value) {
-        Q_ASSERT_X(settings, "SettingTraitSerializer<SettingTrait>::set",
-                   "Provided settings backend pointer is nullptr.");
+        Q_ASSERT_X(settings, "SettingTraitSerializer<Backend,SettingTrait>::set",
+                   "Provided settings pointer is nullptr.");
 
-        ValueSerializer<Backend,Value>::set(settings,SettingTrait::key(),value);
+        settings->setValue(SettingTrait::key(),QVariant::fromValue(value));
+    }
+};
+
+template<SettingsBackendConcept Backend, PrimitiveSettingTraitConcept SettingTrait>
+    requires(draupnir::utils::enum_flags_concept<typename SettingTrait::Value>)
+class SettingTraitSerializer<Backend, SettingTrait>
+{
+public:
+    using Value = typename SettingTrait::Value;
+
+    /*! @brief Loads the setting value from the backend.
+     *  @param settings Pointer to the backend (must not be nullptr).
+     *  @return The stored value if present and valid, otherwise the trait's default. */
+    inline static Value get(Backend* settings) {
+        Q_ASSERT_X(settings, "SettingTraitSerializer<Backend,SettingTrait>::get",
+                   "Provided settings pointer is nullptr.");
+
+        if (!settings->contains(SettingTrait::key()))
+            return SettingTrait::defaultValue();
+
+        const QString valueString = settings->value(SettingTrait::key()).toString();
+        const std::optional<Value> maybeValue = EnumFlagsSerializer<Value>::fromConfigString(valueString);
+        return maybeValue.value_or(SettingTrait::defaultValue());
+    }
+
+    /*! @brief Stores the setting value into the backend.
+     *  @param settings Pointer to the backend (must not be nullptr).
+     *  @param value The value to persist. */
+    inline static void set(Backend* settings, const Value& value) {
+        Q_ASSERT_X(settings, "SettingTraitSerializer<Backend,SettingTrait>::set",
+                   "Provided settings pointer is nullptr.");
+
+        settings->setValue(SettingTrait::key(), EnumFlagsSerializer<Value>::toConfigString(value));
     }
 };
 

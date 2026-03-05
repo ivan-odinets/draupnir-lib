@@ -30,16 +30,15 @@
 #if defined(DRAUPNIR_SETTINGS_USE_QSETTINGS)
     #include <QSettings>
 #elif defined(DRAUPNIR_SETTINGS_USE_APPSETTINGS)
-    #include "core/AppSettings.h"
+    #include "draupnir/settings_registry/core/AppSettings.h"
 #elif defined(DRAUPNIR_SETTINGS_USE_CUSTOM)
-    #include "core/SettingsBackendInterface.h"
+    #include "draupnir/settings_registry/core/SettingsBackendInterface.h"
 #endif
 
 #include "draupnir/settings_registry/SettingsBundleTemplate.h"
 #include "draupnir/settings_registry/concepts/SettingTraitConcept.h"
 #include "draupnir/settings_registry/core/SettingTemplate.h"
 #include "draupnir/settings_registry/utils/SettingTraitSerializer.h"
-
 #include "draupnir/utils/type_presense.h"
 
 namespace Draupnir::Settings
@@ -82,7 +81,7 @@ namespace Draupnir::Settings
  *
  * @todo Add interface for partial updating of the settings. E.g. when the setting has sth like QStringList type - not replace
  *       the variable, but use append method and than write to the backend.
- * @todo Fix paths within includes for this class. */
+ * @todo Question: Maybe backends can be specifyed by the template arguments + specializations?*/
 
 template<SettingTraitConcept... Traits>
 class SettingsRegistryTemplate
@@ -165,6 +164,8 @@ public:
                    "This method must be called only once.");
 
         p_backend = backend;
+
+        _loadSettingsImpl<0>();
     }
 #endif
 
@@ -187,15 +188,17 @@ public:
     /*! @brief Returns the pointer to the enabled Backend. */
     Backend* settings() { return p_backend; }
 
-    /*! @brief Prints all known settings to debug log. Calls key() and value for each trait if available.
-     * @todo Make final version of this method and (maybe?) make it available only in debug builds. */
-    void printAllToDebug() {
-        Q_ASSERT_X(p_backend, "SettingsRegistry<SettingTraits...>::printAllToDebug",
-                   "SettingsRegistry<SettingTraits...>::loadSettings method must have been called before.");
-        qDebug() << "SettingsRegistry<Traits...>::printAllToDebug()";
+    /*! @brief Prints all settings in the registry to an arbitrary output stream-like object.
+     *  @tparam Output Stream-like type that supports `operator<<` for the emitted pieces.
+     *  @param output  Output sink (e.g. `QDebug` from `qDebug()/qInfo()`).
+     * @note The output object must support chaining via `operator<<`. */
+    template<class Output>
+    void printTo(Output&& output) {
+        Q_ASSERT_X(isLoaded(), "SettingsRegistryTemplate<Traits...>::printTo",
+                   "This method must be called only for valid SettingsRegistryTemplate objects.");
 
-        _printAllToDebugImpl<0>();
-    };
+        (SettingTraitPrinter<Traits>::print(output, get<Traits>()), ... );
+    }
 
     /*! @brief Retrieves a SettingsBundle pre-filled with settings from this registry.
      *  @tparam Bundle A concrete instantiation of SettingsBundle<Ts...>
@@ -267,20 +270,6 @@ private:
 
         if constexpr (Index + 1 < std::tuple_size_v<AbstractSettingsTuple>)
             _loadSettingsImpl<Index+1>();
-    }
-    /*! @brief Recursively prints trait keys and values to qDebug. */
-    template<std::size_t Index = 0>
-    inline void _printAllToDebugImpl() {
-        using Trait = typename _TraitForIndex<Index>::type;
-
-//        if constexpr (SettingTraitValidator::has_key<Trait>()) {
-            qDebug() << "["<<Index<<"] key = "<<Trait::key()<<" value = "<<std::get<Index>(m_settings).value;
-//        } else {
-//     qDebug() << "["<<Index<<"] custom thing...";
-// }
-
-        if constexpr (Index + 1 < std::tuple_size<AbstractSettingsTuple>::value)
-            _printAllToDebugImpl<Index+1>();
     }
 
     /*! @brief Populates a SettingsBundle by assigning internal trait pointers.
