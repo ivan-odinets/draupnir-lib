@@ -54,7 +54,10 @@ namespace Draupnir::Ui::MainWindow
  *                   MyApp::Settings::LastOpenedPageSetting
  *               >
  *           >;
- *           @endcode */
+ *           @endcode
+ *
+ * @todo Optimize this entity to use sth more lightweight than SettingsTraitsConcatenator. Maybe restrict "Things" to satisfy
+ *       SettingTraitConcept? */
 
 template<class... Things>
 struct ExtraSettings

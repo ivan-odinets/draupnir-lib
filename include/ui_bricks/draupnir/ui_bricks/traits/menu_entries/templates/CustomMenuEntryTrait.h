@@ -2,7 +2,7 @@
  **********************************************************************************************************************
  *
  * draupnir-lib
- * Copyright (C) 2025 Ivan Odinets <i_odinets@protonmail.com>
+ * Copyright (C) 2025-2026 Ivan Odinets <i_odinets@protonmail.com>
  *
  * This file is part of draupnir-lib
  *
@@ -36,7 +36,9 @@ namespace Draupnir::Ui {
  *  @brief Trait for describing a menu entry that uses a custom menu class. Provides static creation of the custom menu,
  *         passing displayName() and parent as arguments.
  *  @tparam displayNameImpl A callable returning a `QString` (used for the menu's title).
- *  @tparam CustomMenu The custom menu class type (should have a constructor taking `QString`). */
+ *  @tparam CustomMenu The custom menu class type (should have a constructor taking `QString`).
+ *
+ * @todo Question: Do we need this template? */
 
 template<auto displayNameImpl, class CustomMenu>
 class CustomMenuEntryTrait

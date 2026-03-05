@@ -2,7 +2,7 @@
  **********************************************************************************************************************
  *
  * draupnir-lib
- * Copyright (C) 2025 Ivan Odinets <i_odinets@protonmail.com>
+ * Copyright (C) 2025-2026 Ivan Odinets <i_odinets@protonmail.com>
  *
  * This file is part of draupnir-lib
  *
@@ -48,7 +48,8 @@ namespace Draupnir::Settings
  *           - static Type fromConfigString(const QString&);
  *           - static QString toConfigString(Type);
  *
- * @todo Remove unused things from this class. Or at least make possible to disable them using macros. */
+ * @todo Remove unused things from this class. Question: Is this class indeed required? Or the preserveConfig functionality
+ *       can be moved to the SettingsRegistry? */
 
 class AppSettings
 {

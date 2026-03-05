@@ -2,7 +2,7 @@
  **********************************************************************************************************************
  *
  * draupnir-lib
- * Copyright (C) 2025 Ivan Odinets <i_odinets@protonmail.com>
+ * Copyright (C) 2025-2026 Ivan Odinets <i_odinets@protonmail.com>
  *
  * This file is part of draupnir-lib
  *
@@ -42,9 +42,9 @@ namespace Draupnir::Settings
  *           supplies:
  *           - using QSize — the underlying C++ value type;
  *           - static QString key() — the storage key as a QString, built from @p settingsKey;
- *           - static QSize defaultValue() — the default value constructed from provided width and height
+ *           - static QSize defaultValue() — the default value constructed from provided width and height.
  *
- * @todo Add usage example. */
+ * @todo Question: Is this class required? */
 
 template<const char* settingsKey, int defaultWidth, int defaultHeight = defaultWidth>
 struct SizeSettingTraitTemplate

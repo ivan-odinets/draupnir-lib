@@ -2,7 +2,7 @@
  **********************************************************************************************************************
  *
  * draupnir-lib
- * Copyright (C) 2025 Ivan Odinets <i_odinets@protonmail.com>
+ * Copyright (C) 2025-2026 Ivan Odinets <i_odinets@protonmail.com>
  *
  * This file is part of draupnir-lib
  *
@@ -37,8 +37,8 @@
  *           utility functions for conversion between enum values and string representations for config and UI.
  * @note When having QT_NO_SYSTEMTRAYICON macro enabled - tray notification type will be not available.
  *
- * @todo Add support of the telegram notifications (using QtTelegramBot)
- * @todo Add a way so that user can add its own notification types, or at least disable ones being already present. */
+ * @todo Add a way so that user can add its own notification types, or at least disable ones being already present.
+ * @todo Improve serialization of this values. */
 
 namespace Draupnir::Messages
 {

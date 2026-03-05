@@ -28,6 +28,11 @@
 namespace draupnir::utils
 {
 
+/*! @file draupnir/utils/conditional_type_extractors.h
+ *  @ingroup Utils
+ *  @brief This is a file.
+ * @todo Write documentation for the entities within this file. */
+
 template<bool getOrNot, class Type>
 struct type_or_void;
 

@@ -2,7 +2,7 @@
  **********************************************************************************************************************
  *
  * draupnir-lib
- * Copyright (C) 2025 Ivan Odinets <i_odinets@protonmail.com>
+ * Copyright (C) 2025-2026 Ivan Odinets <i_odinets@protonmail.com>
  *
  * This file is part of draupnir-lib
  *
@@ -26,7 +26,7 @@
 #define MESSAGESYSTEMTEMPLATE_H
 
 #include "draupnir/message_system/core/AbstractMessageSystem.h"
-#include "draupnir/message_system/traits/messages/DefaultMessageTraits.h"
+#include "draupnir/message_system/traits/messages/DefaultMessageTraits.h" // IWYU pragma: keep
 #include "draupnir/message_system/utils/MessageTraitsHelper.h"
 #include "draupnir/message_system/ui/widgets/LogWidget.h"
 #include "draupnir/message_system/traits/settings/MessageTypeSettingsTrait.h"
@@ -105,7 +105,8 @@ public:
         m_uiBuilder.setMessageHandlerTemplate(&m_handler);
     }
 
-    /*! @brief Loads settings for this MessageSystemTemplate instantiation from the `SettingsSource` privided. */
+    /*! @brief Loads settings for this MessageSystemTemplate instantiation from the `SettingsSource` privided.
+     * @todo As other `loadSettings`-methods this needs to be standartized. */
     template<class SettingsSource>
     void loadSettings(SettingsSource* registry) {
         static_assert(SettingsBundle::template canBeFullyPopulatedFrom<SettingsSource>(),

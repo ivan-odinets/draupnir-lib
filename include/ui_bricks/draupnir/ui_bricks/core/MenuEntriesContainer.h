@@ -32,8 +32,8 @@
 #include <QObject>
 
 #include "draupnir/ui_bricks/concepts/MenuEntryConcept.h"
-#include "draupnir/utils/type_presense.h"
 #include "draupnir/utils/type_list.h"
+#include "draupnir/utils/type_presense.h"
 
 class QMenu;
 
@@ -51,8 +51,8 @@ class MenuTemplate;
  *  @details MenuEntriesContainer is a generic compile-time container that manages the creation, access, translation, and
  *           destruction of menu entry elements (QMenu/QAction or their descendants). It is designed to be used within
  *           MenuTemplate, MenuBarTemplate, or similar classes to provide DRY logic for nested menu structures.
- * @todo Improve hanling of edge-cases
- * @todo Standartize static_assert messages. */
+ *
+ * @todo Provide specialization for empty MenuEntriesContainer. */
 
 template<MenuEntryConcept... Entries>
 class MenuEntriesContainer
@@ -327,7 +327,7 @@ private:
     template<class Entry, class First, class... Rest>
     auto _getUiElementRecursive() {
         if constexpr (draupnir::utils::is_instantiation_of_v<typename First::Type,Draupnir::Ui::MenuTemplate>) {
-            if constexpr (typename First::Type::template containsRecursive<Entry>())
+            if constexpr (First::Type::template recursiveContains<Entry>())
                 return getUiElement<First>()->template getUiElementRecursive<Entry>();
         } else if constexpr (std::is_same_v<First,Entry>) {
             return getUiElement<Entry>();

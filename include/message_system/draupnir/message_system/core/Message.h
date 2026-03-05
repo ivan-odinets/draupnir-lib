@@ -36,9 +36,10 @@
 namespace Draupnir::Messages
 {
 
-/*! @class Message draupnir/core/Message.h
+/*! @class Message draupnir/message_system/core/Message.h
  *  @ingroup MessageSystem
- *  @brief This class represents some message from the App about event happened. */
+ *  @brief This class represents some message from the App about event happened.
+ * @todo Add static factory methods with std::move usage. */
 
 class Message final
 {

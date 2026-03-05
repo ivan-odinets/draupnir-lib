@@ -2,7 +2,7 @@
  **********************************************************************************************************************
  *
  * draupnir-lib
- * Copyright (C) 2025 Ivan Odinets <i_odinets@protonmail.com>
+ * Copyright (C) 2025-2026 Ivan Odinets <i_odinets@protonmail.com>
  *
  * This file is part of draupnir-lib
  *
@@ -51,11 +51,7 @@ class AbstractMessageHandler;
  *           which populates this widget with actual trait-based controls.
  *
  *           The widget includes a test row (label + combo box + button) and a layout for dynamic rows generated per
- *           message type.
- *
- * @todo Maybe it will make sense to make this widget Qt-only and populate it with specific QCheckBoxes like this is done for
- *       menus?
- * @todo Write test for this class. */
+ *           message type. */
 
 class AbstractNotificationSettingsWidget : public QWidget
 {

@@ -42,9 +42,11 @@ namespace draupnir::utils
  *           which `Detector<T>::value` is `true`.
  *
  *           In other words, `filter_if<Detector, Types...>::toContainer<Container>` yields a type equivalent to: `Container<
- *           Ts... >` *  where `Ts...` is the subsequence of @p Types... that satisfies the predicate @p Detector.  */
+ *           Ts... >` *  where `Ts...` is the subsequence of @p Types... that satisfies the predicate @p Detector.
+ *
+ * @todo Allow 'chained' filter_if usage. */
 
-template<template <class...> class Detector, class... Types>
+template<template <class> class Detector, class... Types>
 class filter_if
 {
 private:

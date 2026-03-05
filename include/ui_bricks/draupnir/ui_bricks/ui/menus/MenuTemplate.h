@@ -40,7 +40,10 @@ namespace Draupnir::Ui {
  *
  *  @details MenuTemplate is a variadic-template class designed to automate and unify creation, translation, and access of complex
  *           menu structures in Qt. It aggregates menu entries (QMenu, QAction, or descendants) defined by Entry traits, manages
- *           their lifecycle, and provides strongly-typed API for convenient compile-time and runtime access. */
+ *           their lifecycle, and provides strongly-typed API for convenient compile-time and runtime access.
+ *
+ * @todo Improve handling of the edge cases (e.g. empty Entries pack).
+ * @todo Reduce amount of public aliases. */
 
 template<class... Entries>
 class MenuTemplate final :

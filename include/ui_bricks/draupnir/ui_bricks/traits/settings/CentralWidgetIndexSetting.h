@@ -2,7 +2,7 @@
  **********************************************************************************************************************
  *
  * draupnir-lib
- * Copyright (C) 2025 Ivan Odinets <i_odinets@protonmail.com>
+ * Copyright (C) 2025-2026 Ivan Odinets <i_odinets@protonmail.com>
  *
  * This file is part of draupnir-lib
  *
@@ -40,11 +40,7 @@ namespace Draupnir::Settings
  *           - static QString key() — returns the persistent key string ("central_widget/active_widget_index");
  *           - static int defaultValue() — returns the default index = 0.
  *
- * @todo Finalize naming, file and directory (which will contain such traits) as this. Maybe split it to
- *       seperate namespace?.
- * @todo Allow changing of the defaultValue behaviour using preprocessor.
- * @todo Test changing of the default value by using macro defines.
- * @todo Update documentation to include this feature. */
+ * @todo Allow changing of the defaultValue behaviour using preprocessor and write test for this feature. */
 
 struct CentralWidgetIndexSetting
 {

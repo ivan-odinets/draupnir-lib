@@ -32,9 +32,7 @@
 #include "draupnir/settings_registry/concepts/SettingTraitConcept.h"
 #include "draupnir/settings_registry/core/SettingTemplate.h"
 #include "draupnir/settings_registry/utils/SettingTraitSerializer.h"
-
 #include "draupnir/utils/type_presense.h"
-#include "draupnir/utils/tuple_like_merge.h"
 
 #if defined(DRAUPNIR_SETTINGS_USE_QSETTINGS)
     #include <QSettings>
@@ -83,7 +81,8 @@ concept HasNestedSettingsBundle =
  *        allow verifying whether a bundle matches a given registry.
  *
  * @todo Add interface for partial updating of the settings. E.g. when the setting has sth like QStringList type - not replace
- *       the variable, but use append method and than write to the backend. */
+ *       the variable, but use append method and than write to the backend.
+ * @todo Move SettingsBundle concepts to better place. */
 
 template<SettingTraitConcept... SettingTraits>
 class SettingsBundleTemplate
@@ -165,7 +164,8 @@ public:
     /*! @brief Returns the pointer to the enabled Backend. */
     Backend* settings() { return p_backend; }
 
-    /*! @brief Prints all keys and values in the bundle using qDebug(). Intended for quick inspection and debugging. */
+    /*! @brief Prints all keys and values in the bundle using qDebug(). Intended for quick inspection and debugging.
+     * @todo Make final version of this method and (maybe?) make it available only in debug builds. */
     void printAllToDebug() const {
         Q_ASSERT_X(isValid(), "SettingsBundle<SettingsTraits...>::printAllToDebug",
                    "This method must be called only for valid SettingsBundle objects.");

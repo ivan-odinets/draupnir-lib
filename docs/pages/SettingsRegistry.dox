@@ -87,7 +87,12 @@
  *               >();
  *
  *               qDebug() << bundle.get<CacheDirectorySetting>();
- *               @endcode */
+ *               @endcode
+ *
+ * @todo Introduce settings UI categories as subtype in SettingTrait classes.
+ * @todo Finalize contract for runtime virtual interfaces. Can we have several SettingsResistries being present (most probably no)?
+ *       Should we have global access point for them?
+ * @todo Allow users automatically creating settings widget / dialog and implement MenuHandler for OpenSettings menu entry. */
 
 /*! @namespace Draupnir::Settings
  *  @ingroup SettingsRegistry

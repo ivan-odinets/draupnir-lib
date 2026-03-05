@@ -2,7 +2,7 @@
  **********************************************************************************************************************
  *
  * draupnir-lib
- * Copyright (C) 2025 Ivan Odinets <i_odinets@protonmail.com>
+ * Copyright (C) 2025-2026 Ivan Odinets <i_odinets@protonmail.com>
  *
  * This file is part of draupnir-lib
  *
@@ -66,9 +66,7 @@ namespace draupnir::utils
  *              ::then_template<std::vector, int>
  *              ::else_t1_a1<std::array, int, 10>
  *           ::result; // std::array<int, 10>
- *           @endcode
- *
- * @todo Maybe try generalizing this structure with macros? */
+ *           @endcode */
 
 template<bool Cond>
 class type_if {
@@ -81,7 +79,7 @@ private:
 
     /*! @brief Carrier for a plain type `T` (exposes `T` as `::type`). */
     template<class T>
-    struct _type      { using type = T; };
+    struct _type { using type = T; };
 
     /*! @brief Carrier for instantiating a `template<class...>` with arguments `Args...`. */
     template<template<class...> class Template, class... Args>

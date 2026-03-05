@@ -2,7 +2,7 @@
  **********************************************************************************************************************
  *
  * draupnir-lib
- * Copyright (C) 2025 Ivan Odinets <i_odinets@protonmail.com>
+ * Copyright (C) 2025-2026 Ivan Odinets <i_odinets@protonmail.com>
  *
  * This file is part of draupnir-lib
  *
@@ -35,7 +35,9 @@ namespace Draupnir::Proxy
  *  @brief Static utility class for conversion between `QNetworkProxy` objects and their `QString` representations.
  *
  *  @details Supports parsing and formatting of HTTP and SOCKS5 proxy URLs in string form. Proxy authentication is
- *           currently not supported. */
+ *           currently not supported.
+ *
+ * @todo Add support of proxy authentification serialization. */
 
 class ProxySerializer
 {

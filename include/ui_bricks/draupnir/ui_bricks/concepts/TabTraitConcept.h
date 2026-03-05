@@ -32,6 +32,11 @@ class QWidget;
 namespace Draupnir::Ui
 {
 
+/*! @namespace TabTrait draupnir/ui_bricks/concepts/TabTraitConcept.h
+ *  @ingroup UiBricks
+ *  @brief This is concept namespace.
+ * @todo Document entities within this namespace. */
+
 namespace TabTrait
 {
 

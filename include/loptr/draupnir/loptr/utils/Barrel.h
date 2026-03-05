@@ -2,7 +2,7 @@
  **********************************************************************************************************************
  *
  * draupnir-lib
- * Copyright (C) 2025 Ivan Odinets <i_odinets@protonmail.com>
+ * Copyright (C) 2025-2026 Ivan Odinets <i_odinets@protonmail.com>
  *
  * This file is part of draupnir-lib
  *
@@ -41,7 +41,7 @@ public:
     static constexpr int defaultDuration = 1000;
 
     /*! @brief Performs a barrel roll.
-     *  @details Triggers a one-shot “barrel roll” visual effect. The exact behaviour depends on the current platform and
+     *  @details Triggers a one-shot "barrel roll" visual effect. The exact behaviour depends on the current platform and
      *           integration, but the general idea is to temporarily rotate or animate the application UI in a and then
      *           restore it back to its normal state.
      *

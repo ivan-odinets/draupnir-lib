@@ -38,8 +38,7 @@ namespace draupnir::utils
  *  @ingroup Utils
  *  @brief Builds a unary predicate that checks for equality with a fixed type.
  *  @tparam Type Reference type to compare against.
- *  @details Given a `Type`, this helper defines a nested template `as<Other>` which is a `std::is_same<Type, Other>`. It may be
- *           used as an adapter to feed into @ref type_list::remove_if when implementing @ref type_list::remove_all_t. */
+ *  @details Given a `Type`, this helper defines a nested template `as<Other>` which is a `std::is_same<Type, Other>`. */
 template<class Type>
 struct the_same {
     template<class Other>

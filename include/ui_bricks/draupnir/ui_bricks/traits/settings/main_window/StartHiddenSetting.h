@@ -2,7 +2,7 @@
  **********************************************************************************************************************
  *
  * draupnir-lib
- * Copyright (C) 2025 Ivan Odinets <i_odinets@protonmail.com>
+ * Copyright (C) 2025-2026 Ivan Odinets <i_odinets@protonmail.com>
  *
  * This file is part of draupnir-lib
  *
@@ -39,9 +39,7 @@ namespace Draupnir::Settings::MainWindow
  *           - static QString key();
  *           - static bool defaultValue();
  *
- * @todo Allow changing of the defaultValue behaviour using preprocessor.
- * @todo Test changing of the default value by using macro defines.
- * @todo Update documentation to include this feature. */
+ * @todo Allow changing of the defaultValue behaviour using preprocessor and write test for this feature. */
 
 struct StartHiddenSetting
 {

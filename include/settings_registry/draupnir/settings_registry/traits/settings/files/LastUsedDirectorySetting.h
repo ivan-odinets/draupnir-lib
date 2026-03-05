@@ -2,7 +2,7 @@
  **********************************************************************************************************************
  *
  * draupnir-lib
- * Copyright (C) 2025 Ivan Odinets <i_odinets@protonmail.com>
+ * Copyright (C) 2025-2026 Ivan Odinets <i_odinets@protonmail.com>
  *
  * This file is part of draupnir-lib
  *
@@ -40,9 +40,8 @@ namespace Draupnir::Settings
  *           - A storage key ("files/last_used_directory");
  *           - A default value.
  *
- * @todo Allow changing of the defaultValue behaviour using preprocessor.
- * @todo Test changing of the default value by using macro defines.
- * @todo Update documentation to include this feature. */
+ * @todo Allow changing of the defaultValue behaviour using preprocessor. and test this behaviour.
+ * @todo Move this trait to more suitable place. Maybe in upcoming Files module? */
 
 struct LastUsedDirectorySetting
 {

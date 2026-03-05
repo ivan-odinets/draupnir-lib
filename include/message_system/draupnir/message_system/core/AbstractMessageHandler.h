@@ -2,7 +2,7 @@
  **********************************************************************************************************************
  *
  * draupnir-lib
- * Copyright (C) 2025 Ivan Odinets <i_odinets@protonmail.com>
+ * Copyright (C) 2025-2026 Ivan Odinets <i_odinets@protonmail.com>
  *
  * This file is part of draupnir-lib
  *
@@ -54,7 +54,7 @@ class MessageListModel;
  *           which consults these policies to show or queue notifications.
  *
  * @todo AbstractMessageHandler::_showMessageBox(Message* message) and AbstractMessageHandler::_showMessageBox(const QList<Message*>&
- *       messageList) methods can be refractored.
+ *       messageList) methods should be refractored.
  * @todo Allow configuration of dialogs (blocking vs non-blocking) somewhere.
  * @todo Add Q_ASSERT_X / reasonable debug messages when trying to show Message object with type unknown to this AbstractMessageHandler. */
 

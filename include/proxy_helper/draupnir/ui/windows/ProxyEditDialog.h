@@ -29,7 +29,8 @@
 
 #include <QNetworkProxy>
 
-namespace Draupnir::Proxy {
+namespace Draupnir::Proxy
+{
 
 class ProxyEditWidget;
 

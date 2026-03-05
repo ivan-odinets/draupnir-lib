@@ -21,7 +21,8 @@
  *           @endcode
  *
  * @warning Things from this module were added to the draupnir-lib for fun. Reasonable usage may be possible, but not
- *          guaranteed. */
+ *          guaranteed.
+ * @todo Add some widget(s) for simplification of easter-egg addition. */
 
 /*! @namespace Draupnir::Loptr
  *  @ingroup Loptr

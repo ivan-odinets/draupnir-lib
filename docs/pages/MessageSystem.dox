@@ -79,7 +79,12 @@
  *
  *           // Log messages
  *           logger.logMessage<VeryImportantMessageTrait>("The cake is a lie.");
- *           @endcode */
+ *           @endcode
+ *
+ * @todo Allow registering of custom notification types (e.g. sendToTelegram).
+ * @todo Finalize contract for runtime virtual interfaces. Can we have several MessageSystems being present? Should we have global access point for them?
+ * @todo Add possibility to show / log "progressable" messages.
+ * @todo Question: If we have non-gui app, with some non-Gui notifications (e.g. send to Telegram / Send to Jabber) - maybe we can use some MessageSystem code? */
 
 /*! @namespace Draupnir::Messages
  *  @ingroup MessageSystem

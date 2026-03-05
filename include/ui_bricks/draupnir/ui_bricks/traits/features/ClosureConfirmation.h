@@ -38,6 +38,11 @@ concept CanConfirmWindowClosure = requires(Candidate c) {
     { c.canWindowBeClosed() } -> std::same_as<bool>;
 };
 
+/*! @class DefaultClosureConfirmer draupnir/ui_bricks/traits/features/DefaultClosureConfirmer.h
+ *  @ingroup UiBricks
+ *  @brief This is a class.
+ * @todo Move this class to its own file. */
+
 class DefaultClosureConfirmer
 {
 public:

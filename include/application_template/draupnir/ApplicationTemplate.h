@@ -68,7 +68,9 @@ namespace Draupnir
  *           - `Ui::MainWindow`: An instantiation of `Draupnir::Ui::MainWindowTemplate<...>`. Used as the main UI element.
  *           - `Ui::TrayIcon`: A tray icon type. If both MainWindow and TrayIcon exist, a ViewManager will be used.
  *           - `Ui::MenuBar`: An instantiation of `Draupnir::Ui::MenuBarTemplate<...>`. Used to extract Settings/Help menus.
- *           - `struct Ui::MenuHandlers { using HelpSource = ...; };` Provides a source object/type for Help menu handler (if used). */
+ *           - `struct Ui::MenuHandlers { using HelpSource = ...; };` Provides a source object/type for Help menu handler (if used).
+ *
+ * @todo Maybe it will make sense to automatically connect LogWidget (if present) to MessageSystem (if present). */
 
 template<class ApplicationConfig>
 class ApplicationTemplate

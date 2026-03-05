@@ -110,7 +110,8 @@ public:
     }
 
     /*! @brief This method loads the settings for this @ref LogWidget object from the specified `SettingsSource`.
-     * @todo Add logging of the warnings if sth is wrong with the settings. */
+     * @todo Add logging of the warnings if sth is wrong with the settings.
+     * @todo As other `loadSettings`-methods this needs to be standartized. */
     template<class SettingsSource>
     void loadSettings(SettingsSource* source) {
         static_assert(SettingsBundle::template canBeFullyPopulatedFrom<SettingsSource>(),

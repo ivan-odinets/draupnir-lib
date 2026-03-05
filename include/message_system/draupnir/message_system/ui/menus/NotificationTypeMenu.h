@@ -2,7 +2,7 @@
  **********************************************************************************************************************
  *
  * draupnir-lib
- * Copyright (C) 2025 Ivan Odinets <i_odinets@protonmail.com>
+ * Copyright (C) 2025-2026 Ivan Odinets <i_odinets@protonmail.com>
  *
  * This file is part of draupnir-lib
  *
@@ -42,11 +42,7 @@ namespace Draupnir::Messages
  *           Usage:
  *           - Use NotificationTypeMenu::setNotificationType() to programmatically select a type.
  *           - Listen for NotificationTypeMenu::notificationTypeChanged() to handle user selection.
- *           - Call NotificationTypeMenu::notificationType() to get the currently selected type.
- *
- * @todo Maybe add "clear" method, which will clear selection.
- * @todo Maybe it should be possible to make this QMenu-based thing templated - which will accept only enum class as
- *       parameter? */
+ *           - Call NotificationTypeMenu::notificationType() to get the currently selected type. */
 
 class NotificationTypeMenu final : public QMenu
 {

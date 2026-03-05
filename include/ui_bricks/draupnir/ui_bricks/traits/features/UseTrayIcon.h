@@ -27,7 +27,6 @@
 
 #include <QSystemTrayIcon>
 
-
 namespace Draupnir::Ui::MainWindow
 {
 
@@ -43,7 +42,10 @@ concept IsQSystemTrayBased =
  *                      etc.).
  *
  *  @details This feature is a stateful feature (declares `hasState_v = true`) and therefore its instance is stored inside @ref
- *           Draupnir::Ui::MainWindowTemplate’s internal `_FeaturesStateTuple`. */
+ *           Draupnir::Ui::MainWindowTemplate’s internal `_FeaturesStateTuple`.
+ *
+ * @todo Move concept to some better place.
+ * @todo Optimize this entity to use sth more lightweight than SettingsTraitsConcatenator. */
 
 template<IsQSystemTrayBased IconClass = QSystemTrayIcon>
 struct UseTrayIcon

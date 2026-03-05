@@ -901,8 +901,6 @@ struct type_list_merge<type_list<FirstTs...>,type_list<SecondTs...>>
 template<class First, class Second>
 using type_list_merge_t = typename type_list_merge<First,Second>::result;
 
-
-
 }; // namespace draupnir::utils
 
 #endif // TYPE_LIST_H

@@ -36,6 +36,11 @@ template<class Candidate>
 concept IsQWidgetBased =
     std::is_base_of_v<QWidget,Candidate>;
 
+/*! @struct UseCentralWidget draupnir/ui_bricks/traits/features/UseCentralWidget.h
+ *  @brief This is a struct.
+ * @todo Move concept to some better place.
+ * @todo Optimize this entity to use sth more lightweight than SettingsTraitsConcatenator. */
+
 template<IsQWidgetBased WidgetClass>
 struct UseCentralWidget
 {

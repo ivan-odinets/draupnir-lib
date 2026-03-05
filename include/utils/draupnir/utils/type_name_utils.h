@@ -2,7 +2,7 @@
  **********************************************************************************************************************
  *
  * draupnir-lib
- * Copyright (C) 2025 Ivan Odinets <i_odinets@protonmail.com>
+ * Copyright (C) 2025-2026 Ivan Odinets <i_odinets@protonmail.com>
  *
  * This file is part of draupnir-lib
  *
@@ -273,6 +273,7 @@ DEFINE_PRETTY_TEMPLATE_INSTANTIATION_PRINTER(std::tuple);
 DEFINE_PRETTY_TEMPLATE_INSTANTIATION_PRINTER(std::vector);
 DEFINE_PRETTY_TEMPLATE_INSTANTIATION_PRINTER(std::list);
 DEFINE_PRETTY_TEMPLATE_INSTANTIATION_PRINTER(std::optional);
+DEFINE_PRETTY_TEMPLATE_INSTANTIATION_PRINTER(std::variant);
 
 template<class Type, std::size_t N>
 struct draupnir::utils::type_pretty_name_impl<std::array<Type,N>> {

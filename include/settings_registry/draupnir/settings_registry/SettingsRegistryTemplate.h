@@ -80,10 +80,9 @@ namespace Draupnir::Settings
  * @note One of the marcos: DRAUPNIR_SETTINGS_USE_QSETTINGS, DRAUPNIR_SETTINGS_USE_APPSETTINGS, DRAUPNIR_SETTINGS_USE_CUSTOM
  *       **MUST** be defined. Or compilation will fail.
  *
- * @todo Introduce settings UI categories.
- * @todo Create templated settings widget / dialog.
  * @todo Add interface for partial updating of the settings. E.g. when the setting has sth like QStringList type - not replace
- *       the variable, but use append method and than write to the backend. */
+ *       the variable, but use append method and than write to the backend.
+ * @todo Fix paths within includes for this class. */
 
 template<SettingTraitConcept... Traits>
 class SettingsRegistryTemplate
@@ -189,7 +188,7 @@ public:
     Backend* settings() { return p_backend; }
 
     /*! @brief Prints all known settings to debug log. Calls key() and value for each trait if available.
-     * @todo Improve formatting and handle custom types. */
+     * @todo Make final version of this method and (maybe?) make it available only in debug builds. */
     void printAllToDebug() {
         Q_ASSERT_X(p_backend, "SettingsRegistry<SettingTraits...>::printAllToDebug",
                    "SettingsRegistry<SettingTraits...>::loadSettings method must have been called before.");

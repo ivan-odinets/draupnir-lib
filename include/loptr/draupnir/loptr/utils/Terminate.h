@@ -2,7 +2,7 @@
  **********************************************************************************************************************
  *
  * draupnir-lib
- * Copyright (C) 2025 Ivan Odinets <i_odinets@protonmail.com>
+ * Copyright (C) 2025-2026 Ivan Odinets <i_odinets@protonmail.com>
  *
  * This file is part of draupnir-lib
  *
@@ -26,7 +26,6 @@
 #define TERMINATE_H
 
 #include <chrono>
-#include <iostream>
 #include <random>
 
 namespace Draupnir::Loptr

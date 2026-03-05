@@ -29,6 +29,11 @@
 
 namespace Draupnir::Handlers {
 
+/*! @namespace ActionHandler draupnir/ui_bricks/concepts/ActionHandlerConcept.h
+ *  @ingroup UiBricks
+ *  @brief This is concept namespace.
+ * @todo Document entities within this namespace. */
+
 namespace ActionHandler
 {
 

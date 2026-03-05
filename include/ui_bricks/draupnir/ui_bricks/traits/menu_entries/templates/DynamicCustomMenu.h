@@ -2,7 +2,7 @@
  **********************************************************************************************************************
  *
  * draupnir-lib
- * Copyright (C) 2025 Ivan Odinets <i_odinets@protonmail.com>
+ * Copyright (C) 2025-2026 Ivan Odinets <i_odinets@protonmail.com>
  *
  * This file is part of draupnir-lib
  *
@@ -44,8 +44,7 @@ namespace Draupnir::Ui {
  *       this method MUST be called before creating any MenuTemplate / MenuBarTemplate objects using DynamicCustomMenu
  *       as a template arguments. Otherwise - `Q_ASSERT_X` will happen in debug.
  *
- * @todo Write reasonable documentation and example of tha usage of this template.
- * @todo Add a test to check this functionality. */
+ * @todo Question: Do we need this template? */
 
 template<auto displayNameImpl, class CustomMenu>
 class DynamicCustomMenu

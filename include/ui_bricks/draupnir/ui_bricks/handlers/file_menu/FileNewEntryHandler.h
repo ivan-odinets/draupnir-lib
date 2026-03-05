@@ -79,7 +79,9 @@ class GenericMenuEntryHandlerTemplate;
  *             - `bool isCurrentFileSaved();`
  *             `FileContext` must provide:
  *             - `static int askUser(QString title, QString message, QMessageBox::StandardButtons buttons);`
- *             - `void onSaveFile();` */
+ *             - `void onSaveFile();`
+ *
+ * @todo Maybe this class can be splitted in several classes / template specializations. */
 
 template<class Context>
 class GenericMenuEntryHandlerTemplate<Context,Draupnir::Ui::FileNewEntry> :

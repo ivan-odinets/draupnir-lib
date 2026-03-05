@@ -56,7 +56,9 @@ namespace Draupnir::Settings
  *           For complex types or multi-key settings, specialize this template. A specialization must implement the same static
  *           interface:
  *           - `static Value get(Backend* settings);`
- *           - `static void set(Backend* settings, const Value& value);` */
+ *           - `static void set(Backend* settings, const Value& value);`
+ *
+ * @todo Unite this entity with @ref ValueSerializer. */
 
 template<class Backend, SettingTraitConcept SettingTrait>
 class SettingTraitSerializer

@@ -41,7 +41,9 @@ namespace Draupnir::Handlers
 {
 
 /*! @class GenericFileMenuContext draupnir/ui_bricks/handlers/file_menu/GenericFileMenuContext.h
- *  @brief This is a generic context template to be used within FileMenuEntriesHandler. */
+ *  @brief This is a generic context template to be used within FileMenuEntriesHandler.
+ *
+ * @todo Maybe this class can be splitted in several classes / template specializations. */
 
 template<class FileManagerClass, class... Entries>
 class GenericFileMenuContext :

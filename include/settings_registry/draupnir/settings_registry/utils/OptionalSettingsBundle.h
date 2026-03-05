@@ -57,7 +57,9 @@ namespace Draupnir::Settings
  *           This wrapper is intended to be used in places where the existence of a particular settings bundle is controlled
  *           by compile-time configuration (e.g. feature flags, conditional subsystems) and you want to:
  *           - Pay zero runtime cost when the feature is disabled, and
- *           - Have convenient access to the bundle when it is enabled.  */
+ *           - Have convenient access to the bundle when it is enabled.
+ *
+ * @todo Question: Maybe it make sense to rename this clas into OptionalSettingsBundleBase? */
 
 template<SettingsBundleConcept Bundle,bool isEnabled>
 class OptionalSettingsBundle;
@@ -147,7 +149,9 @@ private:
  *           @endcode
  *
  *           In other words, @ref NonEmptySettingsBundle is a "compile-time opt-in" wrapper: it transparently disables itself
- *           for empty bundles, and behaves like a fully enabled @ref OptionalSettingsBundle otherwise. */
+ *           for empty bundles, and behaves like a fully enabled @ref OptionalSettingsBundle otherwise.
+ *
+ * @todo Question: Maybe it make sense to rename this clas into NonEmptySettingsBundleBase? */
 
 template<SettingsBundleConcept Bundle>
 class NonEmptySettingsBundle

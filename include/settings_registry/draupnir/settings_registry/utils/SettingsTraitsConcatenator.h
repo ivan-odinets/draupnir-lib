@@ -31,6 +31,7 @@
 #include "draupnir/settings_registry/concepts/SettingTraitConcept.h"
 
 #include "draupnir/utils/template_detectors.h"
+#include "draupnir/utils/tuple_like_merge.h"
 
 namespace Draupnir::Settings
 {
@@ -51,7 +52,9 @@ namespace Draupnir::Settings
  *           The main entry points are:
  *           - @ref to : generic conversion into an arbitrary "tuple-like" output container template;
  *           - @ref toSettingsRegistry : convenience alias that produces a unified @ref Draupnir::Settings::SettingsRegistryTemplate;
- *           - @ref toSettingsBundle : convenience alias that produces a unified @ref Draupnir::Settings::SettingsBundleTemplate. */
+ *           - @ref toSettingsBundle : convenience alias that produces a unified @ref Draupnir::Settings::SettingsBundleTemplate.
+ *
+ * @todo Update this template to use concepts. */
 
 template<class... Things>
 class SettingsTraitsConcatenator

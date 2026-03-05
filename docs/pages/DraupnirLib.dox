@@ -1,0 +1,17 @@
+/*! @defgroup Overview
+ *  @brief This is an overview page
+ *
+ * @todo Establish and implement filnal project structure. This includes: format of *.pri files, presense / absense of umbrella
+ *       headers, policy when having different Qt modules enabled / disabled. After this - update the documentation of the affected
+ *       modules. Rename files to follow some unique pattern to avoid the name conflicts. Establish rules for commits naming.
+ * @todo Implement Files module containing: FileManagerTemplate, FileTemplate / JsonFileTemplate, etc.?
+ * @todo Establish tests structure (mostly grouping + jobs) and write helper scripts for running tests.
+ * @todo Support both for GUI and non-GUI applications (e.g. ApplicationTemplate / CoreApplicationTemplate) ?
+ * @todo Add compilation-time test(s).
+ * @todo Maybe this will fit to the SettingsRegistry. Some kind of CommandLineParser would be nice to have.
+ * @todo Setup running of tests on the github.
+ * @todo Establish format of the documentation, fix it in some doxygen page and update all-over-the-project documentation. Question:
+ *       documentation for the tests?
+ * @todo Establish Q_ASSERT_X / assert / static_assert messages format and policy. And update all-over-the-project assertions.
+ * @todo Implement some reasonable and common translation loading mechanism.
+ * @todo Provide translations for translatable modules. */

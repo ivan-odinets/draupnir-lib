@@ -31,6 +31,11 @@
 namespace Draupnir::Handlers
 {
 
+/*! @namespace FileContext draupnir/ui_bricks/concepts/FileContextConcept.h
+ *  @ingroup UiBricks
+ *  @brief This is concept namespace.
+ * @todo Document entities within this namespace. */
+
 namespace FileContext
 {
 

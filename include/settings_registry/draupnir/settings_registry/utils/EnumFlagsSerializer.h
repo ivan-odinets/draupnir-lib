@@ -37,6 +37,7 @@ namespace Draupnir::Settings
 /*! @class EnumFlagsSerializer draupnir/settings_registry/utils/EnumFlagsSerializer.h
  *  @ingroup SettingsRegistry
  *  @brief This is a class.
+ * @todo Move interval _Helper class to some external util. Maybe in Utils module?
  * @todo Write Reasonable documentation. */
 
 template<draupnir::utils::enum_flags_concept EnumFlags>

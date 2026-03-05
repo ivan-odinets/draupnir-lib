@@ -33,11 +33,16 @@
 #include "draupnir/utils/advance_enum.h"
 #include "draupnir/utils/flags.h"
 
+/*! @file draupnir/message_system/core/MessageFields.h
+ *  @brief This is a file.
+ *
+ * @todo Refractor entities within this file. */
+
 namespace Draupnir::Messages
 {
 
-/*! @brief This enum holds flag for different fields of @ref Draupnir::Messages::Message objects.
- *  @ingroup MessageSystem */
+/*! @ingroup MessageSystem
+ *  @brief This enum holds flag for different fields of @ref Draupnir::Messages::Message objects. */
 enum MessageField {
     None       = 0b00000000,  /*!< @brief None. */
     Brief      = 0b00000001,  /*!< @brief Brief summary of `Message` (@ref Draupnir::Messages::Message::brief). */
@@ -60,25 +65,6 @@ inline MessageField& operator++(MessageField& type,int)
     >::advance(type);
     return type;
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 /*! @brief This static constexpr array holds values from enum @ref Draupnir::Messages::Message::Fields, which are
      *         representing individual fields of the @ref Draupnir::Messages::Message objects. */
@@ -199,11 +185,5 @@ private:
 };
 
 }; // namespace Draupnir::Settings
-
-
-
-
-
-
 
 #endif // MESSAGEFIELDS_H

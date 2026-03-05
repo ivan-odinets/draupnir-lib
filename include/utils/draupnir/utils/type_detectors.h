@@ -30,6 +30,11 @@
 namespace draupnir::utils
 {
 
+/*! @file draupnir/utils/type_detectors.h
+ *  @ingroup Utils
+ *  @brief This is a file.
+ * @todo Document entities within this file. */
+
 template<typename T>
 struct is_integer : std::bool_constant<
     std::is_same_v<T,char> || std::is_same_v<T,unsigned char> ||

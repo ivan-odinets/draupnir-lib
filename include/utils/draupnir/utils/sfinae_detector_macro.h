@@ -2,7 +2,7 @@
  **********************************************************************************************************************
  *
  * draupnir-lib
- * Copyright (C) 2025 Ivan Odinets <i_odinets@protonmail.com>
+ * Copyright (C) 2025-2026 Ivan Odinets <i_odinets@protonmail.com>
  *
  * This file is part of draupnir-lib
  *
@@ -25,7 +25,7 @@
 #ifndef SFINAE_DETECTOR_MACRO_H
 #define SFINAE_DETECTOR_MACRO_H
 
-#include <type_traits>
+#include <type_traits>  // IWYU pragma: keep
 
 /*! @file draupnir/utils/sfinae_detector_macro.h
  *  @ingroup Utils

@@ -36,6 +36,11 @@ template<class Candidate>
 concept IsQMenuBarBased =
     std::is_base_of_v<QMenuBar,Candidate>;
 
+/*! @struct UseMenuBar draupnir/ui_bricks/traits/features/UseMenuBar.h
+ *  @brief This is a struct.
+ * @todo Move concept to some better place.
+ * @todo Optimize this entity to use sth more lightweight than SettingsTraitsConcatenator. */
+
 template<IsQMenuBarBased MenuBarImplementation>
 struct UseMenuBar
 {

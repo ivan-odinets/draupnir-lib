@@ -2,7 +2,7 @@
  **********************************************************************************************************************
  *
  * draupnir-lib
- * Copyright (C) 2025 Ivan Odinets <i_odinets@protonmail.com>
+ * Copyright (C) 2025-2026 Ivan Odinets <i_odinets@protonmail.com>
  *
  * This file is part of draupnir-lib
  *
@@ -53,9 +53,11 @@ namespace Draupnir::Settings
  *              darkModeKey,                 // persistent key
  *              false                        // default value
  *           >;
- *           @endcode */
+ *           @endcode
+ *
+ * @todo Question: Is this class required? */
 
-template<class ValueClass,const char* const settingsKey,auto value>
+template<class ValueClass, const char* const settingsKey,auto value>
 struct SettingTraitTemplate
 {
     /*! @brief Underlying value type. */

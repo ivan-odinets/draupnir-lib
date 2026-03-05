@@ -18,7 +18,10 @@
  *           # SettingsRegistry module is added witith the UiBricks.pri
  *           include(draupnir-lib/modules/UiBricks.pri)
  *           @endcode
- *           It is safe to include the UiBricks.pri file more than one time to *.pro. */
+ *           It is safe to include the UiBricks.pri file more than one time to *.pro.
+ * @todo Add menu templates and / or entries for other standart menus: File / Edit
+ * @todo Question: fully static handlers. Do we need them?
+ * @todo Help menu handlers: Finalize contract for dialos. Who is responsible for configuring dialog? How this is done? */
 
 /*! @namespace Draupnir::Ui
  *  @ingroup UiBricks

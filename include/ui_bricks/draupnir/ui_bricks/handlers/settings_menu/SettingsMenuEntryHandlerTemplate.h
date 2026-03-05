@@ -33,6 +33,11 @@
 namespace Draupnir::Handlers
 {
 
+/*! @class SettingsMenuEntryHandlerTemplate draupnir/ui_bricks/handlers/settings_menu/SettingsMenuEntryHandlerTemplate.h
+ *  @brief This is a class.
+ * @todo Write reasonable docs for this class.
+ * @todo Split this class into several specializations (invalid vs bool/checkable vs other). */
+
 template<class SettingsContext, class SettingsMenuEntry>
 class SettingsMenuEntryHandlerTemplate {
     static_assert(!std::is_same_v<SettingsMenuEntry,SettingsMenuEntry>);

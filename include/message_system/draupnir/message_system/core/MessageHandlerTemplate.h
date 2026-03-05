@@ -2,7 +2,7 @@
  **********************************************************************************************************************
  *
  * draupnir-lib
- * Copyright (C) 2025 Ivan Odinets <i_odinets@protonmail.com>
+ * Copyright (C) 2025-2026 Ivan Odinets <i_odinets@protonmail.com>
  *
  * This file is part of draupnir-lib
  *
@@ -73,7 +73,8 @@ public:
     /*! @brief Destructor. */
     ~MessageHandlerTemplate() final = default;
 
-    /*! @brief Loads notification settings from the provided SettingsSource. */
+    /*! @brief Loads notification settings from the provided SettingsSource.
+     * @todo As other `loadSettings`-methods this needs to be standartized. */
     template<class SettingsSource>
     void loadSettings(SettingsSource* registry) {
         static_assert(SettingsBundle::template canBeFullyPopulatedFrom<SettingsSource>(),

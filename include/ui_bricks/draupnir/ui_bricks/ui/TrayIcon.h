@@ -2,7 +2,7 @@
  **********************************************************************************************************************
  *
  * draupnir-lib
- * Copyright (C) 2025 Ivan Odinets <i_odinets@protonmail.com>
+ * Copyright (C) 2025-2026 Ivan Odinets <i_odinets@protonmail.com>
  *
  * This file is part of draupnir-lib
  *
@@ -44,7 +44,9 @@ namespace Draupnir::Ui
  *
  *           It handles language change events to dynamically update its menu content.
  *
- * @note Automatically assigns the application's main window icon as the tray icon. */
+ * @note Automatically assigns the application's main window icon as the tray icon.
+ *
+ * @todo Allow constructing tray icon menu through traits. */
 
 class TrayIcon : public QSystemTrayIcon
 {

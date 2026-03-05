@@ -65,7 +65,9 @@ class GenericMenuEntryHandlerTemplate;
  *       - void openFile(const QFileInfo&);
  *       - void openFiles(const QStringList&);
  *       - bool hasNothingOpened();
- *       - bool isCurrentFileSaved(); */
+ *       - bool isCurrentFileSaved();
+ *
+ * @todo Maybe this class can be splitted in several classes / template specializations. */
 
 template<class FileContext>
 class GenericMenuEntryHandlerTemplate<FileContext,Draupnir::Ui::FileOpenEntry> :

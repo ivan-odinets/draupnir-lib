@@ -2,7 +2,7 @@
  **********************************************************************************************************************
  *
  * draupnir-lib
- * Copyright (C) 2025 Ivan Odinets <i_odinets@protonmail.com>
+ * Copyright (C) 2025-2026 Ivan Odinets <i_odinets@protonmail.com>
  *
  * This file is part of draupnir-lib
  *
@@ -33,7 +33,9 @@ namespace Draupnir::Ui {
  *  @ingroup UiBricks
  *  @ingroup MenuTemplates
  *  @brief Trait for the simple `QAction` entry. Provides a `QAction` with display name set.
- *  @tparam displayNameImpl - a callable returning `QString`. */
+ *  @tparam displayNameImpl - a callable returning `QString`.
+ *
+ * @todo Question: Do we need this template? */
 
 template<auto displayNameImpl>
 class ActionEntry

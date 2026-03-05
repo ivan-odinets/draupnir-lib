@@ -2,7 +2,7 @@
  **********************************************************************************************************************
  *
  * draupnir-lib
- * Copyright (C) 2025 Ivan Odinets <i_odinets@protonmail.com>
+ * Copyright (C) 2025-2026 Ivan Odinets <i_odinets@protonmail.com>
  *
  * This file is part of draupnir-lib
  *
@@ -127,14 +127,32 @@ struct get_template_instantiation<Template, Head>
  *  @tparam Template    Class template being searched for.
  *  @tparam Ts...       Variadic list of types to be inspected.
  *
- *  @details This alias resolves directly to the nested `type` of @ref get_template_instantiation for the given @p Template and
- *           parameter pack @p Ts....
+ *  @details This alias resolves directly to the nested `type` of @ref get_template_instantiation for the given @p Template
+ *           and parameter pack @p Ts....
  *
  *           If none of the types in @p Ts... is an instantiation of @p Template, the underlying `static_assert` in @ref
  *           get_template_instantiation will trigger and produce a compilation error. */
 
 template<template<typename...> class Template, typename... Ts>
 using get_template_instantiation_t = typename get_template_instantiation<Template,Ts...>::type;
+
+/*! @struct get_base_template_instantiation_or_void draupnir/utils/type_extraсtors.h
+ *  @ingroup Utils
+ *  @brief Extracts the instantiation of a given variadic base template from a derived type, or yields `void` if no such base
+ *         exists.
+ *  @tparam TemplateBase A variadic class template (e.g. `Base<Ts...>`) that is expected to appear somewhere in the inheritance
+ *                       chain.
+ *  @tparam Derived      Type to inspect (typically a class/struct).
+ *
+ *  @details The trait calls `getBase(std::declval<Derived*>())` and uses `decltype(...)` to deduce the result type:
+ *           - If `Derived*` is implicitly convertible to `TemplateBase<Args...>*` for some `Args...` (i.e. `Derived` publicly
+ *             derives from `TemplateBase<Args...>` either directly or indirectly), overload resolution selects the first
+ *             overload and the resulting `type` becomes that exact base instantiation `TemplateBase<Args...>`.
+ *           - Otherwise, the ellipsis overload is chosen and the resulting `type` is `void`.
+ *
+ * @note This technique relies on implicit pointer conversion, so it works for **public** inheritance.
+ * @warning If `Derived` is related to multiple different `TemplateBase<...>` instantiations (e.g. via multiple inheritance),
+ *          the conversion to `TemplateBase<Args...>*` may become ambiguous. */
 
 template<template<typename...> class TemplateBase, class Derived>
 struct get_base_template_instantiation_or_void
@@ -144,8 +162,14 @@ private:
     static TemplateBase<Args...> getBase(TemplateBase<Args...>*);
     static void getBase(...);
 public:
+    /*! @brief The extracted base instantiation `TemplateBase<Args...>` if present; otherwise `void`. */
     using type = decltype(getBase(std::declval<Derived*>()));
 };
+
+/*! @ingroup Utils
+ *  @brief Convenience alias for @ref get_base_template_instantiation_or_void.
+ *  @tparam TemplateBase Variadic base template to look for.
+ *  @tparam Derived      Type to inspect. */
 
 template<template<typename...> class TemplateBase, class Derived>
 using get_base_template_instantiation_or_void_t = typename get_base_template_instantiation_or_void<TemplateBase,Derived>::type;

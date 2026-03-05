@@ -1,7 +1,9 @@
 /*! @defgroup ProxyHelper
  *  @brief This module contains some utils and UI elements to simplify usage of QNetworkProxy objects
  *
- *  @details Classes within this module are located in the namespace Draupnir::ProxyHelper. */
+ *  @details Classes within this module are located in the namespace Draupnir::ProxyHelper.
+ *
+ * @todo Add settings traits for proxy-related settings. Ideally - with allowing callbacks on setting change. */
 
 /*! @namespace Draupnir::Proxy
  *  @ingroup ProxyHelper

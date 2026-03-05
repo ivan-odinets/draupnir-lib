@@ -66,7 +66,8 @@ public:
     /*! @brief Attaches a registry to this context. This method is intended to be called only once. In debug builds, it asserts that:
      *         `p_registry` is null (not initialized yet) and registry is not null
      *  @param registry Pointer to a SettingsRegistry instance.
-     * @warning SettingsContext does not take ownership of `registry`. The registry must remain valid for the lifetime of this context. */
+     * @warning SettingsContext does not take ownership of `registry`. The registry must remain valid for the lifetime of this context.
+     * @todo As other `loadSettings`-methods this needs to be standartized. */
     void loadSettings(SettingsRegistry* registry) {
         Q_ASSERT(p_registry == nullptr);
         Q_ASSERT(registry != nullptr);

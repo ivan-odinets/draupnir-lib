@@ -41,7 +41,6 @@
 #include "draupnir/ui_bricks/traits/features/MinimizableToTray.h"
 #include "draupnir/ui_bricks/traits/features/RememberWindowSize.h"
 #include "draupnir/ui_bricks/traits/features/UseTrayIcon.h"              // IWYU pragma: keep
-
 #include "draupnir/utils/type_presense.h"
 #include "draupnir/utils/type_extractors.h"
 #include "draupnir/utils/filter_if.h"
@@ -79,6 +78,9 @@ struct FeatureWithStateAdapter :
  *             @ref MainWindowTemplate.
  *
  * @todo Allow custom animations for other events, like window closure, window appearing, etc.
+ * @todo Move concept(s) to a better location.
+ * @todo Question: Maybe it will make sense to split this class into seperate "FeatureBases"?
+ * @todo Create analogue of this class, but for dialogs (as some features e.g. for saving size/position can be used within dialogs).
  * @todo Refractor showing / hiding of the window in a better manner. */
 
 template<class... Features>
@@ -218,7 +220,6 @@ public:
      *           is established to route tray icon activation events to @ref MainWindowTemplate::_onTrayIconActivated(). */
     template<class TrayIcon>
     void registerTrayIcon(TrayIcon* icon) requires (isFeaturePresent<MainWindow::UseTrayIcon>()) {
-        qDebug() << "Here!";
         getFeatureState<MainWindow::UseTrayIcon>() = icon;
 
         connect(icon, &QSystemTrayIcon::activated, [this](QSystemTrayIcon::ActivationReason activationReason){

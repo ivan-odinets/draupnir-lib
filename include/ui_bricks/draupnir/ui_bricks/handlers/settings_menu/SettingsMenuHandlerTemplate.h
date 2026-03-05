@@ -33,6 +33,9 @@
 namespace Draupnir::Handlers
 {
 
+/*! @brief This is an alias.
+ * @todo Introduce concepts here. */
+
 template<class SettingsRegistry, class... Entries>
 using SettingsMenuHandler = MenuHandlerTemplate<SettingsContext<SettingsRegistry>,SettingsMenuEntryHandlerTemplate,Entries...>;
 

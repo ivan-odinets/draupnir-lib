@@ -2,7 +2,7 @@
  **********************************************************************************************************************
  *
  * draupnir-lib
- * Copyright (C) 2025 Ivan Odinets <i_odinets@protonmail.com>
+ * Copyright (C) 2025-2026 Ivan Odinets <i_odinets@protonmail.com>
  *
  * This file is part of draupnir-lib
  *
@@ -43,8 +43,7 @@ namespace Draupnir::Ui {
  *  @tparam Entries...  Variadic trait parameter pack describing menu entries.
  *
  * @todo Write reasonable documentation and example of tha usage of this template.
- * @todo Maybe this class should be moved to the "submenus" directory ?
- * @todo Add a test to check this functionality. */
+ * @todo Question: Maybe this class should be moved to the "submenus" directory ? */
 
 template<auto displayNameFunction, class... Entries>
 class MenuTemplateEntry

@@ -91,7 +91,9 @@ template<auto> class SectionEntry;
  *            // Example: remove decorations
  *            using L3 = MenuEntriesConcatenator<FileNewEntry, SeparatorEntry, FileOpenEntry>::RemovedDecorationEntries;
  *            // L3 == type_list<FileNewEntry, FileOpenEntry>
- *            @endcode */
+ *            @endcode
+ *
+ * @todo Reduce amount of public aliases within this entity. */
 
 template<class... Things>
 class MenuEntriesConcatenator

@@ -40,7 +40,10 @@ namespace Draupnir::Ui {
  *  @details MenuBarTemplate is a variadic-template class designed to automate, unify, and strongly-type the creation, translation,
  *           and access of complex menu bar structures in Qt. It aggregates menu entries (QMenu, QAction, or their descendants),
  *           manages their lifecycle, and provides convenient API for compile-time and runtime access to all entries.
- *  @tparam Entries... Variadic parameter pack of menu entry traits/classes, each describing a QMenu, QAction, or descendant type. */
+ *  @tparam Entries... Variadic parameter pack of menu entry traits/classes, each describing a QMenu, QAction, or descendant type.
+ *
+ * @todo Improve handling of the edge cases (e.g. empty Entries pack).
+ * @todo Reduce amount of public aliases. */
 
 template<class... Entries>
 class MenuBarTemplate final :

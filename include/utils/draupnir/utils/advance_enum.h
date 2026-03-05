@@ -2,7 +2,7 @@
  **********************************************************************************************************************
  *
  * draupnir-lib
- * Copyright (C) 2025 Ivan Odinets <i_odinets@protonmail.com>
+ * Copyright (C) 2025-2026 Ivan Odinets <i_odinets@protonmail.com>
  *
  * This file is part of draupnir-lib
  *
@@ -29,7 +29,8 @@
  *  @ingroup Utils
  *  @brief Compile-time helpers for implementing cyclic operator++ on enums.
  *
- *  @details Provides templates for generic enum value iteration and wrap-around logic, intended for use in operator++ overloads. */
+ *  @details Provides templates for generic enum value iteration and wrap-around logic, intended for use in operator++ overloads.
+ * @todo Add helpers for implementing operator--.*/
 
 #include <type_traits>
 

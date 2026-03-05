@@ -34,6 +34,11 @@ class QDialog;
 namespace Draupnir::Ui
 {
 
+/*! @namespace HelpContext draupnir/ui_bricks/concepts/HelpContextConcept.h
+ *  @ingroup UiBricks
+ *  @brief This is concept namespace.
+ * @todo Document entities within this namespace. */
+
 namespace HelpContext
 {
 

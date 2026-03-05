@@ -2,7 +2,7 @@
  **********************************************************************************************************************
  *
  * draupnir-lib
- * Copyright (C) 2025 Ivan Odinets <i_odinets@protonmail.com>
+ * Copyright (C) 2025-2026 Ivan Odinets <i_odinets@protonmail.com>
  *
  * This file is part of draupnir-lib
  *
@@ -29,7 +29,6 @@
 
 #include <QAction>
 
-#include "draupnir/settings_registry/concepts/SettingTraitConcept.h"
 #include "draupnir/settings_registry/utils/SettingsTraitsConcatenator.h"
 #include "draupnir/ui_bricks/concepts/TabTraitConcept.h"
 #include "draupnir/utils/type_list.h"
@@ -63,6 +62,7 @@ namespace Draupnir::Ui
  *               static QString tooltip() { return "Modify application settings"; }
  *           };
  *           @endcode
+ *
  * @todo Add possibility to obtain several widgets via one call (e.g. getAll<TextEditTrait>()). Return as std::tuple. */
 
 template<class WidgetIndexSetting, TabTraitConcept... TabTraits>
@@ -136,7 +136,8 @@ public:
 
     /*! @brief Returns the widget pointer at given TabTrait
      *  @tparam Index Index of the tab.
-     *  @return Stored widget pointer at the specified index.*/
+     *  @return Stored widget pointer at the specified index.
+     * @todo Fix this method. */
     template<TabTraitConcept Tab>
     auto& getWidgetByTrait() {
         static_assert(draupnir::utils::is_one_of_v<Tab,TabTraits...>);

@@ -2,7 +2,7 @@
  **********************************************************************************************************************
  *
  * draupnir-lib
- * Copyright (C) 2025 Ivan Odinets <i_odinets@protonmail.com>
+ * Copyright (C) 2025-2026 Ivan Odinets <i_odinets@protonmail.com>
  *
  * This file is part of draupnir-lib
  *
@@ -58,7 +58,11 @@ concept Showable = requires(Candidate candidate) {
  *              - void show();
  *              - [optionally] void setTrayIcon(TrayIconClass*);
  *           - TrayIconClass must provide:
- *              - void show(); */
+ *              - void show();
+ *
+ * @todo Switch to concepts usage and move concepts to better place.
+ * @todo Optional: Maybe it make sense to make ViewManager universal? Either accepting variadic pack and parsing it later,
+ *       or list of parameters with specializations. */
 
 template<class MainWindowClass, class TrayIconClass>
 class ViewManager

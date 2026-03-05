@@ -45,7 +45,10 @@ class GenericMenuEntryHandlerTemplate;
  *
  *  @details This template specialization handles the "Exit Application" action in a file menu or similar context. It inherits
  *           `QAction` connection logic from @ref Draupnir::Handlers::ActionHandler, and provides a concrete slot (`onTriggered()`)
- *           that, when called, simply terminates the application by invoking `qApp->quit()`. */
+ *           that, when called, simply terminates the application by invoking `qApp->quit()`.
+ *
+ * @todo Calling qApp->exit() will cause in closure of the application. But this may influence the "confirm closure" mechanism.
+ *       Related to implementing "confirm closure" feature this should work properly. */
 
 template<class UnusedContext>
 class GenericMenuEntryHandlerTemplate<UnusedContext,Draupnir::Ui::ExitApplicationEntry> :

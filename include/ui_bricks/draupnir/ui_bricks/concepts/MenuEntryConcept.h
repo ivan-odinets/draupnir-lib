@@ -36,6 +36,11 @@ namespace Draupnir::Ui
 template<class...>
 class MenuTemplate;
 
+/*! @namespace MenuEntry draupnir/ui_bricks/concepts/MenuEntryConcept.h
+ *  @ingroup UiBricks
+ *  @brief This is concept namespace.
+ * @todo Document entities within this namespace. */
+
 namespace MenuEntry
 {
 

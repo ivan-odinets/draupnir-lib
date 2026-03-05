@@ -2,7 +2,7 @@
  **********************************************************************************************************************
  *
  * draupnir-lib
- * Copyright (C) 2025 Ivan Odinets <i_odinets@protonmail.com>
+ * Copyright (C) 2025-2026 Ivan Odinets <i_odinets@protonmail.com>
  *
  * This file is part of draupnir-lib
  *
@@ -39,7 +39,9 @@ namespace Draupnir::Handlers {
  *  @ingroup UiBricks
  *  @brief Composite handler for help-related menu entries.
  *  @tparam HelpSource - The context type providing data and methods needed by help menu entry handlers.
- *  @tparam HandledEntries - Variadic parameter pack listing all handled help menu entry trait types (e.g., AboutAppMenuTrait). */
+ *  @tparam HandledEntries - Variadic parameter pack listing all handled help menu entry trait types (e.g., AboutAppMenuTrait).
+ *
+ * @todo Introduce concept-based restrictions here. */
 
 template<class HelpContext, class... HandledEntries>
 using HelpMenuEntriesHandler = MenuHandlerTemplate<HelpContext,GenericMenuEntryHandlerTemplate,HandledEntries...>;

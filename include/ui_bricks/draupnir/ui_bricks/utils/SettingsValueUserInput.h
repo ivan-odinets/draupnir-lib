@@ -78,7 +78,8 @@ concept IsSupportedFloatingPointType =
  *           std::optional<Value> SettingsValueUserInput<Trait, Value>::getValue(oldValue);
  *           @endcode
  *
- * @todo For specializations: Improve dialog size. */
+ * @todo For specializations: Improve dialog size.
+ * @todo For specializations: Extract "Base class" responsible for decorating the dialogs. */
 
 template<Settings::SettingTraitConcept SettingTrait,class Value>
 class SettingsValueUserInput {
@@ -101,7 +102,7 @@ class SettingsValueUserInput {
  *
  * @note `QInputDialog` stores the integer internally as `int`. Returned value is cast to `Number`. Ensure trait-provided min/max fit into
  *        `int` if you expose them.
- * @todo Add some static_assert to validate that minimalValue() / maximalValue() exposed by `SettingTrait` are makins sense. */
+ * @todo Add some static_assert to validate that minimalValue() / maximalValue() exposed by `SettingTrait` are making sense. */
 
 template<Settings::SettingTraitConcept SettingTrait, typename Number>
     requires(IsSupportedIntegerType<Number>)

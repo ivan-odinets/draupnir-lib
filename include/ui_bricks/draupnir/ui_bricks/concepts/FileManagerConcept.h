@@ -33,7 +33,10 @@ namespace Draupnir::Handlers
 
 /*! @namespace FileManagerConcept draupnir/ui_bricks/concepts/FileManagerConcept.h
  *  @ingroup UiBricks
- *  @brief This is concept namespace. */
+ *  @brief This is concept namespace.
+ * @todo Rename FileManagerConcept -> FileManager
+ * @todo Write final version of FileManagerConcept variations.
+ * @todo Document entities within this namespace. */
 
 namespace FileManagerConcept
 {

@@ -2,7 +2,7 @@
  **********************************************************************************************************************
  *
  * draupnir-lib
- * Copyright (C) 2025 Ivan Odinets <i_odinets@protonmail.com>
+ * Copyright (C) 2025-2026 Ivan Odinets <i_odinets@protonmail.com>
  *
  * This file is part of draupnir-lib
  *
@@ -162,7 +162,8 @@ protected:
         p_handler = handler;
     }
 
-    /*! @brief Loads settings for this @ref MessageUiBuilderTemplate from the specified source. */
+    /*! @brief Loads settings for this @ref MessageUiBuilderTemplate from the specified source.
+     * @todo As other `loadSettings`-methods this needs to be standartized. */
     template<class SettingsSource>
     void loadSettings(SettingsSource* source) {
         static_assert(SettingsBundle::canBeFullyPopulatedFrom<SettingsSource>(),
