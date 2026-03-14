@@ -1,10 +1,6 @@
 !contains(DEFINES, DRAUPNIR_UI_BRICKS_ENABLED) {
     DEFINES += DRAUPNIR_UI_BRICKS_ENABLED
 
-    !contains(CONFIG, c++20) { CONFIG += c++20 }
-    !contains(QT, gui) { QT += gui }
-    !contains(QT, widgets) { QT += widgets }
-
     include(DraupnirVersion.pri)
     include(SettingsRegistry.pri)
     include(DraupnirResources.pri)

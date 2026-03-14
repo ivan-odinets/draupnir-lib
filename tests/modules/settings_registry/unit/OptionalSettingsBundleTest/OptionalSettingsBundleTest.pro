@@ -1,0 +1,12 @@
+TEST_NAME = $$basename(PWD)
+include(../../../../common/TestConfig.pri)
+
+DEFINES += DRAUPNIR_SETTINGS_USE_CUSTOM
+
+include(../../../../common/SomeRandomSettingsTraits.pri)
+
+include(../../../../../modules/SettingsRegistry.pri)
+
+SOURCES +=  \
+    OptionalSettingsBundleTest.cpp
+

@@ -2,7 +2,7 @@
  **********************************************************************************************************************
  *
  * draupnir-lib
- * Copyright (C) 2025 Ivan Odinets <i_odinets@protonmail.com>
+ * Copyright (C) 2025-2026 Ivan Odinets <i_odinets@protonmail.com>
  *
  * This file is part of draupnir-lib
  *
@@ -31,7 +31,7 @@
 
 template<class... MessageTraits>
 class DummyMessageHandler final :
-        public Draupnir::Messages::AbstractMessageHandler
+    public Draupnir::Messages::AbstractMessageHandler
 {
 public:
     DummyMessageHandler() {

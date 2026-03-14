@@ -1,7 +1,9 @@
 !contains(DEFINES, DRAUPNIR_UTILS_ENABLED) {
     DEFINES += DRAUPNIR_UTILS_ENABLED
 
-    !contains(CONFIG, c++20) { CONFIG += c++20 }
+    !contains(CONFIG, c++20) {
+        error("C++20 is required for the whole draupnir-lib. Add CONFIG += c++20 to your *.pro or *.pri file.")
+    }
 
     include(DraupnirVersion.pri)
 
@@ -10,6 +12,7 @@
     HEADERS += \
         $$PWD/../include/utils/draupnir/utils/advance_enum.h \
         $$PWD/../include/utils/draupnir/utils/class_marcos.h \
+        $$PWD/../include/utils/draupnir/utils/conditional_type_extractors.h \
         $$PWD/../include/utils/draupnir/utils/filter_if.h \
         $$PWD/../include/utils/draupnir/utils/flags.h \
         $$PWD/../include/utils/draupnir/utils/index_of.h \
@@ -23,8 +26,7 @@
         $$PWD/../include/utils/draupnir/utils/type_if.h \
         $$PWD/../include/utils/draupnir/utils/type_list.h \
         $$PWD/../include/utils/draupnir/utils/type_name_utils.h \
-        $$PWD/../include/utils/draupnir/utils/type_presense.h \
-        $$PWD/../include/utils/draupnir/utils/conditional_type_extractors.h
+        $$PWD/../include/utils/draupnir/utils/type_presense.h
 
     DISTFILES += \
         $$PWD/../docs/pages/Utils.dox
