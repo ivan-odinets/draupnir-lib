@@ -81,14 +81,6 @@ private slots:
         // Check third
         QVERIFY(std::get<2>(two) != nullptr);
         QCOMPARE((*std::get<2>(two)), QString{});
-
-        std::apply([](auto*... elements){
-            (delete elements, ...);
-        }, one);
-
-        std::apply([](auto*... elements){
-            (delete elements, ...);
-        }, two);
     }
 
     void test_make_zero_value() {
