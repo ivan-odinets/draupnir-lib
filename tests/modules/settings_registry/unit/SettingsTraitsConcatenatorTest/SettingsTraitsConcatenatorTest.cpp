@@ -24,19 +24,17 @@
 
 #include <QtTest>
 
-#include "draupnir/settings_registry/traits/settings/files/LastUsedDirectorySetting.h"
-#include "draupnir/settings_registry/traits/settings/files/RecentFilesListSetting.h"
 #include "draupnir/settings_registry/utils/SettingsTraitsConcatenator.h"
 
-#include "draupnir-test/traits/settings/SomeCustomDoubleSetting.h"
-#include "draupnir-test/traits/settings/SomeCustomBoolSetting.h"
-#include "draupnir-test/traits/settings/SomeRandomWidgetIndexSetting.h"
+#include "draupnir-test/traits/settings/BoolSettingTraits.h"
+#include "draupnir-test/traits/settings/DoubleSettingTraits.h"
+#include "draupnir-test/traits/settings/StringSettingTraits.h"
 
 class ClassWithBundle
 {
 public:
     using SettingsBundle = Draupnir::Settings::SettingsBundleTemplate<
-        SomeCustomBoolSetting, Draupnir::Settings::LastUsedDirectorySetting
+        BoolSettingTrait, QStringSettingTrait
     >;
 };
 
@@ -44,8 +42,7 @@ class OtherClassWithBundle
 {
 public:
     using SettingsBundle = Draupnir::Settings::SettingsBundleTemplate<
-        SomeCustomDoubleSetting, Draupnir::Settings::LastUsedDirectorySetting,
-        Draupnir::Settings::RecentFileListSetting
+        DoubleSettingTrait, QStringSettingTrait, FloatSettingTrait
     >;
 };
 
@@ -64,32 +61,21 @@ namespace Draupnir::Settings
 class SettingsTraitsConcatenatorTest final : public QObject
 {
     Q_OBJECT
-public:
-
 private slots:
     void test_complex_bundle_building() {
         using Result = Draupnir::Settings::SettingsTraitsConcatenator<
             Draupnir::Settings::SettingsBundleTemplate<
-                SomeRandomWidgetIndexSetting,
-                SomeCustomDoubleSetting,
-                SomeCustomBoolSetting
+                QStringSettingTrait,
+                DoubleSettingTrait,
+                BoolSettingTrait
             >,
-            Draupnir::Settings::RecentFileListSetting/*,
-            SettingsBundleTemplate<
-                SettingsBundleTemplate<>,
-                Draupnir::Settings::SettingsBundleTemplate<
-                    SomeCustomDoubleSetting,
-                    SomeCustomBoolSetting,
-                    Draupnir::Settings::CentralWidgetIndexSetting
-                >,
-                Draupnir::Settings::CentralWidgetIndexSetting
-            >*/
+            QStringSettingTrait
         >::toSettingsBundle;
 
-        QCOMPARE(Result::traitCount(), std::size_t{4});
-        QCOMPARE(Result::contains<SomeCustomBoolSetting>(), true);
-        QCOMPARE(Result::contains<SomeCustomDoubleSetting>(), true);
-        QCOMPARE(Result::contains<SomeRandomWidgetIndexSetting>(), true);
+        QCOMPARE(Result::traitCount(), std::size_t{3});
+        QCOMPARE(Result::contains<BoolSettingTrait>(), true);
+        QCOMPARE(Result::contains<DoubleSettingTrait>(), true);
+        QCOMPARE(Result::contains<QStringSettingTrait>(), true);
     }
 
     void test_empty_bundle_merge() {
@@ -97,13 +83,7 @@ private slots:
         using Result = Draupnir::Settings::SettingsTraitsConcatenator<
             Draupnir::Settings::SettingsBundleTemplate<>,
             Draupnir::Settings::SettingsBundleTemplate<>,
-            Draupnir::Settings::SettingsBundleTemplate<
-                // Draupnir::Settings::SettingsBundleTemplate<>,
-                // Draupnir::Settings::SettingsBundleTemplate<
-                //     Draupnir::Settings::SettingsBundleTemplate<>
-                // >,
-                //Draupnir::Settings::SettingsBundleTemplate<>
-            >
+            Draupnir::Settings::SettingsBundleTemplate<>
         >::toSettingsBundle;
 
         QCOMPARE(Result::isEmpty(), true);
@@ -118,10 +98,10 @@ private slots:
 
         QCOMPARE(Result::isEmpty(), false);
         QCOMPARE(Result::traitCount(), 4);
-        QCOMPARE(Result::contains_v<SomeCustomBoolSetting>, true);
-        QCOMPARE(Result::contains_v<SomeCustomDoubleSetting>, true);
-        QCOMPARE(Result::contains_v<Draupnir::Settings::LastUsedDirectorySetting>, true);
-        QCOMPARE(Result::contains_v<Draupnir::Settings::RecentFileListSetting>, true);
+        QCOMPARE(Result::contains_v<BoolSettingTrait>, true);
+        QCOMPARE(Result::contains_v<DoubleSettingTrait>, true);
+        QCOMPARE(Result::contains_v<QStringSettingTrait>, true);
+        QCOMPARE(Result::contains_v<FloatSettingTrait>, true);
     }
 
     void test_mergint_into_registry() {
@@ -129,15 +109,13 @@ private slots:
             ClassWithBundle,
             ClassWithoutBundle,
             Draupnir::Settings::SettingsBundleTemplate<>,
-            OtherClassWithBundle,
-            SomeRandomWidgetIndexSetting
+            OtherClassWithBundle
         >::toSettingsRegistry;
 
-        QCOMPARE(Result::contains<SomeCustomBoolSetting>(),true);
-        QCOMPARE(Result::contains<SomeCustomDoubleSetting>(),true);
-        QCOMPARE(Result::contains<Draupnir::Settings::LastUsedDirectorySetting>(),true);
-        QCOMPARE(Result::contains<SomeRandomWidgetIndexSetting>(),true);
-        QCOMPARE(Result::contains<Draupnir::Settings::RecentFileListSetting>(),true);
+        QCOMPARE(Result::contains<BoolSettingTrait>(),true);
+        QCOMPARE(Result::contains<DoubleSettingTrait>(),true);
+        QCOMPARE(Result::contains<QStringSettingTrait>(),true);
+        QCOMPARE(Result::contains<FloatSettingTrait>(),true);
     }
 };
 

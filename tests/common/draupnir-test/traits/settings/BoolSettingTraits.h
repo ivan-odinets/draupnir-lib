@@ -2,7 +2,7 @@
  **********************************************************************************************************************
  *
  * draupnir-lib
- * Copyright (C) 2025 Ivan Odinets <i_odinets@protonmail.com>
+ * Copyright (C) 2025-2026 Ivan Odinets <i_odinets@protonmail.com>
  *
  * This file is part of draupnir-lib
  *
@@ -22,22 +22,31 @@
  *
  */
 
-#ifndef SOMECUSTOMDOUBLESETTING_H
-#define SOMECUSTOMDOUBLESETTING_H
-
-#include <cmath>
+#ifndef BOOLSETTINGTRAITS_H
+#define BOOLSETTINGTRAITS_H
 
 #include <QString>
 
-/*! @class SomeCustomDoubleSetting draupnir-test/traits/settings/SomeCustomDoubleSetting.h
- *  @brief Some custom double setting trait for testing. */
+/*! @class BoolSettingTrait draupnir-test/traits/settings/BoolSettingTrait.h
+ *  @brief This is a test setting trait for storing a bool variable. */
 
-class SomeCustomDoubleSetting
+class BoolSettingTrait
 {
 public:
-    using Value = double;
-    static QString key() { return "randomDouble"; }
-    static double defaultValue() { return M_PI; }
+    using Value = bool;
+    static QString key() { return "RandomKey"; }
+    static bool defaultValue() { return true; }
 };
 
-#endif // SOMECUSTOMDOUBLESETTING_H
+/*! @class OtherBoolSettingTrait draupnir-test/traits/settings/OtherBoolSettingTrait.h
+ *  @brief This is a test setting trait for storing a bool variable. */
+
+class OtherBoolSettingTrait
+{
+public:
+    using Value = bool;
+    static QString key() { return "OtherRandomKey"; }
+    static bool defaultValue() { return false; }
+};
+
+#endif // BOOLSETTINGTRAITS_H

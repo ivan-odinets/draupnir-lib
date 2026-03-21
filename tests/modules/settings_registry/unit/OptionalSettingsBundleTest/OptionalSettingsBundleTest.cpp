@@ -24,8 +24,8 @@
 
 #include <QtTest>
 
-#include "draupnir-test/traits/settings/SomeCustomDoubleSetting.h"
-#include "draupnir-test/traits/settings/SomeCustomBoolSetting.h"
+#include "draupnir-test/traits/settings/BoolSettingTraits.h"
+#include "draupnir-test/traits/settings/DoubleSettingTraits.h"
 
 #include "draupnir/settings_registry/utils/OptionalSettingsBundle.h"
 
@@ -38,7 +38,7 @@ class OptionalSettingsBundleTest final : public QObject
 
 public:
     using NonEmptyBundle = Draupnir::Settings::SettingsBundleTemplate<
-        SomeCustomDoubleSetting, SomeCustomBoolSetting
+        DoubleSettingTrait, BoolSettingTrait
     >;
 
     class ShouldHaveInt :

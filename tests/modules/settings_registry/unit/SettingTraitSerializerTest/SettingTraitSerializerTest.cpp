@@ -25,11 +25,10 @@
 #include <QtTest>
 
 #include "draupnir/settings_registry/utils/SettingTraitSerializer.h"
-#include "draupnir/settings_registry/traits/settings/files/LastUsedDirectorySetting.h"
-#include "draupnir/settings_registry/traits/settings/files/RecentFilesListSetting.h"
 
 #include "draupnir-test/mocks/MockSettingsTemplate.h"
-#include "draupnir-test/traits/settings/SomeCustomDoubleSetting.h"
+#include "draupnir-test/traits/settings/DoubleSettingTraits.h"
+#include "draupnir-test/traits/settings/StringSettingTraits.h"
 
 /*! @class SettingTraitSerializerTest tests/modules/settings_registry/unit/SettingTraitSerializerTest/SettingTraitSerializerTest.cpp
  *  @brief This test class tests functionality of the SettingTraitSerializer.
@@ -41,19 +40,16 @@ class SettingTraitSerializerTest final : public QObject
 
 public:
     using MockBackend = MockSettingsTemplate<
-        Draupnir::Settings::LastUsedDirectorySetting,
-        Draupnir::Settings::RecentFileListSetting
+        QStringSettingTrait, QStringListSettingTrait
     >;
 
     using QStringSerializer = Draupnir::Settings::SettingTraitSerializer<
-        MockBackend,
-        Draupnir::Settings::LastUsedDirectorySetting
+        MockBackend, QStringSettingTrait
     >;
     QString dummyString{"I Am The String"};
 
     using QStringListSerializer = Draupnir::Settings::SettingTraitSerializer<
-        MockBackend,
-        Draupnir::Settings::RecentFileListSetting
+        MockBackend, QStringListSettingTrait
     >;
     QStringList dummyStringList{
         "/etc/passwd",
@@ -70,10 +66,10 @@ private slots:
     void test_get_default_value() {
         using TestSerializer = Draupnir::Settings::SettingTraitSerializer<
             MockBackend,
-            SomeCustomDoubleSetting
+            DoubleSettingTrait
         >;
 
-        QCOMPARE(TestSerializer::get(&mockBackend), SomeCustomDoubleSetting::defaultValue());
+        QCOMPARE(TestSerializer::get(&mockBackend), DoubleSettingTrait::defaultValue());
     }
 
     void test_set_and_get() {

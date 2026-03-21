@@ -2,7 +2,7 @@
  **********************************************************************************************************************
  *
  * draupnir-lib
- * Copyright (C) 2025 Ivan Odinets <i_odinets@protonmail.com>
+ * Copyright (C) 2025-2026 Ivan Odinets <i_odinets@protonmail.com>
  *
  * This file is part of draupnir-lib
  *
@@ -22,20 +22,20 @@
  *
  */
 
-#ifndef SOMECUSTOMBOOLSETTING_H
-#define SOMECUSTOMBOOLSETTING_H
+#ifndef WIDGETINDEXSETTINGTRAITS_H
+#define WIDGETINDEXSETTINGTRAITS_H
 
 #include <QString>
 
-/*! @class SomeCustomBoolSetting draupnir-test/traits/settings/SomeCustomBoolSetting.h
- *  @brief This is a test setting trait for storing a bool variable. */
+/*! @class WidgetIndexSettingTrait draupnir-test/traits/settings/WidgetIndexSettingTrait.h
+ *  @brief This is a test setting trait for storing a int variable which is a active widget index. */
 
-class SomeCustomBoolSetting
+class WidgetIndexSettingTrait
 {
 public:
-    using Value = bool;
-    static QString key() { return "RandomKey"; }
-    static bool defaultValue() { return true; }
+    using Value = int;
+    static QString key() { return "widgetIndex"; }
+    static int defaultValue() { return 0; }
 };
 
-#endif // SOMECUSTOMBOOLSETTING_H
+#endif // WIDGETINDEXSETTINGTRAITS_H

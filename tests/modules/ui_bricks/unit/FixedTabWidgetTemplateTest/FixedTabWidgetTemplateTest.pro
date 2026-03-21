@@ -6,8 +6,8 @@ QT += widgets
 DEFINES += DRAUPNIR_SETTINGS_USE_CUSTOM
 
 include(../../../../common/MockSettingsTemplate.pri)
-include(../../../../common/SomeRandomSettingsTraits.pri)
-include(../../../../common/SomeRandomWidgetTraits.pri)
+include(../../../../common/SettingsTraits.pri)
+include(../../../../common/WidgetTraits.pri)
 
 include(../../../../../modules/UiBricks.pri)
 

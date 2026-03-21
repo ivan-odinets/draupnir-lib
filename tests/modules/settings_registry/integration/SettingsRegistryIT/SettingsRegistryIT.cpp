@@ -26,9 +26,9 @@
 #include <QCoreApplication>
 
 #include "draupnir-test/mocks/MockSettingsTemplate.h"
-#include "draupnir-test/traits/settings/SomeCustomDoubleSetting.h"
-#include "draupnir-test/traits/settings/SomeCustomBoolSetting.h"
-#include "draupnir-test/traits/settings/SomeRandomWidgetIndexSetting.h"
+#include "draupnir-test/traits/settings/DoubleSettingTraits.h"
+#include "draupnir-test/traits/settings/BoolSettingTraits.h"
+#include "draupnir-test/traits/settings/WidgetIndexSettingTraits.h"
 
 #include "draupnir/settings_registry/SettingsRegistryTemplate.h"
 
@@ -46,19 +46,19 @@ public:
 ///@name Tested types
 ///@{
     using MockSettings = MockSettingsTemplate<
-        SomeCustomDoubleSetting,
-        SomeCustomBoolSetting
+        DoubleSettingTrait,
+        BoolSettingTrait
     >;
 
     using SettingsRegistry = Draupnir::Settings::SettingsRegistryTemplate<
-        SomeCustomDoubleSetting,
-        SomeCustomBoolSetting
+        DoubleSettingTrait,
+        BoolSettingTrait
     >;
     using RandomPopulatableBundle = Draupnir::Settings::SettingsBundleTemplate<
-        SomeCustomDoubleSetting
+        DoubleSettingTrait
     >;
     using RandomUnpopulatableBundle = Draupnir::Settings::SettingsBundleTemplate<
-        SomeCustomBoolSetting, SomeRandomWidgetIndexSetting
+        DoubleSettingTrait, WidgetIndexSettingTrait
     >;
 ///@}
 
@@ -78,8 +78,8 @@ private slots:
      * @todo Extend this test method. */
     void test_constexpr_methods() {
         // Contains
-        QCOMPARE(decltype(testedRegistry)::template contains<SomeCustomDoubleSetting>(), true);
-        QCOMPARE(decltype(testedRegistry)::template contains<SomeRandomWidgetIndexSetting>(), false);
+        QCOMPARE(decltype(testedRegistry)::template contains<DoubleSettingTrait>(), true);
+        QCOMPARE(decltype(testedRegistry)::template contains<WidgetIndexSettingTrait>(), false);
 
         // If stuff is empry or not?
         QCOMPARE(Draupnir::Settings::SettingsRegistryTemplate<>::isEmpty(), true);
@@ -108,60 +108,60 @@ private slots:
         QVERIFY(otherRegistry.isLoaded());
 
         // By default we should have the default values.
-        QCOMPARE(testedRegistry.get<SomeCustomBoolSetting>(),
-                 SomeCustomBoolSetting::defaultValue());
-        QCOMPARE(testedRegistry.get<SomeCustomDoubleSetting>(),
-                 SomeCustomDoubleSetting::defaultValue());
+        QCOMPARE(testedRegistry.get<BoolSettingTrait>(),
+                 BoolSettingTrait::defaultValue());
+        QCOMPARE(testedRegistry.get<DoubleSettingTrait>(),
+                 DoubleSettingTrait::defaultValue());
     }
 
     void test_set_and_get() {
         double testDouble = M_E;
 
         // Verify that we don't have the test values
-        QVERIFY(testedRegistry.template get<SomeCustomDoubleSetting>() != testDouble);
-        QVERIFY(dummySettingsSource.template get<SomeCustomDoubleSetting>() != testDouble);
+        QVERIFY(testedRegistry.template get<DoubleSettingTrait>() != testDouble);
+        QVERIFY(dummySettingsSource.template get<DoubleSettingTrait>() != testDouble);
 
         // Set something
-        testedRegistry.template set<SomeCustomDoubleSetting>(testDouble);
+        testedRegistry.template set<DoubleSettingTrait>(testDouble);
 
         // Check if SettingsRegistry::get method is returning what expected
-        QCOMPARE(testedRegistry.template get<SomeCustomDoubleSetting>(), testDouble);
+        QCOMPARE(testedRegistry.template get<DoubleSettingTrait>(), testDouble);
 
         // Check if values were indeed written to the backend
 
-        QCOMPARE(dummySettingsSource.template get<SomeCustomDoubleSetting>(), testDouble);
+        QCOMPARE(dummySettingsSource.template get<DoubleSettingTrait>(), testDouble);
     }
 
     void test_bundle_functionality() {
         auto bundleByTrait = testedRegistry.template getSettingBundleForTraits<
-            SomeCustomDoubleSetting,SomeCustomBoolSetting
+            DoubleSettingTrait,BoolSettingTrait
         >();
 
         // Check if bundle reports the same as registry
-        QCOMPARE(bundleByTrait.template get<SomeCustomBoolSetting>(),
-                 testedRegistry.template get<SomeCustomBoolSetting>());
-        QCOMPARE(bundleByTrait.template get<SomeCustomDoubleSetting>(),
-                 testedRegistry.template get<SomeCustomDoubleSetting>());
+        QCOMPARE(bundleByTrait.template get<BoolSettingTrait>(),
+                 testedRegistry.template get<BoolSettingTrait>());
+        QCOMPARE(bundleByTrait.template get<DoubleSettingTrait>(),
+                 testedRegistry.template get<DoubleSettingTrait>());
 
         // Check if by any magic within bundle / registry wrong value is present
         QString testString = "Hello SettingsRegistry!";
-        QVERIFY(bundleByTrait.template get<SomeCustomBoolSetting>() != testString);
-        QVERIFY(testedRegistry.template get<SomeCustomBoolSetting>() != testString);
+        QVERIFY(bundleByTrait.template get<BoolSettingTrait>() != testString);
+        QVERIFY(testedRegistry.template get<BoolSettingTrait>() != testString);
 
         // write to bundle and check again
-        bundleByTrait.template set<SomeCustomBoolSetting>(false);
-        QCOMPARE(bundleByTrait.get<SomeCustomBoolSetting>(),false);
-        QCOMPARE(testedRegistry.template get<SomeCustomBoolSetting>(), false);
+        bundleByTrait.template set<BoolSettingTrait>(false);
+        QCOMPARE(bundleByTrait.get<BoolSettingTrait>(),false);
+        QCOMPARE(testedRegistry.template get<BoolSettingTrait>(), false);
 
         // Check if by any magic within bundle / resgistry wrong value is present
         double testDouble = M_PI * M_E;
-        QVERIFY(bundleByTrait.template get<SomeCustomDoubleSetting>() != testDouble);
-        QVERIFY(testedRegistry.template get<SomeCustomDoubleSetting>() != testDouble);
+        QVERIFY(bundleByTrait.template get<DoubleSettingTrait>() != testDouble);
+        QVERIFY(testedRegistry.template get<DoubleSettingTrait>() != testDouble);
 
         // write to registry and check again
-        testedRegistry.template set<SomeCustomDoubleSetting>(testDouble);
-        QCOMPARE(bundleByTrait.template get<SomeCustomDoubleSetting>(), testDouble);
-        QCOMPARE(testedRegistry.template get<SomeCustomDoubleSetting>(), testDouble);
+        testedRegistry.template set<DoubleSettingTrait>(testDouble);
+        QCOMPARE(bundleByTrait.template get<DoubleSettingTrait>(), testDouble);
+        QCOMPARE(testedRegistry.template get<DoubleSettingTrait>(), testDouble);
     }
 };
 

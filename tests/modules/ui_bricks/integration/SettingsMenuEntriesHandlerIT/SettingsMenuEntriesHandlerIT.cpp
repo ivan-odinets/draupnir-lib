@@ -32,32 +32,28 @@
 #include "draupnir/SettingsRegistry.h"
 
 // SettingsMenu
-#include "draupnir/ui_bricks/traits/menu_entries/SettingsMenuEntries.h"
 #include "draupnir/ui_bricks/ui/menus/MenuTemplate.h"
 #include "draupnir/ui_bricks/utils/MenuEntryToTraitMapper.h"
 
-#include "draupnir-test/traits/entries/SomeCheckableMenuEntry.h"
-#include "draupnir-test/traits/settings/SomeCustomBoolSetting.h"
+#include "draupnir-test/helpers/UiTestHelper.h"
+#include "draupnir-test/traits/entries/CheckableMenuEntries.h"
+#include "draupnir-test/traits/entries/CustomMenuEntries.h"
+#include "draupnir-test/traits/settings/BoolSettingTraits.h"
+#include "draupnir-test/traits/settings/IntegerSettingTraits.h"
+#include "draupnir-test/traits/settings/StringSettingTraits.h"
 
 #include "draupnir/ui_bricks/handlers/settings_menu/SettingsMenuHandlerTemplate.h"
 
+// Checkable entries
+DRAUPNIR_DEFINE_SETTINGTRAIT_MAPPING(CheckableMenuEntry,BoolSettingTrait);
+DRAUPNIR_DEFINE_SETTINGTRAIT_MAPPING(OtherCheckableMenuEntry,OtherBoolSettingTrait);
 
-template<>
-struct MapMenuEntry<SomeCustomCheckableMenuEntry> {
-    using MappedEntry = SomeCustomCheckableMenuEntry;
-    using ToTrait = SomeCustomBoolSetting;
-};
+// Non-Checkable entries
+DRAUPNIR_DEFINE_SETTINGTRAIT_MAPPING(SomeMenuEntry,IntSettingTrait);
+DRAUPNIR_DEFINE_SETTINGTRAIT_MAPPING(SomeOtherMenuEntry,QStringSettingTrait);
 
-
-// Test things
-#include "draupnir-test/mocks/MockSettingsTemplate.h"
-
-
-/*! @class SettingsMenuEntriesHandlerGeneralIT
- *  @headerfile tests/handler_templates/SettingsMenuEntriesHandler/GeneralIT/SettingsMenuEntriesHandlerGeneralIT.cpp
- *  @brief This is a test class for testing basic functionality of the SettingsMenuEntriesHandler
- *
- * @todo Refractor this test so that it will have better readability. */
+/*! @class SettingsMenuEntriesHandlerIT
+ *  @brief This is a test class for testing basic functionality of the SettingsMenuEntriesHandler */
 
 class SettingsMenuEntriesHandlerIT : public QObject
 {
@@ -65,33 +61,23 @@ class SettingsMenuEntriesHandlerIT : public QObject
 
 public:
     MockSettingsTemplate<
-        SomeCustomBoolSetting,
-        Draupnir::Settings::MainWindow::MinimizeOnCloseSetting,
-        Draupnir::Settings::MainWindow::MinimizeToTraySetting
+        BoolSettingTrait, OtherBoolSettingTrait, IntSettingTrait, QStringSettingTrait
     > dummySettingsSource;
 
     using SettingsRegistry = Draupnir::Settings::SettingsRegistryTemplate<
-        SomeCustomBoolSetting,
-        Draupnir::Settings::MainWindow::MinimizeOnCloseSetting,
-        Draupnir::Settings::MainWindow::MinimizeToTraySetting,
-        Draupnir::Settings::MainWindow::StartHiddenSetting
+        BoolSettingTrait, OtherBoolSettingTrait, IntSettingTrait, QStringSettingTrait
     >;
     SettingsRegistry registry;
 
     using SettingsMenu = Draupnir::Ui::MenuTemplate<
-        SomeCustomCheckableMenuEntry,
-        Draupnir::Ui::MinimizeOnCloseEntry,
-        Draupnir::Ui::MinimizeToTrayEntry,
-        Draupnir::Ui::StartHiddenMenuEntry
+        CheckableMenuEntry, OtherCheckableMenuEntry,
+        SomeMenuEntry, SomeOtherMenuEntry
     >;
     SettingsMenu menu;
 
     using SettingsMenuHandler = Draupnir::Handlers::SettingsMenuHandler<
         SettingsRegistry,
-        SomeCustomCheckableMenuEntry,
-        Draupnir::Ui::StartHiddenMenuEntry,
-        Draupnir::Ui::MinimizeOnCloseEntry,
-        Draupnir::Ui::MinimizeToTrayEntry
+        CheckableMenuEntry, OtherCheckableMenuEntry, SomeMenuEntry, SomeOtherMenuEntry
     >;
     SettingsMenuHandler handler;
 
@@ -101,31 +87,61 @@ public:
     }
 
 private slots:
-
     void test_initialization() {
-        QAction* customAction = menu.getUiElement<SomeCustomCheckableMenuEntry>();
-        QCOMPARE(customAction->isChecked(), false);
+        QAction* action = menu.getUiElement<CheckableMenuEntry>();
+        QCOMPARE(action->isChecked(), false);
 
-        QAction* minimizeOnCloseAction = menu.getUiElement<Draupnir::Ui::MinimizeOnCloseEntry>();
-        QCOMPARE(minimizeOnCloseAction->isChecked(), false);
+        QAction* otherAction = menu.getUiElement<OtherCheckableMenuEntry>();
+        QCOMPARE(action->isChecked(), false);
 
         handler.loadSettings(&registry);
 
-        QVERIFY(customAction->isChecked() == true);
-        QVERIFY(minimizeOnCloseAction->isChecked() == false);
+        QVERIFY(action->isChecked() == true);
+        QVERIFY(otherAction->isChecked() == false);
     }
 
     void test_actionTriggering() {
-        QAction* minimizeOnCloseAction = menu.getUiElement<Draupnir::Ui::MinimizeOnCloseEntry>();
-        QVERIFY(minimizeOnCloseAction->isChecked() == registry.template get<Draupnir::Settings::MainWindow::MinimizeOnCloseSetting>());
+        QAction* otherAction = menu.getUiElement<OtherCheckableMenuEntry>();
+        QVERIFY(otherAction->isChecked() == registry.template get<OtherBoolSettingTrait>());
 
-        minimizeOnCloseAction->triggered(true);
-        QVERIFY(registry.template get<Draupnir::Settings::MainWindow::MinimizeOnCloseSetting>() == true);
+        otherAction->triggered(true);
+        QVERIFY(registry.template get<OtherBoolSettingTrait>() == true);
 
-        minimizeOnCloseAction->triggered(false);
-        QVERIFY(registry.template get<Draupnir::Settings::MainWindow::MinimizeOnCloseSetting>() == false);
+        otherAction->triggered(false);
+        QVERIFY(registry.template get<OtherBoolSettingTrait>() == false);
     }
 
+    void test_integer_input() {
+        QAction* action = menu.getUiElement<SomeMenuEntry>();
+        const int oldValue = registry.get<IntSettingTrait>();
+        const int newValue = oldValue+10;
+
+        // First lets reject the dialog
+        UiTestHelper::scheduleQInputDialogUserInput(newValue,false);
+        action->trigger();
+        QCOMPARE(registry.get<IntSettingTrait>(),oldValue);
+
+        // And now accept
+        UiTestHelper::scheduleQInputDialogUserInput(newValue,true);
+        action->trigger();
+        QCOMPARE(registry.get<IntSettingTrait>(),newValue);
+    }
+
+    void test_qstring_input() {
+        QAction* action = menu.getUiElement<SomeOtherMenuEntry>();
+        const auto oldValue{registry.get<QStringSettingTrait>()};
+        const auto newValue{oldValue+"[UPDATED]"};
+
+        // First lets reject the dialog
+        UiTestHelper::scheduleQInputDialogUserInput(newValue,false);
+        action->trigger();
+        QCOMPARE(registry.get<QStringSettingTrait>(),oldValue);
+
+        // And now accept
+        UiTestHelper::scheduleQInputDialogUserInput(newValue,true);
+        action->trigger();
+        QCOMPARE(registry.get<QStringSettingTrait>(),newValue);
+    }
 };
 
 QTEST_MAIN(SettingsMenuEntriesHandlerIT)

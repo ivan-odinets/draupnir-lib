@@ -25,12 +25,12 @@
 #include <QtTest>
 
 #include "draupnir/settings_registry/SettingsRegistryTemplate.h"
-#include "draupnir/settings_registry/traits/settings/files/RecentFilesListSetting.h"
 
 #include "draupnir-test/mocks/MockSettingsTemplate.h"
-#include "draupnir-test/traits/settings/SomeCustomDoubleSetting.h"
-#include "draupnir-test/traits/settings/SomeCustomBoolSetting.h"
-#include "draupnir-test/traits/settings/SomeRandomWidgetIndexSetting.h"
+#include "draupnir-test/traits/settings/BoolSettingTraits.h"
+#include "draupnir-test/traits/settings/DoubleSettingTraits.h"
+#include "draupnir-test/traits/settings/StringSettingTraits.h"
+#include "draupnir-test/traits/settings/WidgetIndexSettingTraits.h"
 
 namespace Draupnir::Settings
 {
@@ -47,30 +47,30 @@ public:
 ///@name Tested types
 ///@{
     using MockSettings = MockSettingsTemplate<
-        SomeRandomWidgetIndexSetting,
-        SomeCustomDoubleSetting,
-        SomeCustomBoolSetting
+        WidgetIndexSettingTrait,
+        DoubleSettingTrait,
+        BoolSettingTrait
     >;
 
     using EmptyBundle = Draupnir::Settings::SettingsBundleTemplate<>;
 
     using SettingsRegistry = Draupnir::Settings::SettingsRegistryTemplate<
-        SomeRandomWidgetIndexSetting,
-        SomeCustomDoubleSetting,
-        SomeCustomBoolSetting
+        WidgetIndexSettingTrait,
+        DoubleSettingTrait,
+        BoolSettingTrait
     >;
 
     using SettingsBundle = Draupnir::Settings::SettingsBundleTemplate<
-        SomeRandomWidgetIndexSetting,
-        SomeCustomDoubleSetting,
-        SomeCustomBoolSetting
+        WidgetIndexSettingTrait,
+        DoubleSettingTrait,
+        BoolSettingTrait
     >;
 
     using RandomPopulatableBundle = Draupnir::Settings::SettingsBundleTemplate<
-        SomeCustomDoubleSetting, SomeRandomWidgetIndexSetting
+        WidgetIndexSettingTrait, DoubleSettingTrait
     >;
     using RandomUnpopulatableBundle = Draupnir::Settings::SettingsBundleTemplate<
-        SomeCustomBoolSetting, Draupnir::Settings::RecentFileListSetting
+        BoolSettingTrait, QStringSettingTrait
     >;
 ///@}
 
@@ -91,8 +91,8 @@ private slots:
         QCOMPARE(EmptyBundle::isEmpty(), true);
         QCOMPARE(EmptyBundle::isEmpty_v, true);
 
-        QCOMPARE(EmptyBundle::contains<SomeCustomBoolSetting>(), false);
-        QCOMPARE(EmptyBundle::contains_v<SomeCustomBoolSetting>, false);
+        QCOMPARE(EmptyBundle::contains<BoolSettingTrait>(), false);
+        QCOMPARE(EmptyBundle::contains_v<BoolSettingTrait>, false);
 
         QCOMPARE(RandomPopulatableBundle::canBeFullyPopulatedFrom<EmptyBundle>(), false);
         QCOMPARE(RandomPopulatableBundle::canBeFullyPopulatedFrom_v<EmptyBundle>, false);
@@ -101,11 +101,11 @@ private slots:
         QCOMPARE(SettingsBundle::isEmpty(), false);
         QCOMPARE(SettingsBundle::isEmpty_v, false);
 
-        QCOMPARE(SettingsBundle::contains<SomeCustomDoubleSetting>(), true);
-        QCOMPARE(SettingsBundle::contains_v<SomeCustomDoubleSetting>, true);
+        QCOMPARE(SettingsBundle::contains<DoubleSettingTrait>(), true);
+        QCOMPARE(SettingsBundle::contains_v<DoubleSettingTrait>, true);
 
-        QCOMPARE(SettingsBundle::contains<Draupnir::Settings::RecentFileListSetting>(), false);
-        QCOMPARE(SettingsBundle::contains_v<Draupnir::Settings::RecentFileListSetting>, false);
+        QCOMPARE(SettingsBundle::contains<QStringSettingTrait>(), false);
+        QCOMPARE(SettingsBundle::contains_v<QStringSettingTrait>, false);
 
         QCOMPARE(RandomPopulatableBundle::canBeFullyPopulatedFrom<SettingsBundle>(), true);
         QCOMPARE(RandomPopulatableBundle::canBeFullyPopulatedFrom_v<SettingsBundle>, true);
@@ -141,25 +141,25 @@ private slots:
         SettingsBundle populatedBundle = settingsRegistry.getSettingsBundle<SettingsBundle>();
 
         // Verify that we don't have the test values
-        QVERIFY(populatedBundle.template get<SomeRandomWidgetIndexSetting>() != testInteger);
-        QVERIFY(populatedBundle.template get<SomeCustomDoubleSetting>() != testDouble);
-        QVERIFY(dummySettingsSource.template get<SomeRandomWidgetIndexSetting>() != testInteger);
-        QVERIFY(dummySettingsSource.template get<SomeCustomDoubleSetting>() != testDouble);
+        QVERIFY(populatedBundle.template get<WidgetIndexSettingTrait>() != testInteger);
+        QVERIFY(populatedBundle.template get<DoubleSettingTrait>() != testDouble);
+        QVERIFY(dummySettingsSource.template get<WidgetIndexSettingTrait>() != testInteger);
+        QVERIFY(dummySettingsSource.template get<DoubleSettingTrait>() != testDouble);
 
         // Set something
-        populatedBundle.template set<SomeRandomWidgetIndexSetting>(testInteger);
-        populatedBundle.template set<SomeCustomDoubleSetting>(testDouble);
+        populatedBundle.template set<WidgetIndexSettingTrait>(testInteger);
+        populatedBundle.template set<DoubleSettingTrait>(testDouble);
         // Check if SettingsRegistry::get method is returning what expected
-        QCOMPARE(populatedBundle.template get<SomeRandomWidgetIndexSetting>(), testInteger);
-        QCOMPARE(populatedBundle.template get<SomeCustomDoubleSetting>(), testDouble);
+        QCOMPARE(populatedBundle.template get<WidgetIndexSettingTrait>(), testInteger);
+        QCOMPARE(populatedBundle.template get<DoubleSettingTrait>(), testDouble);
 
         // Check if values were indeed written to the backend
-        QCOMPARE(dummySettingsSource.template get<SomeRandomWidgetIndexSetting>(), testInteger);
-        QCOMPARE(dummySettingsSource.template get<SomeCustomDoubleSetting>(), testDouble);
+        QCOMPARE(dummySettingsSource.template get<WidgetIndexSettingTrait>(), testInteger);
+        QCOMPARE(dummySettingsSource.template get<DoubleSettingTrait>(), testDouble);
 
         // Reset things through the registry
-        populatedBundle.template set<SomeRandomWidgetIndexSetting>(SomeRandomWidgetIndexSetting::defaultValue());
-        populatedBundle.template set<SomeCustomDoubleSetting>(SomeCustomDoubleSetting::defaultValue());
+        populatedBundle.template set<WidgetIndexSettingTrait>(WidgetIndexSettingTrait::defaultValue());
+        populatedBundle.template set<DoubleSettingTrait>(DoubleSettingTrait::defaultValue());
     }
 
     void test_subbundle_functionality() {
@@ -170,21 +170,21 @@ private slots:
         RandomPopulatableBundle subBundle = populatedBundle.getSettingsBundle<RandomPopulatableBundle>();
 
         // Verify that we don't have the test values
-        QVERIFY(subBundle.template get<SomeRandomWidgetIndexSetting>() != testInteger);
-        QVERIFY(subBundle.template get<SomeCustomDoubleSetting>() != testDouble);
-        QVERIFY(dummySettingsSource.template get<SomeRandomWidgetIndexSetting>() != testInteger);
-        QVERIFY(dummySettingsSource.template get<SomeCustomDoubleSetting>() != testDouble);
+        QVERIFY(subBundle.template get<WidgetIndexSettingTrait>() != testInteger);
+        QVERIFY(subBundle.template get<DoubleSettingTrait>() != testDouble);
+        QVERIFY(dummySettingsSource.template get<WidgetIndexSettingTrait>() != testInteger);
+        QVERIFY(dummySettingsSource.template get<DoubleSettingTrait>() != testDouble);
 
         // Write to subbundle
-        subBundle.template set<SomeRandomWidgetIndexSetting>(testInteger);
-        subBundle.template set<SomeCustomDoubleSetting>(testDouble);
+        subBundle.template set<WidgetIndexSettingTrait>(testInteger);
+        subBundle.template set<DoubleSettingTrait>(testDouble);
         // Check if SettingsRegistry::get method is returning what expected
-        QCOMPARE(subBundle.template get<SomeRandomWidgetIndexSetting>(), testInteger);
-        QCOMPARE(subBundle.template get<SomeCustomDoubleSetting>(), testDouble);
+        QCOMPARE(subBundle.template get<WidgetIndexSettingTrait>(), testInteger);
+        QCOMPARE(subBundle.template get<DoubleSettingTrait>(), testDouble);
 
         // Check if values were indeed written to the backend
-        QCOMPARE(dummySettingsSource.template get<SomeRandomWidgetIndexSetting>(), testInteger);
-        QCOMPARE(dummySettingsSource.template get<SomeCustomDoubleSetting>(), testDouble);
+        QCOMPARE(dummySettingsSource.template get<WidgetIndexSettingTrait>(), testInteger);
+        QCOMPARE(dummySettingsSource.template get<DoubleSettingTrait>(), testDouble);
     }
 
     void test_print_to() {

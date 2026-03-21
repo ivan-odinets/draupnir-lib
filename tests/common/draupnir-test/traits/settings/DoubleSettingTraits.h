@@ -2,7 +2,7 @@
  **********************************************************************************************************************
  *
  * draupnir-lib
- * Copyright (C) 2025 Ivan Odinets <i_odinets@protonmail.com>
+ * Copyright (C) 2025-2026 Ivan Odinets <i_odinets@protonmail.com>
  *
  * This file is part of draupnir-lib
  *
@@ -22,26 +22,33 @@
  *
  */
 
-#ifndef SOMECHECKABLEMENUENTRY_H
-#define SOMECHECKABLEMENUENTRY_H
+#ifndef DOUBLESETTINGTRAITS_H
+#define DOUBLESETTINGTRAITS_H
 
-#include <QAction>
+#include <cmath>
 
-/*! @class SomeCheckableMenuEntry draupnir-test/traits/entries/SomeCheckableMenuEntry.h
- *  @brief This is a checkable test menu entry trait for MenuTemplate. */
+#include <QString>
 
-class SomeCustomCheckableMenuEntry
+/*! @class FloatSettingTrait draupnir-test/traits/settings/FloatSettingTrait.h
+ *  @brief Some custom float setting trait for testing. */
+
+class FloatSettingTrait
 {
 public:
-    using Type = QAction;
-
-    static QAction* createElement(QWidget* parent = nullptr) {
-        QAction* result = new QAction{displayName(), parent};
-        result->setCheckable(true);
-        return result;
-    }
-
-    static QString displayName() { return QObject::tr("Some Random CustomTrait"); }
+    using Value = float;
+    static QString key() { return "randomFloat"; }
+    static float defaultValue() { return M_E; }
 };
 
-#endif // SOMECHECKABLEMENUENTRY_H
+/*! @class DoubleSettingTrait draupnir-test/traits/settings/DoubleSettingTrait.h
+ *  @brief Some custom double setting trait for testing. */
+
+class DoubleSettingTrait
+{
+public:
+    using Value = double;
+    static QString key() { return "randomDouble"; }
+    static double defaultValue() { return M_PI; }
+};
+
+#endif // DOUBLESETTINGTRAITS_H

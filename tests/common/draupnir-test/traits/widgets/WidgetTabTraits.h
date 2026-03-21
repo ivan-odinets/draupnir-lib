@@ -2,7 +2,7 @@
  **********************************************************************************************************************
  *
  * draupnir-lib
- * Copyright (C) 2025 Ivan Odinets <i_odinets@protonmail.com>
+ * Copyright (C) 2025-2026 Ivan Odinets <i_odinets@protonmail.com>
  *
  * This file is part of draupnir-lib
  *
@@ -22,20 +22,44 @@
  *
  */
 
-#ifndef SOMERANDOMWIDGETINDEXSETTING_H
-#define SOMERANDOMWIDGETINDEXSETTING_H
+#ifndef WIDGETTABTRAITS_H
+#define WIDGETTABTRAITS_H
 
-#include <QString>
+#include <QLineEdit>
 
-/*! @class SomeRandomWidgetIndexSetting draupnir-test/traits/settings/SomeRandomWidgetIndexSetting.h
- *  @brief This is a test setting trait for storing a int variable which is a active widget index. */
-
-class SomeRandomWidgetIndexSetting
+struct LineEditTrait
 {
-public:
-    using Value = int;
-    static QString key() { return "widgetIndex"; }
-    static int defaultValue() { return 0; }
+    using Widget = QLineEdit;
+
+    static QString displayName() {
+        return QString{"LineEdit"};
+    }
 };
 
-#endif // SOMERANDOMWIDGETINDEXSETTING_H
+#include <QPushButton>
+
+struct PushButtonTrait
+{
+    using Widget = QPushButton;
+
+    static QString displayName() {
+        return QString{"Button"};
+    }
+
+    static QString tooltip() {
+        return QString{"tooltip"};
+    }
+};
+
+#include "draupnir-test/ui/widgets/NonDefaultConstructibleDummyWidget.h"
+
+struct NonDefaultConstructibleTrait
+{
+    using Widget = NonDefaultConstructibleDummyWidget;
+
+    static QString displayName() {
+        return QString{"Random"};
+    }
+};
+
+#endif // WIDGETTABTRAITS_H

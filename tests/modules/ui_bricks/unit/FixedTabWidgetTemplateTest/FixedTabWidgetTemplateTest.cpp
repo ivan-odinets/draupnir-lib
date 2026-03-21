@@ -33,8 +33,8 @@
 #include "draupnir/ui_bricks/ui/widgets/FixedTabWidgetTemplate.h"
 
 #include "draupnir-test/mocks/MockSettingsTemplate.h"
-#include "draupnir-test/traits/settings/SomeRandomWidgetIndexSetting.h"
-#include "draupnir-test/traits/widgets/SomeRandomWidgetTabTraits.h"
+#include "draupnir-test/traits/settings/WidgetIndexSettingTraits.h"
+#include "draupnir-test/traits/widgets/WidgetTabTraits.h"
 
 /*! @class FixedTabWidgetTemplateTest tests/ui_bricks/unit/FixedTabWidgetTemplateTest/FixedTabWidgetTemplateTest.cpp
  *  @brief This test class tests basic functionality of the FixedTabWidgetTemplate. */
@@ -45,13 +45,11 @@ class FixedTabWidgetTemplateTest final : public QObject
 
 public:
     using MockBackend = MockSettingsTemplate<
-        Draupnir::Settings::CentralWidgetIndexSetting,
-        SomeRandomWidgetIndexSetting
+        Draupnir::Settings::CentralWidgetIndexSetting, WidgetIndexSettingTrait
     >;
 
     using SettingsRegistry = Draupnir::Settings::SettingsRegistryTemplate<
-        Draupnir::Settings::CentralWidgetIndexSetting,
-        SomeRandomWidgetIndexSetting
+        Draupnir::Settings::CentralWidgetIndexSetting, WidgetIndexSettingTrait
     >;
 
     using TabWidgetOne = Draupnir::Ui::FixedCentralTabWidgetTemplate<
@@ -61,7 +59,7 @@ public:
     >;
 
     using TabWidgetWithSetting = Draupnir::Ui::FixedTabWidgetTemplate<
-        SomeRandomWidgetIndexSetting,
+        WidgetIndexSettingTrait,
         LineEditTrait,
         PushButtonTrait
     >;
