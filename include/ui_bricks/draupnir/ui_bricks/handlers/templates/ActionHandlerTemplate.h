@@ -37,9 +37,7 @@ namespace Draupnir::Handlers {
  *  @tparam Implementation The derived class implementing either onTriggered() or onTriggered(bool)
  *
  *  @details Provides a standard connection from QAction::triggered() to Implementation::onTriggered(). Intended for simple
- *           actions without a checked/unchecked state.
- *
- * @todo Split this class into several specializations + base class. */
+ *           actions without a checked/unchecked state. */
 
 template<class Implementation>
 class ActionHandlerTemplate
@@ -49,7 +47,7 @@ public:
         p_action{nullptr}
     {
         static_assert(ActionHandlerConcept<Implementation>,
-            "ActionHandler<Implementation>: Implementation must define exactly one of void onTriggered() or void onTriggered(bool).");
+                      "ActionHandler<Implementation>: Implementation must define exactly one of void onTriggered() or void onTriggered(bool).");
     };
 
     /*! @brief Connects QAction::triggered() to Implementation::onTriggered().

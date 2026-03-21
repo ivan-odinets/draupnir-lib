@@ -326,15 +326,22 @@ private:
 
     template<class Entry, class First, class... Rest>
     auto _getUiElementRecursive() {
-        if constexpr (draupnir::utils::is_instantiation_of_v<typename First::Type,Draupnir::Ui::MenuTemplate>) {
-            if constexpr (First::Type::template recursiveContains<Entry>())
-                return getUiElement<First>()->template getUiElementRecursive<Entry>();
-        } else if constexpr (std::is_same_v<First,Entry>) {
+        if constexpr (std::is_same_v<First, Entry>) {
             return getUiElement<Entry>();
+        } else if constexpr (
+            draupnir::utils::is_instantiation_of_v<typename First::Type, Draupnir::Ui::MenuTemplate>
+            ) {
+            if constexpr (First::Type::template recursiveContains<Entry>()) {
+                return getUiElement<First>()->template getUiElementRecursive<Entry>();
+            } else if constexpr (sizeof...(Rest) > 0) {
+                return _getUiElementRecursive<Entry, Rest...>();
+            } else {
+                return static_cast<typename Entry::Type*>(nullptr);
+            }
         } else if constexpr (sizeof...(Rest) > 0) {
-            return _getUiElementRecursive<Entry,Rest...>();
+            return _getUiElementRecursive<Entry, Rest...>();
         } else {
-            return nullptr;
+            return static_cast<typename Entry::Type*>(nullptr);
         }
     }
 

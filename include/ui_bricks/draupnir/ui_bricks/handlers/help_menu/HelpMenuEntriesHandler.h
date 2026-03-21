@@ -27,11 +27,12 @@
 
 #include "draupnir/ui_bricks/handlers/templates/MenuHandlerTemplate.h"
 
+#include "draupnir/ui_bricks/concepts/MenuEntryConcept.h"
+#include "draupnir/ui_bricks/concepts/HelpContextConcept.h"
 #include "draupnir/ui_bricks/handlers/help_menu/AboutAppEntryHandler.h"
 #include "draupnir/ui_bricks/handlers/help_menu/AboutDraupnirLibEntryHandler.h"
 #include "draupnir/ui_bricks/handlers/help_menu/AboutQtEntryHandler.h"
 #include "draupnir/ui_bricks/handlers/help_menu/HelpEntryHandler.h"
-
 
 namespace Draupnir::Handlers {
 
@@ -39,12 +40,24 @@ namespace Draupnir::Handlers {
  *  @ingroup UiBricks
  *  @brief Composite handler for help-related menu entries.
  *  @tparam HelpSource - The context type providing data and methods needed by help menu entry handlers.
- *  @tparam HandledEntries - Variadic parameter pack listing all handled help menu entry trait types (e.g., AboutAppMenuTrait).
- *
- * @todo Introduce concept-based restrictions here. */
+ *  @tparam HandledEntries - Variadic parameter pack listing all handled help menu entry trait types (e.g., AboutAppMenuTrait). */
 
-template<class HelpContext, class... HandledEntries>
-using HelpMenuEntriesHandler = MenuHandlerTemplate<HelpContext,GenericMenuEntryHandlerTemplate,HandledEntries...>;
+template<class Context, Ui::MenuEntryConcept... HandledEntries>
+class HelpMenuEntriesHandler :
+    public MenuHandlerTemplate<Context,GenericMenuEntryHandlerTemplate,HandledEntries...>
+{
+    static_assert(
+        !(draupnir::utils::is_one_of_v<Draupnir::Ui::AboutAppMenuTrait> &&
+        Ui::HelpContext::HasAboutAppText<Context>),
+        "When having Draupnir::Ui::AboutAppMenuTrait - Context must have static QString Context::aboutAppText method."
+    );
+
+    static_assert(
+        !(draupnir::utils::is_one_of_v<Draupnir::Ui::HelpEntryMenuTrait> &&
+        Ui::HelpContext::HasAboutAppText<Context>),
+        "When having Draupnir::Ui::AboutAppMenuTrait - Context must have static QDialog* Context::createHelpDialog() method."
+    );
+};
 
 } // namespace Draupnir::Menus
 

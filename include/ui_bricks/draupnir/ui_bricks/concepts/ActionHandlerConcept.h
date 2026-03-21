@@ -31,17 +31,20 @@ namespace Draupnir::Handlers {
 
 /*! @namespace ActionHandler draupnir/ui_bricks/concepts/ActionHandlerConcept.h
  *  @ingroup UiBricks
- *  @brief This is concept namespace.
- * @todo Document entities within this namespace. */
+ *  @brief Helper concepts for runtime action handlers.
+ *  @details Provides detection concepts for handler types exposing exactly one supported runtime slot-like method:
+ *           either `onTriggered()` or `onTriggered(bool)`. */
 
 namespace ActionHandler
 {
 
+/*! @brief Checks whether handler provides `void onTriggered(bool)`. */
 template<class Handler>
 concept HasRuntimeOnTriggeredWithBool = requires(Handler& handler, bool b) {
     { handler.onTriggered(b) } -> std::same_as<void>;
 };
 
+/*! @brief Checks whether handler provides `void onTriggered()`. */
 template<class Handler>
 concept HasRuntimeOnTriggered = requires(Handler& handler) {
     { handler.onTriggered() } -> std::same_as<void>;
@@ -49,6 +52,10 @@ concept HasRuntimeOnTriggered = requires(Handler& handler) {
 
 }; // namespace Draupnir::Handlers::ActionHandler
 
+/*! @ingroup UiBricks
+ *  @brief Requires handler to provide exactly one supported runtime `onTriggered` overload.
+ *  @details A valid handler must expose either `void onTriggered()` o `void onTriggered(bool)`, but not both at the
+ *           same time. */
 template<class Handler>
 concept ActionHandlerConcept = (
     (ActionHandler::HasRuntimeOnTriggered<Handler> ? 1 : 0) +

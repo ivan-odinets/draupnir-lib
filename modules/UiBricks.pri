@@ -55,6 +55,7 @@
         $$PWD/../include/ui_bricks/draupnir/ui_bricks/ui/menus/MenuTemplate.h \
         $$PWD/../include/ui_bricks/draupnir/ui_bricks/ui/menus/RecentFilesMenu.h \
         $$PWD/../include/ui_bricks/draupnir/ui_bricks/core/MenuEntriesContainer.h \
+        $$PWD/../include/ui_bricks/draupnir/ui_bricks/traits/menu_entries/submenus/FileMenuTemplate.h \
         $$PWD/../include/ui_bricks/draupnir/ui_bricks/traits/menu_entries/submenus/HelpMenuTemplate.h \
         $$PWD/../include/ui_bricks/draupnir/ui_bricks/traits/menu_entries/submenus/SettingsMenuTemplate.h \
         $$PWD/../include/ui_bricks/draupnir/ui_bricks/handlers/file_menu/FileCloseEntryHandler.h \

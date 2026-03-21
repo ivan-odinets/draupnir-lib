@@ -66,6 +66,16 @@ concept IsSupportedFloatingPointType =
         double, float
     >;
 
+/*! @ingroup UiBricks
+ *  @brief Restricts string inputs supported by `SettingsValueUserInput` via `QInputDialog`.
+ *  @tparam String Candidate string type (cv/ref qualifiers are ignored). */
+
+template<typename String>
+concept IsSupportedStringType =
+    draupnir::utils::is_one_of_v<std::remove_cvref_t<String>,
+        QString, std::string
+    >;
+
 /*! @class SettingsValueUserInput draupnir/ui_bricks/utils/SettingsValueUserInput.h
  *  @ingroup UiBricks
  *  @brief Type-directed `QInputDialog`-based user input helper for settings values.
@@ -165,7 +175,8 @@ public:
  *           If `SettingTrait` it provides `settingDescription()`, it will be used as dialog label.
  *
  * @note QInputDialog stores the value internally as `double`. Returned value is cast to Number.
- * @todo Add some static_assert to validate that minimalValue() / maximalValue() exposed by `SettingTrait` are makins sense. */
+ * @todo Add some static_assert to validate that minimalValue() / maximalValue() exposed by `SettingTrait` are makins sense.
+ * @todo Allow configuring double / float precision available for user to input. */
 
 template<Settings::SettingTraitConcept SettingTrait, typename Number>
     requires(IsSupportedFloatingPointType<Number>)
@@ -215,23 +226,27 @@ public:
 /*! @class SettingsValueUserInput<SettingTrait, QString> draupnir/ui_bricks/utils/SettingsValueUserInput.h
  *  @ingroup UiBricks
  *  @tparam SettingTrait Settings trait. If it provides `settingDescription()`, it will be used as dialog label.
- *  @brief `QInputDialog`-based input for `QString` values.
+ *  @brief `QInputDialog`-based input for `QString` and `std::string` values.
  *
  *  @details Uses `QInputDialog::TextInput`. The dialog is initialized with `oldValue`. If SettingTrait provides a description
- *           (settingDescription()), it is shown as dialog label.
- * @todo Add support for non-QString strings (e.g. std::string). */
+ *           (settingDescription()), it is shown as dialog label. */
 
-template<Settings::SettingTraitConcept SettingTrait>
-class SettingsValueUserInput<SettingTrait,QString>
+template<Settings::SettingTraitConcept SettingTrait,typename String>
+    requires(IsSupportedStringType<String>)
+class SettingsValueUserInput<SettingTrait,String>
 {
 public:
     /*! @brief Shows a text input dialog and returns the new value if accepted.
      *  @param oldValue Current/previous text to prefill in the dialog.
      *  @return Optional new text, or std::nullopt if the user cancelled. */
-    static std::optional<QString> getValue(const QString& oldValue) {
+    static std::optional<String> getValue(const String& oldValue) {
         QInputDialog dialog{qApp->activeWindow()};
         dialog.setInputMode(QInputDialog::TextInput);
-        dialog.setTextValue(oldValue);
+        if constexpr (std::is_same_v<std::string, String>) {
+            dialog.setTextValue(QString::fromStdString(oldValue));
+        } else {
+            dialog.setTextValue(oldValue);
+        }
 
         // Configure dialog appearence
         dialog.setWindowIcon(qApp->windowIcon());
@@ -243,9 +258,15 @@ public:
 
         // Show the dialog and exit
         dialog.exec();
-        return (dialog.result() == QDialog::Accepted) ?
-            std::optional<QString>{dialog.textValue()} :
-            std::nullopt;
+        if constexpr (std::is_same_v<std::string,String>) {
+            return (dialog.result() == QDialog::Accepted) ?
+                std::optional<std::string>{dialog.textValue().toStdString()} :
+                std::nullopt;
+        } else {
+            return (dialog.result() == QDialog::Accepted) ?
+                std::optional<QString>{dialog.textValue()} :
+                std::nullopt;
+        }
     }
 };
 

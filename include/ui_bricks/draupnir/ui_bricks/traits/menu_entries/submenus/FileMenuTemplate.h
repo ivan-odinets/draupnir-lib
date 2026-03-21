@@ -22,24 +22,31 @@
  *
  */
 
-#ifndef SETTINGSMENUHANDLERTEMPLATE_H
-#define SETTINGSMENUHANDLERTEMPLATE_H
+#ifndef FILEMENUTEMPLATE_H
+#define FILEMENUTEMPLATE_H
 
-#include "draupnir/ui_bricks/handlers/templates/MenuHandlerTemplate.h"
+#include "draupnir/ui_bricks/ui/menus/MenuTemplate.h"
 
-#include "draupnir/ui_bricks/concepts/MenuEntryConcept.h"
-#include "draupnir/ui_bricks/handlers/settings_menu/SettingsContext.h"
-#include "draupnir/ui_bricks/handlers/settings_menu/SettingsMenuEntryHandlerTemplate.h"
-
-namespace Draupnir::Handlers
+namespace Draupnir::Ui
 {
 
-/*! @brief This is an alias.
- * @todo Introduce concepts here. */
+template<class... Entries>
+class FileMenuTemplate
+{
+public:
+    using Type = MenuTemplate<Entries...>;
 
-template<class SettingsRegistry, Ui::MenuEntryConcept... Entries>
-using SettingsMenuHandler = MenuHandlerTemplate<SettingsContext<SettingsRegistry>,SettingsMenuEntryHandlerTemplate,Entries...>;
+    static Type* createElement(QWidget* parent = nullptr) {
+        return new MenuTemplate<Entries...>{displayName(),parent};
+    }
 
+    /*! @brief Returns the display name for the menu template.
+     *  @return Localized `QString`. */
+    static QString displayName() {
+        return QObject::tr("File");
+    }
 };
 
-#endif // SETTINGSMENUHANDLERTEMPLATE_H
+}; // namespace Draupnir::Ui
+
+#endif // FILEMENUTEMPLATE_H

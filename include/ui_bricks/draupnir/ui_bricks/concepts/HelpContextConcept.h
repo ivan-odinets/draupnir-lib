@@ -36,17 +36,20 @@ namespace Draupnir::Ui
 
 /*! @namespace HelpContext draupnir/ui_bricks/concepts/HelpContextConcept.h
  *  @ingroup UiBricks
- *  @brief This is concept namespace.
- * @todo Document entities within this namespace. */
+ *  @brief Helper concepts for help-related UI context types.
+ *  @details Provides detection concepts for context types that expose optional application help metadata such as
+ *           About text or a custom Help dialog factory. */
 
 namespace HelpContext
 {
 
+/*! @brief Checks whether candidate provides static `aboutAppText()` returning QString-compatible text. */
 template<class Candidate>
 concept HasAboutAppText = requires {
     { Candidate::aboutAppText() } -> std::convertible_to<QString>;
 };
 
+/*! @brief Checks whether candidate provides static `createHelpDialog()` returning a QDialog pointer. */
 template<class Candidate>
 concept HasCreateHelpDialog = requires {
     { Candidate::createHelpDialog() } -> std::convertible_to<QDialog*>;
