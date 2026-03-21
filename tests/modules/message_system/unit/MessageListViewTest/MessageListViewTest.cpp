@@ -126,7 +126,6 @@ private slots:
         QCOMPARE(widget->isMessageFieldDisplayed(MessageField::What), true);
         QCOMPARE(widget->isMessageFieldDisplayed(MessageField::Icon), true);
 
-        // Trigger method emitting signal
         widget->setMessageFieldDisplayed(MessageField::Brief, true);
         // Check if visibility changed
         QCOMPARE(widget->isMessageFieldDisplayed(MessageField::Brief), true);
@@ -135,7 +134,7 @@ private slots:
         // Check if corretct things were emitted
         auto signalArgs = messageFieldVisibilityChangedSpy.takeFirst();
         QCOMPARE(signalArgs.count(),2);
-        QCOMPARE(signalArgs.at(0).value<Message::Fields>(), MessageField::Brief);
+        QCOMPARE(signalArgs.at(0).value<Message::Field>(), MessageField::Brief);
         QCOMPARE(signalArgs.at(1).toBool(), true);
     }
 };

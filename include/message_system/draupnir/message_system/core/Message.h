@@ -38,8 +38,7 @@ namespace Draupnir::Messages
 
 /*! @class Message draupnir/message_system/core/Message.h
  *  @ingroup MessageSystem
- *  @brief This class represents some message from the App about event happened.
- * @todo Add static factory methods with std::move usage. */
+ *  @brief This class represents some message from the App about event happened. */
 
 class Message final
 {
@@ -62,12 +61,31 @@ public:
 
     /*! @brief Static template method to create @ref Message objects from specified `MessageTrait`.
      *  @tparam MessageTrait trait representing a @ref Message to be created.
+     *  @param text text of a @ref Message.
+     * @note Memory is allocated by using new operator. Caller to be responsible for propper memory handling. */
+    template<MessageTraitConcept MessageTrait>
+    static Message* fromTrait(QString&& text) {
+        return new Message{MessageTrait::type, MessageTrait::icon(), MessageTrait::displayName(), std::move(text)};
+    }
+
+    /*! @brief Static template method to create @ref Message objects from specified `MessageTrait`.
+     *  @tparam MessageTrait trait representing a @ref Message to be created.
      *  @param brief brief of a Message.
      *  @param text text of a Message.
      * @note Memory is allocated by using new operator. Caller to be responsible for propper memory handling. */
     template<MessageTraitConcept MessageTrait>
     static Message* fromTrait(const QString& brief, const QString& text) {
         return new Message{MessageTrait::type, MessageTrait::icon(), brief, text};
+    }
+
+    /*! @brief Static template method to create @ref Message objects from specified `MessageTrait`.
+     *  @tparam MessageTrait trait representing a @ref Message to be created.
+     *  @param brief brief of a Message.
+     *  @param text text of a Message.
+     * @note Memory is allocated by using new operator. Caller to be responsible for propper memory handling. */
+    template<MessageTraitConcept MessageTrait>
+    static Message* fromTrait(QString&& brief, QString&& text) {
+        return new Message{MessageTrait::type, MessageTrait::icon(), std::move(brief), std::move(text)};
     }
 
     /*! @brief Returns `QString` with specified fields of the @ref Message object. */
@@ -103,10 +121,14 @@ private:
 
 inline QDebug operator<< (QDebug dbg, Message* messagePtr)
 {
-    dbg.nospace() << qUtf8Printable(QString("Message(type=%1; brief=%2; what=%3)")
-                   .arg(QString::number(messagePtr->type(),2))
-                   .arg(messagePtr->brief())
-                   .arg(messagePtr->what()));
+    if (messagePtr) {
+        dbg.nospace() << qUtf8Printable(QString("Message(type=%1; brief=%2; what=%3)")
+                    .arg(QString::number(messagePtr->type(),2))
+                    .arg(messagePtr->brief())
+                    .arg(messagePtr->what()));
+    } else {
+        dbg.nospace() << qUtf8Printable(QString("Message(nullptr)"));
+    }
 
     return dbg.maybeSpace();
 }

@@ -25,9 +25,8 @@
 #ifndef MESSAGEGROUP_H
 #define MESSAGEGROUP_H
 
-#include <chrono>
+#include <atomic>
 #include <functional>
-#include <random>
 
 namespace Draupnir::Messages
 {
@@ -48,28 +47,21 @@ namespace Draupnir::Messages
 class MessageGroup
 {
 public:
-    /*! @brief Returns MessageGroup object with random integer id.
-     * @todo Make this method thread-safe and efficient.
-     * @todo Improve randomness of this method. */
+    /*! @brief Returns MessageGroup object with some integer id. */
     static MessageGroup generateUniqueGroup() {
-        static std::mt19937 rng(static_cast<unsigned>(std::chrono::steady_clock::now().time_since_epoch().count()));
-
-        auto now = std::chrono::high_resolution_clock::now().time_since_epoch().count();
-
-        int randomPart = static_cast<int>(rng() & 0xFFFF);
-
-        return MessageGroup{static_cast<int>((now ^ randomPart) & 0x7FFFFFFF)};
+        static std::atomic<uint64_t> counter{1};
+        return MessageGroup{counter.fetch_add(1, std::memory_order_relaxed)};
     }
 
     /*! @brief Constructs a MessageGroup with the given ID.
      *  @param id The unique integer identifier for this group. */
-    explicit MessageGroup(int id = 0) :
+    explicit MessageGroup(uint64_t id = 0) :
         m_id{id}
     {}
 
     /*! @brief Returns the internal numeric ID of the group.
      *  @return Integer ID of the group. */
-    int id() const { return m_id; }
+    auto id() const { return m_id; }
 
     /*! @brief Equality operator.
      *  @param other Another MessageGroup.
@@ -92,7 +84,7 @@ public:
     bool operator>(const MessageGroup& other) const { return m_id > other.m_id; }
 
 private:
-    int m_id;
+    uint64_t m_id;
 };
 
 }; // namespace Draupnir::Messages
