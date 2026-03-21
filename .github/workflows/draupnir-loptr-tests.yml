@@ -1,0 +1,46 @@
+name: Draupnir Loptr Tests
+
+on:
+  push:
+    paths:
+      - '.github/workflows/draupnir-loptr-tests.yml'
+      - 'jobs/draupnir_loptr_tests.pm'
+      - 'include/draupnir/loptr/draupnir/**'
+      - 'modules/Loptr.pri'
+      - 'src/draupnir/loptr/**'
+      - 'tests/modules/loptr/**'
+  workflow_dispatch:
+
+jobs:
+  draupnir-loptr-tests:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Install build dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y \
+            perl \
+            build-essential \
+            qtbase5-dev \
+            qt5-qmake \
+            xvfb \
+            libxcb-xinerama0
+
+      - name: Make test runner executable
+        run: chmod +x tools/test-runner.pl
+
+      - name: Run job
+        run: |
+          xvfb-run -a perl tools/test-runner.pl --job draupnir_loptr_tests
+
+      - name: Upload logs on failure
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: draupnir-loptr-test-logs
+          path: tests/build/draupnir_loptr_tests/logs
+          if-no-files-found: ignore

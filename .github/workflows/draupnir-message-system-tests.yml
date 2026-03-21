@@ -1,0 +1,46 @@
+name: Draupnir MessageSystem Tests
+
+on:
+  push:
+    paths:
+      - '.github/workflows/draupnir-message-system-tests.yml'
+      - 'include/draupnir/message_system/draupnir/**'
+      - 'jobs/draupnir_message_system_tests.pm'
+      - 'modules/MessageSystem.pri'
+      - 'src/draupnir/message_system/draupnir/**'
+      - 'tests/modules/message_system/**'
+  workflow_dispatch:
+
+jobs:
+  draupnir-message-system-tests:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Install build dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y \
+            perl \
+            build-essential \
+            qtbase5-dev \
+            qt5-qmake \
+            xvfb \
+            libxcb-xinerama0
+
+      - name: Make test runner executable
+        run: chmod +x tools/test-runner.pl
+
+      - name: Run job
+        run: |
+          xvfb-run -a perl tools/test-runner.pl --job draupnir_message_system_tests
+
+      - name: Upload logs on failure
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: draupnir-message-system-test-logs
+          path: tests/build/draupnir_message_system_tests/logs
+          if-no-files-found: ignore

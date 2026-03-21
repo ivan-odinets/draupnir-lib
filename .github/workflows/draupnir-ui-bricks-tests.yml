@@ -1,0 +1,46 @@
+name: Draupnir UiBricks Tests
+
+on:
+  push:
+    paths:
+      - '.github/workflows/draupnir-ui-bricks-tests.yml'
+      - 'include/draupnir/ui_bricks/draupnir/**'
+      - 'jobs/draupnir_ui_bricks_tests.pm'
+      - 'modules/UiBricks.pri'
+      - 'src/draupnir/ui_bricks/draupnir/**'
+      - 'tests/modules/ui_bricks/**'
+  workflow_dispatch:
+
+jobs:
+  draupnir-ui-bricks-tests:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Install build dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y \
+            perl \
+            build-essential \
+            qtbase5-dev \
+            qt5-qmake \
+            xvfb \
+            libxcb-xinerama0
+
+      - name: Make test runner executable
+        run: chmod +x tools/test-runner.pl
+
+      - name: Run job
+        run: |
+          xvfb-run -a perl tools/test-runner.pl --job draupnir_ui_bricks_tests
+
+      - name: Upload logs on failure
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: draupnir-ui-bricks-test-logs
+          path: tests/build/draupnir_ui_bricks_tests/logs
+          if-no-files-found: ignore

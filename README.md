@@ -23,6 +23,16 @@ This repository is actively developed and refactored. APIs are not frozen, and b
 1. **Qt projects** – include the desired `.pri` file from `modules/` in your `.pro` file.
 2. **CMake projects** – add the `include/` directory to your include path and link against Qt modules required by the classes you
    use.
+   
+## Tests
+- [![Containers](https://github.com/ivan-odinets/draupnir-lib/actions/workflows/draupnir-containers-tests.yml/badge.svg?branch=main)](https://github.com/ivan-odinets/draupnir-lib/actions/workflows/draupnir-containers-tests.yml)
+- [![DraupnirResources](https://github.com/ivan-odinets/draupnir-lib/actions/workflows/draupnir-resources-tests.yml/badge.svg?branch=main)](https://github.com/ivan-odinets/draupnir-lib/actions/workflows/draupnir-resources-tests.yml)
+- [![Loptr](https://github.com/ivan-odinets/draupnir-lib/actions/workflows/draupnir-loptr-tests.yml/badge.svg?branch=main)](https://github.com/ivan-odinets/draupnir-lib/actions/workflows/draupnir-loptr-tests.yml)
+- [![MessageSystem](https://github.com/ivan-odinets/draupnir-lib/actions/workflows/draupnir-message-system-tests.yml/badge.svg?branch=main)](https://github.com/ivan-odinets/draupnir-lib/actions/workflows/draupnir-message-system-tests.yml)
+- [![ProxyHelper](https://github.com/ivan-odinets/draupnir-lib/actions/workflows/draupnir-proxy-helper-tests.yml/badge.svg?branch=main)](https://github.com/ivan-odinets/draupnir-lib/actions/workflows/draupnir-proxy-helper-tests.yml)
+- [![SettingsRegistry](https://github.com/ivan-odinets/draupnir-lib/actions/workflows/draupnir-settings-registry-tests.yml/badge.svg?branch=main)](https://github.com/ivan-odinets/draupnir-lib/actions/workflows/draupnir-settings-registry-tests.yml)
+- [![UiBricks](https://github.com/ivan-odinets/draupnir-lib/actions/workflows/draupnir-ui-bricks-tests.yml/badge.svg?branch=main)](https://github.com/ivan-odinets/draupnir-lib/actions/workflows/draupnir-ui-bricks-tests.yml)
+- [![Utils](https://github.com/ivan-odinets/draupnir-lib/actions/workflows/draupnir-utils-tests.yml/badge.svg?branch=main)](https://github.com/ivan-odinets/draupnir-lib/actions/workflows/draupnir-utils-tests.yml)
 
 ## Additional resources
 

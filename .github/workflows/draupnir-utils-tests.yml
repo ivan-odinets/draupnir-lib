@@ -1,0 +1,43 @@
+name: Draupnir Utils Tests
+
+on:
+  push:
+    paths:
+      - '.github/workflows/draupnir-utils-tests.yml'
+      - 'include/draupnir/utils/draupnir/**'
+      - 'jobs/draupnir_utils_tests.pm'
+      - 'modules/Utils.pri'
+      - 'tests/modules/utils/**'
+  workflow_dispatch:
+
+jobs:
+  draupnir-utils-tests:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Install build dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y \
+            perl \
+            build-essential \
+            qtbase5-dev \
+            qt5-qmake
+
+      - name: Make test runner executable
+        run: chmod +x tools/test-runner.pl
+
+      - name: Run job
+        run: |
+          perl tools/test-runner.pl --job draupnir_utils_tests
+
+      - name: Upload logs on failure
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: draupnir-utils-test-logs
+          path: tests/build/draupnir_utils_tests/logs
+          if-no-files-found: ignore
