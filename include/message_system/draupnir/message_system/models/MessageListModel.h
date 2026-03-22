@@ -48,9 +48,7 @@ class Message;
  *           objects.
  *
  * @note @ref Draupnir::Messages::MessageListModel is responsible for deleting @ref Draupnir::Messages::Message objects contained
- *       within it. This happens in the destructor and in the MessageListModel::clear method.
- *
- * @todo Write a unit-test for this class. */
+ *       within it. This happens in the destructor and in the MessageListModel::clear method. */
 
 class MessageListModel final : public QAbstractItemModel
 {

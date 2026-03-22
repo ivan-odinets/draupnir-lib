@@ -31,7 +31,9 @@
 #include "draupnir/message_system/traits/messages/DefaultMessageTraits.h"
 #include "draupnir/message_system/traits/settings/MessageTypeSettingsTrait.h"
 #include "draupnir/message_system/models/MessageListModel.h"
+#include "draupnir/message_system/ui/windows/MessageDisplayDialog.h"
 
+#include "draupnir-test/helpers/UiTestHelper.h"
 #include "draupnir-test/mocks/MockSettingsTemplate.h"
 #include "draupnir-test/traits/messages/CustomMessageTrait.h"
 
@@ -108,6 +110,19 @@ private slots:
         QCOMPARE(arguments.count(), 2);
         QCOMPARE(arguments.at(0).value<quint64>(), MessageType::Debug);
         QCOMPARE(arguments.at(1).value<Notification::Type>(), expectedDebug);
+    }
+
+    void test_message_box_notification() {
+        Message* dummyMessage = Message::fromTrait<CustomMessageTrait>(QString{"Test Message"});
+        MessageHandler handler;
+
+        bool messageBoxWasShown = false;
+        UiTestHelper::scheduleForTopLevelWidgets<MessageDisplayDialog>([&messageBoxWasShown](MessageDisplayDialog* dialog){
+            dialog->accept();
+            messageBoxWasShown = true;
+        },1000);
+        handler.showMessage(dummyMessage,Notification::MessageBoxType);
+        QTRY_VERIFY(messageBoxWasShown);
     }
 };
 

@@ -7,7 +7,8 @@ DEFINES += DRAUPNIR_SETTINGS_USE_CUSTOM
 DEFINES += DRAUPNIR_MESSAGE_SYSTEM_SINGLETHREAD
 
 include(../../../../common/MockSettingsTemplate.pri)
-include(../../../../common/SomeRandomMessageTraits.pri)
+include(../../../../common/MessageTraits.pri)
+include(../../../../common/UiHelpers.pri)
 
 include(../../../../../modules/MessageSystem.pri)
 

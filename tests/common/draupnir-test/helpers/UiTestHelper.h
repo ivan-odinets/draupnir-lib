@@ -26,8 +26,10 @@
 #define UITESTHELPER_H
 
 #include <QApplication>
+#include <QDebug>
 #include <QInputDialog>
 #include <QTimer>
+#include <QtTest>
 
 class UiTestHelper
 {
@@ -35,11 +37,40 @@ public:
     template<class Widget, class Task>
     static void scheduleForActiveModalWidget(Task&& task, int delay = 200) {
         QTimer::singleShot(delay, [task = std::forward<Task>(task)]() {
+            QWidget* activeModalWidget = QApplication::activeModalWidget();
+            if (!activeModalWidget) {
+                qDebug() << "QApplication::activeModalWidget() == nullptr";
+                QVERIFY(activeModalWidget);
+            }
             auto* widget = qobject_cast<Widget*>(QApplication::activeModalWidget());
-            QVERIFY(widget);
+            if (!widget) {
+                qDebug() << "QApplication::activeModalWidget()->metaObject()->className() = "
+                         << QApplication::activeModalWidget()->metaObject()->className();
+                QVERIFY(widget);
+            }
             task(widget);
         });
     };
+
+    template<class Widget, class Task>
+    static void scheduleForTopLevelWidgets(Task&& task, int delay = 200) {
+        QTimer::singleShot(delay, [task = std::forward<Task>(task)](){
+            auto widgetList = QApplication::topLevelWidgets();
+            if (widgetList.isEmpty()) {
+                qDebug() << "QApplication::topLevelWidgets() == QWidgetList{}";
+                QVERIFY(!widgetList.isEmpty());
+            }
+            int count = 0;
+            for (QWidget* widget : widgetList) {
+                Widget* converted = qobject_cast<Widget*>(widget);
+                if (converted) {
+                    task(converted);
+                    count++;
+                }
+            }
+            QVERIFY(count != 0);
+        });
+    }
 
     template<class Value>
     static void scheduleQInputDialogUserInput(const Value& newValue, bool acceptDialog, int delay = 200) {
