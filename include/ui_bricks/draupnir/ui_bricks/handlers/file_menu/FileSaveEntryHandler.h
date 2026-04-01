@@ -62,24 +62,26 @@ class GenericMenuEntryHandlerTemplate<Context,Draupnir::Ui::FileSaveEntry> :
 public:
     /*! @brief Constructs the handler, statically asserting `FileManager` interface compliance.
      *  @param context Reference to the file context. */
-    GenericMenuEntryHandlerTemplate(Context& context) :
-        m_context{context}
-    {};
+    GenericMenuEntryHandlerTemplate(Context* context) :
+        p_context{context}
+    {
+        //p_context->onSaveMethod([this](){ onTriggered(); });
+    };
 
     /*! @brief Slot called when the "Save File" menu entry is triggered. If the current file has a name, saves directly;
      *         otherwise, initiates "Save As". */
     void onTriggered() {
-        Q_ASSERT(m_context.fileManager());
+        Q_ASSERT(p_context->fileManager());
 
-        if (m_context.fileManager()->currentFileHasName()) {
-            m_context.fileManager()->saveCurrentFile();
+        if (p_context->fileManager()->currentFileHasName()) {
+            p_context->fileManager()->saveCurrentFile();
         } else {
-            m_context.onSaveFileAs();
+            p_context->template triggerEntryHandler<Ui::FileSaveAsEntry>();
         }
     }
 
 private:
-    Context& m_context;
+    Context* p_context;
 };
 
 }; // namespace Draupnir::Menus

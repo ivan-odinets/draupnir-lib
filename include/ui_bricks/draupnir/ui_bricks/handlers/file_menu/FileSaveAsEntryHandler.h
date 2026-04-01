@@ -68,27 +68,29 @@ public:
 
     /*! @brief Constructs the handler with the given context reference.
      *  @param context Reference to the file context. */
-    GenericMenuEntryHandlerTemplate(FileContext& context) :
-        m_context(context)
-    {}
+    GenericMenuEntryHandlerTemplate(FileContext* context) :
+        p_context{context}
+    {
+        // p_context->registerSaveAsMethod([this](){ onTriggered(); });
+    }
 
     /*! @brief Slot called when the "Save As" menu entry is triggered. Opens a dialog for file selection and saves the file
      *         with the selected name. */
     void onTriggered() {
-        Q_ASSERT(m_context.fileManager());
+        Q_ASSERT(p_context->fileManager());
 
-        if (m_context.fileManager()->hasNothingOpened())
+        if (p_context->fileManager()->hasNothingOpened())
             return;
 
-        const QString filePath = m_context.getSaveFileName();
+        const QString filePath = p_context->getSaveFileName();
         if (filePath.isEmpty())
             return;
 
-        m_context.fileManager()->saveCurrentFileAs(filePath);
+        p_context->fileManager()->saveCurrentFileAs(filePath);
     }
 
 private:
-    FileContext& m_context;
+    FileContext* p_context;
 };
 
 };

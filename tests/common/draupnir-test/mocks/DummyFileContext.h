@@ -28,6 +28,8 @@
 #include <QString>
 #include <QMessageBox>
 
+#include "draupnir/ui_bricks/traits/menu_entries/FileMenuEntries.h"
+
 /*! @class DummyFileContext draupnir-tests/mocks/DummyFileContext.h
  *  @brief This is a DummyFileContext class for @ref HandlerTemplates tests. */
 
@@ -45,11 +47,19 @@ public:
         return askUser_result;
     }
 
-    int onSaveFile_callCount = 0;
-    void onSaveFile() { onSaveFile_callCount++; }
+    int saveFile_callCount = 0;
+    int saveFileAs_callCount = 0;
 
-    int onSaveFileAs_callCount = 0;
-    void onSaveFileAs() { onSaveFileAs_callCount++; }
+    template<class Entry>
+    void triggerEntryHandler() {
+        if constexpr (std::is_same_v<Entry,Draupnir::Ui::FileSaveEntry>) {
+            saveFile_callCount++;
+        } else if constexpr (std::is_same_v<Entry,Draupnir::Ui::FileSaveAsEntry>) {
+            saveFileAs_callCount++;
+        } else {
+            static_assert(!std::is_same_v<Entry,Entry>);
+        }
+    }
 
     QString getSaveFileName_result;
     QString getSaveFileName() const { return getSaveFileName_result; }

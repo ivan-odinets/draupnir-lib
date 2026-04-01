@@ -31,6 +31,8 @@
 #include "draupnir-test/mocks/DummySingleFileManager.h"
 
 /*! @class FileSaveEntryHandlerTest
+ *  @ingroup UiBricks
+ *  @ingroup Tests
  *  @brief This is a test class for testing basic functionality of the FileSaveEntryHandler */
 
 class FileSaveEntryHandlerTest final : public QObject
@@ -44,11 +46,11 @@ public:
     >;
 
     FileContext dummyContext;
-    FileSaveEntryHandler handler{dummyContext};
+    FileSaveEntryHandler handler{&dummyContext};
 
 private slots:
     void test_save_file_without_name() {
-        QVERIFY(dummyContext.onSaveFileAs_callCount == 0);
+        QVERIFY(dummyContext.saveFileAs_callCount == 0);
         QVERIFY(dummyContext.fileManager_field.saveCurrentFile_callCount == 0);
 
         // Simulate that we don't have file name
@@ -60,12 +62,12 @@ private slots:
         QCOMPARE(dummyContext.fileManager_field.saveCurrentFile_callCount, 0);
 
         // Check that onSaveFileAs() was called
-        QCOMPARE(dummyContext.onSaveFileAs_callCount, 1);
-        dummyContext.onSaveFileAs_callCount = 0;
+        QCOMPARE(dummyContext.saveFileAs_callCount, 1);
+        dummyContext.saveFileAs_callCount = 0;
     }
 
     void test_save_file_with_name() {
-        QVERIFY(dummyContext.onSaveFileAs_callCount == 0);
+        QVERIFY(dummyContext.saveFileAs_callCount == 0);
         QVERIFY(dummyContext.fileManager_field.saveCurrentFile_callCount == 0);
 
         // Simulate that we don't have file name
@@ -74,8 +76,8 @@ private slots:
         handler.onTriggered();
 
         // Check that onSaveFileAs was called
-        QCOMPARE(dummyContext.onSaveFileAs_callCount, 1);
-        dummyContext.onSaveFileAs_callCount = 0;
+        QCOMPARE(dummyContext.saveFileAs_callCount, 1);
+        dummyContext.saveFileAs_callCount = 0;
     }
 };
 

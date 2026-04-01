@@ -32,7 +32,8 @@ namespace Draupnir::Settings
 
 /*! @namespace SettingTrait
  *  @ingroup SettingsRegistry
- *  @brief Namespace containing concepts of individual elements of the setting traits objects. */
+ *  @brief Namespace containing concepts of individual elements of the setting traits objects.
+ * @todo Maybe it make sense to add validation of minimal / maximal value, precision etc here? */
 
 namespace SettingTrait
 {
@@ -78,6 +79,14 @@ concept HasMinimalValue = requires {
 template<class Candidate>
 concept HasMaximalValue = requires {
     { Candidate::maximalValue() } -> std::same_as<typename Candidate::Value>;
+};
+
+/*! @headerfile draupnir/settings_registry/concepts/SettingTraitConcept.h
+ *  @ingroup SettingsRegistry
+ *  @brief This concept requires type `Candidate` to have public static method `int Candidate::floatingPointAccuracy()` */
+template<class Candidate>
+concept HasFloatingPointDecimals = requires {
+    { Candidate::floatingPointDecimals() } -> std::convertible_to<int>;
 };
 
 /*! @headerfile draupnir/settings_registry/concepts/SettingTraitConcept.h

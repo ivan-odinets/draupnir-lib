@@ -44,11 +44,11 @@ public:
     >;
 
     FileContext dummyContext;
-    FileSaveAsEntryHandler handler{dummyContext};
+    FileSaveAsEntryHandler handler{&dummyContext};
 
 private slots:
     void test_close_when_nothing_opened() {
-        QVERIFY(dummyContext.onSaveFileAs_callCount == 0);
+        QVERIFY(dummyContext.saveFileAs_callCount == 0);
         QVERIFY(dummyContext.fileManager_field.saveCurrentFileAs_callCount == 0);
         QVERIFY(dummyContext.fileManager_field.saveCurrentFileAs_callArguments.isEmpty());
 
@@ -58,13 +58,13 @@ private slots:
         handler.onTriggered();
 
         // Check that nothing changed
-        QCOMPARE(dummyContext.onSaveFileAs_callCount, 0);
+        QCOMPARE(dummyContext.saveFileAs_callCount, 0);
         QCOMPARE(dummyContext.fileManager_field.saveCurrentFileAs_callCount, 0);
         QCOMPARE(dummyContext.fileManager_field.saveCurrentFileAs_callArguments.isEmpty(), true);
     }
 
     void test_empty_save_file_name() {
-        QVERIFY(dummyContext.onSaveFileAs_callCount == 0);
+        QVERIFY(dummyContext.saveFileAs_callCount == 0);
         QVERIFY(dummyContext.fileManager_field.saveCurrentFileAs_callCount == 0);
         QVERIFY(dummyContext.fileManager_field.saveCurrentFileAs_callArguments.isEmpty());
 
@@ -75,7 +75,7 @@ private slots:
         handler.onTriggered();
 
         // Check that nothing changed
-        QCOMPARE(dummyContext.onSaveFileAs_callCount, 0);
+        QCOMPARE(dummyContext.saveFileAs_callCount, 0);
         QCOMPARE(dummyContext.fileManager_field.saveCurrentFileAs_callCount, 0);
         QCOMPARE(dummyContext.fileManager_field.saveCurrentFileAs_callArguments.isEmpty(), true);
     }

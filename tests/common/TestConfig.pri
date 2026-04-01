@@ -1,6 +1,6 @@
 QT += testlib
-CONFIG += console testcase c++20
-QMAKE_CXXFLAGS += -std=c++20
+CONFIG += console testcase c++23
+QMAKE_CXXFLAGS += -std=c++23
 TEMPLATE = app
 
 isEmpty(TEST_NAME) {

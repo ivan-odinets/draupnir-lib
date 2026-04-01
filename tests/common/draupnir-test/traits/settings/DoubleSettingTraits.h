@@ -37,7 +37,7 @@ class FloatSettingTrait
 public:
     using Value = float;
     static QString key() { return "randomFloat"; }
-    static float defaultValue() { return M_E; }
+    static constexpr float defaultValue() { return M_E; }
 };
 
 /*! @class DoubleSettingTrait draupnir-test/traits/settings/DoubleSettingTrait.h
@@ -48,7 +48,20 @@ class DoubleSettingTrait
 public:
     using Value = double;
     static QString key() { return "randomDouble"; }
-    static double defaultValue() { return M_PI; }
+    static constexpr double defaultValue() { return M_PI; }
 };
+
+class RestrictedDoubleSettingTrait
+{
+public:
+    using Value = double;
+    static QString key() { return "randomRestrictedDouble"; }
+    static constexpr double defaultValue() { return M_PI; }
+
+    static constexpr int floatingPointDecimals() { return 4; }
+    static constexpr double minimalValue() { return 0; }
+    static constexpr double maximalValue() { return 100; }
+};
+
 
 #endif // DOUBLESETTINGTRAITS_H

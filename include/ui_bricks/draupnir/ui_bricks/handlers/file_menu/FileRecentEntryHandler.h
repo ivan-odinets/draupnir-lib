@@ -76,8 +76,8 @@ public:
 
     /*! @brief Constructs the handler, asserting FileManager compliance.
      *  @param context Reference to the file context. */
-    GenericMenuEntryHandlerTemplate(FileContext& context) :
-        m_context(context)
+    GenericMenuEntryHandlerTemplate(FileContext* context) :
+        p_context{context}
     {}
 
     /*! @brief Connects this handler to the RecentFilesMenu's selection signal.
@@ -90,7 +90,7 @@ public:
         });
 
         QObject::connect(entry, &Draupnir::Ui::RecentFilesMenu::recentFilesMenuCleared, [this](){
-            onRecentFilesCleared();
+            p_context->template set<Draupnir::Settings::RecentFileListSetting>(QStringList{});
         });
     }
 
@@ -99,7 +99,7 @@ public:
     void onRecentFileSelected(const QFileInfo& fileInfo) {
         if constexpr (!FileContext::FileManager::canHaveMultipleFilesOpened()) {
             // If we have sth opened, and saved
-            if ( (!m_context.fileManager()->hasNothingOpened()) && m_context.fileManager()->isCurrentFileSaved()) {
+            if ( (!p_context->fileManager()->hasNothingOpened()) && !p_context->fileManager()->currentFile()->hasUnsavedData()) {
                 const int userSelection = FileContext::askUser(
                     QObject::tr("Replace current file?"),
                     QObject::tr("This action will close current file and open another file. Continue?"),
@@ -111,7 +111,7 @@ public:
             }
 
             // If we have sth opened, BUT not saved
-            if ( (!m_context.fileManager()->hasNothingOpened()) && (!m_context.fileManager()->isCurrentFileSaved()) ) {
+            if ( (!p_context->fileManager()->hasNothingOpened()) && (!p_context->fileManager()->currentFile()->hasUnsavedData()) ) {
                 const int userSelection = FileContext::askUser(
                     QObject::tr("Replace current file?"),
                     QObject::tr("Current file was modified. Do you want to save your changes or discard them?"),
@@ -121,27 +121,23 @@ public:
                 if (userSelection == QMessageBox::Cancel) {
                     return;
                 } else if (userSelection == QMessageBox::Save) {
-                    m_context.onSaveFile();
+                    p_context->template triggerEntryHandler<Ui::FileSaveEntry>();
                 }
             }
         }
 
-        m_context.fileManager()->openFile(fileInfo.filePath());
+        p_context->fileManager()->openFile(fileInfo.filePath());
     };
-
-    void onRecentFilesCleared() {
-        m_context.template setSetting<Draupnir::Settings::RecentFileListSetting>(QStringList{});
-    }
 
     void onSettingsLoaded() {
         p_menu->loadRecentFiles(
-            m_context.template getSetting<Draupnir::Settings::RecentFileListSetting>()
+            p_context->template get<Draupnir::Settings::RecentFileListSetting>()
         );
     }
 
 private:
     Ui::RecentFilesMenu* p_menu;
-    FileContext& m_context;
+    FileContext* p_context;
 };
 
 };

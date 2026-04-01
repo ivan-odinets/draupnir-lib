@@ -25,10 +25,10 @@
 #ifndef MENUBARHANDLERSHELPER_H
 #define MENUBARHANDLERSHELPER_H
 
-#include "draupnir/ui_bricks/handlers/settings_menu/SettingsContext.h"
-#include "draupnir/ui_bricks/handlers/settings_menu/SettingsMenuEntryHandlerTemplate.h"
-#include "draupnir/ui_bricks/handlers/templates/GenericMenuEntryHandlerTemplate.h"
-#include "draupnir/ui_bricks/handlers/templates/MenuHandlerTemplate.h"
+#include "draupnir/ui_bricks/handlers/file_menu/FileMenuEntriesHandler.h"
+#include "draupnir/ui_bricks/handlers/help_menu/HelpMenuEntriesHandler.h"
+#include "draupnir/ui_bricks/handlers/settings_menu/SettingsMenuHandlerTemplate.h"
+#include "draupnir/ui_bricks/traits/menu_entries/submenus/FileMenuTemplate.h"
 #include "draupnir/ui_bricks/traits/menu_entries/submenus/HelpMenuTemplate.h"
 #include "draupnir/ui_bricks/traits/menu_entries/submenus/SettingsMenuTemplate.h"
 #include "draupnir/ui_bricks/ui/menus/MenuBarTemplate.h"
@@ -58,7 +58,7 @@ namespace Draupnir::Application::Utils
 template<class MenuBar>
 class MenuBarHandlersHelper
 {
-public:
+public:    
     /*! @brief Settings menu handler type (default case).
      *  @tparam SettingsRegistry A settings registry type.
      *  @details For unsupported MenuBar types the handler is always `void`. */
@@ -103,26 +103,11 @@ private:
         using result = void;
     };
 
-    /*! @brief Adapter that converts an entry pack into a `MenuHandlerTemplate`.
-     *  @tparam Context Runtime context type passed into the handler (e.g. SettingsContext<SettingsRegistry>).
-     *  @tparam EntryHandlerTemplate Per-entry handler template (Context, Entry) -> concrete handler for an entry.
-     *  @details This indirection allows `convert_to_t` to instantiate a `MenuHandlerTemplate` from a filtered entry list. */
-    template<class Context, template<class,class> class EntryHandlerTemplate>
+    template<template<class...> class HandlerTemplate, class... HandlerTemplateArgs>
     struct HandlerAdapter {
         template<class... Entries>
-        using result = Draupnir::Handlers::MenuHandlerTemplate<Context,EntryHandlerTemplate,Entries...>;
+        using ResultingHandler = HandlerTemplate<HandlerTemplateArgs...,Entries...>;
     };
-
-    /*! @brief Produces a handler type for a given menu (or `void` if no menu exists).
-     *  @tparam Context Handler context type.
-     *  @tparam EntryHandlerTemplate Handler template used for each menu entry.
-     *  @tparam MenuOrVoid Either a concrete menu type or `void`. */
-    template<class Context, template<class,class> class EntryHandlerTemplate, class MenuOrVoid>
-    struct HandlerDeductor;
-
-    /*! @brief Base case: if the menu is `void`, the handler type is `void`. */
-    template<class Context, template<class,class> class EntryHandlerTemplate>
-    struct HandlerDeductor<Context,EntryHandlerTemplate,void> { using result = void; };
 
     /*! @brief Main case: build a handler type from a concrete menu type.
      *  @details The menu is expanded into `UniqueEntries` and then filtered:
@@ -131,23 +116,43 @@ private:
      *           - submenu template entries are removed (entries that represent `MenuTemplateEntry` / submenu adapters),
      *             and finally converted to a `MenuHandlerTemplate<Context, EntryHandlerTemplate, ...>`.
      * @note The exact meaning of "submenu template entry" depends on `Draupnir::Ui::MenuEntry::IsMenuTemplateEntryAdapter`. */
-    template<class Context, template<class,class> class EntryHandlerTemplate, class Menu>
+    template<class Menu, template<class...> class HandlerTemplate, class... HandlerTemplateArgs>
     struct HandlerDeductor {
         using result = Draupnir::Ui::MenuEntriesConcatenator<Menu>::UniqueEntries
             ::template remove_all_t<Draupnir::Ui::SeparatorEntry>
             ::template remove_if_t<draupnir::utils::is_auto_instantiation<Draupnir::Ui::SectionEntry>::of>
             ::template remove_if_t<Draupnir::Ui::MenuEntry::IsMenuTemplateEntryAdapter>
             ::template convert_to_t<
-                HandlerAdapter<Context,EntryHandlerTemplate>::template result
+                HandlerAdapter<HandlerTemplate,HandlerTemplateArgs...>::template ResultingHandler
             >;
     };
 
+    template<template<class...> class HandlerTemplate, class... HandlerTemplateArgs>
+    struct HandlerDeductor<void,HandlerTemplate,HandlerTemplateArgs...> {
+        using result = void;
+    };
+
 public:
+    /*! @brief Extracted File menu type from the menu bar, or `void` if not present. */
+    using FileMenu_or_void        = SubMenuExtractor<Draupnir::Ui::FileMenuTemplate>::result;
+
     /*! @brief Extracted Settings menu type from the menu bar, or `void` if not present. */
     using SettingsMenu_or_void    = SubMenuExtractor<Draupnir::Ui::SettingsMenuTemplate>::result;
 
     /*! @brief Extracted Help menu type from the menu bar, or `void` if not present. */
     using HelpMenu_or_void        = SubMenuExtractor<Draupnir::Ui::HelpMenuTemplate>::result;
+
+    /*! @brief Derived handler type for the File menu.
+     *  @tparam FileManager A file manager type used to construct `FileContext`.
+     *  @details If `FileMenu_or_void` is `void`, this alias resolves to `void`. Otherwise it resolves to a
+     *           `Draupnir::Handlers::MenuHandlerTemplate<...>` specialization. */
+    template<class FileManager, class UiHelper = void>
+    using FileMenuHandler = HandlerDeductor<
+        FileMenu_or_void,
+        Handlers::FileMenuHandler,
+        FileManager,
+        UiHelper
+    >::result;
 
     /*! @brief Derived handler type for the Settings menu.
      *  @tparam SettingsRegistry A settings registry type used to construct `SettingsContext`.
@@ -155,9 +160,9 @@ public:
      *           `Draupnir::Handlers::MenuHandlerTemplate<...>` specialization. */
     template<class SettingsRegistry>
     using SettingsMenuHandler = HandlerDeductor<
-        Draupnir::Handlers::SettingsContext<SettingsRegistry>,
-        Draupnir::Handlers::SettingsMenuEntryHandlerTemplate,
-        SettingsMenu_or_void
+        SettingsMenu_or_void,
+        Handlers::SettingsMenuHandler,
+        SettingsRegistry
     >::result;
 
     /*! @brief Derived handler type for the Help menu.
@@ -166,9 +171,9 @@ public:
      *           `Draupnir::Handlers::MenuHandlerTemplate<...>` specialization. */
     template<class HelpSource>
     using HelpMenuHandler = HandlerDeductor<
-        HelpSource,
-        Draupnir::Handlers::GenericMenuEntryHandlerTemplate,
-        HelpMenu_or_void
+        HelpMenu_or_void,
+        Handlers::HelpMenuEntriesHandler,
+        HelpSource
     >::result;
 };
 

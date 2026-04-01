@@ -81,6 +81,7 @@ class ApplicationTemplate
     // - template<class T> struct has_NestedType<T, std::void_t<typename T::NestedType>> : std::true_type {};
     // - template<class T> inline constexpr bool has_NestedType_v = has_NestedType<T>::value;
     DEFINE_EXTRACT_NESTED_TYPE_OR_VOID(Core);
+        DEFINE_EXTRACT_NESTED_TYPE_OR_VOID(FileManager);
         DEFINE_EXTRACT_NESTED_TYPE_OR_VOID(ExtraSettingsBundle);
         DEFINE_EXTRACT_NESTED_TYPE_OR_VOID(MessageSystem);
 
@@ -102,6 +103,9 @@ class ApplicationTemplate
 
     /*! @brief Optional message system type. */
     using MessageSystem_or_void        = extract_MessageSystem_or_void_t<Core>;
+
+    /*! @brief Optional FileManager type. */
+    using FileManager_or_void          = extract_FileManager_or_void_t<Core>;
 
     /*! @brief Extracted `ApplicationConfig::Ui`. Must be present. */
     using Ui                      = extract_Ui_or_void_t<ApplicationConfig>;
@@ -141,6 +145,11 @@ class ApplicationTemplate
      *  @details If `Ui::MenuBar` is not specified, helper specialization for `void` should yield `void` menus/handlers. */
     using MenuBarHandlersHelper = Application::Utils::MenuBarHandlersHelper<extract_MenuBar_or_void_t<Ui>>;
 
+    /*! @brief File menu type extracted from MenuBar or `void`. */
+    using FileMenu = MenuBarHandlersHelper::FileMenu_or_void;
+
+    using FileMenuHandler = typename MenuBarHandlersHelper::template FileMenuHandler<FileManager_or_void,void>;
+
     /*! @brief Settings menu type extracted from MenuBar or `void`. */
     using SettingsMenu = MenuBarHandlersHelper::SettingsMenu_or_void;
 
@@ -164,8 +173,11 @@ class ApplicationTemplate
             // Either ViewManager or MainWindow
             UiMainEntryType_or_void,
             MessageSystem_or_void,
-            SettingsMenuHandler,
-            HelpMenuHandler
+            FileManager_or_void,
+            // Handlers
+            FileMenuHandler,
+            HelpMenuHandler,
+            SettingsMenuHandler
         >
         // Remove any possible void types
         ::template remove_all_t<void>
@@ -221,13 +233,19 @@ public:
             Logger::get().setMessageHandler(messageSystem()->handler());
         }
 
-        // Setup Settings Menu handlers
+        // Setup Menu handlers
+        if constexpr (!std::is_void_v<FileMenu> && !std::is_void_v<FileMenuHandler>) {
+            _connectMenuHandler<FileMenu,FileMenuHandler>();
+            std::get<FileMenuHandler>(m_elementsTuple).loadSettings(settingsRegistry());
+            std::get<FileMenuHandler>(m_elementsTuple).setFileManager(fileManager());
+        }
+        if constexpr (!std::is_void_v<HelpMenu> && !std::is_void_v<HelpMenuHandler>) {
+            _connectMenuHandler<HelpMenu,HelpMenuHandler>();
+        }
         if constexpr (!std::is_void_v<SettingsMenu> && !std::is_void_v<SettingsMenuHandler>) {
             _connectMenuHandler<SettingsMenu,SettingsMenuHandler>();
-            std::get<SettingsMenuHandler>(m_elementsTuple).template loadSettings<SettingsRegistry>(settingsRegistry());
+            std::get<SettingsMenuHandler>(m_elementsTuple).loadSettings(settingsRegistry());
         }
-        if constexpr (!std::is_void_v<HelpMenu> && !std::is_void_v<HelpMenuHandler>)
-            _connectMenuHandler<HelpMenu,HelpMenuHandler>();
     }
 
     /*! @brief Runs Qt event loop.
@@ -239,6 +257,10 @@ public:
     /*! @brief Returns a pointer to the settings registry used by this application. */
     auto* settingsRegistry() requires (!std::is_void_v<SettingsRegistry>) {
         return &m_settingsRegistry;
+    }
+
+    auto* fileManager() requires (!std::is_void_v<FileManager_or_void>) {
+        return &std::get<FileManager_or_void>(m_elementsTuple);
     }
 
     /*! @brief Returns a pointer to MainWindow instance.

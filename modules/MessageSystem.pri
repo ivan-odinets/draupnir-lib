@@ -1,7 +1,6 @@
 !contains(DEFINES, DRAUPNIR_MESSAGE_SYSTEM_ENABLED) {
     DEFINES += DRAUPNIR_MESSAGE_SYSTEM_ENABLED
 
-    !contains(CONFIG, c++20) { CONFIG += c++20 }
     !contains(QT, gui) { QT += gui }
     !contains(QT, widgets) { QT += widgets }
 

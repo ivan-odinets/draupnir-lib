@@ -31,6 +31,8 @@
 #include "draupnir-test/mocks/DummySingleFileManager.h"
 
 /*! @class FileCloseEntryHandlerTest
+ *  @ingroup UiBricks
+ *  @ingroup Tests
  *  @brief This is a test class for testing basic functionality of the FileCloseEntryHandler. */
 
 class WrongManager {};
@@ -55,7 +57,7 @@ public:
     >;
 
     FileContext dummyContext;
-    FileCloseEntryHandler handler{dummyContext};
+    FileCloseEntryHandler handler{&dummyContext};
 
     // When uncommented - this will result in static_assert
     // using Broken = Draupnir::Handlers::GenericMenuEntryHandlerTemplate<
@@ -69,7 +71,7 @@ public:
 
 private slots:
     void test_close_when_nothing_opened() {
-        QVERIFY(dummyContext.onSaveFile_callCount == 0);
+        QVERIFY(dummyContext.saveFile_callCount == 0);
 
         // Simulate that we have nothing opened.
         dummyContext.fileManager_field.hasNothingOpened_value = true;
@@ -77,37 +79,37 @@ private slots:
         handler.onTriggered();
 
         // No save calls from CloseHandler
-        QCOMPARE(dummyContext.onSaveFile_callCount, 0);
+        QCOMPARE(dummyContext.saveFile_callCount, 0);
         // No close file calls from CloseHandler
         QCOMPARE(dummyContext.fileManager_field.closeCurrentFile_callCount, 0);
     }
 
     void test_close_saved_file() {
-        QVERIFY(dummyContext.onSaveFile_callCount == 0);
+        QVERIFY(dummyContext.saveFile_callCount == 0);
         QVERIFY(dummyContext.fileManager_field.closeCurrentFile_callCount == 0);
 
         // Simulate that we have something opened
         dummyContext.fileManager_field.hasNothingOpened_value = false;
         // And saved
-        dummyContext.fileManager_field.currentFileSaved_value = true;
+        dummyContext.fileManager_field.hasUnsavedData_value = false;
         // Trigger
         handler.onTriggered();
 
         // No save calls from CloseHandler
-        QCOMPARE(dummyContext.onSaveFile_callCount, 0);
+        QCOMPARE(dummyContext.saveFile_callCount, 0);
         // One close file call from CloseHandler
         QCOMPARE(dummyContext.fileManager_field.closeCurrentFile_callCount, 1);
         dummyContext.fileManager_field.closeCurrentFile_callCount = 0;
     }
 
     void test_close_unsaved_file() {
-        QVERIFY(dummyContext.onSaveFile_callCount == 0);
+        QVERIFY(dummyContext.saveFile_callCount == 0);
         QVERIFY(dummyContext.fileManager_field.closeCurrentFile_callCount == 0);
 
         // Simulate that we have something opened
         dummyContext.fileManager_field.hasNothingOpened_value = false;
         // And unsaved
-        dummyContext.fileManager_field.currentFileSaved_value = false;
+        dummyContext.fileManager_field.hasUnsavedData_value = true;
         // And "user" will cancel close dialog
         dummyContext.askUser_result = QMessageBox::Cancel;
 
@@ -115,7 +117,7 @@ private slots:
         handler.onTriggered();
 
         // No save calls from CloseHandler
-        QCOMPARE(dummyContext.onSaveFile_callCount, 0);
+        QCOMPARE(dummyContext.saveFile_callCount, 0);
         // No close file calls from CloseHandler
         QCOMPARE(dummyContext.fileManager_field.closeCurrentFile_callCount, 0);
 
@@ -126,8 +128,8 @@ private slots:
         handler.onTriggered();
 
         // One save call from CloseHandler
-        QCOMPARE(dummyContext.onSaveFile_callCount, 1);
-        dummyContext.onSaveFile_callCount = 0;
+        QCOMPARE(dummyContext.saveFile_callCount, 1);
+        dummyContext.saveFile_callCount = 0;
         // One close file call from CloseHandler
         QCOMPARE(dummyContext.fileManager_field.closeCurrentFile_callCount, 01);
         dummyContext.fileManager_field.closeCurrentFile_callCount = 0;

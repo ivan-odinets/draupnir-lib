@@ -34,6 +34,8 @@ namespace Draupnir::Messages
 {
 
 /*! @class MessageTypesSelectorWidgetTemplateTest tests/modules/message_system/unit/MessageTypesSelectorWidgetTemplateTest.cpp
+ *  @ingroup MessageSystem
+ *  @ingroup Tests
  *  @brief This test class tests MessageTypesSelectorWidgetTemplate class. */
 
 class MessageTypesSelectorWidgetTemplateTest final : public QObject

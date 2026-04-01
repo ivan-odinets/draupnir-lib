@@ -27,11 +27,10 @@
 
 #include <optional>
 
-#include <QApplication>
-#include <QIcon>
 #include <QInputDialog>
 
 #include "draupnir/settings_registry/concepts/SettingTraitConcept.h"
+#include "draupnir/ui_bricks/utils/DialogDecorator.h"
 #include "draupnir/utils/type_presense.h"
 
 namespace Draupnir::Handlers
@@ -86,12 +85,9 @@ concept IsSupportedStringType =
  *           must provide a single static entry point:
  *           @code
  *           std::optional<Value> SettingsValueUserInput<Trait, Value>::getValue(oldValue);
- *           @endcode
- *
- * @todo For specializations: Improve dialog size.
- * @todo For specializations: Extract "Base class" responsible for decorating the dialogs. */
+ *           @endcode */
 
-template<Settings::SettingTraitConcept SettingTrait,class Value>
+template<Settings::SettingTraitConcept SettingTrait,class Value = typename SettingTrait::Value>
 class SettingsValueUserInput {
     static_assert(!std::is_same_v<Value,Value>);
 };
@@ -108,11 +104,10 @@ class SettingsValueUserInput {
  *              those bounds are applied.
  *           2) Otherwise, if `Number`'s numeric limits are narrower than int's, the bounds are tightened to `Number`'s representable range.
  *
- *           If `SettingTrait` it provides `settingDescription()`, it will be used as dialog label.
+ *           If `SettingTrait` provides `settingDescription()`, it will be used as dialog label.
  *
  * @note `QInputDialog` stores the integer internally as `int`. Returned value is cast to `Number`. Ensure trait-provided min/max fit into
- *        `int` if you expose them.
- * @todo Add some static_assert to validate that minimalValue() / maximalValue() exposed by `SettingTrait` are making sense. */
+ *        `int` if you expose them. */
 
 template<Settings::SettingTraitConcept SettingTrait, typename Number>
     requires(IsSupportedIntegerType<Number>)
@@ -128,14 +123,22 @@ public:
         dialog.setIntValue(oldValue);
 
         // Configure dialog appearence
-        dialog.setWindowIcon(qApp->windowIcon());
-        dialog.setWindowTitle(qApp->applicationName());
+        Ui::DialogDecorator::decorateDialog<
+            Ui::DialogDecorator::UseAppIcon | Ui::DialogDecorator::UseAppTitle |
+            Ui::DialogDecorator::ResizeToTitle
+        >(&dialog);
 
-        // Optinally set the text for the dialog.
+        // Optionally: set the text for the dialog.
         if constexpr (Settings::SettingTrait::HasSettingDescription<SettingTrait>)
             dialog.setLabelText(SettingTrait::settingDescription());
 
-        // Optionaly restrict user input for minimal value
+        // Optionally: verify if range restrictions are making sense.
+        if constexpr (Settings::SettingTrait::HasMinimalValue<SettingTrait> &&
+            Settings::SettingTrait::HasMaximalValue<SettingTrait>) {
+            static_assert(SettingTrait::minimalValue() <= SettingTrait::maximalValue());
+        }
+
+        // Optionally: restrict user input for minimal value
         if constexpr (Settings::SettingTrait::HasMinimalValue<SettingTrait>)
             dialog.setIntMinimum(SettingTrait::minimalValue());
         else if constexpr (std::numeric_limits<Number>::min() > std::numeric_limits<int>::min())
@@ -143,7 +146,7 @@ public:
         else
             dialog.setIntMinimum(std::numeric_limits<int>::min());
 
-        // Optionally restrict user input for maximal value
+        // Optionally: restrict user input for maximal value
         if constexpr (Settings::SettingTrait::HasMaximalValue<SettingTrait>)
             dialog.setIntMaximum(SettingTrait::maximalValue());
         else if constexpr (std::numeric_limits<Number>::max() < std::numeric_limits<int>::max())
@@ -174,9 +177,7 @@ public:
  *
  *           If `SettingTrait` it provides `settingDescription()`, it will be used as dialog label.
  *
- * @note QInputDialog stores the value internally as `double`. Returned value is cast to Number.
- * @todo Add some static_assert to validate that minimalValue() / maximalValue() exposed by `SettingTrait` are makins sense.
- * @todo Allow configuring double / float precision available for user to input. */
+ * @note QInputDialog stores the value internally as `double`. Returned value is cast to Number. */
 
 template<Settings::SettingTraitConcept SettingTrait, typename Number>
     requires(IsSupportedFloatingPointType<Number>)
@@ -192,14 +193,25 @@ public:
         dialog.setDoubleValue(oldValue);
 
         // Configure dialog appearence
-        dialog.setWindowIcon(qApp->windowIcon());
-        dialog.setWindowTitle(qApp->applicationName());
+        Ui::DialogDecorator::decorateDialog<
+            Ui::DialogDecorator::UseAppIcon | Ui::DialogDecorator::UseAppTitle |
+            Ui::DialogDecorator::ResizeToTitle
+        >(&dialog);
 
-        // Optinally set the text for the dialog.
+        // Optinally: set the text for the dialog.
         if constexpr (Settings::SettingTrait::HasSettingDescription<SettingTrait>)
             dialog.setLabelText(SettingTrait::settingDescription());
 
-        // Optionaly restrict user input for minimal value
+        if constexpr (Settings::SettingTrait::HasFloatingPointDecimals<SettingTrait>)
+            dialog.setDoubleDecimals(SettingTrait::floatingPointDecimals());
+
+        // Optionally: verify if range restrictions are making sense.
+        if constexpr (Settings::SettingTrait::HasMinimalValue<SettingTrait> &&
+                      Settings::SettingTrait::HasMaximalValue<SettingTrait>) {
+            static_assert(SettingTrait::minimalValue() <= SettingTrait::maximalValue());
+        }
+
+        // Optionally: restrict user input for minimal value
         if constexpr (Settings::SettingTrait::HasMinimalValue<SettingTrait>)
             dialog.setDoubleMinimum(SettingTrait::minimalValue());
         else if constexpr (std::numeric_limits<Number>::lowest() > std::numeric_limits<double>::lowest())
@@ -207,7 +219,7 @@ public:
         else
             dialog.setDoubleMinimum(std::numeric_limits<double>::lowest());
 
-        // Optionally restrict user input for maximal value
+        // Optionally: restrict user input for maximal value
         if constexpr (Settings::SettingTrait::HasMaximalValue<SettingTrait>)
             dialog.setDoubleMaximum(SettingTrait::maximalValue());
         else if constexpr (std::numeric_limits<Number>::max() < std::numeric_limits<double>::max())
@@ -249,8 +261,10 @@ public:
         }
 
         // Configure dialog appearence
-        dialog.setWindowIcon(qApp->windowIcon());
-        dialog.setWindowTitle(qApp->applicationName());
+        Ui::DialogDecorator::decorateDialog<
+            Ui::DialogDecorator::UseAppIcon | Ui::DialogDecorator::UseAppTitle |
+            Ui::DialogDecorator::ResizeToTitle
+        >(&dialog);
 
         // Optinally set the text for the dialog.
         if constexpr (Settings::SettingTrait::HasSettingDescription<SettingTrait>)

@@ -35,7 +35,7 @@ class WidgetIndexSettingTrait
 public:
     using Value = int;
     static QString key() { return "widgetIndex"; }
-    static int defaultValue() { return 0; }
+    static constexpr int defaultValue() { return 0; }
 };
 
 #endif // WIDGETINDEXSETTINGTRAITS_H

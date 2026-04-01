@@ -35,10 +35,10 @@ class RestrictedShortSettingTrait
 public:
     using Value = short;
     static QString key() { return "randomRestrictedShort"; }
-    static short defaultValue() { return 42; }
+    static constexpr short defaultValue() { return 42; }
 
-    static short minimalValue() { return 10; }
-    static short maximalValue() { return 100; }
+    static constexpr short minimalValue() { return 10; }
+    static constexpr short maximalValue() { return 100; }
 };
 
 /*! @class ShortSettingTrait draupnir-test/traits/settings/IntegerSettingsTraits.h
@@ -49,7 +49,7 @@ class ShortSettingTrait
 public:
     using Value = short;
     static QString key() { return "randomShort"; }
-    static short defaultValue() { return 42; }
+    static constexpr short defaultValue() { return 42; }
 };
 
 /*! @class IntSettingTrait draupnir-test/traits/settings/IntegerSettingsTraits.h
@@ -60,7 +60,7 @@ class IntSettingTrait
 public:
     using Value = int;
     static QString key() { return "randomInteger"; }
-    static int defaultValue() { return 42; }
+    static constexpr int defaultValue() { return 42; }
 };
 
 /*! @class RestrictedIntSettingTrait draupnir-test/traits/settings/IntegerSettingsTraits.h
@@ -73,8 +73,8 @@ public:
     static QString key() { return "randomRestrictedInteger"; }
     static int defaultValue() { return 42; }
 
-    static int minimalValue() { return 10; }
-    static int maximalValue() { return 100; }
+    static constexpr int minimalValue() { return 10; }
+    static constexpr int maximalValue() { return 100; }
 };
 
 #endif // INTEGERSETTINGTRAITS_H

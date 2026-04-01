@@ -30,36 +30,33 @@ namespace draupnir::utils
 
 /*! @file draupnir/utils/conditional_type_extractors.h
  *  @ingroup Utils
- *  @brief This is a file.
- * @todo Write documentation for the entities within this file. */
+ *  @brief Small compile-time helpers for conditional type selection.
+ *
+ *  @details This file provides utility templates that return either a requested type or `void` depending on a compile-time
+ *           condition. These helpers are intended for metaprogramming and SFINAE-style type deduction. */
 
+
+/*! @struct type_or_void draupnir/utils/conditional_type_extractors.h
+ *  @brief Returns `Type` if the boolean condition is `true`, otherwise returns `void`. The selected type is exposed through
+ *         the nested alias `result`
+ *  @tparam getOrNot Compile-time boolean controlling the resulting type.
+ *  @tparam Type Type to return when `getOrNot == true`. */
 template<bool getOrNot, class Type>
 struct type_or_void;
 
+/*! @brief Specialization of `type_or_void` returning `Type`. */
 template<class Type>
 struct type_or_void<true,Type> { using result = Type; };
 
+/*! @brief Specialization of `type_or_void` returning `void`. */
 template<class Type>
 struct type_or_void<false,Type> { using result = void; };
 
+/*! @brief Convenience alias for `type_or_void::result`.
+ *  @tparam getOrNot Compile-time boolean controlling the resulting type.
+ *  @tparam Type Type to return when `getOrNot == true`. */
 template<bool getOrNot,class Type>
 using type_or_void_t = type_or_void<getOrNot,Type>::result;
-
-template<class TypeList,template<class...> class Template,
-    bool getOrNot = TypeList::template contains_template_instantiation_v<Template>>
-struct get_template_instantiation_or_void;
-
-template<class TypeList,template<class...> class Template>
-struct get_template_instantiation_or_void<TypeList,Template,true>
-{
-    using result = int;
-};
-
-template<class TypeList,template<class...> class Template>
-struct get_template_instantiation_or_void<TypeList,Template,false>
-{
-    using result = void;
-};
 
 }; // namespace draupnir::utils
 

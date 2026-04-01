@@ -1,8 +1,8 @@
 !contains(DEFINES, DRAUPNIR_UTILS_ENABLED) {
     DEFINES += DRAUPNIR_UTILS_ENABLED
 
-    !contains(CONFIG, c++20) {
-        error("C++20 is required for the whole draupnir-lib. Add CONFIG += c++20 to your *.pro or *.pri file.")
+    !contains(CONFIG, c++23) {
+        error("Utils.pri: C++23 is required for the whole draupnir-lib. Add CONFIG += c++23 to your *.pro or *.pri file.")
     }
 
     include(DraupnirVersion.pri)

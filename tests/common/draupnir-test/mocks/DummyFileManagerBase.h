@@ -35,8 +35,8 @@
 class DummyFileManagerBase
 {
 public:
-    bool currentFileSaved_value;
-    bool isCurrentFileSaved() const { return currentFileSaved_value; }
+    bool hasUnsavedData_value;
+    bool hasUnsavedData() const { return hasUnsavedData_value; }
 
     bool hasNothingOpened_value;
     bool hasNothingOpened() const { return hasNothingOpened_value; }

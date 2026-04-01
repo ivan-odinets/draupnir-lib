@@ -35,7 +35,9 @@
 namespace Draupnir::Ui {
 
 /*! @class SettingsValueUserInputTest tests/modules/ui_bricks/unit/SettingsValueUserInputTest/SettingsValueUserInputTest.cpp
- *  @brief Test class for the SettingsValueUserInput. */
+ *  @ingroup UiBricks
+ *  @ingroup Tests
+ *  @brief Unit test for @ref Draupnir::Ui::SettingsValueUserInput. */
 
 class SettingsValueUserInputTest final : public QObject
 {
@@ -44,7 +46,13 @@ private:
     template<Settings::SettingTraitConcept Trait, class Value>
     static std::optional<typename Trait::Value> getInputResult(Value oldValue, Value newValue, bool shouldBeAccepted) {
         UiTestHelper::scheduleQInputDialogUserInput(newValue,shouldBeAccepted);
-        return Handlers::SettingsValueUserInput<Trait,typename Trait::Value>::getValue(oldValue);
+        return Handlers::SettingsValueUserInput<Trait>::getValue(oldValue);
+    }
+
+    static constexpr double round(double value, int decimals) {
+        double factor = 1;
+        while (decimals--) factor *= 10;
+        return std::round(value * factor) / factor;
     }
 
 private slots:
@@ -128,6 +136,24 @@ private slots:
         result = getInputResult<DoubleSettingTrait>(oldDouble,newDouble,true);
         QVERIFY(result.has_value());
         QCOMPARE(result.value(), newDouble);
+    }
+
+    void test_restricted_double_input() {
+        constexpr double oldDouble = M_PI;
+        constexpr double doubleWithinRange = M_E;
+
+        // Test amount of decimals when accepted
+        auto result = getInputResult<RestrictedDoubleSettingTrait>(oldDouble,doubleWithinRange,true);
+        QVERIFY(result.has_value());
+        QCOMPARE(result.value(), round(doubleWithinRange,RestrictedDoubleSettingTrait::floatingPointDecimals()));
+
+        // Test restricted double value from below
+        result = getInputResult<RestrictedDoubleSettingTrait>(oldDouble,-100000.0,true);
+        QCOMPARE(result.value(), RestrictedDoubleSettingTrait::minimalValue());
+
+        // Test restricted double value from above
+        result = getInputResult<RestrictedDoubleSettingTrait>(oldDouble,100000.0,true);
+        QCOMPARE(result.value(), RestrictedDoubleSettingTrait::maximalValue());
     }
 
     void test_stdtring_input() {

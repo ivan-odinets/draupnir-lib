@@ -1,7 +1,6 @@
 !contains(DEFINES, DRAUPNIR_APPLICATION_TEMPLATE_ENABLED) {
     DEFINES += DRAUPNIR_APPLICATION_TEMPLATE_ENABLED
 
-    !contains(CONFIG, c++20) { CONFIG += c++20 }
     !contains(QT, gui) { QT += gui }
     !contains(QT, widgets) { QT += widgets }
 

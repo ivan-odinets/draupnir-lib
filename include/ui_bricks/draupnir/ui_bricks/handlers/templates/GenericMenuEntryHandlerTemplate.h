@@ -54,7 +54,7 @@ public:
 
     /*! @brief Dummy constructor, triggers a compile-time error. Instantiating this template always results in a `static_assert`
      *         failure, indicating that a specialization for the given `HandledEntry` is missing. */
-    GenericMenuEntryHandlerTemplate(Context&) {
+    GenericMenuEntryHandlerTemplate(Context*) {
         static_assert(dependent_false_v<HandledEntry>,
                 "GenericMenuEntryHandler template MUST be specialized for all handled entries.");
     }

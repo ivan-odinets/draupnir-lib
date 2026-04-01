@@ -35,7 +35,7 @@ class BoolSettingTrait
 public:
     using Value = bool;
     static QString key() { return "RandomKey"; }
-    static bool defaultValue() { return true; }
+    static constexpr bool defaultValue() { return true; }
 };
 
 /*! @class OtherBoolSettingTrait draupnir-test/traits/settings/OtherBoolSettingTrait.h
@@ -46,7 +46,7 @@ class OtherBoolSettingTrait
 public:
     using Value = bool;
     static QString key() { return "OtherRandomKey"; }
-    static bool defaultValue() { return false; }
+    static constexpr bool defaultValue() { return false; }
 };
 
 #endif // BOOLSETTINGTRAITS_H

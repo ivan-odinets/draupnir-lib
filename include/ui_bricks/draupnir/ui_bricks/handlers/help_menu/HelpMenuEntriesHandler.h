@@ -25,7 +25,7 @@
 #ifndef HELPMENUENTRIESHANDLER_H
 #define HELPMENUENTRIESHANDLER_H
 
-#include "draupnir/ui_bricks/handlers/templates/MenuHandlerTemplate.h"
+#include "draupnir/ui_bricks/handlers/templates/MenuEntryHandlerContainer.h"
 
 #include "draupnir/ui_bricks/concepts/MenuEntryConcept.h"
 #include "draupnir/ui_bricks/concepts/HelpContextConcept.h"
@@ -43,8 +43,7 @@ namespace Draupnir::Handlers {
  *  @tparam HandledEntries - Variadic parameter pack listing all handled help menu entry trait types (e.g., AboutAppMenuTrait). */
 
 template<class Context, Ui::MenuEntryConcept... HandledEntries>
-class HelpMenuEntriesHandler :
-    public MenuHandlerTemplate<Context,GenericMenuEntryHandlerTemplate,HandledEntries...>
+class HelpMenuEntriesHandler
 {
     static_assert(
         !(draupnir::utils::is_one_of_v<Draupnir::Ui::AboutAppMenuTrait> &&
@@ -57,6 +56,24 @@ class HelpMenuEntriesHandler :
         Ui::HelpContext::HasAboutAppText<Context>),
         "When having Draupnir::Ui::AboutAppMenuTrait - Context must have static QDialog* Context::createHelpDialog() method."
     );
+
+    using _Container = MenuEntryHandlerContainer<Context,GenericMenuEntryHandlerTemplate,HandledEntries...>;
+
+public:
+    HelpMenuEntriesHandler() {
+        if constexpr (_Container::contextObjectRequired_v)
+            m_container.initialize(this);
+        else
+            m_container.initialize();
+    }
+
+    template<class MenuContainer>
+    void connectActions(MenuContainer* menuContainer) {
+        m_container.connectActions(menuContainer);
+    }
+
+private:
+    _Container m_container;
 };
 
 } // namespace Draupnir::Menus

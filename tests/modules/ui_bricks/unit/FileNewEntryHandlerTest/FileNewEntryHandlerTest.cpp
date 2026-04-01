@@ -32,7 +32,11 @@
 #include "draupnir-test/mocks/DummySingleFileManager.h"
 
 /*! @class FileNewEntryHandlerTest
- *  @brief This is a test class for testing basic functionality of the FileNewEntryHandler */
+ *  @ingroup UiBricks
+ *  @ingroup Tests
+ *  @brief Unit test for @ref Draupnir::Handlers::GenericMenuEntryHandlerTemplate specialization. Menu entry handled:
+ *         @ref Draupnir::Ui::FileNewEntry.
+ * @todo Split this test into single-file mode test and multi-file mode test. */
 
 class FileNewEntryHandlerTest final : public QObject
 {
@@ -49,12 +53,12 @@ public:
     >;
 
     SingleFileContext dummySingleContext;
-    SingleFileNewEntryHandler singleHandler{dummySingleContext};
+    SingleFileNewEntryHandler singleHandler{&dummySingleContext};
 
     MultipleFileContext dummyMultipleContext;
-    MultipleFileNewEntryHandler multipleHandler{dummyMultipleContext};
+    MultipleFileNewEntryHandler multipleHandler{&dummyMultipleContext};
 
-private slots:
+private slots:   
     void test_new_handler_with_multifile() {
         QVERIFY(dummyMultipleContext.fileManager_field.newFile_callCount == 0);
 
@@ -81,7 +85,7 @@ private slots:
     void test_new_handler_singlefile_sth_opened_and_saved() {
         QVERIFY(dummySingleContext.fileManager_field.newFile_callCount == 0);
         dummySingleContext.fileManager_field.hasNothingOpened_value = false;
-        dummySingleContext.fileManager_field.currentFileSaved_value = true;
+        dummySingleContext.fileManager_field.hasUnsavedData_value = false;
 
         // Assume that user will press Cancel button
         dummySingleContext.askUser_result = QMessageBox::Cancel;
@@ -106,7 +110,7 @@ private slots:
     void test_new_handler_singlefile_sth_opened_and_unsaved() {
         QVERIFY(dummySingleContext.fileManager_field.newFile_callCount == 0);
         dummySingleContext.fileManager_field.hasNothingOpened_value = false;
-        dummySingleContext.fileManager_field.currentFileSaved_value = false;
+        dummySingleContext.fileManager_field.hasUnsavedData_value = true;
 
         // Assume that user will press cancel
         dummySingleContext.askUser_result = QMessageBox::Cancel;
@@ -116,7 +120,7 @@ private slots:
 
         // Nothing happened
         QCOMPARE(dummySingleContext.fileManager_field.newFile_callCount, 0);
-        QCOMPARE(dummySingleContext.onSaveFile_callCount, 0);
+        QCOMPARE(dummySingleContext.saveFile_callCount, 0);
 
         // Assume that user will press discard now
         dummySingleContext.askUser_result = QMessageBox::Discard;
@@ -127,7 +131,7 @@ private slots:
         // Only newFile method was called
         QCOMPARE(dummySingleContext.fileManager_field.newFile_callCount, 1);
         dummySingleContext.fileManager_field.newFile_callCount = 0;
-        QCOMPARE(dummySingleContext.onSaveFile_callCount, 0);
+        QCOMPARE(dummySingleContext.saveFile_callCount, 0);
 
         // Assume that user will press Save now
         dummySingleContext.askUser_result = QMessageBox::Save;
@@ -138,8 +142,8 @@ private slots:
         // Both newFile and onSave methods were called
         QCOMPARE(dummySingleContext.fileManager_field.newFile_callCount, 1);
         dummySingleContext.fileManager_field.newFile_callCount = 0;
-        QCOMPARE(dummySingleContext.onSaveFile_callCount, 1);
-        dummySingleContext.onSaveFile_callCount = 0;
+        QCOMPARE(dummySingleContext.saveFile_callCount, 1);
+        dummySingleContext.saveFile_callCount = 0;
     }
 };
 

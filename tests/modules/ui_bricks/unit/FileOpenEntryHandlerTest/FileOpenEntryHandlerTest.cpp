@@ -49,10 +49,10 @@ public:
     >;
 
     SingleFileContext dummySingleContext;
-    SingleFileOpenEntryHandler singleHandler{dummySingleContext};
+    SingleFileOpenEntryHandler singleHandler{&dummySingleContext};
 
     MultipleFileContext dummyMultipleContext;
-    MultipleFileOpenEntryHandler multipleHandler{dummyMultipleContext};
+    MultipleFileOpenEntryHandler multipleHandler{&dummyMultipleContext};
 
 private slots:
     void test_open_handler_with_multifile() {

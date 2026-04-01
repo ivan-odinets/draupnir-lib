@@ -1,0 +1,143 @@
+/*! @page Tests Testing infrastructure and test project structure
+ *  @defroup Tests
+ *  @brief Overview of test types, directory layout, build jobs, and migration plan.
+ *
+ *  @details
+ *           ### Overview
+ *           Draupnir tests are organized by module and by test type. The goal of this layout is:
+ *           - to keep tests close to the module they validate;
+ *           - to support both local runs and CI runs using the same test targets;
+ *           - to allow grouping tests into different jobs without changing leaf test projects;
+ *           - to reserve a dedicated place for future compilation-only tests.
+ *
+ *           The recommended test categories are:
+ *           - `unit` — small isolated tests for individual classes, functions, utilities, and template components;
+ *           - `integration` — tests that validate interaction between several classes, subsystems, or modules;
+ *           - `compilation` — compile-only tests, including both "must compile" and "must fail with expected error"
+ *             scenarios.
+ *
+ *           ### Directory layout
+ *           Tests should remain grouped by module. Each module may contain its own test tree with the following structure:
+ *           @code{.txt}
+ *           tests/
+ *             common/
+ *               TestDefaults.pri
+ *               ...
+ *
+ *             jobs/
+ *               AllTests.pro
+ *               CoreTests.pro
+ *               GuiTests.pro
+ *
+ *             build/
+ *               <JobName>/
+ *                 bin/
+ *                 results/
+ *                 <TestName>/
+ *                   obj/
+ *                   moc/
+ *                   rcc/
+ *                   ui/
+ *
+ *             <module_name>/
+ *               <ModuleName>Tests.pro
+ *               unit/
+ *                 <TestName>/
+ *                   <TestName>.pro
+ *                   <TestName>.cpp
+ *               integration/
+ *                 <TestName>/
+ *                   <TestName>.pro
+ *                   <TestName>.cpp
+ *               compilation/
+ *                 <TestName>/
+ *                   <TestName>.pro
+ *                   <TestName>.cpp
+ *           @endcode
+ *
+ *           ### Leaf test projects
+ *           Each individual test project should be intentionally small and simple.
+ *
+ *           A leaf `*.pro` file should only:
+ *           - include shared test defaults;
+ *           - include required draupnir-lib module `*.pri` files;
+ *           - include optional test helpers or mocks;
+ *           - declare its own sources.
+ *
+ *           A leaf `*.pro` file should not:
+ *           - define global job orchestration logic;
+ *           - duplicate common compiler or Qt configuration;
+ *           - hardcode build layout unrelated to the current test target.
+ *
+ *           Typical example:
+ *           @code{.pri}
+ *           include(../../../common/TestDefaults.pri)
+ *           include(../../../../modules/Containers.pri)
+ *
+ *           SOURCES += \
+ *               FixedMapTest.cpp
+ *           @endcode
+ *
+ *           ### Shared test defaults
+ *           Common test configuration should be moved into `tests/common/TestDefaults.pri`.
+ *           This file should contain configuration shared by most test executables, for example:
+ *           @code{.pri}
+ *           QT += testlib
+ *           CONFIG += console testcase c++20
+ *           TEMPLATE = app
+ *
+ *           TARGET = $$basename(PWD)
+ *           @endcode
+ *
+ *           Additional flags or paths may be added later if they are truly common across most tests.
+ *
+ *           ### Test jobs
+ *           Files in `tests/jobs/` are orchestration projects. They do not define test logic themselves.
+ *           Instead, they define which test targets belong to a specific run, for example:
+ *           - all fast core tests;
+ *           - GUI-related tests;
+ *           - compilation-only checks;
+ *           - full test suite.
+ *
+ *           A job is expected to control its own build output directory, for example:
+ *           @code{.txt}
+ *           tests/build/<JobName>/bin
+ *           tests/build/<JobName>/results
+ *           @endcode
+ *
+ *           This makes local execution and CI integration easier, because one job corresponds to one set of binaries
+ *           and one set of results.
+ *
+ *           ### Naming conventions
+ *           It is recommended to use one consistent naming scheme for test directories, project files, and targets.
+ *           For example:
+ *           - `FixedMapTest`
+ *           - `MessageSystemIT`
+ *           - `TypeListCompile`
+ *
+ *           The directory name, `*.pro` file name, and resulting target name should match whenever possible.
+ *
+ *           ### Compilation tests
+ *           Compilation tests are a first-class test category and should live next to `unit` and `integration`.
+ *           They are intended for scenarios such as:
+ *           - code must compile successfully;
+ *           - code must fail to compile;
+ *           - compiler diagnostics must contain an expected message.
+ *
+ *           The actual validation of expected compiler output is not a responsibility of qmake itself and should be
+ *           implemented by dedicated wrapper scripts. However, the directory structure should reserve a stable place
+ *           for such tests from the start.
+ *
+ *           ### Local runs and CI
+ *           The same test executables should be usable both locally and in CI.
+ *           The build system should therefore focus on:
+ *           - predictable target names;
+ *           - predictable output directories;
+ *           - minimal duplication in leaf test projects.
+ *
+ *           Formatting of reports, HTML generation, parsing compiler errors, and similar tasks should be implemented
+ *           by runner scripts or CI logic on top of the produced test binaries.
+ *
+ *           ### Current migration direction
+ *           The current repository already contains module-based tests and shared test helpers. The target state is an
+ *           incremental cleanup rather than a full rewrite. Existing tests can be migrated gradually. */

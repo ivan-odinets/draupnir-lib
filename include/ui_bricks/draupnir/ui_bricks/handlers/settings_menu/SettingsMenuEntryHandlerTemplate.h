@@ -43,42 +43,93 @@ class SettingsMenuEntryHandlerTemplate {
     static_assert(!std::is_same_v<SettingsMenuEntry,SettingsMenuEntry>);
 };
 
-template<class SettingsContext, class SettingsMenuEntry>
-    requires Draupnir::Ui::MenuEntry::IsActionEntry<SettingsMenuEntry>
+template<class SettingsContext, class SettingsMenuEntry> requires(
+    Draupnir::Ui::MenuEntry::IsActionEntry<SettingsMenuEntry> &&
+    std::is_same_v<typename MapMenuEntry<SettingsMenuEntry>::ToTrait::Value,bool>
+)
 class SettingsMenuEntryHandlerTemplate<SettingsContext,SettingsMenuEntry> :
     public ActionHandlerTemplate<SettingsMenuEntryHandlerTemplate<SettingsContext,SettingsMenuEntry>>
 {
     using SettingTrait = typename MapMenuEntry<SettingsMenuEntry>::ToTrait;
-    using SettingsValue = typename SettingTrait::Value;
-
-    static inline constexpr bool boolSettingHandled = std::is_same_v<SettingsValue,bool>;
 
 public:
-    SettingsMenuEntryHandlerTemplate(SettingsContext& context) :
-        m_context{context}
+    SettingsMenuEntryHandlerTemplate(SettingsContext* context) :
+        p_context{context}
     {}
 
-    void onTriggered(bool arg) requires(boolSettingHandled) {
-        m_context.template set<SettingTrait>(arg);
+    void onTriggered(bool arg) {
+        p_context->template set<SettingTrait>(arg);
     }
 
-    void onTriggered() requires(!boolSettingHandled) {
-        if constexpr (!std::is_same_v<SettingsValue,bool>) {
-            const SettingsValue oldValue = m_context.template get<SettingTrait>();
-            std::optional<SettingsValue> result = SettingsValueUserInput<SettingTrait,SettingsValue>::getValue(oldValue);
-            if (result.has_value()) {
-                m_context.template set<SettingTrait>(result.value());
-            }
-        }
-    }
-
-    void onSettingsLoaded() requires(boolSettingHandled) {
-        ActionHandlerTemplate<SettingsMenuEntryHandlerTemplate<SettingsContext,SettingsMenuEntry>>::setActionChecked(m_context.template get<SettingTrait>());
+    void onSettingsLoaded() {
+        ActionHandlerTemplate<SettingsMenuEntryHandlerTemplate<SettingsContext,SettingsMenuEntry>>::setActionChecked(p_context->template get<SettingTrait>());
     }
 
 private:
-    SettingsContext& m_context;
+    SettingsContext* p_context;
 };
+
+template<class SettingsContext, class SettingsMenuEntry> requires(
+    Draupnir::Ui::MenuEntry::IsActionEntry<SettingsMenuEntry> &&
+    !std::is_same_v<typename MapMenuEntry<SettingsMenuEntry>::ToTrait::Value,bool>
+)
+class SettingsMenuEntryHandlerTemplate<SettingsContext,SettingsMenuEntry> :
+                                                                             public ActionHandlerTemplate<SettingsMenuEntryHandlerTemplate<SettingsContext,SettingsMenuEntry>>
+{
+    using SettingTrait = typename MapMenuEntry<SettingsMenuEntry>::ToTrait;
+
+public:
+    SettingsMenuEntryHandlerTemplate(SettingsContext* context) :
+        p_context{context}
+    {}
+
+    void onTriggered() {
+        const auto oldValue = p_context->template get<SettingTrait>();
+        const auto result = SettingsValueUserInput<SettingTrait>::getValue(oldValue);
+        if (result.has_value())
+            p_context->template set<SettingTrait>(result.value());
+    }
+
+private:
+    SettingsContext* p_context;
+};
+
+// template<class SettingsContext, class SettingsMenuEntry>
+//     requires Draupnir::Ui::MenuEntry::IsActionEntry<SettingsMenuEntry>
+// class SettingsMenuEntryHandlerTemplate<SettingsContext,SettingsMenuEntry> :
+//     public ActionHandlerTemplate<SettingsMenuEntryHandlerTemplate<SettingsContext,SettingsMenuEntry>>
+// {
+//     using SettingTrait = ;
+//     using SettingsValue = typename SettingTrait::Value;
+
+//     static inline constexpr bool boolSettingHandled = std::is_same_v<SettingsValue,bool>;
+
+// public:
+//     SettingsMenuEntryHandlerTemplate(SettingsContext* context) :
+//         p_context{context}
+//     {}
+
+//     void onTriggered(bool arg) requires(boolSettingHandled) {
+//         p_context->template set<SettingTrait>(arg);
+//     }
+
+//     void onTriggered() requires(!boolSettingHandled) {
+//         if constexpr (!std::is_same_v<SettingsValue,bool>) {
+//             const SettingsValue oldValue = p_context->template get<SettingTrait>();
+//             std::optional<SettingsValue> result = SettingsValueUserInput<SettingTrait,SettingsValue>::getValue(oldValue);
+//             if (result.has_value()) {
+//                 p_context->template set<SettingTrait>(result.value());
+//             }
+//         }
+//     }
+
+//     void onSettingsLoaded() requires(boolSettingHandled) {
+//         ActionHandlerTemplate<SettingsMenuEntryHandlerTemplate<SettingsContext,SettingsMenuEntry>>::setActionChecked(p_context->template get<SettingTrait>());
+//     }
+
+// private:
+//     SettingsContext* p_context;
+// };
 
 }; // namespace Draupnir::Handlers
 

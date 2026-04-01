@@ -2,6 +2,7 @@
     runtime_tests => [
         File::Spec->catdir("containers","unit"),
         File::Spec->catdir("draupnir_resources","unit"),
+        File::Spec->catdir("files","unit"),
         File::Spec->catdir("loptr","unit"),
         File::Spec->catdir("message_system","integration"),
         File::Spec->catdir("message_system","unit"),

@@ -76,23 +76,23 @@ class GenericMenuEntryHandlerTemplate<Context,Draupnir::Ui::FileCloseEntry> :
 {
 public:
     /*! @brief Constructs the handler.
-     *  @param context Reference to the context. */
-    GenericMenuEntryHandlerTemplate(Context& context) :
-        m_context{context}
+     *  @param context Pointer to the context. */
+    GenericMenuEntryHandlerTemplate(Context* context) :
+        p_context{context}
     {};
 
     /*! @brief Slot called when the "Close File" menu entry is triggered. Prompts the user to save unsaved changes before
      *         closing the file. If the file is already saved, it is closed directly. Otherwise, the user is presented
      *         with options to Save, Discard, or Cancel. */
     void onTriggered() {
-        Q_ASSERT_X(m_context.fileManager() != nullptr,
+        Q_ASSERT_X(p_context->fileManager() != nullptr,
             "GenericMenuEntryHandlerTemplate<Context,FileCloseEntry>::onTriggered",
             "FileManager must be specified before by using FileMenuEntriesHandler::setFileManager method");
 
-        if (m_context.fileManager()->hasNothingOpened())
+        if (p_context->fileManager()->hasNothingOpened())
             return;
 
-        if (!m_context.fileManager()->isCurrentFileSaved()) {
+        if (p_context->fileManager()->hasUnsavedData()) {
             const int userSelection = Context::askUser(
                 QObject::tr("Close current file?"),
                 QObject::tr("Current file was modified. Do you want to save your changes or discard them?"),
@@ -100,18 +100,19 @@ public:
             );
 
             if (userSelection == QMessageBox::Save) {
-                m_context.onSaveFile();
+                p_context->template triggerEntryHandler<Ui::FileSaveEntry>();
             } else if (userSelection == QMessageBox::Cancel) {
                 return;
             }
             // Discard -> continue
         }
 
-        m_context.fileManager()->closeCurrentFile();
+        p_context->fileManager()->closeCurrentFile();
     }
 
 private:
-    Context& m_context;
+    Context* p_context;
+    void _closWhenUnsaved();
 };
 
 };

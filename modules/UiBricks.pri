@@ -20,7 +20,7 @@
         $$PWD/../include/ui_bricks/draupnir/ui_bricks/handlers/settings_menu/SettingsMenuHandlerTemplate.h \
         $$PWD/../include/ui_bricks/draupnir/ui_bricks/handlers/templates/ActionHandlerTemplate.h \
         $$PWD/../include/ui_bricks/draupnir/ui_bricks/handlers/templates/GenericMenuEntryHandlerTemplate.h \
-        $$PWD/../include/ui_bricks/draupnir/ui_bricks/handlers/templates/MenuHandlerTemplate.h \
+        $$PWD/../include/ui_bricks/draupnir/ui_bricks/handlers/templates/MenuEntryHandlerContainer.h \
         $$PWD/../include/ui_bricks/draupnir/ui_bricks/traits/features/UseCentralWidget.h \
         $$PWD/../include/ui_bricks/draupnir/ui_bricks/traits/features/UseMenuBar.h \
         $$PWD/../include/ui_bricks/draupnir/ui_bricks/traits/features/UseTrayIcon.h \
@@ -73,9 +73,8 @@
         $$PWD/../include/ui_bricks/draupnir/ui_bricks/handlers/help_menu/HelpMenuEntriesHandler.h \
         $$PWD/../include/ui_bricks/draupnir/ui_bricks/concepts/FileContextConcept.h \
         $$PWD/../include/ui_bricks/draupnir/ui_bricks/concepts/MenuEntryConcept.h \
-        $$PWD/../include/ui_bricks/draupnir/ui_bricks/handlers/file_menu/FileMenuContext.h \
-        $$PWD/../include/ui_bricks/draupnir/ui_bricks/handlers/settings_menu/SettingsContext.h \
         $$PWD/../include/ui_bricks/draupnir/ui_bricks/handlers/settings_menu/SettingsMenuEntryHandlerTemplate.h \
+        $$PWD/../include/ui_bricks/draupnir/ui_bricks/utils/DialogDecorator.h \
         $$PWD/../include/ui_bricks/draupnir/ui_bricks/utils/MenuEntriesConcatenator.h \
         $$PWD/../include/ui_bricks/draupnir/ui_bricks/utils/MenuEntryToTraitMapper.h \
         $$PWD/../include/ui_bricks/draupnir/ui_bricks/utils/SettingsValueUserInput.h \

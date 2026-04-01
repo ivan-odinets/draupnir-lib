@@ -78,9 +78,9 @@ public:
 
     /*! @brief Constructs the handler, checks file manager interface compliance. Performs a static_assert to ensure FileManager
      *         has openFile method.
-     *  @param context Reference to file context. */
-    GenericMenuEntryHandlerTemplate(FileContext& context) :
-        m_context{context}
+     *  @param context Pointer to file context. */
+    GenericMenuEntryHandlerTemplate(FileContext* context) :
+        p_context{context}
     {}
 \
     /*! @brief Slot called when the "File → Open" action is triggered. Handles all required prompting and opens selected files
@@ -88,26 +88,26 @@ public:
     void onTriggered() {
         if constexpr (FileContext::FileManager::canHaveMultipleFilesOpened()) {
             if constexpr (FileContext::FileManager::canOpenMultipleFilesAtOnce()) {
-                const QStringList selectedFiles = m_context.getOpenFileNames();
+                const QStringList selectedFiles = p_context->getOpenFileNames();
 
                 if (selectedFiles.isEmpty())
                     return;
 
-                m_context.updateLastUsedDirectory(QFileInfo{selectedFiles.last()}.dir().path());
-                m_context.fileManager()->openFiles(selectedFiles);
+                p_context->updateLastUsedDirectory(QFileInfo{selectedFiles.last()}.dir().path());
+                p_context->fileManager()->openFiles(selectedFiles);
             } else {
-                const QString filePath = m_context.getOpenFileName();
+                const QString filePath = p_context->getOpenFileName();
 
                 if (filePath.isEmpty())
                     return;
 
                 const QFileInfo fileInfo(filePath);
-                m_context.updateLastUsedDirectory(fileInfo.dir().path());
-                m_context.fileManager()->openFile(fileInfo);
+                p_context->updateLastUsedDirectory(fileInfo.dir().path());
+                p_context->fileManager()->openFile(fileInfo);
             }
         } else {
             // If we have sth opened, and saved
-            if ( (!m_context.fileManager()->hasNothingOpened()) && m_context.fileManager()->isCurrentFileSaved()) {
+            if ( (!p_context->fileManager()->hasNothingOpened()) && p_context->fileManager()->currentFile()->hasUnsavedData()) {
                 const int userSelection = FileContext::askUser(
                     QObject::tr("Replace current file?"),
                     QObject::tr("This action will close current file and open another file. Continue?"),
@@ -119,7 +119,7 @@ public:
             }
 
             // If we have sth opened, BUT not saved
-            if ( (!m_context.fileManager()->hasNothingOpened()) && (!m_context.fileManager()->isCurrentFileSaved()) ) {
+            if ( (!p_context->fileManager()->hasNothingOpened()) && (!p_context->fileManager()->currentFile()->hasUnsavedData()) ) {
                 const int userSelection = FileContext::askUser(
                     QObject::tr("Replace current file?"),
                     QObject::tr("Current file was modified. Do you want to save your changes or discard them?"),
@@ -129,24 +129,25 @@ public:
                 if (userSelection == QMessageBox::Cancel) {
                     return;
                 } else if (userSelection == QMessageBox::Save) {
-                    m_context.onSaveFile();
+                    p_context->template triggerEntryHandler<Ui::FileSaveEntry>();
                 }
             }
 
             // Finally if we are here - we can open something...
-            const QString filePath = m_context.getOpenFileName();
+            const QString filePath = p_context->getOpenFileName();
 
             if (filePath.isEmpty())
                 return;
 
             const QFileInfo fileInfo(filePath);
-            m_context.updateLastUsedDirectory(fileInfo.dir().path());
-            m_context.fileManager()->openFile(fileInfo);
+            p_context->template set<Draupnir::Settings::LastUsedDirectorySetting>(
+                fileInfo.dir().path());
+            p_context->fileManager()->openFile(fileInfo);
         }
     }
 
 private:
-    FileContext& m_context;
+    FileContext* p_context;
 };
 
 } // namespace Draupnir::Menus
