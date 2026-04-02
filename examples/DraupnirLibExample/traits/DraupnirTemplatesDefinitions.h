@@ -73,7 +73,6 @@ struct ExampleAppConfig
             Draupnir::Messages::InfoMessageTrait,
             Draupnir::Messages::WarningMessageTrait,
             Draupnir::Messages::ErrorMessageTrait,
-            Draupnir::Messages::InfoMessageTrait,
             MyMessageTrait
         >
     >;

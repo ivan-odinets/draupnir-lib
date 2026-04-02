@@ -58,8 +58,8 @@ class SettingsMenuEntryHandlerTemplate<SettingsContext,Draupnir::Messages::Messa
 public:
     /*! @brief Constructs handler bound to the given settings context.
      *  @param context Reference to settings context used for reads/writes of the notification setting. */
-    SettingsMenuEntryHandlerTemplate(SettingsContext& context) :
-        m_context{context}
+    SettingsMenuEntryHandlerTemplate(SettingsContext* context) :
+        p_context{context}
     {}
 
     /*! @brief Connects a notification type menu instance to this handler.
@@ -71,7 +71,7 @@ public:
 
         QObject::connect(menu, &Draupnir::Messages::NotificationTypeMenu::notificationTypeChanged,
             [this](Messages::Notification::Type type){
-            m_context.template set<Draupnir::Messages::MessageTypeSettingsTrait<MessageType>>(type);
+            p_context->template set<Draupnir::Messages::MessageTypeSettingsTrait<MessageType>>(type);
         });
     }
 
@@ -80,11 +80,11 @@ public:
      * @note Intended to be called after settings are loaded. */
     void onSettingsLoaded() {
         for (auto menu : m_menuList)
-            menu->setNotificationType(m_context.template get<Draupnir::Messages::MessageTypeSettingsTrait<MessageType>>());
+            menu->setNotificationType(p_context->template get<Draupnir::Messages::MessageTypeSettingsTrait<MessageType>>());
     }
 
 private:
-    SettingsContext& m_context;
+    SettingsContext* p_context;
     std::forward_list<
         Messages::NotificationTypeMenu*
     > m_menuList;

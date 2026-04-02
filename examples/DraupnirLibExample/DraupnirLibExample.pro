@@ -1,7 +1,8 @@
 QT += core gui widgets
 
-QMAKE_CXXFLAGS += -std=c++20
-CONFIG      += c++20
+QMAKE_CXXFLAGS += -std=c++23
+CONFIG      += c++23
+
 
 QMAKE_LFLAGS += -fuse-ld=lld
 
