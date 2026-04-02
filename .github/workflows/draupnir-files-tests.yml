@@ -12,7 +12,7 @@ on:
   workflow_dispatch:
 
 jobs:
-  draupnir-containers-tests:
+  draupnir-files-tests:
     runs-on: ubuntu-latest
 
     steps:
@@ -33,7 +33,7 @@ jobs:
 
       - name: Run job
         run: |
-          perl tools/test-runner.pl --job draupnir_files_tests
+          xvfb-run -a perl perl tools/test-runner.pl --job draupnir_files_tests
 
       - name: Upload logs on failure
         if: failure()
