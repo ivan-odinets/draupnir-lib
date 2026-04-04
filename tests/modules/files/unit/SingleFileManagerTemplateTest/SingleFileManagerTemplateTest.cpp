@@ -24,7 +24,7 @@
 
 #include <QtTest>
 
-#include "draupnir/files/SingleFileManagerTemplate.h"
+#include "draupnir/files/managers/SingleFileManagerTemplate.h"
 
 #include "draupnir-test/helpers/FileTestHelpers.h"
 #include "draupnir-test/mocks/DummyFiles.h"

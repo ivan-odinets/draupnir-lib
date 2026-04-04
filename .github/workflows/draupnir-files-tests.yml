@@ -33,7 +33,7 @@ jobs:
 
       - name: Run job
         run: |
-          xvfb-run -a perl perl tools/test-runner.pl --job draupnir_files_tests
+          xvfb-run -a perl tools/test-runner.pl --job draupnir_files_tests
 
       - name: Upload logs on failure
         if: failure()

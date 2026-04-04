@@ -32,35 +32,38 @@ namespace Draupnir::Handlers
 {
 
 /*! @namespace FileContext draupnir/ui_bricks/concepts/FileContextConcept.h
+ *  @brief Helper concepts for validating file-related context and file manager types.
  *  @ingroup UiBricks
- *  @brief This is concept namespace.
- * @todo Document entities within this namespace. */
+ *
+ *  @details Contains compile-time checks used to verify:
+ *           - presence of a file manager type in a context;
+ *           - presence of an accessor returning the file manager;
+ *           - presence of a helper method for asking the user;
+ *           - presence of save/save-as API in a file manager. */
 
 namespace FileContext
 {
 
+
+/*! @concept HasFileManagerType
+ *  @brief Checks whether a context defines a nested `FileManager` type.*/
 template<class Context>
 concept HasFileManagerType = requires { typename Context::FileManager; };
 
+/*! @concept HasFileManagerMethod
+ *  @brief Checks whether a context provides a `fileManager()` method. The method must return a pointer to `Context::FileManager`. */
 template<class Context>
 concept HasFileManagerMethod = requires (Context context) {
     { context.fileManager() } -> std::same_as<typename Context::FileManager*>;
 };
 
+/*! @concept HasAskUserMethod
+ *  @brief Checks whether a context provides a static `askUser(...)` method. This method is expected to show a dialog to the user
+ *         and return an integer compatible with a `QMessageBox` result. */
 template<class Context>
 concept HasAskUserMethod = requires {
     { Context::askUser(std::declval<QString>(), std::declval<QString>(), std::declval<QMessageBox::StandardButtons>()) }
     -> std::same_as<int>;
-};
-
-template<class Manager>
-concept HasOnSaveFileMethod = requires(Manager manager) {
-    { manager.onSaveFile() } -> std::same_as<void>;
-};
-
-template<class Manager>
-concept HasOnSaveFileAsMethod = requires(Manager manager) {
-    { manager.onSaveFileAs() } -> std::same_as<void>;
 };
 
 };

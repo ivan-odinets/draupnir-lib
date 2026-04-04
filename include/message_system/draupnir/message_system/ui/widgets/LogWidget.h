@@ -64,10 +64,7 @@ namespace Draupnir::Messages
  *           @ref Draupnir::Messages::MessaheHandlerTemplate and exposes controls for:
  *           - Clearing the log (via `QPushButton`)
  *           - Configuring the @ref Draupnir::Messages::MessageListView and notification settings of the associated @ref
- *             Draupnir::Messages::AbstractMessageHandler / @ref Draupnir::Messages::MessageHandlerTemplate.
- *
- * @todo After refractoring the AbstractMessageUiBuilder / MessageUiBuilderTemplate - this thing should be refractored as
- *       well. */
+ *             Draupnir::Messages::AbstractMessageHandler / @ref Draupnir::Messages::MessageHandlerTemplate. */
 
 class LogWidget : public QWidget
 {

@@ -12,12 +12,13 @@
 
     HEADERS += \
         $$PWD/../include/files/draupnir/files/ScopedFileTemplate.h \
-        $$PWD/../include/files/draupnir/files/SingleFileManagerTemplate.h \
         $$PWD/../include/files/draupnir/files/concepts/FileConcept.h \
         $$PWD/../include/files/draupnir/files/file_types/AbstractFile.h \
         $$PWD/../include/files/draupnir/files/file_types/AbstractJsonFile.h \
         $$PWD/../include/files/draupnir/files/file_types/AbstractTextFile.h \
-        $$PWD/../include/files/draupnir/files/file_types/AbstractXmlFile.h
+        $$PWD/../include/files/draupnir/files/file_types/AbstractXmlFile.h \
+        $$PWD/../include/files/draupnir/files/managers/AbstractFileManager.h \
+        $$PWD/../include/files/draupnir/files/managers/SingleFileManagerTemplate.h
 
     SOURCES += \
         $$PWD/../src/files/file_types/AbstractFile.cpp

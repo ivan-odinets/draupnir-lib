@@ -27,8 +27,9 @@
 
 #include <QPushButton>
 
-#include "draupnir/MessageSystem.h"
+#include "draupnir/message_system/ui/widgets/LogWidget.h"
 
+#include "draupnir/message_system/core/MessageSystemTemplate.h"
 #include "draupnir/message_system/models/MessageListModel.h"
 #include "draupnir/message_system/ui/widgets/MessageListView.h"
 
@@ -38,7 +39,9 @@ namespace Draupnir::Messages
 {
 
 /*! @class LogWidgetTest tests/modules/message_system/unit/LogWidgetTest.cpp
- *  @brief This test class tests LogWidget class. */
+ *  @ingroup MessageSystem
+ *  @ingroup Tests
+ *  @brief Unit test for @ref Draupnir::Messages::LogWidget class. */
 
 class LogWidgetTest final : public QObject
 {
@@ -56,7 +59,6 @@ public:
     MockSettings mockedBackend;
     SettingsRegistry settingsRegistry;
     MessageSystem messageSystem;
-
 
     LogWidget* widget = nullptr;
 

@@ -50,13 +50,13 @@ class MenuTemplate;
  *
  *  @details MenuEntriesContainer is a generic compile-time container that manages the creation, access, translation, and
  *           destruction of menu entry elements (QMenu/QAction or their descendants). It is designed to be used within
- *           MenuTemplate, MenuBarTemplate, or similar classes to provide DRY logic for nested menu structures.
- *
- * @todo Provide specialization for empty MenuEntriesContainer. */
+ *           MenuTemplate, MenuBarTemplate, or similar classes to provide DRY logic for nested menu structures. */
 
 template<MenuEntryConcept... Entries>
 class MenuEntriesContainer
 {
+    static_assert(sizeof...(Entries) > 0);
+
 public:
     /*! @brief Compile-time list of entry trait types stored in this @ref MenuEntriesContainer.
      *  @details Convenience alias for metaprogramming over the `Entries...` pack. Equivalent to `draupnir::utils::type_list<Entries...>`. */

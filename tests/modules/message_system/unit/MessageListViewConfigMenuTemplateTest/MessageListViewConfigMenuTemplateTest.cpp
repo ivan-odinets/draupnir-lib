@@ -34,29 +34,30 @@ namespace Draupnir::Messages
 {
 
 /*! @class MessageListViewConfigMenuTemplateTest tests/modules/message_system/unit/MessageListViewConfigMenuTemplateTest.cpp
- *  @brief This test class tests MessageListViewConfigMenuTemplate class. */
+ *  @ingroup MessageSystem
+ *  @ingroup Tests
+ *  @brief Unit test for @ref MessageListViewConfigMenuTemplate class. */
 
 class MessageListViewConfigMenuTemplateTest final : public QObject
 {
     Q_OBJECT
-public:
-    MessageListViewConfigMenuTemplateTest() {
-        qRegisterMetaType<Draupnir::Messages::MessageFields>();
-        qRegisterMetaType<Draupnir::Messages::MessageType>();
-    };
-    ~MessageListViewConfigMenuTemplateTest() final = default;
-
+private:
     using MessageListViewConfigMenu = MessageListViewConfigMenuTemplate<
         DebugMessageTrait,
         InfoMessageTrait,
         ErrorMessageTrait,
         CustomMessageTrait
-    >;
+        >;
 
     MessageListViewConfigMenu* testMenuTemplate = nullptr;
     AbstractMessageListViewConfigMenu* abstractTestMenu = nullptr;
 
 private slots:
+    void initTestCase() {
+        qRegisterMetaType<Draupnir::Messages::MessageFields>();
+        qRegisterMetaType<Draupnir::Messages::MessageType>();
+    }
+
     void init() {
         testMenuTemplate = new MessageListViewConfigMenu;
         abstractTestMenu = testMenuTemplate;

@@ -30,26 +30,29 @@
 #include <QByteArray>
 #include <QFileInfo>
 
+#include "draupnir/files/file_types/AbstractFile.h"
+
 namespace Draupnir::Files
 {
+
+/*! @namespace File
+ *  @brief Helper concepts for validating file-like types.
+ *  @ingroup Files
+ *
+ *  @details Contains compile-time checks for types that provide file opening and saving functionality. */
 
 namespace File
 {
 
-template<class Candidate>
-concept HasDataProcessed = requires(Candidate& object, QByteArray bytes) {
-    { object.dataProcessed(bytes) } -> std::same_as<std::expected<void,QString>>;
-};
-
-template<class Candidate>
-concept HasCurrentData = requires(Candidate& object) {
-    { object.currentData() } -> std::same_as<QByteArray>;
-};
-
-template<class Candidate>
-concept HasExtraFlags = requires {
-    { Candidate::extraFlags() } -> std::same_as<QIODevice::OpenMode>;
-};
+/*! @brief Checks whether a type provides file opening methods.
+ *  @details A valid type must implement both overloads of `open(...)`: one accepting a file path and one accepting a
+ *           `QFileInfo`.
+ *
+ *           Expected signatures:
+ *           @code
+ *           std::expected<void,QString> open(QString path);
+ *           std::expected<void,QString> open(QFileInfo fileInfo);
+ *           @endcode */
 
 template<class Candidate>
 concept HasOpen = requires(Candidate& object, QString path, QFileInfo fileInfo) {
@@ -57,17 +60,33 @@ concept HasOpen = requires(Candidate& object, QString path, QFileInfo fileInfo) 
     { object.open(fileInfo) }  -> std::same_as<std::expected<void,QString>>;
 };
 
+/*! @brief Checks whether a type provides a `save()` method.
+ *  @details Expected signature:
+ *           @code
+ *           std::expected<void,QString> save();
+ *           @endcode */
+
 template<class Candidate>
 concept HasSave = requires(Candidate& object) {
     { object.save() } -> std::same_as<std::expected<void,QString>>;
 };
 
-};
+}; // namespace Draupnir::Files::File
+
+/*! @brief Checks whether a type supports both opening and saving. Combines the requirements of `File::HasOpen` and
+ *  `File::HasSave`.*/
 
 template<class Candidate>
 concept CanBeOpenedAndSaved =
     File::HasOpen<Candidate> &&
     File::HasSave<Candidate>;
+
+/*! @brief Checks whether a type is derived from `AbstractFile`. */
+
+template<class Candidate>
+concept AbstractFileBased =
+    std::default_initializable<Candidate> &&
+    std::derived_from<Candidate,AbstractFile>;
 
 }; // namespace Draupnir::Files
 

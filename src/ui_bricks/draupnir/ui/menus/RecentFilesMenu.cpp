@@ -50,7 +50,7 @@ RecentFilesMenu::RecentFilesMenu(const QString& title, QWidget* parent) :
 QAction* RecentFilesMenu::getFileAction(const QFileInfo& fileInfo)
 {
     for (auto action : w_recentFilesActions->actions()) {
-        if (action->data().value<QFileInfo>() == fileInfo)
+        if (action->data().value<QFileInfo>().absoluteFilePath() == fileInfo.absoluteFilePath())
             return action;
     }
 

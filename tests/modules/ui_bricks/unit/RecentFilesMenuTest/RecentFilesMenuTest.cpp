@@ -29,44 +29,39 @@
 
 namespace Draupnir::Ui {
 
-/*! @class RecentFilesMenuTest tests/ui_bricks/unit/RecentFilesMenuTest/RecentFilesMenuTest.cpp
- *  @brief Test class for the RecentFilesMenu.
- *
- * @note This class needs to be in namespace Draupnir::Ui in order to have access to internals of the RecentFilesMenu.
- *
- * @todo Add test for: updateRecentAction method(s), removeRecentAction method, getFileAction method. */
+/*! @class RecentFilesMenuTest tests/modules/ui_bricks/unit/RecentFilesMenuTest/RecentFilesMenuTest.cpp
+ *  @ingroup UiBricks
+ *  @ingroup Tests
+ *  @brief Unit test for @ref Draupnir::Ui::RecentFilesMenu.
+ * @note This class needs to be in namespace Draupnir::Ui in order to have access to internals of the RecentFilesMenu. */
 
 class RecentFilesMenuTest final : public QObject
 {
     Q_OBJECT
+private:
+    static inline const QFileInfo firstFile{QFileInfo("some_file.txt")};
+    static inline const QFileInfo secondFile{QFileInfo("some_other_file.txt")};
+    static inline const QList<QFileInfo> randomFiles{ firstFile, secondFile };
 
-public:
-    QFileInfo firstFile;
-    QFileInfo secondFile;
-    QList<QFileInfo> randomFiles;
-
-    RecentFilesMenuTest() :
-        firstFile{QFileInfo("some_file.txt")},
-        secondFile{QFileInfo("some_other_file.txt")},
-        randomFiles{firstFile, secondFile}
-    {
-    }
-    ~RecentFilesMenuTest() final = default;
-
+    RecentFilesMenu* recentFiles = nullptr;
 
 private slots:
-    void test_initialization() {
-        RecentFilesMenu* recentFiles = new RecentFilesMenu();
+    void init() {
+        recentFiles = new RecentFilesMenu();
+    }
 
+    void cleanup() {
+        delete recentFiles; recentFiles = nullptr;
+    }
+
+    void test_initialization() {
         QVERIFY(recentFiles->w_recentFilesActions->actions().isEmpty());
         QCOMPARE(recentFiles->actions().count(),2);
         QVERIFY(recentFiles->m_recentFiles.isEmpty());
-
-        delete recentFiles;
     }
 
     void test_addRecentAction() {
-        // Test adding files one
+        // Test adding files one by one
         RecentFilesMenu* recentFiles = new RecentFilesMenu();
         recentFiles->addRecentAction(firstFile);
         recentFiles->addRecentAction(secondFile);
@@ -75,43 +70,61 @@ private slots:
         QCOMPARE(recentFiles->actions().count(),4);
         QCOMPARE(recentFiles->w_recentFilesActions->actions().count(),2);
         QCOMPARE(recentFiles->m_recentFiles.count(), 2);
-
-        delete recentFiles;
     }
 
     void test_loadRecentFiles() {
-        RecentFilesMenu* recentFiles = new RecentFilesMenu();
         recentFiles->loadRecentFiles(randomFiles);
 
         QVERIFY(!recentFiles->w_recentFilesActions->actions().isEmpty());
         QCOMPARE(recentFiles->actions().count(),4);
         QCOMPARE(recentFiles->w_recentFilesActions->actions().count(),2);
         QCOMPARE(recentFiles->m_recentFiles.count(), 2);
-
-        delete recentFiles;
     }
 
-    void test_file_presense() {
-        RecentFilesMenu* recentFiles = new RecentFilesMenu();
+    void test_hasFileAction() {
         recentFiles->addRecentAction(firstFile);
 
-        QVERIFY(recentFiles->hasFileAction(firstFile));
+        QCOMPARE(recentFiles->hasFileAction(firstFile), true);
+        QCOMPARE(recentFiles->hasFileAction(secondFile), false);
+    }
 
-        delete recentFiles;
+    void test_getFileAction() {
+        recentFiles->addRecentAction(firstFile);
+        QVERIFY(recentFiles->getFileAction(firstFile) != nullptr);
+        QCOMPARE(recentFiles->getFileAction(secondFile), nullptr);
+    }
+
+    void test_updateRecentAction() {
+        recentFiles->addRecentAction(firstFile);
+        QAction* fileAction = recentFiles->getFileAction(firstFile);
+        QCOMPARE(fileAction->text(), firstFile.fileName());
+
+        recentFiles->updateRecentAction(firstFile,secondFile);
+        QCOMPARE(fileAction->text(), secondFile.fileName());
     }
 
     void test_reset() {
-        RecentFilesMenu* recentFiles = new RecentFilesMenu();
         recentFiles->loadRecentFiles(randomFiles);
-
         QVERIFY(!recentFiles->w_recentFilesActions->actions().isEmpty());
 
         recentFiles->reset();
         QVERIFY(recentFiles->w_recentFilesActions->actions().isEmpty());
     }
 
+    void test_removeRecentAction() {
+        recentFiles->loadRecentFiles(randomFiles);
+        QPointer<QAction> firstAction{recentFiles->getFileAction(firstFile)};
+        QVERIFY(firstAction.isNull() == false);
+        QVERIFY(recentFiles->hasFileAction(firstFile));
+        QVERIFY(recentFiles->hasFileAction(secondFile));
+
+        recentFiles->removeRecentAction(firstAction.data());
+        QTRY_VERIFY(firstAction.isNull());
+        QCOMPARE(recentFiles->hasFileAction(firstFile), false);
+        QCOMPARE(recentFiles->hasFileAction(secondFile), true);
+    }
+
     void test_clearButtonClick() {
-        RecentFilesMenu* recentFiles = new RecentFilesMenu();
         recentFiles->loadRecentFiles(randomFiles);
         QSignalSpy recentFilesMenuClearedSpy(recentFiles, &RecentFilesMenu::recentFilesMenuCleared);
 
@@ -124,7 +137,6 @@ private slots:
     }
 
     void test_fileSelection() {
-        RecentFilesMenu* recentFiles = new RecentFilesMenu;
         recentFiles->addRecentAction(firstFile);
         recentFiles->addRecentAction(secondFile);
         QSignalSpy recentFileSelectedSpy(recentFiles,&RecentFilesMenu::recentFileSelected);

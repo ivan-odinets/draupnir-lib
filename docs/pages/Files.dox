@@ -1,0 +1,8 @@
+/*! @defgroup Utils
+ *  @brief This module contains various utilities to work with files.
+ *
+ *  @details Classes within this module are located in the namespace Draupnir::Files. */
+
+/*! @namespace Draupnir::Files
+ *  @ingroup Files
+ *  @brief Namespace containing classes from the Files module. */

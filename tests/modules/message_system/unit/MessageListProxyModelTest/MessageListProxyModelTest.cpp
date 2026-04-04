@@ -28,25 +28,33 @@
 #include "draupnir/message_system/core/Message.h"
 #include "draupnir/message_system/models/MessageListModel.h"
 #include "draupnir/message_system/models/MessageListProxyModel.h"
-#include "draupnir/message_system/traits/messages/DefaultMessageTraits.h" // IWYU pragma: keep
+#include "draupnir/message_system/traits/messages/DebugMessageTrait.h"
+#include "draupnir/message_system/traits/messages/InfoMessageTrait.h"
 
 namespace Draupnir::Messages
 {
 
 /*! @class MessageListProxyModelTest tests/modules/message_system/unit/MessageListProxyModelTest.cpp
- *  @brief This test class tests MessageListProxyModel class. */
+ *  @ingroup MessageSystem
+ *  @ingroup Tests
+ *  @brief Unit test for @ref Draupnir::Messages::MessageListProxyModel class. */
 
 class MessageListProxyModelTest : public QObject
 {
     Q_OBJECT
-public:
-    MessageListModel* sourceModel = new MessageListModel{this};
-    Message* debugOne = Message::fromTrait<DebugMessageTrait>("Debug");
-    Message* infoOne = Message::fromTrait<InfoMessageTrait>("Info One");
-    Message* infoTwo = Message::fromTrait<InfoMessageTrait>("Info Two");
+private:
+    MessageListModel* sourceModel = nullptr;
+    Message* debugOne = nullptr;
+    Message* infoOne = nullptr;
+    Message* infoTwo = nullptr;
 
 private slots:
     void initTestCase() {
+        sourceModel = new MessageListModel{this};
+        debugOne = Message::fromTrait<DebugMessageTrait>("Debug");
+        infoOne = Message::fromTrait<InfoMessageTrait>("Info One");
+        infoTwo = Message::fromTrait<InfoMessageTrait>("Info Two");
+
         sourceModel->append(
             { debugOne, infoOne, infoTwo }
         );
@@ -193,7 +201,7 @@ private slots:
     }
 };
 
-}; // namespace Draupnir::MessageGroup
+}; // namespace Draupnir::Messages
 
 QTEST_MAIN(Draupnir::Messages::MessageListProxyModelTest)
 

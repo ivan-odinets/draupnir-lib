@@ -46,6 +46,9 @@ void MessageListProxyModel::setDisplayedMessageTypesMask(MessageType mask)
 
 void MessageListProxyModel::setMessageTypeDisplayed(MessageType type, bool isVisible)
 {
+    if (isMessageTypeDisplayed(type) == isVisible)
+        return;
+
     if (isVisible) {
         uint64_t intValue = m_displayedMessageTypesMask;
         intValue |= type;

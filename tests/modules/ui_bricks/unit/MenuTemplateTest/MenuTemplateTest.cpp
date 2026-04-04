@@ -28,36 +28,73 @@
 #include <QtTest>
 
 #include "draupnir/ui_bricks/traits/menu_entries/FileMenuEntries.h"
+#include "draupnir/ui_bricks/traits/menu_entries/HelpMenuEntries.h"
 #include "draupnir/ui_bricks/traits/menu_entries/decoration/SeparatorEntry.h"
+#include "draupnir/ui_bricks/traits/menu_entries/templates/MenuTemplateEntry.h"
+
+#include "draupnir-test/helpers/TypeHelpers.h"
 
 namespace Draupnir::Ui {
 
-/*! @class MenuTemplateTest tests/ui_bricks/unit/MenuTemplateTest/MenuTemplate.cpp
- *  @brief Test class for the @ref Draupnir::Ui::MenuTemplate.
- * @todo Extend this test. */
+/*! @class MenuTemplateTest tests/modules/ui_bricks/unit/MenuTemplateTest/MenuTemplate.cpp
+ *  @ingroup UiBricks
+ *  @ingroup Tests
+ *  @brief Unit test for @ref Draupnir::Ui::MenuTemplate class. */
 
 class MenuTemplateTest final : public QObject
 {
     Q_OBJECT
-public:
-    MenuTemplateTest() = default;
-    ~MenuTemplateTest() = default;
-
-    MenuTemplate<
+private:
+    using Menu = MenuTemplate<
         FileNewEntry,
         FileOpenEntry,
         SeparatorEntry,
-        ExitApplicationEntry
-    > simpleFlatMenu;
+        RecentFileEntry,
+        MenuTemplateEntry<[]() { return QString{"Help!"}; },
+            FileNewEntry,
+            AboutAppMenuTrait,
+            AboutQtMenuTrait
+        >
+    >;
+    Menu* menu;
 
 private slots:
-    void test_initialization() {
-        QCOMPARE(simpleFlatMenu.entriesCount(), 4);
-        QVERIFY(simpleFlatMenu.contains<FileNewEntry>());
-        QVERIFY(simpleFlatMenu.contains<FileOpenEntry>());
-        QVERIFY(simpleFlatMenu.contains<SeparatorEntry>());
-        QVERIFY(simpleFlatMenu.contains<ExitApplicationEntry>());
-        QVERIFY(!simpleFlatMenu.contains<FileSaveEntry>());
+    void init() {
+        menu = new Menu;
+    }
+
+    void cleanup() {
+        delete menu; menu = nullptr;
+    }
+
+    void test_count() {
+        QCOMPARE(menu->entriesCount(), 5);
+
+        QCOMPARE(menu->recursiveEntriesCount<AboutAppMenuTrait>(), 1);
+        QCOMPARE(menu->recursiveEntriesCount<AboutAppMenuTrait>(), 1);
+        QCOMPARE(menu->recursiveEntriesCount<FileNewEntry>(), 2);
+        QCOMPARE(menu->recursiveEntriesCount<ExitApplicationEntry>(), 0);
+    }
+
+    void test_if_all_entries_properly_initialized() {
+        QVERIFY(menu->getUiElement<FileNewEntry>() != nullptr);
+        TYPE_COMPARE(decltype(menu->getUiElement<FileNewEntry>()),QAction*);
+        QVERIFY(menu->getUiElement<FileOpenEntry>() != nullptr);
+        TYPE_COMPARE(decltype(menu->getUiElement<FileOpenEntry>()),QAction*);
+        QVERIFY(menu->getUiElementRecursive<RecentFileEntry>() != nullptr);
+        TYPE_COMPARE(decltype(menu->getUiElement<RecentFileEntry>()),RecentFilesMenu*);
+
+        QVERIFY(menu->getUiElementRecursive<AboutAppMenuTrait>() != nullptr);
+        TYPE_COMPARE(decltype(menu->getUiElementRecursive<AboutAppMenuTrait>()),QAction*);
+    }
+
+    void test_contains() {
+        QVERIFY(menu->contains<FileNewEntry>());
+        QVERIFY(menu->contains<FileOpenEntry>());
+        QVERIFY(menu->contains<SeparatorEntry>());
+
+        QCOMPARE(menu->contains<AboutAppMenuTrait>(), false);
+        QCOMPARE(menu->recursiveContains<AboutAppMenuTrait>(), true);
     }
 };
 
