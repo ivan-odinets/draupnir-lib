@@ -132,17 +132,8 @@ public:
     /*! @brief This method will iterate over internal std::array of pairs and execute provided functional object for every
      *         value_type stored inside. */
     template<class F>
-    void for_each_value(F&& function) {
-        for (std::pair<const key_type,value_type>& element : m_data) {
-            function(element.second);
-        }
-    }
-
-    /*! @brief Const version of previous method. This method will iterate over internal std::array of pairs and execute
-     *         provided functional object for every value_type stored inside. */
-    template<class F>
-    void for_each_value(F&& function) const {
-        for (const std::pair<const key_type,value_type>& element : m_data) {
+    void for_each_value(this auto&& self, F&& function) {
+        for (auto&& element : self.m_data) {
             function(element.second);
         }
     }
@@ -150,44 +141,23 @@ public:
     /*! @brief This method will iterate over internal std::array of pairs and execute provided functional object for every
      *         std::pair<const key_type,value_type> stored inside the std::array. */
     template<class F>
-    void for_each_pair(F&& function) {
-        for (std::pair<const key_type,value_type>& element : m_data) {
-            function(element);
-        }
-    }
-
-    /*! @brief Const version of previous method. This method will iterate over internal std::array of pairs and execute
-     *         provided functional object for every std::pair<const key_type,value_type> stored inside the std::array. */
-    template<class F>
-    void for_each_pair(F&& function) const {
-        for (const std::pair<const key_type,value_type>& element : m_data) {
+    void for_each_pair(this auto&& self, F&& function) {
+        for (auto&& element : self.m_data) {
             function(element);
         }
     }
 
     /*! @brief Returns reference to the value_type object associated with the given key.
      * @warning If the key is not available in the keys_array template argument - assert statement will be executed. */
-    [[nodiscard]] constexpr value_type& get(key_type key) { return _get_impl<0>(key); }
+    [[nodiscard]] constexpr decltype(auto) get(this auto&& self, key_type key) { return self.template _get_impl<0>(key); }
 
     /*! @brief Returns reference to the value_type object associated with the given key.
      * @warning If the key is not available in the keys_array template argument - assert statement will be executed. */
-    [[nodiscard]] constexpr const value_type& get(key_type key) const { return _get_impl<0>(key); }
-
-    /*! @brief Returns reference to the value_type object associated with the given key.
-     * @warning If the key is not available in the keys_array template argument - assert statement will be executed. */
-    [[nodiscard]] constexpr value_type& operator[](key_type key) { return _get_impl<0>(key); }
-
-    /*! @brief Returns reference to the value_type object associated with the given key.
-     * @warning If the key is not available in the keys_array template argument - assert statement will be executed. */
-    [[nodiscard]] constexpr const value_type& operator[](key_type key) const { return _get_const_impl<0>(key); }
+    [[nodiscard]] constexpr decltype(auto) operator[](this auto&& self, key_type key) { return self.template _get_impl<0>(key); }
 
     /*! @brief Returns reference to the value_type object for a specific index.
      * @warning If the specified index is larger than size of fixed_map - out of bounds access to the array will happen. */
-    [[nodiscard]] constexpr value_type& value_by_index(int index) { return m_data[index].second; }
-
-    /*! @brief Returns reference to the value_type object for a specific index.
-     * @warning If the specified index is larger than size of fixed_map - out of bounds access to the array will happen. */
-    [[nodiscard]] constexpr const value_type& value_by_index(int index) const { return m_data[index].second; }
+    [[nodiscard]] constexpr decltype(auto) value_by_index(this auto&& self, int index) { return self.m_data[index].second; }
 
     /*! @brief Clears the fixed_map container. Values associated with all keys are reset to default ones. This means: numbers
      *         as 0, pointers as nullptr and other types as their default constructor. */
@@ -241,25 +211,11 @@ private:
     }
 
     template<std::size_t I>
-    inline value_type& _get_impl(key_type key) {
+    inline decltype(auto) _get_impl(this auto&& self, key_type key) {
         if constexpr (I < keys_size) {
-            return (m_data[I].first == key) ?
-                m_data[I].second :
-                _get_impl<I+1>(key);
-        } else {
-            assert(false && "Provided key is not known by this fixed_map.");
-            // This should not be executed. But can be executed if the logic is bad.
-            // To suppress compiler warnings about "No Return"
-            return *reinterpret_cast<value_type*>(0xDEADBEEF);
-        }
-    };
-
-    template<std::size_t I>
-    inline const value_type& _get_const_impl(key_type key) const {
-        if constexpr (I < keys_size) {
-            return (m_data[I].first == key) ?
-                m_data[I].second :
-                _get_const_impl<I+1>(key);
+            return (self.m_data[I].first == key) ?
+                self.m_data[I].second :
+                self.template _get_impl<I+1>(key);
         } else {
             assert(false && "Provided key is not known by this fixed_map.");
             // This should not be executed. But can be executed if the logic is bad.

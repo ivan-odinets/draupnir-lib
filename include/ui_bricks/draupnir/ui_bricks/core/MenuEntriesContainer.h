@@ -34,6 +34,7 @@
 #include "draupnir/ui_bricks/concepts/MenuEntryConcept.h"
 #include "draupnir/utils/type_list.h"
 #include "draupnir/utils/type_presense.h"
+#include "draupnir/utils/type_qualifiers_helpers.h"
 
 class QMenu;
 
@@ -56,6 +57,21 @@ template<MenuEntryConcept... Entries>
 class MenuEntriesContainer
 {
     static_assert(sizeof...(Entries) > 0);
+
+    using _ElementsTuple = std::tuple<
+        std::add_pointer_t<typename Entries::Type>...
+    >;
+
+    template<class Self, class T>
+    using _UiPointerFor = draupnir::utils::copy_const_from_t<Self, T>*;
+
+    template<class Self, std::size_t Index>
+    using _IndexedElementPointerFor = _UiPointerFor<Self,
+        std::remove_pointer_t<std::tuple_element_t<Index, _ElementsTuple>>
+    >;
+
+    template<class Self, class Entry>
+    using _EntryElementPointerFor = _UiPointerFor<Self, typename Entry::Type>;
 
 public:
     /*! @brief Compile-time list of entry trait types stored in this @ref MenuEntriesContainer.
@@ -129,9 +145,9 @@ public:
      *  @tparam Index Zero-based index into Entries...
      *  @return Pointer to the stored UI element (QAction*, QMenu*, or a derived type pointer). */
     template<std::size_t Index>
-    auto getUiElement() {
+    auto getUiElement(this auto&& self) -> _IndexedElementPointerFor<decltype(self), Index> {
         static_assert(Index < sizeof...(Entries), "Index is out of bounds in MenuEntriesContainer.");
-        return std::get<Index>(m_elements);
+        return std::get<Index>(self.m_elements);
     }
 
     /*! @brief Returns a pointer to the UI element created for the specified `Entry` trait (shallow lookup).
@@ -139,9 +155,9 @@ public:
      *  @return Pointer to the stored UI element of type `typename Entry::Type*`.
      *  @note This performs a shallow lookup only within this container instance. */
     template<MenuEntryConcept Entry>
-    auto getUiElement() {
+    auto getUiElement(this auto&& self) -> _EntryElementPointerFor<decltype(self),Entry> {
         static_assert(contains<Entry>(), "Entry specified is not present within this MenuEntriesContainer.");
-        return std::get<_getUiElementIndex<0, Entry, Entries...>()>(m_elements);
+        return std::get<_getUiElementIndex<0, Entry, Entries...>()>(self.m_elements);
     }
 
     /*! @brief Returns a pointer to the UI element created for the entry trait instantiated as `EntryTemplate<class...>` (shallow
@@ -150,9 +166,9 @@ public:
      *  @return Pointer to the stored UI element of type `typename EntryTemplate<...>::Type*`.
      *  @note This performs a shallow lookup only within this container instance. */
     template<template<class...> class EntryTemplate>
-    auto getUiElement() {
+    auto getUiElement(this auto&& self) {
         static_assert(containsEntryTemplate<EntryTemplate>());
-        return _getUiElementImpl<EntryTemplate,0,Entries...>();
+        return self.template _getUiElementImpl<EntryTemplate,0,Entries...>();
     }
 
     /*! @brief Returns a pointer to the UI element created for the entry trait instantiated as `EntryTemplate<auto,class...>` (shallow
@@ -161,9 +177,9 @@ public:
      *  @return Pointer to the stored UI element of type `typename EntryTemplate<...>::Type*`.
      *  @note This performs a shallow lookup only within this container instance. */
     template<template<auto,class...> class EntryTemplate>
-    auto getUiElement() {
+    auto getUiElement(this auto&& self) {
         static_assert(containsEntryTemplate<EntryTemplate>());
-        return _getUiElementImpl<EntryTemplate,0,Entries...>();
+        return self.template _getUiElementImpl<EntryTemplate,0,Entries...>();
     }
 
     /*! @brief Returns a pointer to the UI element corresponding to the specified Entry trait, searching recursively.
@@ -173,8 +189,8 @@ public:
      *           template is searched recursively.
      * @note If multiple instances exist, this returns the first match in traversal order. */
     template<MenuEntryConcept Entry>
-    auto getUiElementRecursive() {
-        return _getUiElementRecursive<Entry,Entries...>();
+    auto getUiElementRecursive(this auto&& self) {
+        return self.template _getUiElementRecursive<Entry,Entries...>();
     }
 
     /*! @brief Returns a tuple of pointers to all UI elements for which `Condition<EntryTrait>::value == true` (shallow, no recursion).
@@ -183,13 +199,18 @@ public:
      *  @details Each matched element is returned as a pointer (Entry::Type*). Non-matching entries contribute an empty tuple.
      * @note This does NOT traverse nested MenuTemplate entries. Use recursiveGetAllUiElementsIf for deep traversal. */
     template<template<class> class Condition>
-    auto getAllUiElementsIf() { return std::tuple_cat(_getTupleOfMatched<Condition,Entries>()...); }
+    auto getAllUiElementsIf(this auto&& self) {
+        return std::tuple_cat(self.template _getTupleOfMatched<Condition,Entries>()...);
+    }
+
 
     /*! @brief Returns a tuple of pointers to all UI elements represented by the specified `Entry` trait (shallow, no recursion).
      *  @tparam Entry Entry trait type.
      *  @return std::tuple containing pointers to all matching elements in Entries... order. */
     template<MenuEntryConcept Entry>
-    auto getAllUiElements() { return getAllUiElementsIf<draupnir::utils::the_same<Entry>::template as>(); }
+    auto getAllUiElements(this auto&& self) {
+        return self.template getAllUiElementsIf<draupnir::utils::the_same<Entry>::template as>();
+    }
 
     /*! @brief Returns a tuple of pointers to all UI elements for which `Condition<EntryTrait>::value == true`, including nested templates.
      *  @tparam Condition A unary type-trait template providing `static constexpr bool value`.
@@ -197,13 +218,17 @@ public:
      *  @details Traversal is depth-first in Entries... order. If an entry's Type is a MenuTemplate<...> instantiation, the nested
      *           menu is queried recursively and its matches are concatenated into the result. */
     template<template<class> class Condition>
-    auto recursiveGetAllUiElementsIf() { return std::tuple_cat(_recursiveGetTupleOfMatched<Condition,Entries>()...); }
+    auto recursiveGetAllUiElementsIf(this auto&& self) {
+        return std::tuple_cat(self.template _recursiveGetTupleOfMatched<Condition,Entries>()...);
+    }
 
     /*! @brief Returns a tuple of pointers to all UI elements represented by the specified `Entry` trait, searching recursively.
      *  @tparam Entry Entry trait type.
      *  @return std::tuple containing pointers to all matching elements in traversal order. */
     template<MenuEntryConcept Entry>
-    auto recursiveGetAllUiElements() { return recursiveGetAllUiElementsIf<draupnir::utils::the_same<Entry>::template as>(); }
+    auto recursiveGetAllUiElements(this auto&& self) {
+        return self.template recursiveGetAllUiElementsIf<draupnir::utils::the_same<Entry>::template as>();
+    }
 
     /*! @brief Connects the `QAction::triggered` signal of the specified `Entry` to the provided Qt slot/functor.
      *  @tparam Entry Entry trait type to connect (must describe QAction or a QAction-derived Type).
@@ -234,9 +259,7 @@ protected:
 private:
     friend class MenuEntriesContainerTest;
 
-    std::tuple<
-        std::add_pointer_t<typename Entries::Type>...
-    > m_elements;
+    _ElementsTuple m_elements;
 
     template<std::size_t Index, class First, class... Rest>
     inline void _initUiElementsImpl() {
@@ -301,11 +324,11 @@ private:
     }
 
     template<template<class...> class EntryTemplate, std::size_t Index, class First, class... Rest>
-    auto _getUiElementImpl() {
+    auto _getUiElementImpl(this auto&& self) {
         if constexpr (draupnir::utils::is_instantiation_of_v<First,EntryTemplate>) {
-            return getUiElement<Index>();
+            return self.template getUiElement<Index>();
         } else if constexpr (sizeof...(Rest) > 0) {
-            return _getUiElementImpl<EntryTemplate,Index+1,Rest...>();
+            return self.template _getUiElementImpl<EntryTemplate,Index+1,Rest...>();
         } else {
             static_assert(sizeof...(Rest) > 0, "Entries... pack does not contain EntryTemplate instantiation.");
             return nullptr;
@@ -313,11 +336,11 @@ private:
     }
 
     template<template<auto,class...> class EntryTemplate, std::size_t Index, class First, class... Rest>
-    auto _getUiElementImpl() {
+    auto _getUiElementImpl(this auto&& self) {
         if constexpr (draupnir::utils::is_a1tp_instantiation_of_v<First,EntryTemplate>) {
-            return getUiElement<Index>();
+            return self.template getUiElement<Index>();
         } else if constexpr (sizeof...(Rest) > 0) {
-            return _getUiElementImpl<EntryTemplate,Index+1,Rest...>();
+            return self.template _getUiElementImpl<EntryTemplate,Index+1,Rest...>();
         } else {
             static_assert(sizeof...(Rest) > 0, "Entries... pack does not contain EntryTemplate instantiation.");
             return nullptr;
@@ -325,41 +348,41 @@ private:
     }
 
     template<class Entry, class First, class... Rest>
-    auto _getUiElementRecursive() {
+    auto _getUiElementRecursive(this auto&& self) {
         if constexpr (std::is_same_v<First, Entry>) {
-            return getUiElement<Entry>();
+            return self.template getUiElement<Entry>();
         } else if constexpr (
             draupnir::utils::is_instantiation_of_v<typename First::Type, Draupnir::Ui::MenuTemplate>
             ) {
             if constexpr (First::Type::template recursiveContains<Entry>()) {
-                return getUiElement<First>()->template getUiElementRecursive<Entry>();
+                return self.template getUiElement<First>()->template getUiElementRecursive<Entry>();
             } else if constexpr (sizeof...(Rest) > 0) {
-                return _getUiElementRecursive<Entry, Rest...>();
+                return self.template _getUiElementRecursive<Entry, Rest...>();
             } else {
                 return static_cast<typename Entry::Type*>(nullptr);
             }
         } else if constexpr (sizeof...(Rest) > 0) {
-            return _getUiElementRecursive<Entry, Rest...>();
+            return self.template _getUiElementRecursive<Entry, Rest...>();
         } else {
             return static_cast<typename Entry::Type*>(nullptr);
         }
     }
 
     template<template<class> class Condition,class CurrentEntry>
-    auto _getTupleOfMatched() {
+    decltype(auto) _getTupleOfMatched(this auto&& self) {
         if constexpr (Condition<CurrentEntry>::value) {
-            return std::tuple{ getUiElement<CurrentEntry>() };
+            return std::tuple{ self.template getUiElement<CurrentEntry>() };
         } else {
             return std::tuple{};
         }
     }
 
     template<template<class> class Condition,class CurrentEntry>
-    auto _recursiveGetTupleOfMatched() {
+    auto _recursiveGetTupleOfMatched(this auto&& self) {
         if constexpr (draupnir::utils::is_instantiation_of_v<typename CurrentEntry::Type, Draupnir::Ui::MenuTemplate>) {
-            return getUiElement<CurrentEntry>()->template recursiveGetAllUiElementsIf<Condition>();
+            return self.template getUiElement<CurrentEntry>()->template recursiveGetAllUiElementsIf<Condition>();
         } else if constexpr (Condition<CurrentEntry>::value) {
-            return std::tuple{ getUiElement<CurrentEntry>() };
+            return std::tuple{ self.template getUiElement<CurrentEntry>() };
         } else {
             return std::tuple{};
         }

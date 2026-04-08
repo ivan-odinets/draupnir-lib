@@ -30,6 +30,8 @@
 #include "draupnir/ui_bricks/traits/menu_entries/FileMenuEntries.h"
 #include "draupnir/ui_bricks/traits/menu_entries/decoration/SeparatorEntry.h"
 #include "draupnir/ui_bricks/traits/menu_entries/templates/MenuTemplateEntry.h"
+#include "draupnir/ui_bricks/traits/menu_entries/submenus/FileMenuTemplate.h"
+#include "draupnir/utils/template_adapters.h"
 
 #include "draupnir-test/helpers/TypeHelpers.h"
 
@@ -57,18 +59,28 @@ public:
         RecentFileEntry
     > flatContainer;
 
-    MenuEntriesContainer<
-        FileNewEntry,
-        MenuTemplateEntry<[]() { return QString{}; },
-            FileOpenEntry, FileNewEntry
-        >,
-        MenuTemplateEntry<[]() { return QString{}; },
-            FileSaveEntry, MenuTemplateEntry<[]() { return QString{}; },
-                FileSaveEntry,FileNewEntry,
-                MenuTemplateEntry<[]() { return QString{}; },FileSaveAsEntry>
-            >
+    template<MenuEntryConcept Entry>
+    struct IsActionEntry : std::is_same<QAction, typename Entry::Type> {};
+
+    template<MenuEntryConcept Entry>
+    struct IsMenuBasedEntry : std::is_base_of<QMenu, typename Entry::Type> {};
+
+    using FileSubMenuEntry = FileMenuTemplate<
+        FileOpenEntry, FileNewEntry
+    >;
+    using TemplateSubMenuEntry = MenuTemplateEntry<[]() { return QString{}; },
+        FileSaveEntry, MenuTemplateEntry<[]() { return QString{}; },
+            FileSaveEntry,FileNewEntry,
+            MenuTemplateEntry<[]() { return QString{}; },FileSaveAsEntry>
         >
-    > randomNestedContainer;
+    >;
+    using ComplexMenuContainer = MenuEntriesContainer<
+        FileNewEntry,
+        FileSubMenuEntry,
+        TemplateSubMenuEntry,
+        FileSaveEntry
+    >;
+    ComplexMenuContainer randomNestedContainer;
 
 private slots:
     void test_initialization() {
@@ -81,13 +93,13 @@ private slots:
     void test_recursiveEntryCount() {
         QCOMPARE(randomNestedContainer.recursiveEntriesCount<FileNewEntry>(),3);
         QCOMPARE(randomNestedContainer.recursiveEntriesCount<FileOpenEntry>(),1);
-        QCOMPARE(randomNestedContainer.recursiveEntriesCount<FileSaveEntry>(),2);
+        QCOMPARE(randomNestedContainer.recursiveEntriesCount<FileSaveEntry>(),3);
         QCOMPARE(randomNestedContainer.recursiveEntriesCount<FileSaveAsEntry>(),1);
         QCOMPARE(randomNestedContainer.recursiveEntriesCount<ExitApplicationEntry>(),0);
 
         QCOMPARE(randomNestedContainer.recursiveEntriesCount_v<FileNewEntry>,3);
         QCOMPARE(randomNestedContainer.recursiveEntriesCount_v<FileOpenEntry>,1);
-        QCOMPARE(randomNestedContainer.recursiveEntriesCount_v<FileSaveEntry>,2);
+        QCOMPARE(randomNestedContainer.recursiveEntriesCount_v<FileSaveEntry>,3);
         QCOMPARE(randomNestedContainer.recursiveEntriesCount_v<FileSaveAsEntry>,1);
         QCOMPARE(randomNestedContainer.recursiveEntriesCount_v<ExitApplicationEntry>,0);
     }
@@ -141,6 +153,87 @@ private slots:
 
         QCOMPARE(dummyUi.actionsAdded.count(), 3);
         QCOMPARE(dummyUi.menusAdded.count(), 1);
+    }
+
+    void test_type_getUiElement_index() {
+        { using actual_t = decltype(randomNestedContainer.getUiElement<0>());
+          TYPE_COMPARE(actual_t, QAction*); }
+        { const auto& constRef = randomNestedContainer;
+          using actual_t = decltype(constRef.getUiElement<0>());
+          TYPE_COMPARE(actual_t, const QAction*); }
+    }
+
+    void test_type_getUiElement_trait() {
+        { using actual_t = decltype(randomNestedContainer.getUiElement<FileNewEntry>());
+            TYPE_COMPARE(actual_t, QAction*); }
+        { const auto& constRef = randomNestedContainer;
+          using actual_t = decltype(constRef.getUiElement<FileNewEntry>());
+          TYPE_COMPARE(actual_t, const QAction*); }
+    }
+
+    void test_type_getUiElement_template_tp() {
+        { using actual_t = decltype(randomNestedContainer.getUiElement<FileMenuTemplate>());
+          TYPE_COMPARE(actual_t,typename FileSubMenuEntry::Type*); }
+        { const auto& constRef = randomNestedContainer;
+          using actual_t = decltype(constRef.getUiElement<FileMenuTemplate>());
+          TYPE_COMPARE(actual_t,const typename FileSubMenuEntry::Type*); }
+    }
+
+    void test_type_getUiElement_template_a1tp() {
+        { using actual_t = decltype(randomNestedContainer.getUiElement<TemplateSubMenuEntry>());
+          TYPE_COMPARE(actual_t,typename TemplateSubMenuEntry::Type*); }
+        { const auto& constRef = randomNestedContainer;
+          using actual_t = decltype(constRef.getUiElement<TemplateSubMenuEntry>());
+          TYPE_COMPARE(actual_t,const typename TemplateSubMenuEntry::Type*); }
+    }
+
+    void test_type_getUiElementRecursive_trait() {
+        { using actual_t = decltype(randomNestedContainer.getUiElementRecursive<FileSaveAsEntry>());
+            TYPE_COMPARE(actual_t, QAction*); }
+        { const auto& constRef = randomNestedContainer;
+          using actual_t = decltype(constRef.getUiElementRecursive<FileSaveAsEntry>());
+          TYPE_COMPARE(actual_t, const QAction*); }
+    }
+
+    void test_type_getAllUiElementsIf() {
+        { using actual_t = decltype(randomNestedContainer.getAllUiElementsIf<IsActionEntry>());
+          using expected_t = std::tuple<QAction*,QAction*>;
+          TYPE_COMPARE(actual_t, expected_t); }
+        { const auto& constRef = randomNestedContainer;
+          using actual_t = decltype(constRef.getAllUiElementsIf<IsActionEntry>());
+          using expected_t = std::tuple<const QAction*, const QAction*>;
+          TYPE_COMPARE(actual_t, expected_t); }
+    }
+
+    void test_type_getAllUiElements() {
+        { using actual_t = decltype(randomNestedContainer.getAllUiElements<FileNewEntry>());
+          using expected_t = std::tuple<QAction*>;
+          TYPE_COMPARE(actual_t, expected_t); }
+        { const auto& constRef = randomNestedContainer;
+          using actual_t = decltype(constRef.getAllUiElements<FileNewEntry>());
+          using expected_t = std::tuple<const QAction*>;
+          TYPE_COMPARE(actual_t, expected_t); }
+    }
+
+    void test_type_recursiveGetAllUiElementsIf() {
+        { using actual_t = decltype(randomNestedContainer.recursiveGetAllUiElementsIf<IsActionEntry>());
+          using expected_t = std::tuple<QAction*,QAction*,QAction*,QAction*,QAction*,QAction*,QAction*,QAction*>;
+          TYPE_COMPARE(actual_t, expected_t); }
+        { const auto& constRef = randomNestedContainer;
+          using actual_t = decltype(constRef.recursiveGetAllUiElementsIf<IsActionEntry>());
+          using expected_t = std::tuple<const QAction*, const QAction*, const QAction*, const QAction*,
+                                        const QAction*, const QAction*, const QAction*, const QAction*>;
+          TYPE_COMPARE(actual_t, expected_t); }
+    }
+
+    void test_type_recursiveGetAllUiElements() {
+        { using actual_t = decltype(randomNestedContainer.recursiveGetAllUiElements<FileNewEntry>());
+          using expected_t = std::tuple<QAction*, QAction*, QAction*>;
+          TYPE_COMPARE(actual_t, expected_t); }
+        { const auto& constRef = randomNestedContainer;
+          using actual_t = decltype(constRef.recursiveGetAllUiElements<FileNewEntry>());
+          using expected_t = std::tuple<const QAction*, const QAction*, const QAction*>;
+          TYPE_COMPARE(actual_t, expected_t); }
     }
 };
 
