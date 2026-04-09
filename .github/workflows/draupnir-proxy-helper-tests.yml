@@ -7,6 +7,7 @@ on:
       - 'include/draupnir/proxy_helper/draupnir/**'
       - 'jobs/draupnir_proxy_helper_tests.pm'
       - 'modules/ProxyHelper.pri'
+      - 'src/proxy_helper/**'
       - 'tests/modules/proxy_helper/**'
   workflow_dispatch:
 
@@ -27,10 +28,22 @@ jobs:
             qtbase5-dev \
             qt5-qmake
 
+      - name: Select GCC 14
+        run: |
+          sudo update-alternatives --install /usr/bin/gcc gcc /usr/bin/gcc-14 140
+          sudo update-alternatives --install /usr/bin/g++ g++ /usr/bin/g++-14 140
+          sudo update-alternatives --set gcc /usr/bin/gcc-14
+          sudo update-alternatives --set g++ /usr/bin/g++-14
+          gcc --version
+          g++ --version
+
       - name: Make test runner executable
         run: chmod +x tools/test-runner.pl
 
       - name: Run job
+        env:
+          CC: gcc-14
+          CXX: g++-14
         run: |
           perl tools/test-runner.pl --job draupnir_proxy_helper_tests
 

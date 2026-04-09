@@ -7,11 +7,12 @@ on:
       - 'include/draupnir/resources/draupnir/**'
       - 'jobs/draupnir_resources_tests.pm'
       - 'modules/DraupnirResources.pri'
+      - 'src/resources/**'
       - 'tests/modules/resources/**'
   workflow_dispatch:
 
 jobs:
-  draupnir-proxy-helper-tests:
+  draupnir-resources-tests:
     runs-on: ubuntu-latest
 
     steps:
@@ -27,17 +28,29 @@ jobs:
             qtbase5-dev \
             qt5-qmake
 
+      - name: Select GCC 14
+        run: |
+          sudo update-alternatives --install /usr/bin/gcc gcc /usr/bin/gcc-14 140
+          sudo update-alternatives --install /usr/bin/g++ g++ /usr/bin/g++-14 140
+          sudo update-alternatives --set gcc /usr/bin/gcc-14
+          sudo update-alternatives --set g++ /usr/bin/g++-14
+          gcc --version
+          g++ --version
+
       - name: Make test runner executable
         run: chmod +x tools/test-runner.pl
 
       - name: Run job
+        env:
+          CC: gcc-14
+          CXX: g++-14
         run: |
-          perl tools/test-runner.pl --job draupnir_proxy_helper_tests
+          perl tools/test-runner.pl --job draupnir_resources_tests
 
       - name: Upload logs on failure
         if: failure()
         uses: actions/upload-artifact@v4
         with:
-          name: draupnir-proxy-helper-test-logs
-          path: tests/build/draupnir_proxy_helper_tests/logs
+          name: draupnir-resources-test-logs
+          path: tests/build/draupnir_resources_tests/logs
           if-no-files-found: ignore

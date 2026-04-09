@@ -22,10 +22,22 @@ jobs:
             xvfb \
             libxcb-xinerama0
 
+      - name: Select GCC 14
+        run: |
+          sudo update-alternatives --install /usr/bin/gcc gcc /usr/bin/gcc-14 140
+          sudo update-alternatives --install /usr/bin/g++ g++ /usr/bin/g++-14 140
+          sudo update-alternatives --set gcc /usr/bin/gcc-14
+          sudo update-alternatives --set g++ /usr/bin/g++-14
+          gcc --version
+          g++ --version
+
       - name: Make test runner executable
         run: chmod +x tools/test-runner.pl
 
       - name: Run job
+        env:
+          CC: gcc-14
+          CXX: g++-14
         run: |
           xvfb-run -a perl tools/test-runner.pl --job draupnir_all_tests
 
@@ -33,6 +45,6 @@ jobs:
         if: failure()
         uses: actions/upload-artifact@v4
         with:
-          name: draupnir-all-tests-logs
-          path: tests/build/draupnir_ui_bricks_tests/logs
+          name: draupnir-all-tests-ubuntu-latest-logs
+          path: tests/build/draupnir_all_tests/logs
           if-no-files-found: ignore

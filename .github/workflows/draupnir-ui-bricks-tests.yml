@@ -7,13 +7,13 @@ on:
       - 'include/draupnir/ui_bricks/draupnir/**'
       - 'jobs/draupnir_ui_bricks_tests.pm'
       - 'modules/UiBricks.pri'
-      - 'src/draupnir/ui_bricks/draupnir/**'
+      - 'src/ui_bricks/**'
       - 'tests/modules/ui_bricks/**'
   workflow_dispatch:
 
 jobs:
   draupnir-ui-bricks-tests:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
 
     steps:
       - name: Checkout repository
@@ -24,16 +24,27 @@ jobs:
           sudo apt-get update
           sudo apt-get install -y \
             perl \
-            build-essential \
             qtbase5-dev \
             qt5-qmake \
             xvfb \
             libxcb-xinerama0
 
+      - name: Select GCC 14
+        run: |
+          sudo update-alternatives --install /usr/bin/gcc gcc /usr/bin/gcc-14 140
+          sudo update-alternatives --install /usr/bin/g++ g++ /usr/bin/g++-14 140
+          sudo update-alternatives --set gcc /usr/bin/gcc-14
+          sudo update-alternatives --set g++ /usr/bin/g++-14
+          gcc --version
+          g++ --version
+
       - name: Make test runner executable
         run: chmod +x tools/test-runner.pl
 
       - name: Run job
+        env:
+          CC: gcc-14
+          CXX: g++-14
         run: |
           xvfb-run -a perl tools/test-runner.pl --job draupnir_ui_bricks_tests
 

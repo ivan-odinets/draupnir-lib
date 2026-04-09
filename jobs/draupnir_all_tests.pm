@@ -14,6 +14,7 @@
         File::Spec->catdir("utils","unit")
     ],
     compile_tests => [
+        File::Spec->catdir("ui_bricks","compile"),
         File::Spec->catdir("utils","compile")
     ],
     must_crash_tests => [ "TerminateIfEvenTest" ]
