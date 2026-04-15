@@ -25,6 +25,9 @@
 #include <QtTest>
 
 #include "draupnir/utils/flags.h"
+#include "draupnir/utils/integer_wrapper.h"
+
+DEFINE_WRAPPED_INTEGER(WrappedUnsignedInt,unsigned int)
 
 /*! @class FlagsTest tests/modules/utils/unit/flags_test/FlagsTest.cpp
  *  @brief Test class for testing @ref draupnir::utils::flags. */
@@ -41,6 +44,8 @@ public:
         All   = 0b1111
     };
     using MyFlags = draupnir::utils::enum_flags<MyEnum>;
+
+    using MyWrappedFlags = draupnir::utils::flags<WrappedUnsignedInt>;
 
 private slots:
     void test_initialization() {
@@ -99,6 +104,12 @@ private slots:
         QCOMPARE(f.value(), 0);
         QVERIFY(f.none());
         QVERIFY(f.testFlag(0));
+
+        f.setFlag(All, true);
+        QCOMPARE(f.value(), All);
+        QVERIFY(f.testFlag(One));
+        f.setFlag(One,false);
+        QVERIFY(f.testFlag(One) == false);
     }
 
     void test_or() {
@@ -167,6 +178,18 @@ private slots:
         QCOMPARE(d.value(), One);
         d ^= One;
         QCOMPARE(d.value(), 0);
+    }
+
+    void test_wrapped_integer_flags() {
+        MyWrappedFlags wrappedUnsignedIntFlags{WrappedUnsignedInt{0}};
+        QVERIFY(wrappedUnsignedIntFlags.testFlag(WrappedUnsignedInt{0b001}) == false);
+        wrappedUnsignedIntFlags.setFlag(WrappedUnsignedInt{0b001});
+        QVERIFY(wrappedUnsignedIntFlags.testFlag(WrappedUnsignedInt{0b001}) == true);
+
+        wrappedUnsignedIntFlags.setFlag(WrappedUnsignedInt{std::numeric_limits<unsigned int>::max()});
+        QVERIFY(wrappedUnsignedIntFlags.testFlag(WrappedUnsignedInt{0b001}) == true);
+        wrappedUnsignedIntFlags.setFlag(WrappedUnsignedInt{0b001},false);
+        QVERIFY(wrappedUnsignedIntFlags.testFlag(WrappedUnsignedInt{0b001}) == false);
     }
 };
 

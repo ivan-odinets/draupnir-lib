@@ -28,7 +28,7 @@
 #include <initializer_list>
 
 #include "draupnir/utils/template_detectors.h"
-#include "draupnir/utils/type_detectors.h"
+#include "draupnir/utils/concepts/type_concepts.h"
 
 namespace draupnir::utils
 {
@@ -48,7 +48,7 @@ namespace draupnir::utils
  *
  * @note `testFlag(0)` follows the QFlags-like rule: it returns `true` only when the stored mask is also zero. */
 
-template<integer_concept Int>
+template<integer_like_concept Int>
 class flags
 {
 public:
@@ -56,45 +56,45 @@ public:
     using integer = Int;
 
     /*! @brief Constructs an empty flags object. Initializes the underlying mask to `0`. */
-    constexpr inline flags() noexcept :
+    constexpr flags() noexcept :
         m_mask{0} {}
 
     /*! @brief Constructs flags from a raw mask.
      *  @param mask Initial bitmask value. */
-    constexpr inline flags(Int mask) noexcept :
+    constexpr flags(Int mask) noexcept :
         m_mask{mask} {}
 
     /*! @brief Constructs flags by OR-ing all values from the initializer list. Equivalent to: `Int result = 0; for (auto v
      *         : mask) result |= v;`
      *  @param mask List of bit values to combine. */
-    constexpr inline flags(std::initializer_list<Int> mask) noexcept
+    constexpr flags(std::initializer_list<Int> mask) noexcept
         : m_mask{initializer_list_helper(mask.begin(), mask.end())} {}
 
     /*! @brief Implicit conversion to the underlying integer mask.
      *  @return Stored mask value. */
-    constexpr inline operator Int() const noexcept { return m_mask; }
+    constexpr operator Int() const noexcept { return m_mask; }
 
     /*! @brief Returns the underlying mask value explicitly.
      *  @return Stored mask value. */
-    constexpr inline Int value() const noexcept { return m_mask; }
+    constexpr Int value() const noexcept { return m_mask; }
 
     /*! @brief Checks whether any bit is set.
      *  @return `true` if mask is non-zero, `false` otherwise. */
-    constexpr inline bool any() const noexcept { return m_mask != 0; }
+    constexpr bool any() const noexcept { return m_mask != 0; }
 
     /*! @brief Checks whether no bits are set.
      *  @return `true` if mask is zero, `false` otherwise. */
-    constexpr inline bool none() const noexcept { return m_mask == 0; }
+    constexpr bool none() const noexcept { return m_mask == 0; }
 
 ///@name Bitwise assignment operators.
 ///@{
     /*! @brief ANDs the stored mask with a raw mask.
      *  @param mask Mask to AND with. */
-    constexpr inline flags& operator&=(Int mask) noexcept { m_mask &= mask; return *this; }
+    constexpr flags& operator&=(Int mask) noexcept { m_mask &= mask; return *this; }
 
     /*! @brief ANDs the stored mask with another flags object.
      *  @param other Other flags. */
-    constexpr inline flags& operator&=(const flags& other) noexcept { m_mask &= other.m_mask; return *this; }
+    constexpr flags& operator&=(const flags& other) noexcept { m_mask &= other.m_mask; return *this; }
 
     /*! @brief ORs the stored mask with a raw mask.
      *  @param mask Mask to OR with. */
@@ -102,40 +102,40 @@ public:
 
     /*! @brief ORs the stored mask with another flags object.
      *  @param other Other flags. */
-    constexpr inline flags& operator|=(const flags& other) noexcept { m_mask |= other.m_mask; return *this; }
+    constexpr flags& operator|=(const flags& other) noexcept { m_mask |= other.m_mask; return *this; }
 
     /*! @brief XORs the stored mask with a raw mask.
      *  @param mask Mask to XOR with. */
-    constexpr inline flags& operator^=(Int mask) noexcept { m_mask ^= mask; return *this; }
+    constexpr flags& operator^=(Int mask) noexcept { m_mask ^= mask; return *this; }
 
     /*! @brief XORs the stored mask with another flags object.
      *  @param other Other flags. */
-    constexpr inline flags& operator^=(const flags& other) noexcept { m_mask ^= other.m_mask; return *this; }
+    constexpr flags& operator^=(const flags& other) noexcept { m_mask ^= other.m_mask; return *this; }
 ///@}
 
 ///@name Bitwise non-assignment operators.
 ///@{
     /*! @brief Returns a new flags object equal to `(*this | other)`. */
-    constexpr inline flags operator|(const flags& other) const noexcept { return flags{m_mask | other.m_mask}; }
+    constexpr flags operator|(const flags& other) const noexcept { return flags{m_mask | other.m_mask}; }
 
     /*! @brief Returns a new flags object equal to `(*this ^ other)`. */
-    constexpr inline flags operator^(const flags& other) const noexcept { return flags{m_mask ^ other.m_mask}; }
+    constexpr flags operator^(const flags& other) const noexcept { return flags{m_mask ^ other.m_mask}; }
 
     /*! @brief Returns a new flags object equal to `(*this & other)`. */
-    constexpr inline flags operator&(const flags& other) const noexcept { return flags{m_mask & other.m_mask}; }
+    constexpr flags operator&(const flags& other) const noexcept { return flags{m_mask & other.m_mask}; }
 
     /*! @brief Returns a new flags object with all bits inverted (`~mask`). */
-    constexpr inline flags operator~() const noexcept { return flags{~m_mask}; }
+    constexpr flags operator~() const noexcept { return flags{~m_mask}; }
 
     /*! @brief Checks whether the mask is zero. Returns `true` if mask is zero, `false` otherwise. */
-    constexpr inline bool operator!() const noexcept { return !m_mask; }
+    constexpr bool operator!() const noexcept { return !m_mask; }
 ///@}
 
     /*! @brief Tests whether all bits from @p flag are set in the current mask. Returns `true` if `(m_mask & flag) ==
      *         flag`.
      *  @param flag Bit pattern to test.
      * @note Special case: if `flag == 0`, this returns `true` only if `m_mask == 0`. */
-    constexpr inline bool testFlag(Int flag) const noexcept {
+    constexpr bool testFlag(Int flag) const noexcept {
         return (m_mask & flag) == flag && (flag != 0 || m_mask == flag );
     }
 
@@ -143,14 +143,14 @@ public:
      *  @param flag Bit pattern to modify.
      *  @param on  If `true`, sets bits (`OR`). If `false`, clears bits (`AND` with `~flag`).
      *  @return `*this`. */
-    constexpr inline flags& setFlag(Int flag, bool on = true) noexcept {
+    constexpr flags& setFlag(Int flag, bool on = true) noexcept {
         return on ? (*this |= flag) : (*this &= ~flag);
     }
 
 protected:
     Int m_mask;
 
-    constexpr static inline Int initializer_list_helper(typename std::initializer_list<Int>::const_iterator it,
+    constexpr static Int initializer_list_helper(typename std::initializer_list<Int>::const_iterator it,
                                                         typename std::initializer_list<Int>::const_iterator end) noexcept {
         return (it == end ? Int(0) : (Int(*it) | initializer_list_helper(it + 1, end)));
     }

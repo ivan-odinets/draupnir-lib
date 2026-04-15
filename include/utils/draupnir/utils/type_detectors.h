@@ -27,13 +27,23 @@
 
 #include <type_traits>
 
+/*! @file draupnir/utils/type_detectors.h
+ *  @ingroup Utils
+ *  @brief This file contains helper type traits and variable templates used to classify C++ types at compile time. */
+
 namespace draupnir::utils
 {
 
-/*! @file draupnir/utils/type_detectors.h
+/*! @struct is_integer draupnir/utils/type_detectors.h
  *  @ingroup Utils
- *  @brief This is a file.
- * @todo Document entities within this file. */
+ *  @brief Checks whether a type is one of the supported built-in integer types.
+ *  @tparam T Type to check.
+ *
+ *  @details This trait evaluates to `true` only for the explicitly listed built-in integer types: `char`, `unsigned char`,
+ *           `short`, `unsigned short`, `int`, `unsigned int`, `long`, `unsigned long`, `long long` `unsigned long long`.
+ *
+ *           Types such as `bool`, wide/UTF character types, floating-point types, enumerations, and user-defined integer-like
+ *           wrappers are not considered integers by this trait. */
 
 template<typename T>
 struct is_integer : std::bool_constant<
@@ -44,11 +54,15 @@ struct is_integer : std::bool_constant<
     std::is_same_v<T,long long> || std::is_same_v<T,unsigned long long>
 > {};
 
-template<class Candidate>
-concept integer_concept = is_integer<Candidate>::value;
+/*! @ingroup Utils
+ *  @brief Convenience variable template for @ref is_integer.
+ *  @tparam T Type to check.
+ *
+ *  @details Provides direct access to the result of @ref is_integer as a `bool` constant */
 
-template<class Candidate>
-concept enum_concept = std::is_enum_v<Candidate>;
+template<typename T>
+inline constexpr bool is_integer_v = is_integer<T>::value;
+
 
 };
 

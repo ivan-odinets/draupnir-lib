@@ -16,6 +16,7 @@
         $$PWD/../include/utils/draupnir/utils/filter_if.h \
         $$PWD/../include/utils/draupnir/utils/flags.h \
         $$PWD/../include/utils/draupnir/utils/index_of.h \
+        $$PWD/../include/utils/draupnir/utils/integer_wrapper.h \
         $$PWD/../include/utils/draupnir/utils/sfinae_detector_macro.h \
         $$PWD/../include/utils/draupnir/utils/template_adapters.h \
         $$PWD/../include/utils/draupnir/utils/template_constructors.h \
@@ -27,7 +28,8 @@
         $$PWD/../include/utils/draupnir/utils/type_list.h \
         $$PWD/../include/utils/draupnir/utils/type_name_utils.h \
         $$PWD/../include/utils/draupnir/utils/type_presense.h \
-        $$PWD/../include/utils/draupnir/utils/type_qualifiers_helpers.h
+        $$PWD/../include/utils/draupnir/utils/type_qualifiers_helpers.h \
+        $$PWD/../include/utils/draupnir/utils/concepts/type_concepts.h
 
     DISTFILES += \
         $$PWD/../docs/pages/Utils.dox
