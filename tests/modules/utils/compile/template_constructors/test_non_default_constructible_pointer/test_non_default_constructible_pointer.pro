@@ -1,6 +1,6 @@
 QT = core
 
-CONFIG += c++20 cmdline
+CONFIG += c++23 cmdline
 
 # TEST_NAME = $$basename(PWD)
 # include(../../../../common/TestConfig.pri)

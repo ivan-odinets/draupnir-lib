@@ -472,13 +472,16 @@ sub run_compile_test_case {
     # - It contains $test_case.pro file
     do { say_warning "Test case $test_case does not contain '$test_case.pro' file."; return TEST_MISCONFIGURED(); }
         unless -f File::Spec->catfile($test_case_directory,"$test_case.pro");
+    # - If test case config has niether error string nor error array - we are failed
+    my $failure_message = $compile_test_config->{test_cases}->{$test_case};
+    do { say_warning "Test case $test_case config does not contain niether error string nor error array"; return TEST_MISCONFIGURED(); }
+        unless (defined($failure_message) && (!ref($failure_message) || ref($failure_message) eq 'ARRAY'));
     # - Well and if we cannot enter the test case directory - this is also wrong
     my $old_cwd = getcwd();
     do { say_warning "Cannot chdir into $test_case_directory"; return TEST_MISCONFIGURED(); }
         unless chdir($test_case_directory);
 
     # Lets run the test.
-    my $failure_message = $compile_test_config->{test_cases}->{$test_case};
     my $output = `( qmake && make ) 2>&1`;
     my $exit_code = $? >> 8;
 
@@ -488,9 +491,21 @@ sub run_compile_test_case {
     my $expected_failure = defined $failure_message;
     my $compilation_failed = ($exit_code != 0);
 
+    my $output_is_valid = 0;
+    if (ref($failure_message) eq 'ARRAY') {
+        my $matched_parts = 0;
+        for my $part (@{$failure_message}) {
+            $matched_parts++ if (index($output, $part) != -1);
+        }
+        $output_is_valid = ($matched_parts == scalar(@{$failure_message}));
+    } elsif (ref($failure_message) ne 'HASH') {
+        $output_is_valid = ($failure_message eq "") ? 1 :
+            index($output, $failure_message) != -1;
+    }
+
     my $passed =
         (!$expected_failure && !$compilation_failed) ||
-        ($expected_failure &&  $compilation_failed);
+        ($expected_failure &&  $compilation_failed && $output_is_valid);
 
     # Cleanup. For Compilation tests we must have main.cpp and *.pro file. All other stuff can be removed.
     opendir(my $dh, $test_case_directory) or die "Cannot open '$test_case_directory': $!";
