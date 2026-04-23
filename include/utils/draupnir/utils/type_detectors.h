@@ -63,6 +63,26 @@ struct is_integer : std::bool_constant<
 template<typename T>
 inline constexpr bool is_integer_v = is_integer<T>::value;
 
+/*! @ingroup Utils
+ *  @brief Type trait that checks whether `Candidate` is either an integer type or an enum type.
+ *  @tparam Candidate Type to check.
+ *
+ *  @details The check is performed on `std::remove_cvref_t<Candidate>`, so cv-qualifiers and references are ignored. The trait
+ *           evaluates to `true` for integer and enum types, and to `false` otherwise. */
+
+template<typename Candidate>
+struct is_enum_or_integer : public std::bool_constant<
+    is_integer_v<std::remove_cvref_t<Candidate>> || std::is_enum_v<std::remove_cvref_t<Candidate>>
+> {};
+
+/*! @ingroup Utils
+ *  @brief Convenience variable template for @ref is_enum_or_integer.
+ *  @tparam Candidate Type to check.
+ *
+ *  @details Equivalent to `is_enum_or_integer<Candidate>::value`. */
+
+template<typename T>
+inline constexpr bool is_enum_or_integer_v = is_enum_or_integer<T>::value;
 
 };
 

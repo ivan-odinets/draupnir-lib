@@ -25,12 +25,12 @@
 #ifndef TYPE_CONCEPTS_H
 #define TYPE_CONCEPTS_H
 
-#include "draupnir/utils/type_detectors.h"
-#include "draupnir/utils/template_detectors.h"
-
 /*! @file draupnir/utils/concepts/type_concepts.h
  *  @ingroup Utils
  *  @brief This file contains concepts used to constrain templates based on fundamental type categories. */
+
+#include "draupnir/utils/type_detectors.h"
+#include "draupnir/utils/template_detectors.h"
 
 namespace draupnir::utils
 {
@@ -69,6 +69,25 @@ concept integer_like_concept =
 
 template<class Candidate>
 concept enum_concept = std::is_enum_v<Candidate>;
+
+/*! @ingroup Utils
+ *  @brief Concept satisfied by integer and enum types.
+ *  @tparam Candidate Type to check.
+ *
+ *  @details This concept is a shorthand for @ref is_enum_or_integer_v and is intended for use in template constraints. */
+
+template<class Candidate>
+concept enum_or_integer_concept =
+    is_enum_or_integer_v<Candidate>;
+
+/*! @ingroup Utils
+ *  @brief Concept satisfied by integer-like and enum types.
+ *  @tparam Candidate Type to check. */
+
+template<class Candidate>
+concept enum_or_integer_like_concept =
+    enum_concept<Candidate> ||
+    integer_like_concept<Candidate>;
 
 }; // namespace draupnir::utils
 

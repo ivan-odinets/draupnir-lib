@@ -25,224 +25,508 @@
 #ifndef FLAGS_H
 #define FLAGS_H
 
-#include <initializer_list>
-
-#include "draupnir/utils/template_detectors.h"
 #include "draupnir/utils/concepts/type_concepts.h"
+#include "draupnir/utils/integer_wrapper.h"
+#include "draupnir/utils/template_detectors.h"
 
 namespace draupnir::utils
 {
 
-/*! @class flags draupnir/utils/flags.h
+/*! @class flags_base draupnir/utils/flags.h
  *  @ingroup Utils
- *  @brief Lightweight bitmask wrapper over an integer type.
- *  @tparam Int Integer storage type for the bitmask (e.g. `uint32_t`, `quint64`). Must satisfy @ref draupnir::utils::integer_concept.
+ *  @brief CRTP base class providing common bitmask operations for flags-like types.
+ *  @tparam Int Integer-like storage type used to store the mask.
+ *  @tparam Derived Final derived flags type implementing the public policy.
  *
- *  @details `flags<Int>` is a small value-type that stores a bitmask in an integer and provides a `QFlags`-like interface:
- *            - construction from a raw mask or from a list of bit values;
- *            - bitwise operators (`&`, `|`, `^`, `~`) and their assignment forms;
- *            - helpers for checking/setting bits via @ref testFlag and @ref setFlag.
+ *  @details `flags_base<Int, Derived>` implements storage and common operations shared by @ref draupnir::utils::flags and
+ *           @ref draupnir::utils::enum_flags:
+ *           - explicit access to stored value via @ref value;
+ *           - boolean/query helpers such as @ref any, @ref none, and `operator bool`;
+ *           - equality and three-way comparison with compatible built-in integer values;
+ *           - bitwise operators (`&`, `|`, `^`, `~`) and their assignment forms.
  *
- *            The class does not prescribe any particular meaning for bits. It is intended to be used either directly (for
- *            "raw" flags), or as a base for higher-level wrappers such as @ref draupnir::utils::enum_flags.
+ *           This base class intentionally knows only about the integer-like storage model. Policy decisions such as:
+ *           - whether enums are accepted;
+ *           - whether wrapper types are accepted;
+ *           - which exact enum or wrapper types are allowed
+ *           are implemented by derived classes.
  *
- * @note `testFlag(0)` follows the QFlags-like rule: it returns `true` only when the stored mask is also zero. */
+ * @note This class is not intended to be used directly. Use @ref draupnir::utils::flags or @ref draupnir::utils::enum_flags
+ *        instead. */
 
-template<integer_like_concept Int>
-class flags
+template<integer_like_concept Int, class Derived>
+class flags_base
 {
+protected:
+    using _normalizer = normalizer<Int>;
+
+    static inline constexpr Int _zero = Int{};
+
 public:
-    /*! @brief Alias to access integer type being used within this @ref flags object instantiation. */
+    /*! @brief Alias to access integer type used by this flags object instantiation. */
     using integer = Int;
 
-    /*! @brief Constructs an empty flags object. Initializes the underlying mask to `0`. */
-    constexpr flags() noexcept :
-        m_mask{0} {}
+///@name Constructors.
+///@{
+    /*! @brief Constructs an empty flags object.
+     *  @details Initializes the underlying mask to `0`. */
+    constexpr flags_base() noexcept = default;
 
-    /*! @brief Constructs flags from a raw mask.
+    /*! @brief Constructs flags from an integer-like object that can be normalized into `Int`.
      *  @param mask Initial bitmask value. */
-    constexpr flags(Int mask) noexcept :
-        m_mask{mask} {}
+    template<integer_like_concept Other> requires(_normalizer::template can_be_normalized_v<Other>)
+    constexpr explicit flags_base(const Other& mask) noexcept: m_mask{_normalizer::normalize(mask)} {}
+///@}
 
-    /*! @brief Constructs flags by OR-ing all values from the initializer list. Equivalent to: `Int result = 0; for (auto v
-     *         : mask) result |= v;`
-     *  @param mask List of bit values to combine. */
-    constexpr flags(std::initializer_list<Int> mask) noexcept
-        : m_mask{initializer_list_helper(mask.begin(), mask.end())} {}
-
-    /*! @brief Implicit conversion to the underlying integer mask.
-     *  @return Stored mask value. */
-    constexpr operator Int() const noexcept { return m_mask; }
+///@name Helpers.
+///@{
+    /*! @brief Explicit conversion to `bool`.
+     *  @return `true` if `m_mask != 0`, and `false` if `m_mask == 0`. */
+    [[nodiscard]] constexpr explicit operator bool() const noexcept { return bool(m_mask); }
 
     /*! @brief Returns the underlying mask value explicitly.
-     *  @return Stored mask value. */
-    constexpr Int value() const noexcept { return m_mask; }
+     *  @return Stored mask value */
+    [[nodiscard]] constexpr Int value() const noexcept { return m_mask; }
 
     /*! @brief Checks whether any bit is set.
      *  @return `true` if mask is non-zero, `false` otherwise. */
-    constexpr bool any() const noexcept { return m_mask != 0; }
+    [[nodiscard]] constexpr bool any() const noexcept { return m_mask != _zero; }
 
     /*! @brief Checks whether no bits are set.
      *  @return `true` if mask is zero, `false` otherwise. */
-    constexpr bool none() const noexcept { return m_mask == 0; }
+    [[nodiscard]] constexpr bool none() const noexcept { return m_mask == _zero; }
+///@}
+
+///@name Comparison operators.
+///@{
+    /*! @brief Compares two flags objects of the same derived type for equality. */
+    [[nodiscard]] friend constexpr bool operator==(const Derived& lhs, const Derived& rhs) noexcept { return lhs.m_mask == rhs.m_mask; }
+
+    /*! @brief Compares a built-in integer mask with flags object for equality. */
+    template<integer_concept Other> requires(_normalizer::template can_be_normalized_v<Other>)
+    [[nodiscard]] friend constexpr bool operator==(const Other& lhs, const Derived& rhs) noexcept { return _normalizer::normalize(lhs) == rhs.m_mask; }
+
+    /*! @brief Compares flags object with a built-in integer mask for equality. */
+    template<integer_concept Other> requires(_normalizer::template can_be_normalized_v<Other>)
+    [[nodiscard]] friend constexpr bool operator==(const Derived& lhs, const Other& rhs) noexcept { return lhs.m_mask == _normalizer::normalize(rhs); }
+
+    /*! @brief Performs three-way comparison between two flags objects of the same derived type. */
+    [[nodiscard]] friend constexpr auto operator<=>(const Derived& lhs, const Derived& rhs) noexcept { return lhs.m_mask <=> rhs.m_mask; }
+
+    /*! @brief Performs three-way comparison between a built-in integer mask and flags object. */
+    template<integer_concept Other> requires(_normalizer::template can_be_normalized_v<Other>)
+    [[nodiscard]] friend constexpr auto operator<=>(const Other& lhs, const Derived& rhs) noexcept { return _normalizer::normalize(lhs) <=> rhs.m_mask; }
+
+    /*! @brief Performs three-way comparison between flags object and a built-in integer mask. */
+    template<integer_concept Other> requires(_normalizer::template can_be_normalized_v<Other>)
+    [[nodiscard]] friend constexpr auto operator<=>(const Derived& lhs, const Other& rhs) noexcept { return lhs.m_mask <=> _normalizer::normalize(rhs); }
+///@}
 
 ///@name Bitwise assignment operators.
 ///@{
     /*! @brief ANDs the stored mask with a raw mask.
-     *  @param mask Mask to AND with. */
-    constexpr flags& operator&=(Int mask) noexcept { m_mask &= mask; return *this; }
+     *  @param mask Mask to AND with.
+     *  @return `*this`. */
+    template<integer_concept Other> requires(_normalizer::template can_be_normalized_v<Other>)
+    constexpr Derived& operator&=(Other mask) noexcept { m_mask &= _normalizer::normalize(mask); return _derived(); }
 
     /*! @brief ANDs the stored mask with another flags object.
-     *  @param other Other flags. */
-    constexpr flags& operator&=(const flags& other) noexcept { m_mask &= other.m_mask; return *this; }
+     *  @param other Other flags.
+     *  @return `*this`. */
+    constexpr Derived& operator&=(const Derived& other) noexcept { m_mask &= other.m_mask; return _derived(); }
 
     /*! @brief ORs the stored mask with a raw mask.
-     *  @param mask Mask to OR with. */
-    constexpr inline flags& operator|=(Int mask) noexcept { m_mask |= mask; return *this; }
+     *  @param mask Mask to OR with.
+     *  @return `*this`. */
+    template<integer_concept Other> requires(_normalizer::template can_be_normalized_v<Other>)
+    constexpr Derived& operator|=(Other mask) noexcept { m_mask |= _normalizer::normalize(mask); return _derived(); }
 
     /*! @brief ORs the stored mask with another flags object.
-     *  @param other Other flags. */
-    constexpr flags& operator|=(const flags& other) noexcept { m_mask |= other.m_mask; return *this; }
+     *  @param other Other flags.
+     *  @return `*this`. */
+    constexpr Derived& operator|=(const Derived& other) noexcept { m_mask |= other.m_mask; return _derived(); }
 
     /*! @brief XORs the stored mask with a raw mask.
-     *  @param mask Mask to XOR with. */
-    constexpr flags& operator^=(Int mask) noexcept { m_mask ^= mask; return *this; }
+     *  @param mask Mask to XOR with.
+     *  @return `*this`. */
+    template<integer_concept Other> requires(_normalizer::template can_be_normalized_v<Other>)
+    constexpr Derived& operator^=(Other mask) noexcept { m_mask ^= _normalizer::normalize(mask); return _derived(); }
 
     /*! @brief XORs the stored mask with another flags object.
-     *  @param other Other flags. */
-    constexpr flags& operator^=(const flags& other) noexcept { m_mask ^= other.m_mask; return *this; }
+     *  @param other Other flags.
+     *  @return `*this`. */
+    constexpr Derived& operator^=(const Derived& other) noexcept { m_mask ^= other.m_mask; return _derived(); }
 ///@}
 
 ///@name Bitwise non-assignment operators.
 ///@{
-    /*! @brief Returns a new flags object equal to `(*this | other)`. */
-    constexpr flags operator|(const flags& other) const noexcept { return flags{m_mask | other.m_mask}; }
+    /*! @brief Returns result of bitwise AND with a raw integer-like mask. */
+    template<integer_concept Other> requires(_normalizer::template can_be_normalized_v<Other>)
+    [[nodiscard]] friend constexpr Derived operator&(Other lhs, Derived rhs) noexcept { return Derived{_normalizer::normalize(lhs) & rhs.m_mask}; }
 
-    /*! @brief Returns a new flags object equal to `(*this ^ other)`. */
-    constexpr flags operator^(const flags& other) const noexcept { return flags{m_mask ^ other.m_mask}; }
+    /*! @brief Returns result of bitwise AND with a raw integer-like mask. */
+    template<integer_concept Other> requires(_normalizer::template can_be_normalized_v<Other>)
+    [[nodiscard]] friend constexpr Derived operator&(Derived lhs, Other rhs) noexcept { return Derived{lhs.m_mask & _normalizer::normalize(rhs)}; }
 
-    /*! @brief Returns a new flags object equal to `(*this & other)`. */
-    constexpr flags operator&(const flags& other) const noexcept { return flags{m_mask & other.m_mask}; }
+    /*! @brief Returns result of bitwise AND with another flags object of the same derived type. */
+    [[nodiscard]] friend constexpr Derived operator&(Derived lhs, Derived rhs) noexcept { return Derived{lhs.m_mask & rhs.m_mask}; }
 
-    /*! @brief Returns a new flags object with all bits inverted (`~mask`). */
-    constexpr flags operator~() const noexcept { return flags{~m_mask}; }
+    /*! @brief Returns result of bitwise OR with a raw integer-like mask. */
+    template<integer_concept Other> requires(_normalizer::template can_be_normalized_v<Other>)
+    [[nodiscard]] friend constexpr Derived operator|(Other lhs, Derived rhs) noexcept { return Derived{_normalizer::normalize(lhs) | rhs.m_mask}; }
 
-    /*! @brief Checks whether the mask is zero. Returns `true` if mask is zero, `false` otherwise. */
-    constexpr bool operator!() const noexcept { return !m_mask; }
+    /*! @brief Returns result of bitwise OR with a raw integer-like mask. */
+    template<integer_concept Other> requires(_normalizer::template can_be_normalized_v<Other>)
+    [[nodiscard]] friend constexpr Derived operator|(Derived lhs, Other rhs) noexcept { return Derived{lhs.m_mask | _normalizer::normalize(rhs)}; }
+
+    /*! @brief Returns result of bitwise OR with another flags object of the same derived type. */
+    [[nodiscard]] friend constexpr Derived operator|(Derived lhs, Derived rhs) noexcept { return Derived{lhs.m_mask | rhs.m_mask}; }
+
+    /*! @brief Returns result of bitwise XOR with a raw integer-like mask. */
+    template<integer_concept Other> requires(_normalizer::template can_be_normalized_v<Other>)
+    [[nodiscard]] friend constexpr Derived operator^(Other lhs, Derived rhs) noexcept { return Derived{_normalizer::normalize(lhs) ^ rhs.m_mask}; }
+
+    /*! @brief Returns result of bitwise XOR with a raw integer-like mask. */
+    template<integer_concept Other> requires(_normalizer::template can_be_normalized_v<Other>)
+    [[nodiscard]] friend constexpr Derived operator^(Derived lhs, Other rhs) noexcept { return Derived{lhs.m_mask ^ _normalizer::normalize(rhs)}; }
+
+    /*! @brief Returns result of bitwise XOR with another flags object of the same derived type. */
+    [[nodiscard]] friend constexpr Derived operator^(Derived lhs, Derived rhs) noexcept { return Derived{lhs.m_mask ^ rhs.m_mask}; }
 ///@}
 
-    /*! @brief Tests whether all bits from @p flag are set in the current mask. Returns `true` if `(m_mask & flag) ==
-     *         flag`.
-     *  @param flag Bit pattern to test.
-     * @note Special case: if `flag == 0`, this returns `true` only if `m_mask == 0`. */
-    constexpr bool testFlag(Int flag) const noexcept {
-        return (m_mask & flag) == flag && (flag != 0 || m_mask == flag );
-    }
+    /*! @brief Returns bitwise negation of the stored value. */
+    [[nodiscard]] constexpr Derived operator~() const noexcept { return Derived{~m_mask}; }
 
-    /*! @brief Sets or clears bits from @p flag.
-     *  @param flag Bit pattern to modify.
-     *  @param on  If `true`, sets bits (`OR`). If `false`, clears bits (`AND` with `~flag`).
-     *  @return `*this`. */
-    constexpr flags& setFlag(Int flag, bool on = true) noexcept {
-        return on ? (*this |= flag) : (*this &= ~flag);
-    }
+    /*! @brief Checks whether the stored mask is zero.
+     *  @return `true` if the stored mask is zero, `false` otherwise.
+     */
+    constexpr bool operator!() const noexcept { return !m_mask; }
 
 protected:
-    Int m_mask;
+    constexpr Derived& _derived() noexcept { return static_cast<Derived&>(*this); }
+    constexpr const Derived& _derived() const noexcept { return static_cast<const Derived&>(*this); }
 
-    constexpr static Int initializer_list_helper(typename std::initializer_list<Int>::const_iterator it,
-                                                        typename std::initializer_list<Int>::const_iterator end) noexcept {
-        return (it == end ? Int(0) : (Int(*it) | initializer_list_helper(it + 1, end)));
-    }
+    Int m_mask{};
 };
+
+/*! @class flags draupnir/utils/flags.h
+ *  @ingroup Utils
+ *  @brief Lightweight bitmask wrapper over an integer-like storage type.
+ *  @tparam Int Integer-like storage type for the bitmask. Must satisfy @ref draupnir::utils::integer_like_concept.
+ *
+ *  @details `flags<Int>` is a small value-type that stores a bitmask and provides a `QFlags`-like interface. It can be
+ *           constructed from:
+ *           - built-in integer values that can be normalized into `Int`;
+ *           - enum values that can be normalized into `Int`;
+ *           - matching integer-wrapper type when `Int` itself is an integer wrapper.
+ *
+ *           It supports:
+ *           - equality and three-way comparison;
+ *           - bitwise operators (`&`, `|`, `^`, `~`) and their assignment forms;
+ *           - helper methods @ref test_flag and @ref set_flag.
+ *
+ *           The class does not prescribe any particular meaning for bits. It is intended to be used directly as a generic
+ *           flags container.
+ *
+ * @note `test_flag(0)` follows the QFlags-like rule: it returns `true` only when the stored mask is also zero. */
+
+template<integer_like_concept Int>
+class flags : public flags_base<Int,flags<Int>>
+{
+    using _base = flags_base<Int,flags<Int>>;
+
+public:
+    /*! @brief Integer type used by this flags object. */
+    using integer = flags_base<Int,flags<Int>>::integer;
+
+///@name Constructors.
+///@{
+    /*! @brief Constructs zero-initialized flags object. */
+    constexpr flags() noexcept : _base{_base::_zero} {}
+
+    /*! @brief Constructs flags from a built-in integer or enum value that can be normalized into `Int`.
+     *  @param value Initial mask value. */
+    template<enum_or_integer_concept Other> requires(_base::_normalizer::template can_be_normalized_v<Other>)
+    constexpr flags(Other value) noexcept: _base{_base::_normalizer::normalize(value)} {}
+
+    /*! @brief Constructs flags from matching integer-wrapper type.
+     *  @param value Initial mask value. */
+    template<integer_wrapper_concept OtherWrapper> requires(std::same_as<Int, OtherWrapper>)
+    constexpr flags(OtherWrapper value) noexcept: _base{value.value()} {}
+
+    /*! @brief Rejects construction from non-matching integer-wrapper type. */
+    template<integer_wrapper_concept OtherWrapper> requires(!std::same_as<Int, OtherWrapper>)
+    constexpr flags(OtherWrapper value) = delete;
+///@}
+
+///@name Helpers.
+///@{
+    /*! @brief Tests whether all bits from `flag` are set in the current mask.
+     *  @param flag Bit pattern to test.
+     *  @return `true` if all bits from `flag` are set.
+     * @note Special case: if `flag == 0`, this returns `true` only if the stored mask is also zero. */
+    template<enum_or_integer_concept Value>
+    constexpr bool test_flag(Value flag) const noexcept requires(_base::_normalizer::template can_be_normalized_v<Value>) {
+        const auto normalizedFlag = _base::_normalizer::normalize(flag);
+        return (_base::m_mask & normalizedFlag) == normalizedFlag && (normalizedFlag != _base::_zero || _base::m_mask == normalizedFlag );
+    }
+
+    /*! @brief Tests whether all bits from `flag` are set in the current mask.
+     *  @param flag Bit pattern to test.
+     *  @return `true` if all bits from `flag` are set.
+     * @note This overload is enabled only for matching integer-wrapper type when `Int` is itself a wrapper. */
+    template<integer_wrapper_concept Value>
+    constexpr bool test_flag(Value flag) const noexcept requires(std::same_as<Value,Int>) {
+        const auto normalizedFlag = _base::_normalizer::normalize(flag);
+        return (_base::m_mask & normalizedFlag) == normalizedFlag && (normalizedFlag != _base::_zero || _base::m_mask == normalizedFlag );
+    }
+
+    /*! @brief Sets or clears bits from `flag`.
+     *  @param flag Bit pattern to modify.
+     *  @param on If `true`, sets bits (`OR`). If `false`, clears bits (`AND` with `~flag`).
+     *  @return `*this`. */
+    template<enum_or_integer_concept Value>
+    constexpr flags& set_flag(Value flag, bool on = true) noexcept requires(_base::_normalizer::template can_be_normalized_v<Value>) {
+        const auto normalizedFlag = _base::_normalizer::normalize(flag);
+        return on ? (*this |= normalizedFlag) : (*this &= ~normalizedFlag);
+    }
+
+    /*! @brief Sets or clears bits from `flag`.
+     *  @param flag Bit pattern to modify.
+     *  @param on If `true`, sets bits (`OR`). If `false`, clears bits (`AND` with `~flag`).
+     *  @return `*this`.
+     * @note This overload is enabled only for matching integer-wrapper type when `Int` is itself a wrapper. */
+    template<integer_wrapper_concept Value>
+    constexpr flags& set_flag(Value flag, bool on = true) noexcept requires(std::same_as<Value,Int>) {
+        const auto normalizedFlag = _base::_normalizer::normalize(flag);
+        return on ? (*this |= normalizedFlag) : (*this &= ~normalizedFlag);
+    }
+///@}
+
+///@name Comparison operators.
+///@{
+    /*! @brief Compares matching integer-wrapper type with flags object for equality. */
+    template<integer_wrapper_concept Other> requires(std::same_as<Int, Other>)
+    [[nodiscard]] friend constexpr bool operator==(const Other& lhs, const flags& rhs) noexcept { return _base::_normalizer::normalize(lhs) == rhs.m_mask; }
+
+    /*! @brief Compares flags object with matching integer-wrapper type for equality. */
+    template<integer_wrapper_concept Other> requires(std::same_as<Int, Other>)
+    [[nodiscard]] friend constexpr bool operator==(const flags& lhs, const Other& rhs) noexcept { return lhs.m_mask == _base::_normalizer::normalize(rhs); }
+
+    /*! @brief Performs three-way comparison between matching integer-wrapper type and flags object. */
+    template<integer_wrapper_concept Other> requires(std::same_as<Int, Other>)
+    [[nodiscard]] friend constexpr auto operator<=>(const Other& lhs, const flags& rhs) noexcept { return _base::_normalizer::normalize(lhs) <=> rhs.m_mask; }
+
+    /*! @brief Performs three-way comparison between flags object and matching integer-wrapper type. */
+    template<integer_wrapper_concept Other> requires(std::same_as<Int, Other>)
+    [[nodiscard]] friend constexpr auto operator<=>(const flags& lhs, const Other& rhs) noexcept { return lhs.m_mask <=> _base::_normalizer::normalize(rhs); }
+///@}
+
+///@name Bitwise non-assignment operators.
+///@{
+    /*! @brief Returns result of bitwise AND with a raw enum mask. */
+    template<enum_concept Other> requires(_base::_normalizer::template can_be_normalized_v<Other>)
+    [[nodiscard]] friend constexpr flags operator&(Other lhs, flags rhs) noexcept { return flags{_base::_normalizer::normalize(lhs) & rhs.m_mask}; }
+
+    /*! @brief Returns result of bitwise AND with a raw enum mask. */
+    template<enum_concept Other> requires(_base::_normalizer::template can_be_normalized_v<Other>)
+    [[nodiscard]] friend constexpr flags operator&(flags lhs, Other rhs) noexcept { return flags{lhs.m_mask & _base::_normalizer::normalize(rhs)}; }
+
+    /*! @brief Returns result of bitwise OR with a raw enum mask. */
+    template<enum_concept Other> requires(_base::_normalizer::template can_be_normalized_v<Other>)
+    [[nodiscard]] friend constexpr flags operator|(Other lhs, flags rhs) noexcept { return flags{_base::_normalizer::normalize(lhs) | rhs.m_mask}; }
+
+    /*! @brief Returns result of bitwise OR with a raw enum mask. */
+    template<enum_concept Other> requires(_base::_normalizer::template can_be_normalized_v<Other>)
+    [[nodiscard]] friend constexpr flags operator|(flags lhs, Other rhs) noexcept { return flags{lhs.m_mask | _base::_normalizer::normalize(rhs)}; }
+
+    /*! @brief Returns result of bitwise XOR with a raw enum mask. */
+    template<enum_concept Other> requires(_base::_normalizer::template can_be_normalized_v<Other>)
+    [[nodiscard]] friend constexpr flags operator^(Other lhs, flags rhs) noexcept { return flags{_base::_normalizer::normalize(lhs) ^ rhs.m_mask}; }
+
+    /*! @brief Returns result of bitwise XOR with a raw enum mask. */
+    template<enum_concept Other> requires(_base::_normalizer::template can_be_normalized_v<Other>)
+    [[nodiscard]] friend constexpr flags operator^(flags lhs, Other rhs) noexcept { return flags{lhs.m_mask ^ _base::_normalizer::normalize(rhs)}; }
+///@}
+};
+
+/*! @brief Concept satisfied by instantiations of @ref draupnir::utils::flags.
+ *  @tparam Candidate Type to test. */
+
+template<class Candidate>
+concept flags_concept = draupnir::utils::is_instantiation_of_v<Candidate,flags>;
 
 /*! @class enum_flags draupnir/utils/flags.h
  *  @ingroup Utils
- *  @brief Enum-friendly flags type.
+ *  @brief Strongly-typed flags wrapper bound to a specific enum type.
  *  @tparam Enum Enum type whose underlying integral type is used as storage. Must satisfy @ref draupnir::utils::enum_concept.
  *
- *  @details `enum_flags<Enum>` is a convenience wrapper around @ref draupnir::utils::flags that uses `std::underlying_type_t<Enum>`
- *           as the mask storage type. It is intended to provide a strongly-typed "flags-for-enum" handle while reusing all bitmask
- *           operations from the base @ref draupnir::utils::flags. */
+ *  @details `enum_flags<Enum>` stores a bitmask in `std::underlying_type_t<Enum>` and provides a flags interface with stricter
+ *           type rules than @ref draupnir::utils::flags. It can be constructed from:
+ *           - built-in integer values that can be normalized into the underlying integer type;
+ *           - values of the matching enum type `Enum`.
+ *
+ *           It rejects:
+ *           - non-matching enum types;
+ *           - integer-wrapper types.
+ *
+ *           It supports:
+ *           - equality and three-way comparison;
+ *           - bitwise operators (`&`, `|`, `^`, `~`) and their assignment forms;
+ *           - helper methods @ref test_flag and @ref set_flag.
+ *
+ * @note `test_flag(0)` follows the QFlags-like rule: it returns `true` only when the stored mask is also zero. */
 
 template<enum_concept Enum>
-class enum_flags : public flags<std::underlying_type_t<Enum>>
+class enum_flags : public flags_base<std::underlying_type_t<Enum>,enum_flags<Enum>>
 {
+    using _base = flags_base<std::underlying_type_t<Enum>,enum_flags<Enum>>;
+
 public:
     /*! @brief Associated enum type. */
     using enum_type = Enum;
 
-    /*! @brief Integer type used by the @ref draupnir::utils::flags base of this enum_flags object. */
-    using integer = flags<std::underlying_type_t<Enum>>::integer;
+    /*! @brief Integer type used by this enum_flags object. */
+    using integer = flags_base<std::underlying_type_t<Enum>,enum_flags<Enum>>::integer;
 
-    /*! @brief Assigns a single enum value to this flags object.
-     *  @param value Enum value whose underlying bits become the new mask. */
-    constexpr inline enum_flags& operator=(Enum value) noexcept {
-        this->m_mask = value;
-        return *this;
+///@name Constructors.
+///@{
+    /*! @brief Constructs zero-initialized enum_flags object. */
+    constexpr enum_flags() noexcept = default;
+
+    /*! @brief Constructs enum_flags from a built-in integer value that can be normalized into the underlying storage type.
+     *  @param value Initial mask value. */
+    template<integer_concept Other> requires(_base::_normalizer::template can_be_normalized_v<Other>)
+    constexpr enum_flags(Other value) noexcept: _base{_base::_normalizer::normalize(value)} {}
+
+    /*! @brief Constructs enum_flags from matching enum value.
+     *  @param value Initial mask value. */
+    template<enum_concept OtherEnum> requires(std::same_as<Enum,OtherEnum>)
+    constexpr enum_flags(OtherEnum value) noexcept: _base{_base::_normalizer::normalize(value)} {}
+
+    /*! @brief Rejects construction from non-matching enum type. */
+    template<enum_concept OtherEnum> requires(!std::same_as<Enum,OtherEnum>)
+    constexpr enum_flags(OtherEnum value) noexcept = delete;
+///@}
+
+///@name Helpers.
+///@{
+    /*! @brief Tests whether all bits from `flag` are set in the current mask.
+     *  @param flag Bit pattern to test.
+     *  @return `true` if all bits from @p flag are set.
+     * @note Special case: if `flag == 0`, this returns `true` only if the stored mask is also zero. */
+    template<integer_concept Value>
+    constexpr bool test_flag(Value flag) const noexcept requires(_base::_normalizer::template can_be_normalized_v<Value>) {
+        const auto normalizedFlag = _base::_normalizer::normalize(flag);
+        return (_base::m_mask & normalizedFlag) == normalizedFlag && (normalizedFlag != _base::_zero || _base::m_mask == normalizedFlag );
     }
 
-///@name Bitwise assignment operators.
+    /*! @brief Tests whether all bits from `flag` are set in the current mask.
+     *  @param flag Bit pattern to test.
+     *  @return `true` if all bits from @p flag are set.
+     * @note This overload is enabled only for the matching enum type. */
+    template<enum_concept Value>
+    constexpr bool test_flag(Value flag) const noexcept requires(std::same_as<Enum,Value>) {
+        const auto normalizedFlag = _base::_normalizer::normalize(flag);
+        return (_base::m_mask & normalizedFlag) == normalizedFlag && (normalizedFlag != _base::_zero || _base::m_mask == normalizedFlag );
+    }
+
+    /*! @brief Sets or clears bits from `flag`.
+     *  @param flag Bit pattern to modify.
+     *  @param on If `true`, sets bits (`OR`). If `false`, clears bits (`AND` with `~flag`).
+     *  @return `*this`. */
+    template<integer_concept Value>
+    constexpr enum_flags& set_flag(Value flag, bool on = true) noexcept requires(_base::_normalizer::template can_be_normalized_v<Value>) {
+        const auto normalizedFlag = _base::_normalizer::normalize(flag);
+        return on ? (*this |= normalizedFlag) : (*this &= ~normalizedFlag);
+    }
+
+    /*! @brief Sets or clears bits from `flag`.
+     *  @param flag Bit pattern to modify.
+     *  @param on If `true`, sets bits (`OR`). If `false`, clears bits (`AND` with `~flag`).
+     *  @return `*this`.
+     * @note This overload is enabled only for the matching enum type. */
+    template<enum_concept Value>
+    constexpr enum_flags& set_flag(Value flag, bool on = true) noexcept requires(std::same_as<Value,Enum>) {
+        const auto normalizedFlag = _base::_normalizer::normalize(flag);
+        return on ? (*this |= normalizedFlag) : (*this &= ~normalizedFlag);
+    }
+///@}
+
+///@name Comparison operators.
 ///@{
-    /*! @brief ANDs the stored mask with a Enum flag.
-     *  @param flag Fask to AND with. */
-    constexpr inline enum_flags& operator&=(Enum flag) noexcept { this->m_mask &= flag; return *this; }
+    /*! @brief Compares matching enum value with enum_flags object for equality. */
+    template<enum_concept OtherEnum> requires(std::same_as<Enum,OtherEnum>)
+    [[nodiscard]] friend constexpr bool operator==(const OtherEnum& lhs, const enum_flags& rhs) noexcept { return _base::_normalizer::normalize(lhs) == rhs.m_mask; }
 
-    /*! @brief ANDs the stored mask with a raw mask.
-     *  @param mask Mask to AND with. */
-    constexpr inline enum_flags& operator&=(integer mask) noexcept { this->m_mask &= mask; return *this; }
+    /*! @brief Compares enum_flags object with matching enum value for equality. */
+    template<enum_concept OtherEnum> requires(std::same_as<Enum,OtherEnum>)
+    [[nodiscard]] friend constexpr bool operator==(const enum_flags& lhs, const OtherEnum& rhs) noexcept { return lhs.m_mask == _base::_normalizer::normalize(rhs); }
 
-    /*! @brief ANDs the stored mask with another @ref enum_flags object.
-     *  @param other Other enum_flags. */
-    constexpr inline enum_flags& operator&=(const enum_flags& other) noexcept { this->m_mask &= other.m_mask; return *this; }
+    /*! @brief Performs three-way comparison between matching enum value and enum_flags object. */
+    template<enum_concept OtherEnum> requires(std::same_as<Enum,OtherEnum>)
+    [[nodiscard]] friend constexpr auto operator<=>(const OtherEnum& lhs, const enum_flags& rhs) noexcept { return _base::_normalizer::normalize(lhs) <=> rhs.m_mask; }
 
-    /*! @brief ORs the stored mask with a Enum flag.
-     *  @param flag Fask to OR with. */
-    constexpr inline enum_flags& operator|=(Enum flag) noexcept { this->m_mask |= flag; return *this; }
-
-    /*! @brief ORs the stored mask with a raw mask.
-     *  @param mask Mask to OR with. */
-    constexpr inline enum_flags& operator|=(integer mask) noexcept { this->m_mask |= mask; return *this; }
-
-    /*! @brief ORs the stored mask with another flags object.
-     *  @param other Other enum_flags. */
-    constexpr inline enum_flags& operator|=(const enum_flags& other) noexcept { this->m_mask |= other.m_mask; return *this; }
-
-    /*! @brief XORs the stored mask with a Enum flag.
-     *  @param flag Fask to XOR with. */
-    constexpr inline enum_flags& operator^=(Enum flag) noexcept { this->m_mask ^= flag; return *this; }
-
-    /*! @brief XORs the stored mask with a raw mask.
-     *  @param mask Mask to XOR with. */
-    constexpr inline enum_flags& operator^=(integer mask) noexcept { this->m_mask ^= mask; return *this; }
-
-    /*! @brief XORs the stored mask with another enum_flags object.
-     *  @param other Other flags. */
-    constexpr inline enum_flags& operator^=(const enum_flags& other) noexcept { this->m_mask ^= other.m_mask; return *this; }
+    /*! @brief Performs three-way comparison between enum_flags object and matching enum value. */
+    template<enum_concept OtherEnum> requires(std::same_as<Enum,OtherEnum>)
+    [[nodiscard]] friend constexpr auto operator<=>(const enum_flags& lhs, const OtherEnum& rhs) noexcept { return lhs.m_mask <=> _base::_normalizer::normalize(rhs); }
 ///@}
 
 ///@name Bitwise non-assignment operators.
 ///@{
-    /*! @brief Returns a new enum_flags object equal to `(*this | other)`. */
-    constexpr inline enum_flags operator|(const enum_flags& other) const noexcept { return enum_flags{this->m_mask | other.m_mask}; }
+    /*! @brief Returns result of bitwise AND with a matching enum mask. */
+    template<enum_concept Other> requires(std::same_as<Enum,Other>)
+    [[nodiscard]] friend constexpr enum_flags operator&(Other lhs, enum_flags rhs) noexcept { return enum_flags{_base::_normalizer::normalize(lhs) & rhs.m_mask}; }
 
-    /*! @brief Returns a new enum_flags object equal to `(*this ^ other)`. */
-    constexpr inline enum_flags operator^(const enum_flags& other) const noexcept { return enum_flags{this->m_mask ^ other.m_mask}; }
+    /*! @brief Returns result of bitwise AND with a matching enum mask. */
+    template<enum_concept Other> requires(std::same_as<Enum,Other>)
+    [[nodiscard]] friend constexpr enum_flags operator&(enum_flags lhs, Other rhs) noexcept { return enum_flags{lhs.m_mask & _base::_normalizer::normalize(rhs)}; }
 
-    /*! @brief Returns a new flags object equal to `(*this & other)`. */
-    constexpr inline enum_flags operator&(const enum_flags& other) const noexcept { return enum_flags{this->m_mask & other.m_mask}; }
+    /*! @brief Returns result of bitwise OR with a matching enum mask. */
+    template<enum_concept Other> requires(std::same_as<Enum,Other>)
+    [[nodiscard]] friend constexpr enum_flags operator|(Other lhs, enum_flags rhs) noexcept { return enum_flags{_base::_normalizer::normalize(lhs) | rhs.m_mask}; }
 
-    /*! @brief Returns a new flags object with all bits inverted (`~mask`). */
-    constexpr inline enum_flags operator~() const noexcept { return enum_flags{~this->m_mask}; }
+    /*! @brief Returns result of bitwise OR with a matching enum mask. */
+    template<enum_concept Other> requires(std::same_as<Enum,Other>)
+    [[nodiscard]] friend constexpr enum_flags operator|(enum_flags lhs, Other rhs) noexcept { return enum_flags{lhs.m_mask | _base::_normalizer::normalize(rhs)}; }
 
-    /*! @brief Checks whether the mask is zero.
-     *  @return `true` if mask is zero, `false` otherwise. */
-    constexpr inline bool operator!() const noexcept { return !this->m_mask; }
+    /*! @brief Returns result of bitwise XOR with a matching enum mask. */
+    template<enum_concept Other> requires(std::same_as<Enum,Other>)
+    [[nodiscard]] friend constexpr enum_flags operator^(Other lhs, enum_flags rhs) noexcept { return enum_flags{_base::_normalizer::normalize(lhs) ^ rhs.m_mask}; }
+
+    /*! @brief Returns result of bitwise XOR with a matching enum mask. */
+    template<enum_concept Other> requires(std::same_as<Enum,Other>)
+    [[nodiscard]] friend constexpr enum_flags operator^(enum_flags lhs, Other rhs) noexcept { return enum_flags{lhs | _base::_normalizer::normalize(rhs)}; }
 ///@}
 };
 
+/*! @brief Concept satisfied by instantiations of @ref draupnir::utils::enum_flags.
+ *  @tparam Candidate Type to test. */
 template<class Candidate>
 concept enum_flags_concept = draupnir::utils::is_instantiation_of_v<Candidate,enum_flags>;
+
+/*! @brief Checks whether `Flags::test_flag(Value)` is a valid expression returning `bool`.
+ *  @tparam Flags Flags-like type to test.
+ *  @tparam Value Value type to pass into `test_flag`.
+ *
+ *  @details This concept is intended primarily for compile-time tests of the public API. It evaluates to `true` when the
+ *           expression `std::declval<const Flags&>().test_flag(std::declval<Value>())` is well-formed and returns `bool`. */
+
+template<class Flags, class Value>
+concept test_flag_callable = requires(const Flags& flags, Value value) {
+    { flags.test_flag(value) } -> std::same_as<bool>;
+};
+
+/*! @brief Checks whether `Flags::set_flag(Value, bool)` is a valid expression returning `Flags&`.
+ *  @tparam Flags Flags-like type to test.
+ *  @tparam Value Value type to pass into `set_flag`.
+ *
+ *  @details This concept is intended primarily for compile-time tests of the public API. It evaluates to `true` when the
+ *           expression `std::declval<Flags&>().set_flag(std::declval<Value>(), true)` is well-formed and returns `Flags&`. */
+template<class Flags, class Value>
+concept set_flag_callable = requires(Flags& flags, Value value, bool on) {
+    { flags.set_flag(value, on) } -> std::same_as<Flags&>;
+};
 
 }; // namespace draupnir::utils
 

@@ -2,7 +2,7 @@
  **********************************************************************************************************************
  *
  * draupnir-lib
- * Copyright (C) 2025 Ivan Odinets <i_odinets@protonmail.com>
+ * Copyright (C) 2026 Ivan Odinets <i_odinets@protonmail.com>
  *
  * This file is part of draupnir-lib
  *
@@ -25,10 +25,8 @@
 #ifndef INTEGER_WRAPPER_H
 #define INTEGER_WRAPPER_H
 
-#include <concepts>
-
 #include "draupnir/utils/concepts/type_concepts.h"
-#include "draupnir/utils/template_detectors.h"
+#include "draupnir/utils/integer_normalization.h"
 
 namespace draupnir::utils
 {
@@ -40,8 +38,8 @@ namespace draupnir::utils
  *  @tparam Derived Final wrapper type inheriting from this template.
  *
  *  @details `integer_wrapper<Integer, Derived>` provides an integer-like API while preserving type safety between different
- *           wrapper types. Objects of the same @p Derived type can be compared and combined with each other, and can also
- *           interact with raw integer-like values convertible to @p Integer. Different wrapper types are intentionally not
+ *           wrapper types. Objects of the same `Derived` type can be compared and combined with each other, and can also
+ *           interact with raw integer values convertible to `Integer`. Different wrapper types are intentionally not
  *           interoperable.
  *
  *           Usage:
@@ -65,6 +63,10 @@ namespace draupnir::utils
 template<integer_concept Integer, class Derived>
 class integer_wrapper
 {
+    /*! @brief Helper used to normalize raw integer and enum values into the underlying `Integer` type.
+     *  @note Explicit normalization is required so that scoped enums (`enum class`) work correctly. */
+    using _normalizer = normalizer<Integer>;
+
 public:
     /*! @brief Alias for the underlying integer storage type. */
     using underlying_type = Integer;
@@ -72,125 +74,149 @@ public:
     /*! @brief Constructs wrapper with zero value. */
     constexpr integer_wrapper() noexcept = default;
 
-    /*! @brief Constructs wrapper from an underlying integer value.
+    /*! @brief Constructs wrapper from an value of type Other (enum, integer, scoped enum).
      *  @param value Initial value to store. */
-    constexpr explicit integer_wrapper(Integer value) noexcept:
-        m_value{value} {}
+    template<enum_or_integer_concept Other> requires(_normalizer::template can_be_normalized_v<Other>)
+    constexpr integer_wrapper(Other value) noexcept:
+        m_value{_normalizer::normalize(value)} {}
 
-    /*! @brief Assigns a new underlying integer value.
-     *  @param value New value to store.
-     *  @return `*this`. */
-    constexpr Derived& operator=(Integer value) noexcept { m_value = value; return static_cast<Derived&>(*this); };
+    /*! @brief Assigns a new integer or enum value to the wrapper.
+     *  @tparam Other Source value type.
+     *  @param value New value to store. */
+    template<enum_or_integer_concept Other> requires(_normalizer::template can_be_normalized_v<Other>)
+    constexpr Derived& operator=(Other value) noexcept { m_value = _normalizer::normalize(value); return static_cast<Derived&>(*this); };
+
+    /*! @brief Explicit conversion to `bool`. Returns `true` if `m_value != 0`, and `false` if `m_value == 0`. */
+    constexpr explicit operator bool() const noexcept { return m_value != 0; }
 
     /*! @brief Returns the stored underlying value.
      *  @return Current wrapped integer value. */
     [[nodiscard]] constexpr Integer value() const noexcept { return m_value; }
 
-    /*! @brief Compares wrapper with a raw integer-like value for equality.
-     *  @tparam Other Right-hand side type convertible to `Integer`, excluding other @ref integer_wrapper types.
-     *  @param other Right-hand side value.
-     *  @return `true` if stored value equals `other`, `false` otherwise. */
-    template<class Other> requires
-        std::convertible_to<Other, Integer> && (!is_template_base_of_v<integer_wrapper, std::remove_cvref_t<Other>>)
-    constexpr bool operator==(const Other& other) const noexcept { return m_value == static_cast<Integer>(other); }
+    /*! @brief Compares wrapper with an integer or enum value for equality.
+     *  @tparam Other Right-hand side type.
+     *  @param lhs Left-hand side wrapper.
+     *  @param rhs Right-hand side integer or enum value.
+     *  @return `true` if the stored value equals `rhs` converted to the underlying integer type, `false` otherwise. */
+    template<enum_or_integer_concept Other> requires(_normalizer::template can_be_normalized_v<Other>)
+    friend constexpr bool operator==(Derived lhs, Other rhs) noexcept { return lhs.m_value == _normalizer::normalize(rhs); }
+
+    /*! @brief Compares an integer or enum value with wrapper for equality.
+     *  @tparam Other Left-hand side type.
+     *  @param lhs Left-hand side integer or enum value.
+     *  @param rhs Right-hand side wrapper.
+     *  @return `true` if `lhs` converted to the underlying integer type equals the stored value of `rhs`, `false` otherwise. */
+    template<enum_or_integer_concept Other> requires(_normalizer::template can_be_normalized_v<Other>)
+    friend constexpr bool operator==(Other lhs, Derived rhs) noexcept { return _normalizer::normalize(lhs) == rhs.m_value; }
 
     /*! @brief Compares two wrappers of the same derived type for equality.
-     *  @tparam Other Type of the right-hand side operand.
      *  @param lhs Left-hand side wrapper.
      *  @param rhs Right-hand side wrapper.
-     *  @return `true` if stored values are equal, `false` otherwise. */
-    friend constexpr bool operator==(const Derived& lhs, const Derived& rhs) noexcept { return lhs.m_value == rhs.m_value; }
+     *  @return `true` if both wrappers store the same underlying value, `false` otherwise. */
+    friend constexpr bool operator==(Derived lhs, Derived rhs) noexcept { return lhs.m_value == rhs.m_value; }
 
-    /*! @brief Three-way comparison with a raw integer-like value.
-     *  @tparam Other Type of the right-hand side operand.
-     *  @param other Right-hand side raw value.
-     *  @return Result of comparing stored value with `other`. */
-    template<class Other> requires
-        std::convertible_to<Other, Integer> && (!is_template_base_of_v<integer_wrapper, std::remove_cvref_t<Other>>)
-    constexpr auto operator<=>(const Other& other) const noexcept { return m_value <=> static_cast<Integer>(other); }
+    /*! @brief Performs three-way comparison between wrapper and an integer or enum value.
+     *  @tparam Other Right-hand side type.
+     *  @param lhs Left-hand side wrapper.
+     *  @param rhs Right-hand side integer or enum value.
+     *  @return Result of comparing the stored value of `lhs` with `rhs` converted to the underlying integer type. */
+    template<enum_or_integer_concept Other> requires(_normalizer::template can_be_normalized_v<Other>)
+    friend constexpr auto operator<=>(Derived lhs, Other rhs) noexcept { return lhs.m_value <=> _normalizer::normalize(rhs); }
 
-    /*! @brief Three-way comparison with another wrapper of the same derived type.
-     *  @tparam Other Type of the right-hand side operand.
-     *  @param other Right-hand side wrapper.
-     *  @return Result of comparing stored values. */
-    friend constexpr auto operator<=>(const Derived& lhs, const Derived& rhs) noexcept { return lhs.m_value <=> rhs.m_value; }
+    /*! @brief Performs three-way comparison between an integer or enum value and wrapper.
+     *  @tparam Other Left-hand side type.
+     *  @param lhs Left-hand side integer or enum value.
+     *  @param rhs Right-hand side wrapper.
+     *  @return Result of comparing `lhs` converted to the underlying integer type with the stored value of `rhs`. */
+    template<enum_or_integer_concept Other> requires(_normalizer::template can_be_normalized_v<Other>)
+    friend constexpr auto operator<=>(Other lhs, Derived rhs) noexcept { return _normalizer::normalize(lhs) <=> rhs.m_value; }
+
+    /*! @brief Performs three-way comparison between two wrappers of the same derived type.
+     *  @param lhs Left-hand side wrapper.
+     *  @param rhs Right-hand side wrapper.
+     *  @return Result of comparing the stored underlying values of both wrappers. */
+    friend constexpr auto operator<=>(Derived lhs, Derived rhs) noexcept { return lhs.m_value <=> rhs.m_value; }
 
 ///@name Bitwise assignment operators.
 ///@{
-    /*! @brief Applies bitwise AND with a raw integer-like mask.
-     *  @tparam Other Mask type convertible to `Integer`, excluding other @ref integer_wrapper types.
+    /*! @brief Applies bitwise AND with an integer or enum mask.
+     *  @tparam Other Mask type.
      *  @param mask Right-hand side mask.
      *  @return Reference to the derived wrapper object. */
-    template<class Other> requires
-        std::convertible_to<Other, Integer> && (!is_template_base_of_v<integer_wrapper, std::remove_cvref_t<Other>>)
-    constexpr Derived& operator&=(const Other& mask) noexcept { m_value &= mask; return static_cast<Derived&>(*this); };
+    template<enum_or_integer_concept Other> requires(_normalizer::template can_be_normalized_v<Other>)
+    constexpr Derived& operator&=(const Other& mask) noexcept { m_value &= _normalizer::normalize(mask); return static_cast<Derived&>(*this); };
 
     /*! @brief Applies bitwise AND with another wrapper of the same derived type.
      *  @param mask Right-hand side wrapper.
      *  @return Reference to the derived wrapper object. */
     constexpr Derived& operator&=(const Derived& mask) noexcept { m_value &= mask.m_value; return static_cast<Derived&>(*this); }
 
-    /*! @brief Applies bitwise OR with a raw integer-like mask.
-     *  @tparam Other Mask type convertible to `Integer`, excluding other @ref integer_wrapper types.
+    /*! @brief Applies bitwise OR with an integer or enum mask.
+     *  @tparam Other Mask type.
      *  @param mask Right-hand side mask.
      *  @return Reference to the derived wrapper object. */
-    template<class Other> requires
-        std::convertible_to<Other, Integer> && (!is_template_base_of_v<integer_wrapper, std::remove_cvref_t<Other>>)
-    constexpr Derived& operator|=(const Other& mask) noexcept { m_value |= mask; return static_cast<Derived&>(*this); }
+    template<enum_or_integer_concept Other> requires(_normalizer::template can_be_normalized_v<Other>)
+    constexpr Derived& operator|=(const Other& mask) noexcept { m_value |= _normalizer::normalize(mask); return static_cast<Derived&>(*this); }
 
     /*! @brief Applies bitwise OR with another wrapper of the same derived type.
      *  @param mask Right-hand side wrapper.
      *  @return Reference to the derived wrapper object. */
     constexpr Derived& operator|=(const Derived& mask) noexcept { m_value |= mask.m_value; return static_cast<Derived&>(*this); }
 
-    /*! @brief Applies bitwise XOR with a raw integer-like mask.
-     *  @tparam Other Mask type convertible to `Integer`, excluding other @ref integer_wrapper types.
+    /*! @brief Applies bitwise XOR with an integer or enum mask.
+     *  @tparam Other Mask type.
      *  @param mask Right-hand side mask.
      *  @return Reference to the derived wrapper object. */
-    template<class Other> requires
-        std::convertible_to<Other, Integer> && (!is_template_base_of_v<integer_wrapper, std::remove_cvref_t<Other>>)
-    constexpr Derived& operator^=(const Other& mask) noexcept { m_value ^= mask; return static_cast<Derived&>(*this); }
+    template<enum_or_integer_concept Other> requires(_normalizer::template can_be_normalized_v<Other>)
+    constexpr Derived& operator^=(const Other& mask) noexcept { m_value ^= _normalizer::normalize(mask); return static_cast<Derived&>(*this); }
 
     /*! @brief Applies bitwise XOR with another wrapper of the same derived type.
      *  @param mask Right-hand side wrapper.
      *  @return Reference to the derived wrapper object. */
     constexpr Derived& operator^=(const Derived& mask) noexcept { m_value ^= mask.m_value; return static_cast<Derived&>(*this); }
-
 ///@}
 
 ///@name Bitwise non-assignment operators.
 ///@{
     /*! @brief Returns result of bitwise AND with a raw integer-like mask. */
-    template<class Other> requires
-        std::convertible_to<Other, Integer> && (!is_template_base_of_v<integer_wrapper, std::remove_cvref_t<Other>>)
-    constexpr Derived operator&(const Other& mask) const noexcept { return Derived{m_value & mask}; }
+    template<enum_or_integer_concept Other> requires(_normalizer::template can_be_normalized_v<Other>)
+    [[nodiscard]] friend constexpr Derived operator&(Other lhs, Derived rhs) noexcept { return Derived{_normalizer::normalize(lhs) & rhs.m_value}; }
 
-    /*! @brief Returns result of bitwise AND with another wrapper of the same derived type. */
-    constexpr Derived operator&(const Derived& mask) const noexcept { return Derived{m_value & mask.m_value}; }
+    /*! @brief Returns result of bitwise AND with a raw integer-like mask. */
+    template<enum_or_integer_concept Other> requires(_normalizer::template can_be_normalized_v<Other>)
+    [[nodiscard]] friend constexpr Derived operator&(Derived lhs, Other rhs) noexcept { return Derived{lhs.m_value & _normalizer::normalize(rhs)}; }
+
+    /*! @brief Returns result of bitwise AND with a raw integer-like mask. */
+    [[nodiscard]] friend constexpr Derived operator&(Derived lhs, Derived rhs) noexcept { return Derived{lhs.m_value & rhs.m_value}; }
 
     /*! @brief Returns result of bitwise OR with a raw integer-like mask. */
-    template<class Other> requires
-        std::convertible_to<Other, Integer> && (!is_template_base_of_v<integer_wrapper, std::remove_cvref_t<Other>>)
-    constexpr Derived operator|(const Other& mask) const noexcept { return Derived{m_value | mask}; }
+    template<enum_or_integer_concept Other> requires(_normalizer::template can_be_normalized_v<Other>)
+    [[nodiscard]] friend constexpr Derived operator|(Other lhs, Derived rhs) noexcept { return Derived{_normalizer::normalize(lhs) | rhs.m_value}; }
 
-    /*! @brief Returns result of bitwise OR with another wrapper of the same derived type. */
-    constexpr Derived operator|(const Derived& mask) const noexcept { return Derived{m_value | mask.m_value}; }
+    /*! @brief Returns result of bitwise OR with a raw integer-like mask. */
+    template<enum_or_integer_concept Other> requires(_normalizer::template can_be_normalized_v<Other>)
+    [[nodiscard]] friend constexpr Derived operator|(Derived lhs, Other rhs) noexcept { return Derived{lhs.m_value | _normalizer::normalize(rhs)}; }
+
+    /*! @brief Returns result of bitwise OR with a raw integer-like mask. */
+    [[nodiscard]] friend constexpr Derived operator|(Derived lhs, Derived rhs) noexcept { return Derived{lhs.m_value | rhs.m_value}; }
 
     /*! @brief Returns result of bitwise XOR with a raw integer-like mask. */
-    template<class Other> requires
-        std::convertible_to<Other, Integer> && (!is_template_base_of_v<integer_wrapper, std::remove_cvref_t<Other>>)
-    constexpr Derived operator^(const Other& mask) const noexcept { return Derived{m_value ^ mask}; }
+    template<enum_or_integer_concept Other> requires(_normalizer::template can_be_normalized_v<Other>)
+    [[nodiscard]] friend constexpr Derived operator^(Other lhs, Derived rhs) noexcept { return Derived{_normalizer::normalize(lhs) ^ rhs.m_value}; }
 
-    /*! @brief Returns result of bitwise XOR with another wrapper of the same derived type. */
-    constexpr Derived operator^(const Derived& mask) const noexcept { return Derived{m_value ^ mask.m_value}; }
+    /*! @brief Returns result of bitwise XOR with a raw integer-like mask. */
+    template<enum_or_integer_concept Other> requires(_normalizer::template can_be_normalized_v<Other>)
+    [[nodiscard]] friend constexpr Derived operator^(Derived lhs, Other rhs) noexcept { return Derived{lhs.m_value ^ _normalizer::normalize(rhs)}; }
+
+    /*! @brief Returns result of bitwise XOR with a raw integer-like mask. */
+    [[nodiscard]] friend constexpr Derived operator^(Derived lhs, Derived rhs) noexcept { return Derived{lhs.m_value ^ rhs.m_value}; }
 
     /*! @brief Returns bitwise negation of the stored value. */
-    constexpr Derived operator~() const noexcept { return Derived{~m_value}; }
+    [[nodiscard]] constexpr Derived operator~() const noexcept { return Derived{~m_value}; }
 
     /*! @brief Checks whether the stored value is zero.
      *  @return `true` if stored value is zero, `false` otherwise. */
     constexpr bool operator!() const noexcept { return !m_value; }
-
 ///@}
 
 ///@name Assignment shift operators.
@@ -211,17 +237,24 @@ public:
     /*! @brief Returns a new wrapper with the stored value left-shifted by `shift` bits.
      *  @param shift Number of bits to shift to the left.
      *  @return New wrapper containing the shifted value. */
-    constexpr Derived operator<<(int shift) const noexcept { return Derived{m_value << shift}; }
+    [[nodiscard]] constexpr Derived operator<<(int shift) const noexcept { return Derived{m_value << shift}; }
 
     /*! @brief Returns a new wrapper with the stored value right-shifted by @p shift bits.
      *  @param shift Number of bits to shift to the right.
      *  @return New wrapper containing the shifted value. */
-    constexpr Derived operator>>(int shift) const noexcept { return Derived{m_value >> shift}; }
+    [[nodiscard]] constexpr Derived operator>>(int shift) const noexcept { return Derived{m_value >> shift}; }
 ///@}
 
 protected:
     Integer m_value{};
 };
+
+/*! @brief Concept satisfied by instantiations of @ref draupnir::utils::integer_wrapper.
+ *  @tparam Candidate Type to test. */
+
+template<class Candidate>
+concept integer_wrapper_concept =
+    draupnir::utils::is_template_base_of_v<integer_wrapper,Candidate>;
 
 }; // namespace draupnir::utils
 

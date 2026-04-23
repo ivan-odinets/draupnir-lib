@@ -33,6 +33,7 @@
  *           utilities to dynamically allocate tuples of objects by type. */
 
 #include <type_traits>
+
 #include "template_detectors.h"
 
 namespace draupnir::utils
@@ -89,17 +90,21 @@ inline Tuple create_tuple_new() {
             "Provided type is not a tuple.");
     static_assert(is_tuple_ptr_only_v<Tuple>,
             "Provided tuple is containing non-pointers.");
-    static_assert(is_tuple_like_pointees_default_constructible_v<Tuple>,
-            "Provided tuple contains one or more pointers to objects which can not be dafult constructed (using new T).");
 
-    static constexpr auto tupleSize = std::tuple_size_v<Tuple>;
-    return [&]<std::size_t... I>(std::index_sequence<I...>) {
-        return std::tuple{
-            new std::remove_pointer_t<
-                std::tuple_element_t<I, Tuple>
-            >()...
-        };
-    }(std::make_index_sequence<tupleSize>{});
+    if constexpr (is_tuple_like_pointees_default_constructible_v<Tuple>) {
+        static constexpr auto tupleSize = std::tuple_size_v<Tuple>;
+        return [&]<std::size_t... I>(std::index_sequence<I...>) {
+            return std::tuple{
+                new std::remove_pointer_t<
+                    std::tuple_element_t<I, Tuple>
+                    >()...
+            };
+        }(std::make_index_sequence<tupleSize>{});
+    } else {
+        static_assert(is_tuple_like_pointees_default_constructible_v<Tuple>,
+            "Provided tuple contains one or more pointers to objects which can not be dafult constructed (using new T).");
+        return Tuple{};
+    }
 }
 
 }; // draupnir::utils

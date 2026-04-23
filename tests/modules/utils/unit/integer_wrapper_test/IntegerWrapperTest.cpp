@@ -32,9 +32,13 @@ DEFINE_WRAPPED_INTEGER(FirstChild,int)
 DEFINE_WRAPPED_INTEGER(SecondChild,int)
 DEFINE_WRAPPED_INTEGER(ThirdChild,short)
 DEFINE_WRAPPED_INTEGER(FourthChild,long)
+DEFINE_WRAPPED_INTEGER(UnsignedChild, unsigned int)
 
-/*! @class IntegerWrapperTest tests/modules/utils/unit/flags_test/IntegerWrapperTest.cpp
+/*! @class IntegerWrapperTest tests/modules/utils/unit/integer_wrapper_test/IntegerWrapperTest.cpp
  *  @brief Unit test for @ref draupnir::utils::integer_wrapper. */
+
+enum RandomEnum { One = 1, Two = 2 };
+enum class RandomEnumClass { One = 1, Two = 2 };
 
 class IntegerWrapperTest final : public QObject
 {
@@ -60,17 +64,22 @@ private slots:
         QVERIFY(std::is_default_constructible_v<FirstChild>);
         QVERIFY((std::is_constructible_v<FirstChild, short>));
         QVERIFY((std::is_constructible_v<FirstChild, int>));
+        // QVERIFY((!std::is_constructible_v<FirstChild, long>));
         QVERIFY((std::is_constructible_v<FirstChild, FirstChild>));
         QVERIFY((!std::is_constructible_v<FirstChild, SecondChild>));
         QVERIFY((!std::is_constructible_v<SecondChild, FirstChild>));
+        QVERIFY((std::is_constructible_v<UnsignedChild, unsigned int>));
+        // QVERIFY(!(std::is_constructible_v<UnsignedChild, int>));
 
         // Assignment for wrapper children
         QVERIFY((std::is_assignable_v<FirstChild&, short>));
         QVERIFY((std::is_assignable_v<FirstChild&, int>));
         QVERIFY((std::is_assignable_v<FirstChild&, FirstChild>));
-        //QVERIFY((!std::is_assignable_v<FirstChild&,long>));
+        // QVERIFY((!std::is_assignable_v<FirstChild&,long>));
         QVERIFY((!std::is_assignable_v<FirstChild&, SecondChild>));
         QVERIFY((!std::is_assignable_v<SecondChild&, FirstChild>));
+        QVERIFY((std::is_assignable_v<UnsignedChild, unsigned int>));
+        // QVERIFY(!(std::is_assignable_v<UnsignedChild, int>));
 
         // Type identity, children
         QVERIFY((std::is_same_v<FirstChild, FirstChild>));
@@ -90,6 +99,14 @@ private slots:
         // FirstChild from another firstChild
         FirstChild subchild{intLiteral};
         QCOMPARE(subchild.value(), 42);
+
+        // FirstChild from enum
+        FirstChild enumChild(RandomEnum::One);
+        QCOMPARE(enumChild, RandomEnum::One);
+
+        // FirstChild from enum
+        FirstChild enumClassChild(RandomEnumClass::One);
+        QCOMPARE(enumClassChild, RandomEnumClass::One);
 
         // FirstChild from SecondChild - should fail
         // FirstChild fail{SecondChild{42}};
