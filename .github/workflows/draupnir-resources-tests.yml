@@ -45,7 +45,7 @@ jobs:
           CC: gcc-14
           CXX: g++-14
         run: |
-          perl tools/test-runner.pl --job draupnir_resources_tests
+          xvfb-run -a perl tools/test-runner.pl --job draupnir_resources_tests
 
       - name: Upload logs on failure
         if: failure()
