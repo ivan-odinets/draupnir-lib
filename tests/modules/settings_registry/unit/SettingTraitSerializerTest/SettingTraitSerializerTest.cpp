@@ -26,7 +26,7 @@
 
 #include "draupnir/settings_registry/utils/SettingTraitSerializer.h"
 
-#include "draupnir-test/mocks/MockSettingsTemplate.h"
+#include "draupnir-test/mocks/SettingsBackendMockTemplate.h"
 #include "draupnir-test/traits/settings/DoubleSettingTraits.h"
 #include "draupnir-test/traits/settings/StringSettingTraits.h"
 
@@ -39,7 +39,7 @@ class SettingTraitSerializerTest final : public QObject
     Q_OBJECT
 
 public:
-    using MockBackend = MockSettingsTemplate<
+    using MockBackend = SettingsBackendMockTemplate<
         QStringSettingTrait, QStringListSettingTrait
     >;
 

@@ -31,6 +31,12 @@
 #include <QTimer>
 #include <QtTest>
 
+/*! @class UiTestHelper
+ *  @ingroup TestHelpers
+ *  @brief This is a test helper.
+ * @todo Question: std::expected<void,QString> vs pure void?
+ * @todo Write documentation for this class. */
+
 class UiTestHelper
 {
 public:
@@ -56,6 +62,26 @@ public:
     static void scheduleForTopLevelWidgets(Task&& task, int delay = 200) {
         QTimer::singleShot(delay, [task = std::forward<Task>(task)](){
             auto widgetList = QApplication::topLevelWidgets();
+            if (widgetList.isEmpty()) {
+                qDebug() << "QApplication::topLevelWidgets() == QWidgetList{}";
+                QVERIFY(!widgetList.isEmpty());
+            }
+            int count = 0;
+            for (QWidget* widget : widgetList) {
+                Widget* converted = qobject_cast<Widget*>(widget);
+                if (converted) {
+                    task(converted);
+                    count++;
+                }
+            }
+            QVERIFY(count != 0);
+        });
+    }
+
+    template<class Widget, class Task>
+    static void scheduleForAllWidgets(Task&& task, int delay = 200) {
+        QTimer::singleShot(delay, [task = std::forward<Task>(task)](){
+            auto widgetList = QApplication::allWidgets();
             if (widgetList.isEmpty()) {
                 qDebug() << "QApplication::topLevelWidgets() == QWidgetList{}";
                 QVERIFY(!widgetList.isEmpty());

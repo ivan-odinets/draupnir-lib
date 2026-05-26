@@ -25,10 +25,9 @@
 #include <QtTest>
 #include <QCoreApplication>
 
-#include "draupnir/settings_registry/SettingsRegistryTemplate.h"
 #include "draupnir/ui_bricks/core/ViewManager.h"
 
-#include "draupnir-test/mocks/MockSettingsTemplate.h"
+#include "draupnir-test/mocks/SettingsSourceMockTemplate.h"
 #include "draupnir-test/mocks/MockSomeMainWindow.h"
 #include "draupnir-test/mocks/MockSomeTrayIcon.h"
 
@@ -41,32 +40,18 @@ class ViewManagerTest : public QObject
 
 public:
     // Settings, mocked
-    using MockSettingsBackend = MockSettingsTemplate<
+    using SettingsSource = Draupnir::Settings::SettingsSourceMockTemplate<
         Draupnir::Settings::MainWindow::StartHiddenSetting
     >;
-    MockSettingsBackend mockedSettings;
-
-    // We will need SettingsResitryTemplate as well
-    using SettingsRegistry = Draupnir::Settings::SettingsRegistryTemplate<
-        Draupnir::Settings::MainWindow::StartHiddenSetting
-    >;
-    SettingsRegistry registry;
+    SettingsSource settings;
 
     Draupnir::Ui::ViewManager<
         SomeMainWindow, SomeTrayIcon
     > viewManager;
 
-    // Init internal fields
-    ViewManagerTest() :
-        viewManager{}
-    {
-        registry.setBackend(&mockedSettings);
-        viewManager.loadSettings(&registry);
-    }
-
-    ~ViewManagerTest() = default;
-
 private slots:
+    void initTestCase() { viewManager.loadSettings(&settings); }
+
     /*! @brief Tests if default settings were properly initialized. */
     void test_initialization() {
         Draupnir::Ui::ViewManager<SomeMainWindow,SomeTrayIcon> otherViewManager{};
@@ -79,14 +64,14 @@ private slots:
     }
 
     void test_settingsLoading() {
-        QCOMPARE(viewManager.startHidden(), mockedSettings.get<Draupnir::Settings::MainWindow::StartHiddenSetting>());
+        QCOMPARE(viewManager.startHidden(), settings.get<Draupnir::Settings::MainWindow::StartHiddenSetting>());
 
         viewManager.setStartHidden(true);
-        QCOMPARE(viewManager.startHidden(), mockedSettings.get<Draupnir::Settings::MainWindow::StartHiddenSetting>());
+        QCOMPARE(viewManager.startHidden(), settings.get<Draupnir::Settings::MainWindow::StartHiddenSetting>());
         QCOMPARE(viewManager.startHidden(), true);
 
-        registry.set<Draupnir::Settings::MainWindow::StartHiddenSetting>(false);
-        QCOMPARE(viewManager.startHidden(), mockedSettings.get<Draupnir::Settings::MainWindow::StartHiddenSetting>());
+        settings.set<Draupnir::Settings::MainWindow::StartHiddenSetting>(false);
+        QCOMPARE(viewManager.startHidden(), settings.get<Draupnir::Settings::MainWindow::StartHiddenSetting>());
         QCOMPARE(viewManager.startHidden(), false);
     }
 
@@ -111,7 +96,7 @@ private slots:
 
     void test_externalComponentCreation() {
         Draupnir::Ui::ViewManager<SomeMainWindow,SomeTrayIcon> otherViewManager;
-        otherViewManager.loadSettings(&registry);
+        otherViewManager.loadSettings(&settings);
         SomeMainWindow* window = new SomeMainWindow;
         window->hide();
         SomeTrayIcon* trayIcon = new SomeTrayIcon;

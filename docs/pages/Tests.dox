@@ -1,5 +1,4 @@
-/*! @page Tests Testing infrastructure and test project structure
- *  @defroup Tests
+/*! @defgroup Tests
  *  @brief Overview of test types, directory layout, build jobs, and migration plan.
  *
  *  @details
@@ -141,3 +140,7 @@
  *           ### Current migration direction
  *           The current repository already contains module-based tests and shared test helpers. The target state is an
  *           incremental cleanup rather than a full rewrite. Existing tests can be migrated gradually. */
+
+/*! @defgroup TestHelpers
+ *  @ingroup Tests
+ *  @brief This is a group for test helpers. */

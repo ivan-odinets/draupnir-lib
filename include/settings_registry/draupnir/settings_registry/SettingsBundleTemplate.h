@@ -225,7 +225,10 @@ protected:
     template<SettingTraitConcept...>
     friend class SettingsRegistryTemplate;
 
-    /*! @brief Internal constructor. Called by SettingsRegistry when initializing the bundle.
+    template<SettingTraitConcept...>
+    friend class SettingsSourceMockTemplate;
+
+    /*! @brief Constructor. Called by SettingsRegistry when initializing the bundle.
      *  @param settings Pointer to the shared backend. */
     SettingsBundleTemplate(Backend* backend) :
         p_backend{backend},

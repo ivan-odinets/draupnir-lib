@@ -25,7 +25,7 @@
 #include <QtTest>
 #include <QCoreApplication>
 
-#include "draupnir-test/mocks/MockSettingsTemplate.h"
+#include "draupnir-test/mocks/SettingsBackendMockTemplate.h"
 #include "draupnir-test/traits/settings/DoubleSettingTraits.h"
 #include "draupnir-test/traits/settings/BoolSettingTraits.h"
 #include "draupnir-test/traits/settings/WidgetIndexSettingTraits.h"
@@ -45,7 +45,7 @@ class SettingsRegistryIT final : public QObject
 public:
 ///@name Tested types
 ///@{
-    using MockSettings = MockSettingsTemplate<
+    using MockSettings = SettingsBackendMockTemplate<
         DoubleSettingTrait,
         BoolSettingTrait
     >;

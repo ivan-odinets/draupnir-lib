@@ -26,10 +26,7 @@
 #include <QCoreApplication>
 
 // Mocks
-#include "draupnir-test/mocks/MockSettingsTemplate.h"
-
-// SettingsRegistry
-#include "draupnir/SettingsRegistry.h"
+#include "draupnir-test/mocks/SettingsSourceMockTemplate.h"
 
 // SettingsMenu
 #include "draupnir/ui_bricks/ui/menus/MenuTemplate.h"
@@ -60,14 +57,10 @@ class SettingsMenuEntriesHandlerIT : public QObject
     Q_OBJECT
 
 public:
-    MockSettingsTemplate<
-        BoolSettingTrait, OtherBoolSettingTrait, IntSettingTrait, QStringSettingTrait
-    > dummySettingsSource;
-
-    using SettingsRegistry = Draupnir::Settings::SettingsRegistryTemplate<
+    using SettingsSource = Draupnir::Settings::SettingsSourceMockTemplate<
         BoolSettingTrait, OtherBoolSettingTrait, IntSettingTrait, QStringSettingTrait
     >;
-    SettingsRegistry registry;
+    SettingsSource registry;
 
     using SettingsMenu = Draupnir::Ui::MenuTemplate<
         CheckableMenuEntry, OtherCheckableMenuEntry,
@@ -76,17 +69,14 @@ public:
     SettingsMenu menu;
 
     using SettingsMenuHandler = Draupnir::Handlers::SettingsMenuHandler<
-        SettingsRegistry,
+        SettingsSource,
         CheckableMenuEntry, OtherCheckableMenuEntry, SomeMenuEntry, SomeOtherMenuEntry
     >;
     SettingsMenuHandler handler;
 
-    SettingsMenuEntriesHandlerIT() {
-        registry.setBackend(&dummySettingsSource);
-        handler.connectActions(&menu);
-    }
-
 private slots:
+    void initTestCase() { handler.connectActions(&menu); }
+
     void test_initialization() {
         QAction* action = menu.getUiElement<CheckableMenuEntry>();
         QCOMPARE(action->isChecked(), false);

@@ -503,7 +503,25 @@ public:
 /*! @brief Concept satisfied by instantiations of @ref draupnir::utils::enum_flags.
  *  @tparam Candidate Type to test. */
 template<class Candidate>
-concept enum_flags_concept = draupnir::utils::is_instantiation_of_v<Candidate,enum_flags>;
+concept enum_flags_concept =
+    draupnir::utils::is_instantiation_of_v<Candidate,enum_flags>;
+
+/*! @brief Concept satisfied by derivatives of @ref draupnir::utils::enum_flags, but not by instantiations of the @ref draupnir::utils::enum_flags.
+ *         itself.
+ *  @tparam Candidate Type to test. */
+template<class Candidate>
+concept enum_flags_derived_concept =
+    (draupnir::utils::is_instantiation_of_v<Candidate,enum_flags> == false) &&
+    draupnir::utils::is_template_base_of_v<enum_flags,Candidate>;
+
+/*! @brief Concept satisfied by derivatives of @ref draupnir::utils::enum_flags and by instantiations of the @ref draupnir::utils::enum_flags.
+ *         itself.
+ *  @tparam Candidate Type to test. */
+template<class Candidate>
+concept enum_flags_like_concept =
+    draupnir::utils::is_instantiation_of_v<Candidate,enum_flags> ||
+    draupnir::utils::is_template_base_of_v<enum_flags,Candidate>;
+
 
 /*! @brief Checks whether `Flags::test_flag(Value)` is a valid expression returning `bool`.
  *  @tparam Flags Flags-like type to test.

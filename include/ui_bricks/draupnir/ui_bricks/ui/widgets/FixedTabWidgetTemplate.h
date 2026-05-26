@@ -32,6 +32,7 @@
 #include "draupnir/settings_registry/utils/SettingsTraitsConcatenator.h"
 #include "draupnir/ui_bricks/concepts/TabTraitConcept.h"
 #include "draupnir/utils/type_list.h"
+#include "draupnir/utils/type_qualifiers_helpers.h"
 
 namespace Draupnir::Ui
 {
@@ -68,6 +69,11 @@ namespace Draupnir::Ui
 template<class WidgetIndexSetting, TabTraitConcept... TabTraits>
 class FixedTabWidgetTemplate final : public FixedTabWidget
 {
+    template<class From, class T>
+    using copy_const_from_t = std::conditional_t<
+        std::is_const_v<std::remove_reference_t<From>>, const T, T
+    >;
+
 public:
     /*! @brief type_list of TabTraits... objects. */
     using TabList = draupnir::utils::type_list<TabTraits...>;
@@ -122,7 +128,7 @@ public:
      *  @tparam Widget Type of the widget (must match one of TabTraits::Widget).
      *  @return Stored widget pointer of given type.*/
     template<class Widget>
-    auto& getWidget() {
+    decltype(auto) getWidget() {
         return std::get<Widget*>(m_widgets);
     }
 

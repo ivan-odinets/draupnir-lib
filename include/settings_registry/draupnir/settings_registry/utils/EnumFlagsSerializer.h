@@ -34,16 +34,33 @@
 namespace Draupnir::Settings
 {
 
+/*! @brief Checks whether an enum-flags-like type provides custom config serialization to string.
+ *  @tparam Candidate Type to test.
+ *
+ *  @details This concept is satisfied when `Candidate` provides a static member functions with the following signatures:
+ *           @code
+ *           static QString toConfigString(const Candidate&);
+ *           static std::optional<Candidate> fromConfigString(const QString&);
+ *           @endcode */
+
+template<class Candidate>
+concept HasCustomEnumFlagsConfigSerialization =
+    requires(const Candidate& enumFlags, QString& configString) {
+        { Candidate::toConfigString(enumFlags) } -> std::same_as<QString>;
+        { Candidate::fromConfigString(configString) } -> std::same_as<std::optional<Candidate>>;
+    };
+
 /*! @class EnumFlagsSerializer draupnir/settings_registry/utils/EnumFlagsSerializer.h
  *  @ingroup SettingsRegistry
  *  @brief This is a class.
+ * @todo Improve handling of the cases when enum_flags contains sth very very wrong.
  * @todo Move interval _Helper class to some external util. Maybe in Utils module?
  * @todo Write Reasonable documentation. */
 
-template<draupnir::utils::enum_flags_concept EnumFlags>
+template<draupnir::utils::enum_flags_like_concept EnumFlags>
 class EnumFlagsSerializer
 {
-    template<typename Integer,class Unused = void>
+    template<typename Integer, class Unused = void>
     struct _Helper {};
 
     template<class Unused>
@@ -107,6 +124,22 @@ public:
 
     static QString toConfigString(const EnumFlags& value) {
         return QString::number(value.value(),2);
+    }
+};
+
+template<draupnir::utils::enum_flags_like_concept EnumFlags>
+    requires HasCustomEnumFlagsConfigSerialization<EnumFlags>
+class EnumFlagsSerializer<EnumFlags>
+{
+public:
+    using Enum = typename EnumFlags::enum_type;
+
+    static std::optional<EnumFlags> fromConfigString(const QString& string) {
+        return EnumFlags::fromConfigString(string);
+    }
+
+    static QString toConfigString(const EnumFlags& value) {
+        return EnumFlags::toConfigString(value);
     }
 };
 

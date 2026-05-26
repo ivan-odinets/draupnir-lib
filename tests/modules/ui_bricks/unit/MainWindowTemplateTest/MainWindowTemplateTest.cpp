@@ -25,10 +25,9 @@
 #include <QCoreApplication>
 #include <QtTest>
 
-#include "draupnir/SettingsRegistry.h" // IWYU pragma: keep
 #include "draupnir/UiBricks.h"         // IWYU pragma: keep
 
-#include "draupnir-test/mocks/MockSettingsTemplate.h"
+#include "draupnir-test/mocks/SettingsSourceMockTemplate.h"
 
 /*! @class MainWindowTemplateTest tests/ui_bricks/unit/MainWindowTemplateTest/MainWindowTemplateTest.cpp
  *  @brief This test class tests basic functionality of the @ref Draupnir::Ui::MainWindowTemplate. */
@@ -37,29 +36,21 @@ class MainWindowTemplateTest final : public QObject
 {
     Q_OBJECT
 public:
-    MockSettingsTemplate<
+    Draupnir::Settings::SettingsSourceMockTemplate<
         Draupnir::Settings::MainWindow::MinimizeOnCloseSetting,
         Draupnir::Settings::MainWindow::MinimizeToTraySetting,
         Draupnir::Settings::MainWindow::WindowSizeSetting
-    > mockSettingsBackend;
-
-    Draupnir::Settings::SettingsRegistryTemplate<
-        Draupnir::Settings::MainWindow::MinimizeOnCloseSetting,
-        Draupnir::Settings::MainWindow::MinimizeToTraySetting,
-        Draupnir::Settings::MainWindow::WindowSizeSetting
-    > registry;
+    > settings;
 
     Draupnir::Ui::TrayIcon trayIcon;
 
     const QSize defaultWindowSize = QSize{100,100};
 
 private slots:
-    void initTestCase() { registry.setBackend(&mockSettingsBackend); }
-
     void init() {
-        registry.set<Draupnir::Settings::MainWindow::MinimizeOnCloseSetting>(false);
-        registry.set<Draupnir::Settings::MainWindow::MinimizeToTraySetting>(false);
-        registry.set<Draupnir::Settings::MainWindow::WindowSizeSetting>(defaultWindowSize);
+        settings.set<Draupnir::Settings::MainWindow::MinimizeOnCloseSetting>(false);
+        settings.set<Draupnir::Settings::MainWindow::MinimizeToTraySetting>(false);
+        settings.set<Draupnir::Settings::MainWindow::WindowSizeSetting>(defaultWindowSize);
     }
 
     void test_window_resize() {
@@ -67,7 +58,7 @@ private slots:
             Draupnir::Ui::MainWindow::RememberWindowSize
         >;
         window->setAttribute(Qt::WA_DontShowOnScreen);
-        window->loadSettings(&registry);
+        window->loadSettings(&settings);
 
         // Show window
         window->show();
@@ -84,8 +75,7 @@ private slots:
         // Delete the window to save settings
         delete window;
         // Check if updated
-        QCOMPARE(registry.get<Draupnir::Settings::MainWindow::WindowSizeSetting>(), newSize);
-        QCOMPARE(mockSettingsBackend.get<Draupnir::Settings::MainWindow::WindowSizeSetting>(), newSize);
+        QCOMPARE(settings.get<Draupnir::Settings::MainWindow::WindowSizeSetting>(), newSize);
     }
 
     void test_window_minimize_on_close() {
@@ -93,7 +83,7 @@ private slots:
             Draupnir::Ui::MainWindow::MinimizableOnClose
         >;
         window->setAttribute(Qt::WA_DontShowOnScreen);
-        window->loadSettings(&registry);
+        window->loadSettings(&settings);
         QVERIFY(window->minimizeOnClose() == false);
 
         // Show window
@@ -125,7 +115,7 @@ private slots:
             Draupnir::Ui::MainWindow::UseTrayIcon<>
         >;
         window->setAttribute(Qt::WA_DontShowOnScreen);
-        window->loadSettings(&registry);
+        window->loadSettings(&settings);
         QVERIFY(window->minimizeToTray() == false);
 
         // Show window
@@ -159,7 +149,7 @@ private slots:
             Draupnir::Ui::MainWindow::UseTrayIcon<Draupnir::Ui::TrayIcon>
         > window;
         window.setAttribute(Qt::WA_DontShowOnScreen);
-        window.loadSettings(&registry);
+        window.loadSettings(&settings);
         window.registerTrayIcon(&trayIcon);
 
         window.show();

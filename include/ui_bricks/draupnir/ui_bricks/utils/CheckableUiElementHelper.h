@@ -37,7 +37,7 @@ namespace Draupnir::Ui
  *         a specific callback using a generic interface.
  *  @tparam UiElement class of the UI element to be created / handled. Should be either `QAction` or `QCheckBox`.
  *
- *  @details This class is used within template-based containers (e.g. @ref Draupnir::Messages::MessageFieldsSelectorBase)
+ *  @details This class is used within template-based containers (e.g. @ref Draupnir::Logging::MessageFieldsSelectorBase)
  *           to have an abstract interface for connecting slots to a `QAction` and `QCheckBox` user-triggered signals. */
 
 template<class UiElement>

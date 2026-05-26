@@ -26,7 +26,7 @@
 
 #include "draupnir/settings_registry/SettingsRegistryTemplate.h"
 
-#include "draupnir-test/mocks/MockSettingsTemplate.h"
+#include "draupnir-test/mocks/SettingsBackendMockTemplate.h"
 #include "draupnir-test/traits/settings/BoolSettingTraits.h"
 #include "draupnir-test/traits/settings/DoubleSettingTraits.h"
 #include "draupnir-test/traits/settings/StringSettingTraits.h"
@@ -46,7 +46,7 @@ class SettingsBundleTemplateTest final : public QObject
 public:
 ///@name Tested types
 ///@{
-    using MockSettings = MockSettingsTemplate<
+    using MockSettings = SettingsBackendMockTemplate<
         WidgetIndexSettingTrait,
         DoubleSettingTrait,
         BoolSettingTrait

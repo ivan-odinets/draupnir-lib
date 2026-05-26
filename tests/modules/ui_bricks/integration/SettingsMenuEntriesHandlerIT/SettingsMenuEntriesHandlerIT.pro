@@ -6,6 +6,7 @@ QT += widgets
 DEFINES += DRAUPNIR_SETTINGS_USE_CUSTOM
 
 include(../../../../common/MenuEntryTraits.pri)
+include(../../../../common/SettingsSourceMockTemplate.pri)
 include(../../../../common/SettingsTraits.pri)
 include(../../../../common/UiHelpers.pri)
 

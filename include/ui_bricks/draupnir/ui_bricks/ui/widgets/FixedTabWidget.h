@@ -54,12 +54,16 @@ public:
      *  @tparam Widget type of the widget (must match one of TabTrait::widget).
      *  @return Widget pointer. */
     template<class Widget>
-    Widget* getWidgetByIndex(int index) {
-        Q_ASSERT_X(index < count(), "CentralTabbedWidget::getWidgetByIndex",
+    decltype(auto) getWidgetByIndex(this auto&& self, int index) {
+        using result_t = std::conditional_t<
+            std::is_const_v<std::remove_reference_t<decltype(self)>>, const Widget*, Widget*
+        >;
+
+        Q_ASSERT_X(index < self.count(), "CentralTabbedWidget::getWidgetByIndex",
                    "Provided index should be lower than amount of tabs.");
-        Q_ASSERT_X(qobject_cast<Widget*>(QTabWidget::widget(index)), "CentralTabbedWidget::getWidgetByIndex",
+        Q_ASSERT_X(qobject_cast<result_t>(self.widget(index)), "CentralTabbedWidget::getWidgetByIndex",
                    "Widget at provided index does not match the specified type");
-        return static_cast<Widget*>(QTabWidget::widget(index));
+        return static_cast<result_t>(self.widget(index));
     }
 
 protected:

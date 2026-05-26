@@ -1,0 +1,96 @@
+/*! @defgroup Logging
+ *  @brief This module contains message logging and visualization system.
+ *
+ *  @details Classes within this module are located in the namespace Draupnir::Logging
+ *           ### Overview
+ *           The Logging module provides an extensible and type-safe framework for logging, handling, storing, and
+ *           visualizing runtime messages GUI applications (headless mode will come). It supports per-message-type
+ *           notification policies (e.g., show in tray, show dialog, ignore), persistent settings, and seamless integration
+ *           with Qt widgets and menus.
+ *
+ *           The following containers are available:
+ *           - `Logger` — global singleton used to send messages into the system.
+ *           - `Draupnir::Logging::MessageSystemTemplate` — central glue class that connects handler and UI for a fixed
+ *              set of message types.
+ *           - `Draupnir::Logging::MessageHandlerTemplate` — stores notification policies for statically defined message
+ *              types.
+ *           - `Draupnir::Logging::MessageUiBuilderTemplate` — builds widgets and menus for user interaction with message
+ *              types.
+ *           - `Draupnir::Logging::LogWidgetTemplate` — visual widget for displaying and filtering messages.
+ *           - `Draupnir::Logging::NotificationTypeMenu` — reusable QMenu allowing runtime selection of notification behavior.
+ *           - `Draupnir::Logging::MessageTrait` classes — define behavior, appearance, and settings keys for each message
+ *              type.
+ *
+ *           - All message types are defined at compile time using variadic templates and trait classes.
+ *           - Every message type is associated with:
+ *             - a unique 64-bit ID (only one bit set);
+ *             - a human-readable name and icon;
+ *             - a persistent settings key;
+ *             - a default notification level (e.g., `None`, `Dialog`, `Systemtray`);
+ *           - UI and core logic are completely decoupled and synchronized via shared MessageHandler.
+ *           - All configuration is persistable via `SettingsRegistry` and restored via `loadSettings()`.
+ *           - Safe extensibility: custom message types can be added by simply defining new trait classes.
+ *
+ *           ### Dependencies & Requirements
+ *           This module is using @ref Containers and @ref SettingsRegistry modules from the draupnir-lib, which are included
+ *           automatically if not yet included. In addition `DraupnirVersion.pri` file is included to enable define
+ *           DRAUPNIR_LIB_VERSION with current version of the draupnir-lib.
+ *
+ *           Option c++20 is added to the CONFIG if not enabled yet.
+ *
+ *           Qt gui and widgets modules are added to QT config if not enabled yet.
+ *
+ *           ### Usage
+ *           In your *.pro file add the following:
+ *           @code{.pri}
+ *           # This includes MessageSystem module from the draupnir-lib.
+ *           # Dependencies are added within the MessageSystem.pri
+ *           include(draupnir-lib/modules/MessageSystem.pri)
+ *           @endcode
+ *           It is safe to include the MessageSystem.pri file more than one time to *.pro.
+ *
+ *           Here's how to define a new message type `VeryImportantMessageTrait`, register it, and log messages:
+ *           @code
+ *           // Define a new message trait
+ *           class VeryImportantMessageTrait
+ *           {
+ *           public:
+ *               static constexpr MessageType type = MessageType::nextType(MessageType::FirstCustomType);
+ *
+ *               static constexpr const char* settingsKey = "veryImportant";
+ *
+ *               static constexpr Notification::Type defaultNotification = Notification::None;
+ *
+ *               static QString displayName() { return QObject::tr("Very Important"); }
+ *
+ *               static const QIcon& icon() {
+ *                   static QIcon icon = QIcon(":/icons/very_important.svg");
+ *                   return icon;
+ *               }
+ *           };
+ *
+ *           // Instantiate the system with your custom trait
+ *           using MyMessageSystem = MessageSystemTemplate<VeryImportantMessageTrait>;
+ *
+ *           // Initialize the system during application startup
+ *           auto* system = new MyMessageSystem{};
+ *           system->loadSettings(mySettingsRegistry); // optional
+ *           Logger::get()->setMessageHandler(system->handler());
+ *
+ *           // Log messages
+ *           logger.logMessage<VeryImportantMessageTrait>("The cake is a lie.");
+ *           @endcode
+ *
+ * @todo Update docs.
+ * @todo Allow registering of custom notification types (e.g. sendToTelegram).
+ * @todo Finalize contract for runtime virtual interfaces. Can we have several MessageSystems being present? Should we have global access point for them?
+ * @todo Add possibility to show / log "progressable" messages.
+ * @todo Question: If we have non-gui app, with some non-Gui notifications (e.g. send to Telegram / Send to Jabber) - maybe we can use some MessageSystem code? */
+
+/*! @namespace Draupnir::Logging
+ *  @ingroup Logging
+ *  @brief Namespace containing classes from the Logging module. */
+
+ /*! @defgroup LoggingTests
+  *  @ingroup Tests
+  *  @brief Test classes for @ref Logging. */

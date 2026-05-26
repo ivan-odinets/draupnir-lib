@@ -1,0 +1,58 @@
+name: Draupnir MessageSystem Tests
+
+on:
+  push:
+    paths:
+      - '.github/workflows/draupnir-logging-tests.yml'
+      - 'include/draupnir/logging/draupnir/**'
+      - 'jobs/draupnir_logging_tests.pm'
+      - 'modules/Logging.pri'
+      - 'src/logging/**'
+      - 'tests/modules/logging/**'
+  workflow_dispatch:
+
+jobs:
+  draupnir-message-system-tests:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Install build dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y \
+            perl \
+            build-essential \
+            qtbase5-dev \
+            qt5-qmake \
+            xvfb \
+            libxcb-xinerama0
+
+      - name: Select GCC 14
+        run: |
+          sudo update-alternatives --install /usr/bin/gcc gcc /usr/bin/gcc-14 140
+          sudo update-alternatives --install /usr/bin/g++ g++ /usr/bin/g++-14 140
+          sudo update-alternatives --set gcc /usr/bin/gcc-14
+          sudo update-alternatives --set g++ /usr/bin/g++-14
+          gcc --version
+          g++ --version
+
+      - name: Make test runner executable
+        run: chmod +x tools/test-runner.pl
+
+      - name: Run job
+        env:
+          CC: gcc-14
+          CXX: g++-14
+        run: |
+          xvfb-run -a perl tools/test-runner.pl --job draupnir_logging_tests
+
+      - name: Upload logs on failure
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: draupnir-logging-test-logs
+          path: tests/build/draupnir_logging_tests/logs
+          if-no-files-found: ignore

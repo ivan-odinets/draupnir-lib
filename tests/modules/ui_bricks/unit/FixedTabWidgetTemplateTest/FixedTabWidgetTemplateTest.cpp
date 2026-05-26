@@ -25,14 +25,12 @@
 #include <QtTest>
 #include <QCoreApplication>
 
-#include "draupnir/SettingsRegistry.h"
-
 #include "draupnir/ui_bricks/traits/settings/CentralWidgetIndexSetting.h"
 
 #include "draupnir/ui_bricks/ui/widgets/FixedCentralTabWidgetTemplate.h"
 #include "draupnir/ui_bricks/ui/widgets/FixedTabWidgetTemplate.h"
 
-#include "draupnir-test/mocks/MockSettingsTemplate.h"
+#include "draupnir-test/mocks/SettingsSourceMockTemplate.h"
 #include "draupnir-test/traits/settings/WidgetIndexSettingTraits.h"
 #include "draupnir-test/traits/widgets/WidgetTabTraits.h"
 
@@ -44,11 +42,7 @@ class FixedTabWidgetTemplateTest final : public QObject
     Q_OBJECT
 
 public:
-    using MockBackend = MockSettingsTemplate<
-        Draupnir::Settings::CentralWidgetIndexSetting, WidgetIndexSettingTrait
-    >;
-
-    using SettingsRegistry = Draupnir::Settings::SettingsRegistryTemplate<
+    using SettingsSource = Draupnir::Settings::SettingsSourceMockTemplate<
         Draupnir::Settings::CentralWidgetIndexSetting, WidgetIndexSettingTrait
     >;
 
@@ -70,21 +64,14 @@ public:
         PushButtonTrait
     >;
 
-    MockBackend backend;
-    SettingsRegistry registry;
-
-    // Init internal fields
-    FixedTabWidgetTemplateTest() {
-        registry.setBackend(&backend);
-    }
-
-    ~FixedTabWidgetTemplateTest() final = default;
+    SettingsSource settingsSource;
 
 private slots:
+    void initTestCase() { settingsSource.loadSettings(); }
 
     void test_initialization() {
         auto tabWidgetOne = new TabWidgetOne;
-        tabWidgetOne->template loadSettings<SettingsRegistry>(&registry);
+        tabWidgetOne->template loadSettings<SettingsSource>(&settingsSource);
 
         QCOMPARE(tabWidgetOne->count(), 2);
 
@@ -103,8 +90,8 @@ private slots:
     void test_settings_loading() {
         TabWidgetOne* oneMoreWidget = new TabWidgetOne;
         // Test 0
-        registry.set<Draupnir::Settings::CentralWidgetIndexSetting>(0);
-        oneMoreWidget->loadSettings<SettingsRegistry>(&registry);
+        settingsSource.set<Draupnir::Settings::CentralWidgetIndexSetting>(0);
+        oneMoreWidget->loadSettings<SettingsSource>(&settingsSource);
         QCOMPARE(oneMoreWidget->currentIndex(), 0);
 
         // Reset Widget
@@ -112,8 +99,8 @@ private slots:
         oneMoreWidget = new TabWidgetOne;
 
         // Test 1
-        registry.set<Draupnir::Settings::CentralWidgetIndexSetting>(1);
-        oneMoreWidget->loadSettings<SettingsRegistry>(&registry);
+        settingsSource.set<Draupnir::Settings::CentralWidgetIndexSetting>(1);
+        oneMoreWidget->loadSettings<SettingsSource>(&settingsSource);
         QCOMPARE(oneMoreWidget->currentIndex(), 1);
 
         // Reset Widget
@@ -121,8 +108,8 @@ private slots:
         oneMoreWidget = new TabWidgetOne;
 
         // Test invalid thing.
-        registry.set<Draupnir::Settings::CentralWidgetIndexSetting>(42);
-        oneMoreWidget->loadSettings<SettingsRegistry>(&registry);
+        settingsSource.set<Draupnir::Settings::CentralWidgetIndexSetting>(42);
+        oneMoreWidget->loadSettings<SettingsSource>(&settingsSource);
         QCOMPARE(oneMoreWidget->currentIndex(), Draupnir::Settings::CentralWidgetIndexSetting::defaultValue());
 
         delete oneMoreWidget;
