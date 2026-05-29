@@ -1,4 +1,4 @@
-name: Draupnir MessageSystem Tests
+name: Draupnir Logging Tests
 
 on:
   push:
