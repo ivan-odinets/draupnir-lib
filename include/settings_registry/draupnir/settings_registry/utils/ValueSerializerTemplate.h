@@ -22,17 +22,35 @@
  *
  */
 
-#ifndef ENUMFLAGSSERIALIZER_H
-#define ENUMFLAGSSERIALIZER_H
+#ifndef VALUESERIALIZERTEMPLATE_H
+#define VALUESERIALIZERTEMPLATE_H
 
-#include <optional>
-
-#include <QString>
+#include <QVariant>
 
 #include "draupnir/utils/flags.h"
 
 namespace Draupnir::Settings
 {
+
+/*! @class ValueSerializerTemplate draupnir/settings_registry/utils/ValueSerializerTemplate.h
+ *  @ingroup SettingsRegistry
+ *  @brief Static template class used within the @ref Draupnir::Settings::SettingsTraitSerializer for value serialization
+ *         to / from `QVariant`. */
+
+template<class Value>
+class ValueSerializerTemplate
+{
+public:
+    static QVariant toQVariant(const Value& value) {
+        return QVariant::fromValue(value);
+    }
+
+    static std::optional<Value> fromQVariant(const QVariant& value) {
+        return (value.canConvert<Value>()) ?
+            std::optional<Value>{value.value<Value>()} :
+            std::nullopt;
+    }
+};
 
 /*! @brief Checks whether an enum-flags-like type provides custom config serialization to string.
  *  @tparam Candidate Type to test.
@@ -50,7 +68,7 @@ concept HasCustomEnumFlagsConfigSerialization =
         { Candidate::fromConfigString(configString) } -> std::same_as<std::optional<Candidate>>;
     };
 
-/*! @class EnumFlagsSerializer draupnir/settings_registry/utils/EnumFlagsSerializer.h
+/*! @class ValueSerializerTemplate draupnir/settings_registry/utils/ValueSerializerTemplate.h
  *  @ingroup SettingsRegistry
  *  @brief This is a class.
  * @todo Improve handling of the cases when enum_flags contains sth very very wrong.
@@ -58,7 +76,7 @@ concept HasCustomEnumFlagsConfigSerialization =
  * @todo Write Reasonable documentation. */
 
 template<draupnir::utils::enum_flags_like_concept EnumFlags>
-class EnumFlagsSerializer
+class ValueSerializerTemplate<EnumFlags>
 {
     template<typename Integer, class Unused = void>
     struct _Helper {};
@@ -66,7 +84,7 @@ class EnumFlagsSerializer
     template<class Unused>
     struct _Helper<short, Unused> {
         static short fromString(const QString& string, bool* ok, int base)
-            { return string.toShort(ok,base); }
+        { return string.toShort(ok,base); }
     };
 
     template<class Unused>
@@ -114,35 +132,40 @@ class EnumFlagsSerializer
 public:
     using Enum = typename EnumFlags::enum_type;
 
-    static std::optional<EnumFlags> fromConfigString(const QString& string) {
+    static std::optional<EnumFlags> fromQVariant(const QVariant& value) {
+        if (!value.canConvert<QString>())
+            return std::nullopt;
+
         bool ok = false;
-        const auto value = _Helper<std::underlying_type_t<Enum>>::fromString(string,&ok,2);
+        const auto maybeValue = _Helper<std::underlying_type_t<Enum>>::fromString(value.toString(),&ok,2);
         return (ok) ?
             std::optional<EnumFlags>{EnumFlags{value}} :
             std::nullopt;
     }
 
-    static QString toConfigString(const EnumFlags& value) {
-        return QString::number(value.value(),2);
+    static QVariant toQVariant(const EnumFlags& value) {
+        return QVariant{QString::number(value.value(),2)};
     }
 };
 
 template<draupnir::utils::enum_flags_like_concept EnumFlags>
     requires HasCustomEnumFlagsConfigSerialization<EnumFlags>
-class EnumFlagsSerializer<EnumFlags>
+class ValueSerializerTemplate<EnumFlags>
 {
 public:
     using Enum = typename EnumFlags::enum_type;
 
-    static std::optional<EnumFlags> fromConfigString(const QString& string) {
-        return EnumFlags::fromConfigString(string);
+    static std::optional<EnumFlags> fromQVariant(const QVariant& value) {
+        if (!value.canConvert<QString>())
+            return std::nullopt;
+        return EnumFlags::fromConfigString(value.toString());
     }
 
-    static QString toConfigString(const EnumFlags& value) {
+    static QVariant toQVariant(const EnumFlags& value) {
         return EnumFlags::toConfigString(value);
     }
 };
 
-}; // namespace Draupnir::Settings
+} // namespace Draupnir::Settings
 
-#endif // ENUMFLAGSSERIALIZER_H
+#endif // VALUESERIALIZERTEMPLATE_H

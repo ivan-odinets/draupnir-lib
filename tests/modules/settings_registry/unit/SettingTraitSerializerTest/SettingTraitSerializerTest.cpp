@@ -31,6 +31,7 @@
 #include "draupnir-test/traits/settings/StringSettingTraits.h"
 
 /*! @class SettingTraitSerializerTest tests/modules/settings_registry/unit/SettingTraitSerializerTest/SettingTraitSerializerTest.cpp
+ *  @ingroup SettingsRegistryTests
  *  @brief This test class tests functionality of the SettingTraitSerializer.
  * @todo Add custom complex setting trait test. */
 

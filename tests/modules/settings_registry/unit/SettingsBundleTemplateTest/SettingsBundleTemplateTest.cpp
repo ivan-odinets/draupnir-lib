@@ -143,8 +143,8 @@ private slots:
         // Verify that we don't have the test values
         QVERIFY(populatedBundle.template get<WidgetIndexSettingTrait>() != testInteger);
         QVERIFY(populatedBundle.template get<DoubleSettingTrait>() != testDouble);
-        QVERIFY(dummySettingsSource.template get<WidgetIndexSettingTrait>() != testInteger);
-        QVERIFY(dummySettingsSource.template get<DoubleSettingTrait>() != testDouble);
+        QVERIFY(dummySettingsSource.template getQVariant<WidgetIndexSettingTrait>() != testInteger);
+        QVERIFY(dummySettingsSource.template getQVariant<DoubleSettingTrait>() != testDouble);
 
         // Set something
         populatedBundle.template set<WidgetIndexSettingTrait>(testInteger);
@@ -154,8 +154,8 @@ private slots:
         QCOMPARE(populatedBundle.template get<DoubleSettingTrait>(), testDouble);
 
         // Check if values were indeed written to the backend
-        QCOMPARE(dummySettingsSource.template get<WidgetIndexSettingTrait>(), testInteger);
-        QCOMPARE(dummySettingsSource.template get<DoubleSettingTrait>(), testDouble);
+        QCOMPARE(dummySettingsSource.template getQVariant<WidgetIndexSettingTrait>(), testInteger);
+        QCOMPARE(dummySettingsSource.template getQVariant<DoubleSettingTrait>(), testDouble);
 
         // Reset things through the registry
         populatedBundle.template set<WidgetIndexSettingTrait>(WidgetIndexSettingTrait::defaultValue());
@@ -172,8 +172,8 @@ private slots:
         // Verify that we don't have the test values
         QVERIFY(subBundle.template get<WidgetIndexSettingTrait>() != testInteger);
         QVERIFY(subBundle.template get<DoubleSettingTrait>() != testDouble);
-        QVERIFY(dummySettingsSource.template get<WidgetIndexSettingTrait>() != testInteger);
-        QVERIFY(dummySettingsSource.template get<DoubleSettingTrait>() != testDouble);
+        QVERIFY(dummySettingsSource.template getQVariant<WidgetIndexSettingTrait>() != testInteger);
+        QVERIFY(dummySettingsSource.template getQVariant<DoubleSettingTrait>() != testDouble);
 
         // Write to subbundle
         subBundle.template set<WidgetIndexSettingTrait>(testInteger);
@@ -183,8 +183,8 @@ private slots:
         QCOMPARE(subBundle.template get<DoubleSettingTrait>(), testDouble);
 
         // Check if values were indeed written to the backend
-        QCOMPARE(dummySettingsSource.template get<WidgetIndexSettingTrait>(), testInteger);
-        QCOMPARE(dummySettingsSource.template get<DoubleSettingTrait>(), testDouble);
+        QCOMPARE(dummySettingsSource.template getQVariant<WidgetIndexSettingTrait>(), testInteger);
+        QCOMPARE(dummySettingsSource.template getQVariant<DoubleSettingTrait>(), testDouble);
     }
 
     void test_print_to() {

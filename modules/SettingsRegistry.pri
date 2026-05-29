@@ -60,11 +60,11 @@
         $$PWD/../include/settings_registry/draupnir/settings_registry/traits/settings/files/RecentFilesListSetting.h \
         $$PWD/../include/settings_registry/draupnir/settings_registry/traits/settings/templates/SettingTraitTemplate.h \
         $$PWD/../include/settings_registry/draupnir/settings_registry/traits/settings/templates/SizeSettingTraitTemplate.h \
-        $$PWD/../include/settings_registry/draupnir/settings_registry/utils/EnumFlagsSerializer.h \
         $$PWD/../include/settings_registry/draupnir/settings_registry/utils/OptionalSettingsBundle.h \
         $$PWD/../include/settings_registry/draupnir/settings_registry/utils/SettingsTraitsConcatenator.h \
         $$PWD/../include/settings_registry/draupnir/settings_registry/utils/SettingTraitPrinter.h \
-        $$PWD/../include/settings_registry/draupnir/settings_registry/utils/SettingTraitSerializer.h
+        $$PWD/../include/settings_registry/draupnir/settings_registry/utils/SettingTraitSerializer.h \
+        $$PWD/../include/settings_registry/draupnir/settings_registry/utils/ValueSerializerTemplate.h
 
     DISTFILES += \
         $$PWD/../docs/pages/SettingsRegistry.dox

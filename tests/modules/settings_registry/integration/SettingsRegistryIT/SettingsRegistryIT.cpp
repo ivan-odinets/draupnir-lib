@@ -29,10 +29,12 @@
 #include "draupnir-test/traits/settings/DoubleSettingTraits.h"
 #include "draupnir-test/traits/settings/BoolSettingTraits.h"
 #include "draupnir-test/traits/settings/WidgetIndexSettingTraits.h"
+#include "draupnir-test/traits/settings/ComplexValueSettingTrait.h"
 
 #include "draupnir/settings_registry/SettingsRegistryTemplate.h"
 
 /*! @class SettingsRegistryIT tests/modules/settings_registry/integration/SettingsRegistryIT/SettingsRegistryIT.cpp
+ *  @ingroup SettingsRegistryTests
  *  @brief This is a very basic test for @ref Draupnir::Settings::SettingsRegistryTemplate and related things.
  *
  * @todo Split this test into several: unit-test for SettingsRegistryTemplate, unit test for SettingsBundleTemplate and
@@ -47,12 +49,14 @@ public:
 ///@{
     using MockSettings = SettingsBackendMockTemplate<
         DoubleSettingTrait,
-        BoolSettingTrait
+        BoolSettingTrait,
+        ComplexValueSettingTrait
     >;
 
     using SettingsRegistry = Draupnir::Settings::SettingsRegistryTemplate<
         DoubleSettingTrait,
-        BoolSettingTrait
+        BoolSettingTrait,
+        ComplexValueSettingTrait
     >;
     using RandomPopulatableBundle = Draupnir::Settings::SettingsBundleTemplate<
         DoubleSettingTrait
@@ -64,14 +68,14 @@ public:
 
 ///@name Required fields
 ///@{
-    MockSettings dummySettingsSource;
+    MockSettings mockedBackend;
 
     SettingsRegistry testedRegistry;
 ///@}
 
 private slots:
     void initTestCase() {
-        testedRegistry.setBackend(&dummySettingsSource);
+        testedRegistry.setBackend(&mockedBackend);
     }
 
     /*! @brief Testing if the constexpt methods are correct for the specfic SettingsRegistryTemplate.
@@ -119,7 +123,7 @@ private slots:
 
         // Verify that we don't have the test values
         QVERIFY(testedRegistry.template get<DoubleSettingTrait>() != testDouble);
-        QVERIFY(dummySettingsSource.template get<DoubleSettingTrait>() != testDouble);
+        QVERIFY(mockedBackend.template getQVariant<DoubleSettingTrait>() != testDouble);
 
         // Set something
         testedRegistry.template set<DoubleSettingTrait>(testDouble);
@@ -128,8 +132,7 @@ private slots:
         QCOMPARE(testedRegistry.template get<DoubleSettingTrait>(), testDouble);
 
         // Check if values were indeed written to the backend
-
-        QCOMPARE(dummySettingsSource.template get<DoubleSettingTrait>(), testDouble);
+        QCOMPARE(mockedBackend.template getQVariant<DoubleSettingTrait>(), testDouble);
     }
 
     void test_bundle_functionality() {
@@ -162,6 +165,20 @@ private slots:
         testedRegistry.template set<DoubleSettingTrait>(testDouble);
         QCOMPARE(bundleByTrait.template get<DoubleSettingTrait>(), testDouble);
         QCOMPARE(testedRegistry.template get<DoubleSettingTrait>(), testDouble);
+    }
+
+    void test_complex_value_serialization() {
+        using ValueSerializer = Draupnir::Settings::ValueSerializerTemplate<ComplexValue>;
+        QCOMPARE(testedRegistry.template get<ComplexValueSettingTrait>(), ComplexValueSettingTrait::defaultValue());
+
+        // Try writing something, and check if it is written as expected
+        const ComplexValue value{42,42};
+        const QVariant valueVariant{ValueSerializer::toQVariant(value)};
+        testedRegistry.template set<ComplexValueSettingTrait>(value);
+
+        QCOMPARE(testedRegistry.template get<ComplexValueSettingTrait>(), value);
+        QCOMPARE(mockedBackend.getQVariant<ComplexValueSettingTrait>(), valueVariant);
+
     }
 };
 

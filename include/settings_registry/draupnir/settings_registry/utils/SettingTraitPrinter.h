@@ -28,7 +28,7 @@
 #include <QTextStream>
 
 #include "draupnir/settings_registry/concepts/SettingTraitConcept.h"
-#include "draupnir/settings_registry/utils/EnumFlagsSerializer.h"
+#include "draupnir/settings_registry/utils/ValueSerializerTemplate.h"
 
 namespace Draupnir::Settings
 {
@@ -75,7 +75,7 @@ public:
     inline static void print(Output&& output, const Trait::Value& value) {
         output << Trait::key()
                << " = "
-               << EnumFlagsSerializer<typename Trait::Value>::toConfigString(value)
+               << ValueSerializerTemplate<typename Trait::Value>::toQVariant(value)
                << Qt::endl;
     };
 };

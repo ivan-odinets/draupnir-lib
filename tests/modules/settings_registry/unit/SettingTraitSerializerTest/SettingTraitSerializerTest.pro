@@ -3,7 +3,7 @@ include(../../../../common/TestConfig.pri)
 
 DEFINES += DRAUPNIR_SETTINGS_USE_CUSTOM
 
-include(../../../../common/MockSettingsTemplate.pri)
+include(../../../../common/SettingsTemplate.pri)
 include(../../../../common/SettingsTraits.pri)
 
 include(../../../../../modules/SettingsRegistry.pri)

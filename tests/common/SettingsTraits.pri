@@ -2,6 +2,7 @@ INCLUDEPATH += $$PWD
 
 HEADERS += \
     $$PWD/draupnir-test/traits/settings/BoolSettingTraits.h \
+    $$PWD/draupnir-test/traits/settings/ComplexValueSettingTrait.h \
     $$PWD/draupnir-test/traits/settings/DoubleSettingTraits.h \
     $$PWD/draupnir-test/traits/settings/IntegerSettingTraits.h \
     $$PWD/draupnir-test/traits/settings/StringSettingTraits.h \

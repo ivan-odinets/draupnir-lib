@@ -35,6 +35,8 @@ public:
         _loadSettingsImpl();
     }
 
+    Backend* backend() { return &m_backend; }
+
     template<Draupnir::Settings::SettingsBundleConcept Bundle>
     Bundle getSettingsBundle() {
         static_assert(Bundle::template canBeFullyPopulatedFrom<SettingsSourceMockTemplate<SettingTraits...>>(),

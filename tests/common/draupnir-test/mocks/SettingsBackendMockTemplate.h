@@ -25,8 +25,11 @@
 #ifndef SETTINGSBACKENDMOCKTEMPLATE_H
 #define SETTINGSBACKENDMOCKTEMPLATE_H
 
+#include <QDebug>
+
 #include "draupnir/settings_registry/core/SettingsBackendInterface.h"
 #include "draupnir/settings_registry/core/SettingTemplate.h"
+#include "draupnir/settings_registry/utils/ValueSerializerTemplate.h"
 
 /*! @class SettingsBackendMockTemplate tests/common/mocks/SettingsBackendMockTemplate.h
  *  @ingroup TestHelpers
@@ -45,22 +48,20 @@ public:
     }
 
     QVariant value(const QString& key, const QVariant& defaultValue = QVariant{}) {
-        return _valueImpl<SettingTraits...>(key,defaultValue);
+        return _valueImpl<0, SettingTraits...>(key,defaultValue);
     }
 
     void setValue(const QString& key, const QVariant& value) final {
-        return _setValueImpl<SettingTraits...>(key,value);
+        return _setValueImpl<0, SettingTraits...>(key,value);
     }
 
-    template<class Trait>
-    typename Trait::Value get() {
-        return std::get<Draupnir::Settings::SettingTemplate<Trait>>(m_dummyTuple).value;
+    template<Draupnir::Settings::PrimitiveSettingTraitConcept Trait>
+    QVariant getQVariant() {
+        return value(Trait::key(), Draupnir::Settings::ValueSerializerTemplate<typename Trait::Value>::toQVariant(Trait::defaultValue()));
     }
 
 private:
-    std::tuple<
-        Draupnir::Settings::SettingTemplate<SettingTraits>...
-    > m_dummyTuple;
+    std::array<QVariant,sizeof...(SettingTraits)> m_variantArray;
 
     template<class First,class... Rest>
     bool _containsImpl(const QString& key) const {
@@ -75,31 +76,27 @@ private:
         }
     }
 
-    template<class First,class... Rest>
+    template<std::size_t Index, class First,class... Rest>
     QVariant _valueImpl(const QString& key, const QVariant& defaultValue = QVariant()) {
-        if (First::key() == key) {
-            return QVariant::fromValue<
-                typename Draupnir::Settings::SettingTemplate<First>::Value
-            >(std::get<Draupnir::Settings::SettingTemplate<First>>(m_dummyTuple).value);
-        }
+        if (First::key() == key)
+            return m_variantArray.at(Index);
 
         if constexpr (sizeof...(Rest) > 0) {
-            return _valueImpl<Rest...>(key,defaultValue);
+            return _valueImpl<Index+1, Rest...>(key,defaultValue);
         } else {
             return QVariant{};
         }
     }
 
-    template<class First,class... Rest>
+    template<std::size_t Index, class First,class... Rest>
     void _setValueImpl(const QString& key, const QVariant& value) {
         if (First::key() == key) {
-            std::get<Draupnir::Settings::SettingTemplate<First>>(m_dummyTuple).value = value.value<typename First::Value>();
+            m_variantArray[Index] = value;
             return;
         }
 
-        if constexpr (sizeof...(Rest) > 0) {
-            _setValueImpl<Rest...>(key,value);
-        }
+        if constexpr (sizeof...(Rest) > 0)
+            _setValueImpl<Index+1, Rest...>(key,value);
     }
 };
 
