@@ -22,7 +22,7 @@
  *
  */
 
-#include "draupnir/logging/core/AbstractMessageViewIconProvider.h"
+#include "draupnir/logging/messages/AbstractMessageViewIconProvider.h"
 
 #include <QApplication>
 #include <QStyle>

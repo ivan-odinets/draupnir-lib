@@ -27,7 +27,7 @@
 #include <QCoreApplication>
 
 #include "draupnir/logging/messages/MessageViewItemFields.h"
-#include "draupnir/settings_registry/utils/EnumFlagsSerializer.h"
+#include "draupnir/settings_registry/utils/ValueSerializerTemplate.h"
 
 using namespace Draupnir::Logging;
 
@@ -99,9 +99,9 @@ private slots:
 
     void test_message_view_item_fields_settings_settings_serializer() {
         // Briefly (not) check conversion from QString to MessageViewItemFields
-        using MessageViewItemFieldsSerializer = Draupnir::Settings::EnumFlagsSerializer<MessageViewItemFields>;
+        using MessageViewItemFieldsSerializer = Draupnir::Settings::ValueSerializerTemplate<MessageViewItemFields>;
         for (const auto& testCase : parseCases) {
-            const auto result = MessageViewItemFieldsSerializer::fromConfigString(testCase.configString);
+            const auto result = MessageViewItemFieldsSerializer::fromQVariant(testCase.configString);
             if (result != testCase.expected)
                 qCritical() << "For config string:" << testCase.configString << "received wrong result.";
             QCOMPARE(result, testCase.expected);

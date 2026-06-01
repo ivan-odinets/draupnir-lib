@@ -25,11 +25,10 @@
 #include <QtTest>
 #include <QCoreApplication>
 
-#include "draupnir/logging/core/AbstractMessageViewIconProvider.h"
+#include "draupnir/logging/messages/AbstractMessageViewIconProvider.h"
 #include "draupnir/logging/messages/MessageViewItem.h"
 #include "draupnir/logging/models/MessageListModel.h"
 #include "draupnir/logging/models/MessageListProxyModel.h"
-
 
 namespace Draupnir::Logging
 {
@@ -42,6 +41,7 @@ class MessageListProxyModelTest : public QObject
 {
     Q_OBJECT
 private:
+    AbstractMessageViewIconProvider* iconProvider = nullptr;
     static inline constexpr MessageCategory dummyCategory       = 0b1000'0000'0000'0000;
     static inline constexpr MessageCategory nonExistingCategory = 0b0001'0000'0000'0000;
 
@@ -54,6 +54,8 @@ private:
 
 private slots:
     void initTestCase() {
+        iconProvider = new AbstractMessageViewIconProvider;
+
         sourceModel = new MessageListModel{this};
         debugOne = Message::create("Debug", MessageLevel::Debug);
         infoOne = Message::create("Info One", MessageLevel::Info);
@@ -64,7 +66,16 @@ private slots:
             { debugOne, infoOne, infoTwo, errorOne }
         );
 
-        MessageViewItem::registerIconProvider(new AbstractMessageViewIconProvider);
+        MessageViewItem::registerIconProvider(iconProvider);
+    }
+
+    void cleanupTestCase() {
+        delete iconProvider;
+
+        delete debugOne;
+        delete infoOne;
+        delete infoTwo;
+        delete errorOne;
     }
 
     void init() {

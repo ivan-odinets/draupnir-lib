@@ -112,6 +112,10 @@ signals:
      *         object has changed. */
     void messageViewItemFieldVisibilityChanged(Draupnir::Logging::MessageViewItemField::Value field, bool isVisible);
 
+    void messageCategoryVisibilityChanged(Draupnir::Logging::MessageCategory category, bool isVisible);
+
+    void messageLevelVisibilityChanged(Draupnir::Logging::MessageLevel::Value level, bool isVisible);
+
 protected:
     /*! @brief Shows @ref Draupnir::Logging::MessageDisplayDialog by double click. */
     void mouseDoubleClickEvent(QMouseEvent *event) final;
@@ -121,6 +125,6 @@ private:
     MessageListProxyModel* p_messageListProxyModel;
 };
 
-}; // namespace Draupnir::Messages
+} // namespace Draupnir::Messages
 
 #endif // MESSAGELISTVIEW_H

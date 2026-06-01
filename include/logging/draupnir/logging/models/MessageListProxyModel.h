@@ -33,11 +33,15 @@
 namespace Draupnir::Logging
 {
 
-/*! @class MessageListProxyModel draupnir/message_system/models/MessageListProxyModel.h
+/*! @class MessageListProxyModel draupnir/logging/models/MessageListProxyModel.h
  *  @ingroup Logging
- *  @brief This class is a proxy model for @ref Draupnir::Logging::MessageListModel to allow filtering and formatting of the
- *         displayed @ref Draupnir::Logging::MessageViewItem objects. By default this model will accept any message type and
- *         display everything. */
+ *  @brief Proxy model for @ref Draupnir::Logging::MessageListModel.
+ *
+ *  @details This proxy model filters messages by @ref Draupnir::Logging::MessageLevel and @ref Draupnir::Logging::MessageCategory
+ *           and adjusts the data returned for display according to the configured @ref Draupnir::Logging::MessageViewItemFields
+ *           mask.
+ *
+ *           By default, all message levels, all message categories, and all view item fields are displayed. */
 
 class MessageListProxyModel final : public QSortFilterProxyModel
 {
@@ -45,6 +49,12 @@ class MessageListProxyModel final : public QSortFilterProxyModel
 public:
     static inline constexpr MessageViewItemFields DefaultDisplayedMessageItemFields =
         MessageViewItemFields::All;
+
+    static inline constexpr MessageCategories DefaultDisplayedMessageCategories =
+        MessageCategories::All;
+
+    static inline constexpr MessageLevels DefaultDisplayedMessageLevels =
+        MessageLevels::All;
 
     /*! @brief Default constructor. By default this filter model will accept all messages and display all fields of the
      *         @ref Draupnir::Logging::MessageViewItem objects. */
@@ -65,7 +75,9 @@ public:
     void setMessageViewItemFieldDisplayed(MessageViewItemField::Value field, bool isVisible);
 
     /*! @brief Returns `true` if specific field of @ref Draupnir::Logging::MessageViewItem object is displayed. */
-    bool isMessageViewItemFieldDisplayed(MessageViewItemField::Value field) const { return m_displayedMessageViewItemFields.test_flag(field); }
+    bool isMessageViewItemFieldDisplayed(MessageViewItemField::Value field) const {
+        return m_displayedMessageViewItemFields.test_flag(field);
+    }
 ///@}
 
     bool isMessageTypeDisplayed(MessageType type) const;
@@ -82,7 +94,9 @@ public:
     void setMessageCategoryDisplayed(MessageCategory category, bool isVisible);
 
     /*! @brief Returns `true` if the specified category will be displayed by this model. */
-    bool isMessageCategoryDisplayed(MessageCategory messageCategory) { return m_displayedMessageCategoriesMask.test_flag(messageCategory); }
+    bool isMessageCategoryDisplayed(MessageCategory messageCategory) const {
+        return m_displayedMessageCategoriesMask.test_flag(messageCategory);
+    }
 ///@}
 
 ///@name This is a group
@@ -93,7 +107,9 @@ public:
 
     void setMessageLevelDisplayed(MessageLevel::Value level, bool isVisible);
 
-    bool isMessageLevelDisplayed(MessageLevel::Value level) const { return m_displayedMessageLevelsMask.test_flag(level); }
+    bool isMessageLevelDisplayed(MessageLevel::Value level) const {
+        return m_displayedMessageLevelsMask.test_flag(level);
+    }
 ///@}
 
     /*! @brief This method is used to adjust displayed data in accordance to configured fields mask. */
@@ -105,9 +121,9 @@ protected:
     bool filterAcceptsRow(int source_row, const QModelIndex &source_parent) const final;
 
 private:
+    MessageViewItemFields m_displayedMessageViewItemFields;
     MessageCategories     m_displayedMessageCategoriesMask;
     MessageLevels         m_displayedMessageLevelsMask;
-    MessageViewItemFields m_displayedMessageViewItemFields;
 };
 
 }; // namespace Draupnir::Logging

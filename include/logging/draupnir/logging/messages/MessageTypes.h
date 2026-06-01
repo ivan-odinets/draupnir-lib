@@ -25,7 +25,7 @@
 #ifndef MESSAGETYPES_H
 #define MESSAGETYPES_H
 
-#include "draupnir/logging/messages/MessageCategories.h"
+#include "draupnir/logging/messages/categories/MessageCategories.h"
 #include "draupnir/logging/messages/MessageLevels.h"
 
 namespace Draupnir::Logging

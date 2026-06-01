@@ -98,7 +98,11 @@ MessageCategories MessageListView::displayedMessageCategoriesMask() const
 
 void MessageListView::setMessageCategoryDisplayed(MessageCategory category, bool isVisible)
 {
+    if (isMessageCategoryDisplayed(category) == isVisible)
+        return;
+
     p_messageListProxyModel->setMessageCategoryDisplayed(category, isVisible);
+    emit messageCategoryVisibilityChanged(category, isVisible);
 }
 
 bool MessageListView::isMessageCategoryDisplayed(MessageCategory messageCategory)
@@ -118,7 +122,11 @@ MessageLevels MessageListView::displayedMessageLevelsMask() const
 
 void MessageListView::setMessageLevelDisplayed(MessageLevel::Value level, bool isVisible)
 {
+    if (isMessageLevelDisplayed(level) == isVisible)
+        return;
+
     p_messageListProxyModel->setMessageLevelDisplayed(level, isVisible);
+    emit messageLevelVisibilityChanged(level, isVisible);
 }
 
 bool MessageListView::isMessageLevelDisplayed(MessageLevel::Value level) const

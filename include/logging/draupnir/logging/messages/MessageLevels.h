@@ -103,4 +103,7 @@ public:
 
 }; // namespace Draupnir::Logging
 
+Q_DECLARE_METATYPE(Draupnir::Logging::MessageLevel::Value);
+Q_DECLARE_METATYPE(Draupnir::Logging::MessageLevels);
+
 #endif // MESSAGELEVELS_H

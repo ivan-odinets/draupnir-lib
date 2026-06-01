@@ -51,8 +51,9 @@ public:
     enum Value {
         /*! @brief Default message category used when no custom category is specified. */
         Default = 0b1,
+        Network = 0b10,
         /*! @brief First value reserved for user-defined message categories. */
-        FirstCustomCategory = 0b10,        
+        FirstCustomCategory = 0b100,
     };
 
     using draupnir::utils::integer_wrapper<quint64, MessageCategory>::integer_wrapper;
@@ -80,6 +81,9 @@ public:
 
     static constexpr _Base::integer All =
         std::numeric_limits<MessageCategory::underlying_type>::max();
+
+    static QLatin1String noneConfigKey()     { return QLatin1String{"none"}; }
+    static QLatin1String allConfigKey()      { return QLatin1String{"all"}; }
 };
 
 } // Draupnir::Logging

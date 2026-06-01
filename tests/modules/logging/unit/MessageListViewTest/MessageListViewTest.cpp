@@ -26,7 +26,7 @@
 #include <QCoreApplication>
 #include <QVBoxLayout>
 
-#include "draupnir/logging/core/AbstractMessageViewIconProvider.h"
+#include "draupnir/logging/messages/AbstractMessageViewIconProvider.h"
 #include "draupnir/logging/messages/Message.h"
 #include "draupnir/logging/messages/MessageViewItem.h"
 #include "draupnir/logging/models/MessageListModel.h"
@@ -121,38 +121,62 @@ private slots:
     }
 
     void test_setting_displayed_message_categoriesMask() {
-        // widget->setDisplayedMessageCategoriesMask(MessageCategories::All);
-        // QVERIFY(widget->displayedMessageCategoriesMask() == MessageCategories::All);
+        widget->setDisplayedMessageCategoriesMask(MessageCategories::All);
+        QVERIFY(widget->displayedMessageCategoriesMask() == MessageCategories::All);
 
-        // // Signal spy
-        // QSignalSpy messageCategoriesVisibilityChangedSpy{ widget, &MessageListView:: };
-        //     // Try setting masks
-        //     widget->setDisplayedMessageTypesMask(MessageType::Debug);
-        //     QTRY_COMPARE(messageTypeVisibilityChangedSpy.count(),0);
-        //     QCOMPARE(widget->displayedMessageTypesMask(), MessageType::Debug);
-        //     QCOMPARE(widget->isMessageTypeDisplayed(MessageType::Debug), true);
-        //     QCOMPARE(widget->isMessageTypeDisplayed(MessageType::Info), false);
-        //     QCOMPARE(widget->isMessageTypeDisplayed(MessageType::Warning), false);
-        //     // Try setting more masks
-        //     widget->setDisplayedMessageTypesMask(MessageType::Info|MessageType::Warning);
-        //     QTRY_COMPARE(messageTypeVisibilityChangedSpy.count(),0);
-        //     QCOMPARE(widget->displayedMessageTypesMask(), MessageType::Info|MessageType::Warning);
-        //     QCOMPARE(widget->isMessageTypeDisplayed(MessageType::Debug), false);
-        //     QCOMPARE(widget->isMessageTypeDisplayed(MessageType::Info), true);
-        //     QCOMPARE(widget->isMessageTypeDisplayed(MessageType::Warning), true);
+        // Signal spy
+        QSignalSpy messageCategoriesVisibilityChangedSpy{ widget, &MessageListView::messageCategoryVisibilityChanged };
+        // Try setting masks
+        widget->setDisplayedMessageCategoriesMask(MessageCategory::Default);
+        widget->setDisplayedMessageCategoriesMask(MessageCategory::Default);
+        QTRY_COMPARE(messageCategoriesVisibilityChangedSpy.count(),0);
+        QCOMPARE(widget->displayedMessageCategoriesMask(), MessageCategory::Default);
+        QCOMPARE(widget->isMessageCategoryDisplayed(MessageCategory::Default), true);
+        QCOMPARE(widget->isMessageCategoryDisplayed(MessageCategory::Network), false);
+        // Try setting more masks
+        widget->setDisplayedMessageCategoriesMask(MessageCategory::Default | MessageCategory::Network);
+        QTRY_COMPARE(messageCategoriesVisibilityChangedSpy.count(),0);
+        QCOMPARE(widget->displayedMessageCategoriesMask(), MessageCategory::Default | MessageCategory::Network);
+        QCOMPARE(widget->isMessageCategoryDisplayed(MessageCategory::Default), true);
+        QCOMPARE(widget->isMessageCategoryDisplayed(MessageCategory::Network), true);
 
-        //     // Trigger method emitting signal
-        //     widget->setMessageTypeDisplayed(MessageType::Info, false);
-        //     // Check if visibility changed
-        //     QCOMPARE(widget->isMessageTypeDisplayed(MessageType::Info), false);
-        //     // Wait for signal to be emitted
-        //     QTRY_COMPARE(messageTypeVisibilityChangedSpy.count(),1);
-        //     // Check if corretct things were emitted
-        //     auto signalArgs = messageTypeVisibilityChangedSpy.takeFirst();
-        //     QCOMPARE(signalArgs.count(),2);
-        //     QCOMPARE(signalArgs.at(0).value<MessageType>(), MessageType::Info);
-        //     QCOMPARE(signalArgs.at(1).toBool(), false);
-        // }
+        // Trigger method emitting signal
+        widget->setMessageCategoryDisplayed(MessageCategory::Default, false);
+        // Check if visibility changed
+        QCOMPARE(widget->isMessageCategoryDisplayed(MessageCategory::Default), false);
+        // Wait for signal to be emitted
+        QTRY_COMPARE(messageCategoriesVisibilityChangedSpy.count(),1);
+        // Check if corretct things were emitted
+        auto signalArgs = messageCategoriesVisibilityChangedSpy.takeFirst();
+        QCOMPARE(signalArgs.count(),2);
+        QCOMPARE(signalArgs.at(0).value<MessageCategory>(), MessageCategory::Default);
+        QCOMPARE(signalArgs.at(1).toBool(), false);
+    }
+
+    void test_setting_message_levels() {
+        widget->setDisplayedMessageLevelsMask(MessageLevels::All);
+        QVERIFY(widget->displayedMessageLevelsMask() == MessageLevels::All);
+
+        // Signal spy
+        QSignalSpy messageLevelVisibilityChangedSignalSpy{ widget, &MessageListView::messageLevelVisibilityChanged };
+        // Try setting masks
+        widget->setDisplayedMessageLevelsMask(MessageLevel::Debug);
+        QTRY_COMPARE(messageLevelVisibilityChangedSignalSpy.count(),0);
+        QCOMPARE(widget->displayedMessageLevelsMask(), MessageLevel::Debug);
+        QCOMPARE(widget->isMessageLevelDisplayed(MessageLevel::Debug), true);
+        QCOMPARE(widget->isMessageLevelDisplayed(MessageLevel::Info), false);
+
+        // Trigger method emitting signal
+        widget->setMessageLevelDisplayed(MessageLevel::Debug, false);
+        // Check if visibility changed
+        QCOMPARE(widget->isMessageLevelDisplayed(MessageLevel::Debug), false);
+        // Wait for signal to be emitted
+        QTRY_COMPARE(messageLevelVisibilityChangedSignalSpy.count(),1);
+        // Check if corretct things were emitted
+        auto signalArgs = messageLevelVisibilityChangedSignalSpy.takeFirst();
+        QCOMPARE(signalArgs.count(),2);
+        QCOMPARE(signalArgs.at(0).value<MessageLevel::Value>(), MessageLevel::Debug);
+        QCOMPARE(signalArgs.at(1).toBool(), false);
     }
 
     void test_mouse_double_click_single_item() {
@@ -197,113 +221,6 @@ private slots:
         // And final check..
         QTRY_COMPARE(isHandlerSuccessfull, true);
     }
-
-    // void test_mouse_double_click_multiple_items() {
-    //     constexpr int numberSelections = 2;
-
-    //     // Show widget
-    //     widget->show();
-    //     QVERIFY(QTest::qWaitForWindowExposed(widget));
-    //     QVERIFY(widget->selectionMode() != QAbstractItemView::SingleSelection);
-    //     //
-    //     auto* proxyModel = qobject_cast<MessageListProxyModel*>(widget->model());
-    //     QVERIFY(proxyModel);
-
-        // const QModelIndex proxyIndex0 = widget->model()->index(0, 0);
-        // const QModelIndex proxyIndex1 = widget->model()->index(1, 0);
-
-        // QVERIFY(proxyIndex0.isValid());
-        // QVERIFY(proxyIndex1.isValid());
-
-        // const QModelIndex sourceIndex0 = proxyModel->mapToSource(proxyIndex0);
-        // const QModelIndex sourceIndex1 = proxyModel->mapToSource(proxyIndex1);
-
-        // QVERIFY(sourceIndex0.isValid());
-        // QVERIFY(sourceIndex1.isValid());
-
-        // const auto* viewedElement0 =
-        //     static_cast<MessageViewItem*>(sourceIndex0.internalPointer());
-
-        // const auto* viewedElement1 =
-        //     static_cast<MessageViewItem*>(sourceIndex1.internalPointer());
-
-        // QVERIFY(viewedElement0 != nullptr);
-        // QVERIFY(viewedElement1 != nullptr);
-
-        // QVERIFY(!viewedElement0->what().isEmpty());
-        // QVERIFY(!viewedElement1->what().isEmpty());
-
-        // // Прокручуємо до першого/другого. Для 0 та 1 це зазвичай не потрібно,
-        // // але хай тест буде стабільний.
-        // widget->scrollTo(proxyIndex0, QAbstractItemView::PositionAtCenter);
-        // widget->scrollTo(proxyIndex1, QAbstractItemView::PositionAtCenter);
-        // QCoreApplication::processEvents();
-
-        // const QRect rect0 = widget->visualRect(proxyIndex0);
-        // const QRect rect1 = widget->visualRect(proxyIndex1);
-
-        // QVERIFY(rect0.isValid());
-        // QVERIFY(rect1.isValid());
-        // QVERIFY(!rect0.isEmpty());
-        // QVERIFY(!rect1.isEmpty());
-
-        // const QPoint pos0 = rect0.center();
-        // const QPoint pos1 = rect1.center();
-
-        // QCOMPARE(widget->indexAt(pos0), proxyIndex0);
-        // QCOMPARE(widget->indexAt(pos1), proxyIndex1);
-
-        // // Варіант максимально близький до користувача:
-        // // 1. клік по першому
-        // // 2. Ctrl+клік по другому
-        // QTest::mouseClick(
-        //     widget->viewport(),
-        //     Qt::LeftButton,
-        //     Qt::NoModifier,
-        //     pos0
-        //     );
-
-        // QTest::mouseClick(
-        //     widget->viewport(),
-        //     Qt::LeftButton,
-        //     Qt::ControlModifier,
-        //     pos1
-        //     );
-
-        // QVERIFY(widget->selectionModel()->isSelected(proxyIndex0));
-        // QVERIFY(widget->selectionModel()->isSelected(proxyIndex1));
-
-        // const QSet<const MessageViewItem*> expectedMessages{
-        //     viewedElement0,
-        //     viewedElement1
-        // };
-
-        // QSet<const MessageViewItem*> receivedMessages;
-
-        // UiTestHelper::scheduleForAllWidgets<MessageDisplayWidget>(
-        //     [&expectedMessages, &receivedMessages](MessageDisplayWidget* displayWidget) {
-        //         const auto* message = displayWidget->message();
-
-        //         QVERIFY(expectedMessages.contains(message));
-
-        //         receivedMessages.insert(message);
-        //     }
-        //     );
-
-        // // Дабл-клік по одному з уже виділених item-ів.
-        // // Якщо production-код бере selectionModel()->selection(),
-        // // у діалог мають потрапити обидва.
-        // QTest::mouseDClick(
-        //     widget->viewport(),
-        //     Qt::LeftButton,
-        //     Qt::NoModifier,
-        //     pos1
-        //     );
-
-        // QTRY_COMPARE(receivedMessages.size(), expectedMessages.size());
-
-        // QCOMPARE(receivedMessages, expectedMessages);
-    // }
 };
 
 }; // namespace Draupnir::Logging

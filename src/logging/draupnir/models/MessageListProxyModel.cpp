@@ -31,9 +31,9 @@ namespace Draupnir::Logging
 
 MessageListProxyModel::MessageListProxyModel(QObject* parent) :
     QSortFilterProxyModel{parent},
-    m_displayedMessageCategoriesMask{MessageCategories::All},
-    m_displayedMessageLevelsMask{MessageLevels::All},
-    m_displayedMessageViewItemFields{MessageViewItemFields::All}
+    m_displayedMessageViewItemFields{DefaultDisplayedMessageItemFields},
+    m_displayedMessageCategoriesMask{DefaultDisplayedMessageCategories},
+    m_displayedMessageLevelsMask{DefaultDisplayedMessageLevels}
 {}
 
 void MessageListProxyModel::setDisplayedMessageViewItemFieldsMask(MessageViewItemFields mask)
@@ -134,4 +134,4 @@ bool MessageListProxyModel::filterAcceptsRow(int sourceRow, const QModelIndex &s
     return isMessageTypeDisplayed(msgView->type());
 }
 
-}; // namespace Draupnir::Messages
+}; // namespace Draupnir::Logging

@@ -14,22 +14,28 @@
     SOURCES +=
 
     HEADERS += \
+    $$PWD/../include/logging/draupnir/logging/messages/AbstractMessageViewIconProvider.h \
         $$PWD/../include/logging/draupnir/logging/messages/Message.h \
         $$PWD/../include/logging/draupnir/logging/Logger.h \
         $$PWD/../include/logging/draupnir/logging/core/AbstractMessageHandler.h \
-        $$PWD/../include/logging/draupnir/logging/core/AbstractMessageViewIconProvider.h \
-        $$PWD/../include/logging/draupnir/logging/messages/MessageCategories.h \
         $$PWD/../include/logging/draupnir/logging/messages/MessageGroup.h \
         $$PWD/../include/logging/draupnir/logging/messages/MessageLevels.h \
         $$PWD/../include/logging/draupnir/logging/messages/MessageTypes.h \
         $$PWD/../include/logging/draupnir/logging/messages/MessageViewItem.h \
         $$PWD/../include/logging/draupnir/logging/messages/MessageViewItemFields.h \
+        $$PWD/../include/logging/draupnir/logging/messages/categories/MessageCategories.h \
         $$PWD/../include/logging/draupnir/logging/models/MessageListModel.h \
         $$PWD/../include/logging/draupnir/logging/models/MessageListProxyModel.h \
-        $$PWD/../include/logging/draupnir/logging/traits/categories/DefaultMessageCategory.h \
         $$PWD/../include/logging/draupnir/logging/ui/widgets/MessageDisplayWidget.h \
         $$PWD/../include/logging/draupnir/logging/ui/widgets/MessageListView.h \
-        $$PWD/../include/logging/draupnir/logging/ui/windows/MessageDisplayDialog.h
+        $$PWD/../include/logging/draupnir/logging/ui/windows/MessageDisplayDialog.h \
+        $$PWD/../include/logging/draupnir/logging/concepts/MessageCategoryTraitConcept.h \
+        $$PWD/../include/logging/draupnir/logging/messages/categories/AbstractMessageCategoryRegistry.h \
+        $$PWD/../include/logging/draupnir/logging/messages/categories/MessageCategoriesSerializerInterface.h \
+        $$PWD/../include/logging/draupnir/logging/messages/categories/MessageCategoryRegistryTemplate.h \
+        $$PWD/../include/logging/draupnir/logging/traits/categories/DefaultMessageCategoryTrait.h \
+        $$PWD/../include/logging/draupnir/logging/traits/categories/NetworkMessageCategoryTrait.h \
+        $$PWD/../include/logging/draupnir/logging/traits/settings/LogWidgetSettingsTraits.h
 
     DISTFILES += \
         $$PWD/../docs/pages/Logging.dox

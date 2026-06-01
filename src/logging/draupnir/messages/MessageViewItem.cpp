@@ -24,7 +24,7 @@
 
 #include "draupnir/logging/messages/MessageViewItem.h"
 
-#include "draupnir/logging/core/AbstractMessageViewIconProvider.h"
+#include "draupnir/logging/messages/AbstractMessageViewIconProvider.h"
 
 namespace Draupnir::Logging
 {

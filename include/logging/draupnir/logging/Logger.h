@@ -35,7 +35,7 @@
 #include "draupnir/logging/messages/Message.h"
 #include "draupnir/logging/messages/MessageGroup.h"
 #include "draupnir/logging/messages/MessageLevels.h"
-#include "draupnir/logging/messages/MessageCategories.h"
+#include "draupnir/logging/messages/categories/MessageCategories.h"
 
 namespace Draupnir::Logging {
 

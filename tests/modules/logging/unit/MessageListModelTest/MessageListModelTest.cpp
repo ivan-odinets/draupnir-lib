@@ -25,7 +25,7 @@
 #include <QtTest>
 #include <QCoreApplication>
 
-#include "draupnir/logging/core/AbstractMessageViewIconProvider.h"
+#include "draupnir/logging/messages/AbstractMessageViewIconProvider.h"
 #include "draupnir/logging/messages/MessageViewItem.h"
 #include "draupnir/logging/models/MessageListModel.h"
 
