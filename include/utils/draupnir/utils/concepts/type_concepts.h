@@ -89,6 +89,20 @@ concept enum_or_integer_like_concept =
     enum_concept<Candidate> ||
     integer_like_concept<Candidate>;
 
-}; // namespace draupnir::utils
+/*! @ingroup Utils
+ *  @brief Concept satisfied by C-style arrays with the specified element type.
+ *  @tparam Candidate Type to check.
+ *  @tparam Element Expected array element type.
+ *
+ *  @details This concept is satisfied when `Candidate` is a C-style array and its element type matches `Element` according
+ *           to @ref draupnir::utils::is_c_array_of.
+ *
+ *           References and cv-qualification are handled by @ref is_c_array_of. */
+
+template<class Candidate, class Element>
+concept c_array_of_concept =
+    is_c_array_of_v<Candidate, Element>;
+
+} // namespace draupnir::utils
 
 #endif // TYPE_CONCEPTS_H

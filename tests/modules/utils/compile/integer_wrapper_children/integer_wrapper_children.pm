@@ -1,6 +1,8 @@
 {
     test_cases => {
         "test_different_children_not_constructible_one_from_another" => "",
+        "test_different_children_not_addable" => "",
+        "test_different_children_not_subtractable" => "",
         "test_different_children_not_assignable" => "",
         "test_different_children_not_equality_comparable" => "",
         "test_different_children_not_spaceship_comparable" => "",

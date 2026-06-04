@@ -95,6 +95,12 @@ public:
     /*! @brief Checks whether no bits are set.
      *  @return `true` if mask is zero, `false` otherwise. */
     [[nodiscard]] constexpr bool none() const noexcept { return m_mask == _zero; }
+
+    /*! @brief Checks if only one bit is set.
+     *  @return `true` if mask contains only one bit set, `false` otherwise. */
+    [[nodiscard]] constexpr bool is_single_bit_set() const noexcept {
+        return (m_mask != 0) && ((m_mask & (m_mask - 1)) == 0);
+    }
 ///@}
 
 ///@name Comparison operators.
@@ -499,6 +505,12 @@ public:
     [[nodiscard]] friend constexpr enum_flags operator^(enum_flags lhs, Other rhs) noexcept { return enum_flags{lhs | _base::_normalizer::normalize(rhs)}; }
 ///@}
 };
+
+template<class Candidate>
+concept flags_like_concept =
+    draupnir::utils::is_template_base_of_v<enum_flags, Candidate> ||
+    draupnir::utils::is_template_base_of_v<flags, Candidate>;
+
 
 /*! @brief Concept satisfied by instantiations of @ref draupnir::utils::enum_flags.
  *  @tparam Candidate Type to test. */

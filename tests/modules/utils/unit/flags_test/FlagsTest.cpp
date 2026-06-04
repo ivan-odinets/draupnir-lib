@@ -508,18 +508,23 @@ private slots:
         // Runtime checks for MyFlags
         MyFlags f{};
         QVERIFY(f.none());
+        QVERIFY(!f.is_single_bit_set());
         QVERIFY(!f.any());
         QVERIFY(f.test_flag(0));
 
         f.set_flag(One, true);
         QVERIFY(f.any());
         QVERIFY(!f.none());
+        QVERIFY(f.is_single_bit_set());
         QVERIFY(f.test_flag(One));
         QVERIFY(!f.test_flag(Two));
         QVERIFY(!f.test_flag(All));
         QVERIFY(!f.test_flag(0));
 
         f.set_flag(Two);
+        QVERIFY(f.any());
+        QVERIFY(!f.none());
+        QVERIFY(!f.is_single_bit_set());
         QCOMPARE(f.value(), (One | Two));
         QVERIFY(f.test_flag(One));
         QVERIFY(f.test_flag(Two));
@@ -547,11 +552,13 @@ private slots:
         MyWrappedFlags wrapped{};
         QVERIFY(wrapped.none());
         QVERIFY(!wrapped.any());
+        QVERIFY(!wrapped.is_single_bit_set());
         QVERIFY(wrapped.test_flag(0));
         QVERIFY(wrapped.test_flag(WrappedInt{0}));
 
         wrapped.set_flag(WrappedInt{One});
         QVERIFY(wrapped.any());
+        QVERIFY(wrapped.is_single_bit_set());
         QVERIFY(wrapped.test_flag(WrappedInt{One}));
         QVERIFY(!wrapped.test_flag(WrappedInt{Two}));
 

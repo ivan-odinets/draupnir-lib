@@ -57,7 +57,7 @@ namespace draupnir::utils
  *           @endcode
  *
  * @note This wrapper intentionally does not provide implicit conversion to the underlying integer type.
- * @todo Extend integer-like API with arithmetic operators (`+`, `-`, `*`, `/`, `%`, unary `+`/`-`, and corresponding
+ * @todo Extend integer-like API with arithmetic operators (`*`, `/`, `%`, unary `+`/`-`, and corresponding
  *       assignment operators). */
 
 template<integer_concept Integer, class Derived>
@@ -243,6 +243,31 @@ public:
      *  @param shift Number of bits to shift to the right.
      *  @return New wrapper containing the shifted value. */
     [[nodiscard]] constexpr Derived operator>>(int shift) const noexcept { return Derived{m_value >> shift}; }
+///@}
+
+///@name Arithmetic operators.
+///@{
+    /*! @brief Returns result of + with a raw integer-like mask. */
+    template<enum_or_integer_concept Other> requires(_normalizer::template can_be_normalized_v<Other>)
+    [[nodiscard]] friend constexpr Derived operator+(Other lhs, Derived rhs) noexcept { return Derived{_normalizer::normalize(lhs) + rhs.m_value}; }
+
+    /*! @brief Returns result of + a raw integer-like mask. */
+    template<enum_or_integer_concept Other> requires(_normalizer::template can_be_normalized_v<Other>)
+    [[nodiscard]] friend constexpr Derived operator+(Derived lhs, Other rhs) noexcept { return Derived{lhs.m_value + _normalizer::normalize(rhs)}; }
+
+    /*! @brief Returns result of + with a raw integer-like mask. */
+    [[nodiscard]] friend constexpr Derived operator+(Derived lhs, Derived rhs) noexcept { return Derived{lhs.m_value + rhs.m_value}; }
+
+    /*! @brief Returns result of - with a raw integer-like mask. */
+    template<enum_or_integer_concept Other> requires(_normalizer::template can_be_normalized_v<Other>)
+    [[nodiscard]] friend constexpr Derived operator-(Other lhs, Derived rhs) noexcept { return Derived{_normalizer::normalize(lhs) - rhs.m_value}; }
+
+    /*! @brief Returns result of - a raw integer-like mask. */
+    template<enum_or_integer_concept Other> requires(_normalizer::template can_be_normalized_v<Other>)
+    [[nodiscard]] friend constexpr Derived operator-(Derived lhs, Other rhs) noexcept { return Derived{lhs.m_value - _normalizer::normalize(rhs)}; }
+
+    /*! @brief Returns result of - with a raw integer-like mask. */
+    [[nodiscard]] friend constexpr Derived operator-(Derived lhs, Derived rhs) noexcept { return Derived{lhs.m_value - rhs.m_value}; }
 ///@}
 
 protected:

@@ -212,6 +212,12 @@ private slots:
         child = firstArgument;
         QCOMPARE(child >> 1, firstArgumentShiftedRight);
     }
+
+    void test_arithmetic_operators() {
+        FirstChild child{42};
+        QCOMPARE(child + 1, 43);
+        QCOMPARE(child - 1, 41);
+    }
 };
 
 QTEST_APPLESS_MAIN(IntegerWrapperTest)
