@@ -34,7 +34,9 @@ DEFINE_WRAPPED_INTEGER(WrappedOtherInt,int)
 using namespace draupnir::utils;
 
 /*! @class FlagsTest tests/modules/utils/unit/flags_test/FlagsTest.cpp
- *  @brief Test class for testing @ref draupnir::utils::flags. */
+ *  @ingroup UtilsTests
+ *  @brief Unit test for @ref draupnir::utils::flags.
+ * @todo Optional: Restructure and reorganize this test. */
 
 class FlagsTest final : public QObject
 {
@@ -599,6 +601,30 @@ private slots:
         QCOMPARE(enumFlags.value(), 0);
         QVERIFY(enumFlags.none());
         QVERIFY(enumFlags.test_flag(0));
+    }
+
+    void test_is_superset() {
+        MyEnumFlags flags =         0b0001;
+        QVERIFY(flags.is_superset(  0b0001));
+        QVERIFY(!flags.is_superset( 0b1001));
+
+        flags =                     0b0111;
+        QVERIFY(flags.is_superset(  0b0101));
+        QVERIFY(!flags.is_superset( 0b1001));
+
+        flags =                     0b0011;
+        QVERIFY(flags.is_superset(  0b0010));
+        QVERIFY(!flags.is_superset( 0b1111));
+    }
+
+    void test_is_subset() {
+        MyEnumFlags flags =       0b1001;
+        QVERIFY(flags.is_subset(  0b1111));
+        QVERIFY(!flags.is_subset( 0b1100));
+
+        flags =                   0b0011;
+        QVERIFY(flags.is_subset(  0b0111));
+        QVERIFY(!flags.is_subset( 0b0110));
     }
 
     void test_assigning_bitwise_and() {

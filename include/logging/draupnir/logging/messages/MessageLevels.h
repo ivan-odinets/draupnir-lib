@@ -95,10 +95,22 @@ class MessageLevels final : public draupnir::utils::enum_flags<MessageLevel::Val
 
 public:
     using _Base::enum_flags;
+    using _Base::operator=;
 
     static constexpr _Base::integer None = 0;
     static constexpr _Base::integer All =
         MessageLevel::Debug | MessageLevel::Info | MessageLevel::Warning | MessageLevel::Error;
+
+    static constexpr _Base::enum_type displayedFlags[] = {
+        MessageLevel::Debug, MessageLevel::Info, MessageLevel::Warning, MessageLevel::Error };
+    static constexpr _Base::integer displayedMasks[] = { All };
+
+    static QString toDisplayString(MessageLevels levels) {
+        if (levels == All)
+            return QObject::tr("All");
+
+        return MessageLevel::toDisplayString(static_cast<MessageLevel::Value>(levels.value()));
+    };
 };
 
 }; // namespace Draupnir::Logging

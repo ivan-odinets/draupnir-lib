@@ -38,7 +38,11 @@ namespace Draupnir::Ui
  *  @tparam UiElement class of the UI element to be created / handled. Should be either `QAction` or `QCheckBox`.
  *
  *  @details This class is used within template-based containers (e.g. @ref Draupnir::Logging::MessageFieldsSelectorBase)
- *           to have an abstract interface for connecting slots to a `QAction` and `QCheckBox` user-triggered signals. */
+ *           to have an abstract interface for connecting slots to a `QAction` and `QCheckBox` user-triggered signals.
+ * @todo Feature: Allow creation QAction / QCheckBox / ... with parent.
+ * @todo Feature: Add possibility of conenction to different signals from "checkable" elements.
+ * @todo Feature: Add support of QAction-derived and QCheckBox-derived widgets.
+ * @todo Question: Do we need here support of QGroupBox?*/
 
 template<class UiElement>
 class CheckableUiElementHelper
@@ -51,23 +55,58 @@ public:
         } else if constexpr (std::is_same_v<UiElement, QCheckBox>) {
             return &QCheckBox::clicked;
         } else {
-            static_assert(!std::is_same_v<UiElement,UiElement>,
+            static_assert(!std::is_same_v<UiElement, UiElement>,
                 "Only QAction or QCheckBox are supported as UiElement.");
             return 0xDEADBEFF;
         }
     }();
 
-    /*! @brief Helper method to create and connect a new checkable UI element.
-     *  @param callable Slot to call on toggled/triggered(bool).
-     *  @return A new DisplayUiElement* properly connected and checkable. */
-    template<typename F>
-    static UiElement* createConnectedUiElement(F&& callable) {
+    /*! @brief Helper method to create a new checkable UI element.
+     *  @return A new checkable UiElement*. */
+    static UiElement* createUiElement() {
         UiElement* result = new UiElement{};
+        // QCheckBox is checkable by default. For QAction we need to call
         if constexpr (std::is_same_v<UiElement,QAction>)
             result->setCheckable(true);
+        return result;
+    }
 
-        QObject::connect(result, singalAddress, std::forward<F>(callable));
+    /*! @brief Helper method to create a new checkable UI element with specified text / label.
+     *  @param text Text to be shown on the newly created element
+     *  @return A new checkable UiElement*. */
+    static UiElement* createUiElement(const QString& text) {
+        UiElement* result = createUiElement();
+        // Call either QAction::setText ot QCheckBox::setText method
+        result->setText(text);
+        return result;
+    }
 
+    /*! @brief Helper method to conenct provided checkable UI element to a specified callable.
+     *  @param callable Slot to call on toggled/triggered(bool).
+     *  @return A new checkable UiElement*. */
+    template<typename F>
+    static auto connectElement(UiElement* element, F&& callable) {
+        return QObject::connect(element, singalAddress, std::forward<F>(callable));
+    }
+
+    /*! @brief Helper method to create and connect a new checkable UI element.
+     *  @param callable Slot to call on toggled/triggered(bool).
+     *  @return A new UiElement* properly connected and checkable. */
+    template<typename F>
+    static UiElement* createConnectedUiElement(F&& callable) {
+        UiElement* result = createUiElement();
+        connectElement(result, std::forward<F>(callable));
+        return result;
+    }
+
+    /*! @brief Helper method to create and connect a new checkable UI element with specified text / label.
+     *  @param text Text to be shown on the newly created element
+     *  @param callable Slot to call on toggled/triggered(bool).
+     *  @return A new UiElement* properly connected and checkable. */
+    template<typename F>
+    static UiElement* createConnectedUiElement(const QString& text, F&& callable) {
+        UiElement* result = createUiElement(text);
+        connectElement(result, std::forward<F>(callable));
         return result;
     }
 };

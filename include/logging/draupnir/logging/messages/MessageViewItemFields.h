@@ -124,9 +124,20 @@ class MessageViewItemFields final : public draupnir::utils::enum_flags<MessageVi
     using _Base = draupnir::utils::enum_flags<MessageViewItemField::Value>;
 
 public:
-    using _Base::enum_flags;
+    using integer = _Base::integer;
+    using enum_type = _Base::enum_type;
 
+    using _Base::enum_flags;
     using _Base::operator=;
+
+    static constexpr enum_type displayedFlags[] = {
+        MessageViewItemField::Value::Brief, MessageViewItemField::Value::What,
+        MessageViewItemField::Value::DateTime, MessageViewItemField::Value::Icon
+    };
+
+    static QString toDisplayString(MessageViewItemFields fields) {
+        return MessageViewItemField::toDisplayString(static_cast<MessageViewItemField::Value>(fields.value()));
+    }
 
     static constexpr _Base::integer None = 0;
 
@@ -179,8 +190,6 @@ public:
 
     static QLatin1String noneConfigKey()     { return QLatin1String{"none"}; }
     static QLatin1String allConfigKey()      { return QLatin1String{"all"}; }
-
-private:
 };
 
 }; // namespace Draupnir::Logging

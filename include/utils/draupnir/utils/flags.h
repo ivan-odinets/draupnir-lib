@@ -41,7 +41,8 @@ namespace draupnir::utils
  *  @details `flags_base<Int, Derived>` implements storage and common operations shared by @ref draupnir::utils::flags and
  *           @ref draupnir::utils::enum_flags:
  *           - explicit access to stored value via @ref value;
- *           - boolean/query helpers such as @ref any, @ref none, and `operator bool`;
+ *           - boolean/query helpers such as @ref any, @ref none, @ref is_single_bit_set, @ref is_superset, @ref is_subset,
+ *             and `operator bool`;
  *           - equality and three-way comparison with compatible built-in integer values;
  *           - bitwise operators (`&`, `|`, `^`, `~`) and their assignment forms.
  *
@@ -100,6 +101,45 @@ public:
      *  @return `true` if mask contains only one bit set, `false` otherwise. */
     [[nodiscard]] constexpr bool is_single_bit_set() const noexcept {
         return (m_mask != 0) && ((m_mask & (m_mask - 1)) == 0);
+    }
+
+    /*! @brief Checks whether this mask is a superset of another mask-like value.
+     *  @tparam Value Enum or integer-like value that can be normalized into the storage type.
+     *  @param other Mask value whose bits must be present in this mask.
+     *  @return `true` if every bit set in `other` is also set in this mask, `false` otherwise.
+     * @note The empty mask is a subset of every mask, so `is_superset(0)` returns `true`. */
+    template<enum_or_integer_concept Value>
+    [[nodiscard]] constexpr bool is_superset(Value other) const noexcept requires(_normalizer::template can_be_normalized_v<Value>) {
+        return (this->m_mask & _normalizer::normalize(other)) == _normalizer::normalize(other);
+    }
+
+    /*! @brief Checks whether this mask is a superset of another flags object.
+     *  @param other Other flags object whose bits must be present in this mask.
+     *  @return `true` if every bit set in @p other is also set in this mask, `false` otherwise.
+     * @note The empty mask is a subset of every mask, so passing an empty @p other returns `true`. */
+    [[nodiscard]] constexpr bool is_superset(flags_base other) const noexcept {
+        return (this->m_mask & other.m_mask) == other.m_mask;
+    }
+
+    /*! @brief Checks whether this mask is a subset of another mask-like value.
+     *  @tparam Value Enum or integer-like value that can be normalized into the storage type.
+     *  @param other Mask value that should contain all bits from this mask.
+     *  @return `true` if every bit set in this mask is also set in `other`, `false` otherwise.
+     * @note The empty mask is a subset of every mask, so an empty current mask always returns `true`. */
+    template<enum_or_integer_concept Value>
+    [[nodiscard]] constexpr bool is_subset(Value other) const noexcept requires(_normalizer::template can_be_normalized_v<Value>) {
+        return (this->m_mask & _normalizer::normalize(other)) == this->m_mask;
+    }
+
+    /*! @brief Checks whether this mask is a subset of another flags object.
+     *  @param other Other flags object that should contain all bits from this mask.
+     *  @return `true` if every bit set in this mask is also set in `other`, `false` otherwise.
+     * @note The empty mask is a subset of every mask, so an empty current mask always returns `true`. */
+    [[nodiscard]] constexpr bool is_subset(const flags_base& other) const noexcept {
+        return (this->m_mask & other.m_mask) == this->m_mask;
+    }
+    [[nodiscard]] constexpr bool is_subset(flags_base other) const noexcept {
+        return (this->m_mask & other.m_mask) == this->m_mask;
     }
 ///@}
 
@@ -206,7 +246,7 @@ public:
     /*! @brief Checks whether the stored mask is zero.
      *  @return `true` if the stored mask is zero, `false` otherwise.
      */
-    constexpr bool operator!() const noexcept { return !m_mask; }
+    [[nodiscard]] constexpr bool operator!() const noexcept { return !m_mask; }
 
 protected:
     constexpr Derived& _derived() noexcept { return static_cast<Derived&>(*this); }
@@ -229,7 +269,7 @@ protected:
  *           It supports:
  *           - equality and three-way comparison;
  *           - bitwise operators (`&`, `|`, `^`, `~`) and their assignment forms;
- *           - helper methods @ref test_flag and @ref set_flag.
+ *           - helper methods @ref test_flag, @ref set_flag, @ref is_superset, and @ref is_subset;
  *
  *           The class does not prescribe any particular meaning for bits. It is intended to be used directly as a generic
  *           flags container.
@@ -379,7 +419,7 @@ concept flags_concept = draupnir::utils::is_instantiation_of_v<Candidate,flags>;
  *           It supports:
  *           - equality and three-way comparison;
  *           - bitwise operators (`&`, `|`, `^`, `~`) and their assignment forms;
- *           - helper methods @ref test_flag and @ref set_flag.
+ *           - helper methods @ref test_flag, @ref set_flag, @ref is_superset, and @ref is_subset;
  *
  * @note `test_flag(0)` follows the QFlags-like rule: it returns `true` only when the stored mask is also zero. */
 
@@ -502,7 +542,7 @@ public:
 
     /*! @brief Returns result of bitwise XOR with a matching enum mask. */
     template<enum_concept Other> requires(std::same_as<Enum,Other>)
-    [[nodiscard]] friend constexpr enum_flags operator^(enum_flags lhs, Other rhs) noexcept { return enum_flags{lhs | _base::_normalizer::normalize(rhs)}; }
+    [[nodiscard]] friend constexpr enum_flags operator^(enum_flags lhs, Other rhs) noexcept { return enum_flags{lhs ^ _base::_normalizer::normalize(rhs)}; }
 ///@}
 };
 

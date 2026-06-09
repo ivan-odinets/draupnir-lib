@@ -22,34 +22,34 @@
  *
  */
 
-#ifndef MESSAGECATEGORYTRAITCONCEPT_H
-#define MESSAGECATEGORYTRAITCONCEPT_H
+#ifndef DISPLAYABLEENUMFLAGSCONCEPT_H
+#define DISPLAYABLEENUMFLAGSCONCEPT_H
 
-#include "draupnir/logging/messages/categories/MessageCategories.h"
+#include <QString>
 
-#include <QAction>
+#include "draupnir/utils/concepts/type_concepts.h"
+#include "draupnir/utils/flags.h"
 
-namespace Draupnir::Logging
+namespace Draupnir::Ui
 {
 
-/*! @ingroup Logging
- *  @brief Concept for compile-time message category traits.
- *  @tparam Candidate Type to check.
- *
- *  @details A message category trait describes a single logging/message category known at compile time.
- *
- *           A valid trait must provide:
- *           - `static MessageCategory id()` — stable category identifier.
- *           - `static QString displayName()` — human-readable name for UI.
- *           - `static QString configKey()` — stable string key used in config files. */
+template<class Candidate>
+concept DisplayableEnumFlagsConcept =
+    draupnir::utils::enum_flags_derived_concept<Candidate> &&
+    requires(Candidate flags) {
+        typename Candidate::enum_type;
+        typename Candidate::integer;
+
+        requires draupnir::utils::c_array_of_concept<decltype(Candidate::displayedFlags), typename Candidate::enum_type>;
+
+        { Candidate::toDisplayString(flags) } -> std::same_as<QString>;
+    };
 
 template<class Candidate>
-concept MessageCategoryTraitConcept = requires {
-    { Candidate::id() } -> std::same_as<MessageCategory>;
-    { Candidate::displayName() } -> std::same_as<QString>;
-    { Candidate::configKey() } -> std::same_as<QString>;
-};
+concept DisplayableEnumFlagsWithMasks =
+    DisplayableEnumFlagsConcept<Candidate> &&
+    draupnir::utils::c_array_of_concept<decltype(Candidate::displayedMasks),typename Candidate::integer>;
 
-}; // namespace Draupnir::Logging
+}; // namespace Draupnir::Ui
 
-#endif // MESSAGECATEGORYTRAITCONCEPT_H
+#endif // DISPLAYABLEENUMFLAGSCONCEPT_H

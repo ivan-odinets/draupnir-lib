@@ -1,6 +1,7 @@
 !contains(DEFINES, DRAUPNIR_UI_BRICKS_ENABLED) {
     DEFINES += DRAUPNIR_UI_BRICKS_ENABLED
 
+    include(Containers.pri)
     include(DraupnirVersion.pri)
     include(SettingsRegistry.pri)
     include(DraupnirResources.pri)
@@ -17,6 +18,7 @@
         $$PWD/../include/ui_bricks/draupnir/ui_bricks/animations/ShrinkToCenter.h \
         $$PWD/../include/ui_bricks/draupnir/ui_bricks/concepts/FileManagerConcept.h \
         $$PWD/../include/ui_bricks/draupnir/ui_bricks/core/ViewManager.h \
+    $$PWD/../include/ui_bricks/draupnir/ui_bricks/core/selectors/EnumFlagsMaskSelectorBase.h \
         $$PWD/../include/ui_bricks/draupnir/ui_bricks/handlers/settings_menu/SettingsMenuHandlerTemplate.h \
         $$PWD/../include/ui_bricks/draupnir/ui_bricks/handlers/templates/ActionHandlerTemplate.h \
         $$PWD/../include/ui_bricks/draupnir/ui_bricks/handlers/templates/GenericMenuEntryHandlerTemplate.h \
@@ -80,6 +82,7 @@
         $$PWD/../include/ui_bricks/draupnir/ui_bricks/utils/SettingsValueUserInput.h \
         $$PWD/../include/ui_bricks/draupnir/ui_bricks/concepts/ActionHandlerConcept.h \
         $$PWD/../include/ui_bricks/draupnir/ui_bricks/traits/features/ClosureConfirmation.h \
+        $$PWD/../include/ui_bricks/draupnir/ui_bricks/concepts/DisplayableEnumFlagsConcept.h \
         $$PWD/../include/ui_bricks/draupnir/ui_bricks/concepts/HelpContextConcept.h \
         $$PWD/../include/ui_bricks/draupnir/ui_bricks/concepts/TabTraitConcept.h
 
@@ -91,3 +94,4 @@
     DISTFILES += \
         $$PWD/../docs/pages/UiBricks.dox
 }
+

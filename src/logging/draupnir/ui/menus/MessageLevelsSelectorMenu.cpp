@@ -22,34 +22,39 @@
  *
  */
 
-#ifndef MESSAGECATEGORYTRAITCONCEPT_H
-#define MESSAGECATEGORYTRAITCONCEPT_H
+#include "draupnir/logging/ui/menus/MessageLevelsSelectorMenu.h"
 
-#include "draupnir/logging/messages/categories/MessageCategories.h"
-
-#include <QAction>
+#include <QEvent>
 
 namespace Draupnir::Logging
 {
 
-/*! @ingroup Logging
- *  @brief Concept for compile-time message category traits.
- *  @tparam Candidate Type to check.
- *
- *  @details A message category trait describes a single logging/message category known at compile time.
- *
- *           A valid trait must provide:
- *           - `static MessageCategory id()` — stable category identifier.
- *           - `static QString displayName()` — human-readable name for UI.
- *           - `static QString configKey()` — stable string key used in config files. */
+MessageLevelsSelectorMenu::MessageLevelsSelectorMenu(QWidget* parent) :
+    QMenu{parent},
+    _Base{MessageLevels::All}
+{ _setupUi(); }
 
-template<class Candidate>
-concept MessageCategoryTraitConcept = requires {
-    { Candidate::id() } -> std::same_as<MessageCategory>;
-    { Candidate::displayName() } -> std::same_as<QString>;
-    { Candidate::configKey() } -> std::same_as<QString>;
+MessageLevelsSelectorMenu::MessageLevelsSelectorMenu(const QString& title, QWidget* parent) :
+    QMenu{title, parent},
+    _Base{MessageLevels::All}
+{ _setupUi(); }
+
+void MessageLevelsSelectorMenu::changeEvent(QEvent* event)
+{
+    if (event->type() == QEvent::LanguageChange)
+        _Base::retranslateUiElements();
+
+    QMenu::changeEvent(event);
+}
+
+void MessageLevelsSelectorMenu::_setupUi()
+{
+    addAction(_Base::getMaskElement<MessageLevels::All>());
+    addSeparator();
+    addAction(_Base::getFlagElement<MessageLevel::Debug>());
+    addAction(_Base::getFlagElement<MessageLevel::Info>());
+    addAction(_Base::getFlagElement<MessageLevel::Warning>());
+    addAction(_Base::getFlagElement<MessageLevel::Error>());
+}
+
 };
-
-}; // namespace Draupnir::Logging
-
-#endif // MESSAGECATEGORYTRAITCONCEPT_H

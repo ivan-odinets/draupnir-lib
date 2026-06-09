@@ -35,7 +35,9 @@
         $$PWD/../include/logging/draupnir/logging/messages/categories/MessageCategoryRegistryTemplate.h \
         $$PWD/../include/logging/draupnir/logging/traits/categories/DefaultMessageCategoryTrait.h \
         $$PWD/../include/logging/draupnir/logging/traits/categories/NetworkMessageCategoryTrait.h \
-        $$PWD/../include/logging/draupnir/logging/traits/settings/LogWidgetSettingsTraits.h
+        $$PWD/../include/logging/draupnir/logging/traits/settings/LogWidgetSettingsTraits.h \
+        $$PWD/../include/logging/draupnir/logging/ui/menus/MessageLevelsSelectorMenu.h \
+        $$PWD/../include/logging/draupnir/logging/ui/menus/MessageViewItemFieldsSelectorMenu.h
 
     DISTFILES += \
         $$PWD/../docs/pages/Logging.dox
@@ -48,5 +50,7 @@
         $$PWD/../src/logging/draupnir/models/MessageListProxyModel.cpp \
         $$PWD/../src/logging/draupnir/ui/widgets/MessageDisplayWidget.cpp \
         $$PWD/../src/logging/draupnir/ui/widgets/MessageListView.cpp \
-        $$PWD/../src/logging/draupnir/ui/windows/MessageDisplayDialog.cpp
+        $$PWD/../src/logging/draupnir/ui/windows/MessageDisplayDialog.cpp \
+        $$PWD/../src/logging/draupnir/ui/menus/MessageViewItemFieldsSelectorMenu.cpp \
+        $$PWD/../src/logging/draupnir/ui/menus/MessageLevelsSelectorMenu.cpp
 }

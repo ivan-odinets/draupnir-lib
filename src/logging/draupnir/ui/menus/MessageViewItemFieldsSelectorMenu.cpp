@@ -22,36 +22,37 @@
  *
  */
 
-#ifndef NETWORKMESSAGECATEGORYTRAIT_H
-#define NETWORKMESSAGECATEGORYTRAIT_H
+#include "draupnir/logging/ui/menus/MessageViewItemFieldsSelectorMenu.h"
 
-#include <QObject>
-
-#include "draupnir/logging/messages/categories/MessageCategories.h"
+#include <QEvent>
 
 namespace Draupnir::Logging
 {
 
-/*! @class NetworkMessageCategoryTrait draupnir/logging/traits/categories/NetworkMessageCategoryTrait.h
- *  @ingroup Logging
- *  @brief Trait describing the network message category.
- *
- *  @details Provides compile-time metadata for the network logging/message category, including its identifier, configuration
- *           key, and translatable display name. */
+MessageViewItemFieldsSelectorMenu::MessageViewItemFieldsSelectorMenu(QWidget* parent) :
+    QMenu{parent},
+    _Base{MessageViewItemFields::All}
+{ _setupUi(); }
 
-class NetworkMessageCategoryTrait
+MessageViewItemFieldsSelectorMenu::MessageViewItemFieldsSelectorMenu(const QString& title, QWidget* parent) :
+    QMenu{title, parent},
+    _Base{MessageViewItemFields::All}
+{ _setupUi(); }
+
+void MessageViewItemFieldsSelectorMenu::changeEvent(QEvent* event)
 {
-public:
-    /*! @brief Returns the stable category identifier. */
-    static constexpr MessageCategory id() { return MessageCategory::Network; }
+    if (event->type() == QEvent::LanguageChange)
+        _Base::retranslateUiElements();
 
-    /*! @brief Returns the stable configuration key for this category. */
-    static QString configKey() { return "network"; }
+    QMenu::event(event);
+}
 
-    /*! @brief Returns the user-facing translated display name. */
-    static QString displayName() { return QObject::tr("Network"); }
-};
+void MessageViewItemFieldsSelectorMenu::_setupUi()
+{
+    addAction(_Base::getFlagElement<MessageViewItemField::Brief>());
+    addAction(_Base::getFlagElement<MessageViewItemField::What>());
+    addAction(_Base::getFlagElement<MessageViewItemField::DateTime>());
+    addAction(_Base::getFlagElement<MessageViewItemField::Icon>());
+}
 
 }; // namespace Draupnir::Logging
-
-#endif // NETWORKMESSAGECATEGORYTRAIT_H

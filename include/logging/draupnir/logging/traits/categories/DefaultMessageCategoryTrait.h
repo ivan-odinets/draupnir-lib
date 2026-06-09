@@ -43,7 +43,7 @@ class DefaultMessageCategoryTrait
 {
 public:
     /*! @brief Returns the stable category identifier. */
-    static MessageCategory id() { return MessageCategory::Default; }
+    static constexpr MessageCategory id() { return MessageCategory::Default; }
 
     /*! @brief Returns the stable configuration key for this category. */
     static QString configKey() { return QString("default"); }

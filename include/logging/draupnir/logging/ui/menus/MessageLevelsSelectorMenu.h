@@ -22,36 +22,46 @@
  *
  */
 
-#ifndef NETWORKMESSAGECATEGORYTRAIT_H
-#define NETWORKMESSAGECATEGORYTRAIT_H
+#ifndef MESSAGELEVELSSELECTORMENU_H
+#define MESSAGELEVELSSELECTORMENU_H
 
-#include <QObject>
+#include <QMenu>
 
-#include "draupnir/logging/messages/categories/MessageCategories.h"
+#include "draupnir/ui_bricks/core/selectors/EnumFlagsMaskSelectorBase.h"
+
+#include "draupnir/logging/messages/MessageLevels.h"
 
 namespace Draupnir::Logging
 {
 
-/*! @class NetworkMessageCategoryTrait draupnir/logging/traits/categories/NetworkMessageCategoryTrait.h
+/*! @class MessageLevelsSelectorMenu
  *  @ingroup Logging
- *  @brief Trait describing the network message category.
- *
- *  @details Provides compile-time metadata for the network logging/message category, including its identifier, configuration
- *           key, and translatable display name. */
+ *  @brief This is a class.
+ * @todo Documentation: Write reasonable documentation. */
 
-class NetworkMessageCategoryTrait
+class MessageLevelsSelectorMenu final :
+    public QMenu,
+    public Draupnir::Ui::EnumFlagsMaskSelectorBase<MessageLevelsSelectorMenu, QAction, MessageLevels>
 {
+    Q_OBJECT
+private:
+    using _Base = Draupnir::Ui::EnumFlagsMaskSelectorBase<MessageLevelsSelectorMenu, QAction, MessageLevels>;
+
 public:
-    /*! @brief Returns the stable category identifier. */
-    static constexpr MessageCategory id() { return MessageCategory::Network; }
+    MessageLevelsSelectorMenu(QWidget* parent = nullptr);
+    MessageLevelsSelectorMenu(const QString& title, QWidget* parent = nullptr);
+    ~MessageLevelsSelectorMenu() final = default;
 
-    /*! @brief Returns the stable configuration key for this category. */
-    static QString configKey() { return "network"; }
+signals:
+    void flagSelectionChanged(MessageLevel::Value level, bool isChecked);
 
-    /*! @brief Returns the user-facing translated display name. */
-    static QString displayName() { return QObject::tr("Network"); }
+protected:
+    void changeEvent(QEvent* event) final;
+
+private:
+    void _setupUi();
 };
 
 }; // namespace Draupnir::Logging
 
-#endif // NETWORKMESSAGECATEGORYTRAIT_H
+#endif // MESSAGELEVELSSELECTORMENU_H
