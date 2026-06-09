@@ -34,8 +34,8 @@ namespace Draupnir::Settings
  *  @ingroup SettingsRegistry
  *  @brief Setting trait for tracking the list of the recently used files
  *
- * @todo Allow changing of the defaultValue behaviour using preprocessor and test this behaviour.
- * @todo Move this trait to more suitable place. Maybe in upcoming Files module? */
+ * @todo Feature: Allow changing of the defaultValue behaviour using preprocessor and test this behaviour.
+ * @todo Cleanup: Move this trait to more suitable place. Maybe in upcoming Files module? */
 
 struct RecentFileListSetting
 {

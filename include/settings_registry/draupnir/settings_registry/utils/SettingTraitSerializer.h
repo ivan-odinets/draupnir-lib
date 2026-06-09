@@ -58,7 +58,7 @@ namespace Draupnir::Settings
  *           - `static Value get(Backend* settings);`
  *           - `static void set(Backend* settings, const Value& value);`
  *
- * @note Default implementation assumes that `Backend` provides `contains(key)`, `value(key)`, `setValue(key, QVariant)`. */
+ * @todo Documentation: Write reasonable documentation page when this class needs to be specialized. And write a manual how to do so. */
 
 template<SettingsBackendConcept Backend, SettingTraitConcept SettingTrait>
 class SettingTraitSerializer;
@@ -73,8 +73,7 @@ public:
      *  @param settings Pointer to the backend (must not be nullptr).
      *  @return The stored value if present and valid, otherwise the trait's default. */
     inline static Value get(Backend* settings) {
-        Q_ASSERT_X(settings, "SettingTraitSerializer<Backend,SettingTrait>::get",
-                   "Provided settings pointer is nullptr.");
+        Q_ASSERT_X(settings, Q_FUNC_INFO, "Provided settings pointer is nullptr.");
 
         if (!settings->contains(SettingTrait::key()))
             return SettingTrait::defaultValue();
@@ -85,10 +84,10 @@ public:
 
     /*! @brief Stores the setting value into the backend.
      *  @param settings Pointer to the backend (must not be nullptr).
-     *  @param value The value to persist. */
+     *  @param value The value to persist.
+     * @todo Question: Maybe add some validation like "if ValueSerializerTemplate<Value>::toQVariant works"? */
     inline static void set(Backend* settings, const Value& value) {
-        Q_ASSERT_X(settings, "SettingTraitSerializer<Backend,SettingTrait>::set",
-                   "Provided settings pointer is nullptr.");
+        Q_ASSERT_X(settings, Q_FUNC_INFO, "Provided settings pointer is nullptr.");
 
         settings->setValue(SettingTrait::key(), ValueSerializerTemplate<Value>::toQVariant(value));
     }

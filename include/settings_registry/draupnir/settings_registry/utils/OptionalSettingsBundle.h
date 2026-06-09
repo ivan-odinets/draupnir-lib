@@ -25,7 +25,8 @@
 #ifndef OPTIONALSETTINGSBUNDLE_H
 #define OPTIONALSETTINGSBUNDLE_H
 
-#include "draupnir/settings_registry/SettingsBundleTemplate.h"
+#include "draupnir/settings_registry/concepts/SettingTraitConcept.h"
+#include "draupnir/settings_registry/concepts/SettingsBundleConcept.h"
 
 namespace Draupnir::Settings
 {
@@ -61,7 +62,7 @@ namespace Draupnir::Settings
  *
  * @todo Question: Maybe it make sense to rename this clas into OptionalSettingsBundleBase? */
 
-template<SettingsBundleConcept Bundle,bool isEnabled>
+template<SettingsBundleConcept Bundle, bool isEnabled>
 class OptionalSettingsBundle;
 
 /*! @brief Disabled specialization of @ref OptionalSettingsBundle.
@@ -71,7 +72,7 @@ class OptionalSettingsBundle;
  *           terms of runtime cost (subject to the usual rules for empty types and EBO). */
 
 template<SettingsBundleConcept Bundle>
-class OptionalSettingsBundle<Bundle,false>
+class OptionalSettingsBundle<Bundle, false>
 {};
 
 /*! @brief Enabled specialization of @ref OptionalSettingsBundle.
@@ -81,7 +82,8 @@ class OptionalSettingsBundle<Bundle,false>
  *
  *           The `SettingsSource` used in @ref loadSettings may be provided either as a pointer or as a non-pointer type.
  *           In both cases, the implementation enforces at compile time that the bundle can be fully populated from the given
- *           source type. */
+ *           source type.
+ * @todo Question: Maybe add this auto&& versions of some methods within this class? */
 
 template<SettingsBundleConcept Bundle>
 class OptionalSettingsBundle<Bundle,true>
@@ -91,7 +93,8 @@ public:
      *  @tparam SettingsSource Type of the source object providing access to settings. May be a pointer or a non-pointer type.
      *  @param source The settings source instance (or pointer to it).
      *  @details At compile time this function verifies that `Bundle` can be fully populated from `SettingsSource`. If the
-     *           check fails, compilation is aborted via `static_assert`. */
+     *           check fails, compilation is aborted via `static_assert`.
+     * @todo Important: As other `loadSettings`-methods this needs to be standartized. */
     template<class SettingsSource>
     void loadSettings(SettingsSource source) {
         if constexpr (std::is_pointer_v<SettingsSource>) {
@@ -105,15 +108,17 @@ public:
     }
 
     /*! @brief Provides direct access to the underlying settings bundle.
-     *  @return A non-const reference to the stored `Bundle` instance. */
+     *  @return A non-const reference to the stored `Bundle` instance.
+     * @todo Question: Do we need access to SettingsBundle if it was not loaded? */
     auto& bundle() { return m_settings; }
 
     /*! @brief Retrieves the value of a specific setting trait from the bundle.
      *  @tparam SettingTrait A setting trait that must be contained in `Bundle`.
      *  @return A const reference to the value associated with `SettingTrait`.
      *  @details This function performs a compile-time check that `Bundle` contains the specified `SettingTrait`. If the trait
-     *           is not part of the bundle, compilation fails with a `static_assert`. */
-    template<class SettingTrait>
+     *           is not part of the bundle, compilation fails with a `static_assert`.
+     * @todo User-Friendliness: Improve static_assert message. Add Q_ASSERT / Q_ASSERT_X validation if settings are loaded. */
+    template<SettingTraitConcept SettingTrait>
     const typename SettingTrait::Value& get() const {
         static_assert(Bundle::template contains<SettingTrait>());
         return m_settings.template get<SettingTrait>();
@@ -123,8 +128,9 @@ public:
      *  @tparam SettingTrait A setting trait that must be contained in `Bundle`.
      *  @param value New value to assign to the trait.
      *  @details As with @ref get, this function enforces at compile time that `SettingTrait is a member of `Bundle`. The new
-     *           value is then forwarded to the underlying bundle's `set` member. */
-    template<class SettingTrait>
+     *           value is then forwarded to the underlying bundle's `set` member.
+     * @todo User-Friendliness: Improve static_assert message. Add Q_ASSERT / Q_ASSERT_X validation if settings are loaded. */
+    template<SettingTraitConcept SettingTrait>
     void set(const typename SettingTrait::Value& value) {
         static_assert(Bundle::template contains<SettingTrait>());
         m_settings.template set<SettingTrait>(value);

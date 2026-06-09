@@ -25,13 +25,11 @@
 #ifndef SETTINGSBUNDLETEMPLATE_H
 #define SETTINGSBUNDLETEMPLATE_H
 
-#include <iostream>
 #include <tuple>
 
 #include <QDebug>
 
 #include "draupnir/settings_registry/concepts/SettingsBundleConcept.h"
-#include "draupnir/settings_registry/concepts/SettingTraitConcept.h"
 #include "draupnir/settings_registry/core/SettingTemplate.h"
 #include "draupnir/settings_registry/utils/SettingTraitPrinter.h"
 #include "draupnir/settings_registry/utils/SettingTraitSerializer.h"
@@ -71,8 +69,9 @@ namespace Draupnir::Settings
  *  @note Bundles can represent arbitrary subsets of traits. Compile-time utilities (contains, canBePopulatedFrom)
  *        allow verifying whether a bundle matches a given registry.
  *
- * @todo Add interface for partial updating of the settings. E.g. when the setting has sth like QStringList type - not replace
- *       the variable, but use append method and than write to the backend. */
+ * @todo Feature: Add interface for partial updating of the settings. E.g. when the setting has sth like QStringList type -
+ *       not replace the variable, but use append method and than write to the backend.
+ * @todo Tests: Add compile tests for this class. */
 
 template<SettingTraitConcept... SettingTraits>
 class SettingsBundleTemplate
@@ -122,7 +121,8 @@ public:
 
     /*! @brief Compile-time check: can this bundle be fully populated from the given SettingsSource?
      *  @tparam SettingsSource A registry type to check against.
-     *  @return true if all SettingTraits in this bundle are present in the registry, false otherwise. */
+     *  @return true if all SettingTraits in this bundle are present in the registry, false otherwise.
+     * @todo Important: As other `loadSettings`-related methods this needs to be standartized. */
     template<class SettingsSource>
     static constexpr bool canBeFullyPopulatedFrom() {
         return _canBePopulatedFromImpl<SettingsSource,SettingTraits...>();
@@ -160,18 +160,16 @@ public:
      * @note The output object must support chaining via `operator<<`. */
     template<class Output>
     void printTo(Output&& output) {
-        Q_ASSERT_X(isValid(), "SettingsBundleTemplate<SettingsTraits...>::printTo",
-                   "This method must be called only for valid SettingsBundleTemplate objects.");
+        Q_ASSERT_X(isValid(), Q_FUNC_INFO, "This method must be called only for valid SettingsBundleTemplate objects.");
 
         (SettingTraitPrinter<SettingTraits>::template print<Output>(std::forward<Output>(output), get<SettingTraits>()), ... );
     }
 
-    template<class Bundle>
+    template<SettingsBundleConcept Bundle>
     Bundle getSettingsBundle() {
         static_assert(Bundle::template canBeFullyPopulatedFrom<SettingsBundleTemplate<SettingTraits...>>(),
                 "Requested Bundle can not be fully populated by this SettingsBundle<SettingTraits...> instance.");
-        Q_ASSERT_X(p_backend, "SettingsBundle<SettingTraits...>::getSettingsBundle<Bundle>()",
-                   "This bundle must have been initialized from corresponding SettingsRegistry.");
+        Q_ASSERT_X(p_backend, Q_FUNC_INFO, "This bundle must have been initialized from corresponding SettingsRegistry.");
 
         Bundle result{p_backend};
         _populateSettingBundle<Bundle,SettingTraits...>(result);
@@ -185,8 +183,7 @@ public:
     SettingsBundleTemplate<SubsetOfTraits...> getSettingBundleForTraits() {
         static_assert(SettingsBundleTemplate<SubsetOfTraits...>::template canBeFullyPopulatedFrom<SettingsBundleTemplate<SettingTraits...>>(),
                 "Requested Bundle can not be fully populated by this SettingsBundle<SettingTraits...> instance.");
-        Q_ASSERT_X(p_backend, "SettingsBundle<SettingTraits...>::getSettingBundleForTraits<Bundle>()",
-                   "This bundle must have been initialized from corresponding SettingsRegistry.");
+        Q_ASSERT_X(p_backend, Q_FUNC_INFO, "This bundle must have been initialized from corresponding SettingsRegistry.");
 
         return getSettingsBundle<SettingsBundleTemplate<SubsetOfTraits...>>();
     };
@@ -198,8 +195,7 @@ public:
     const typename Trait::Value& get() const {
         static_assert(draupnir::utils::is_one_of_v<Trait,SettingTraits...>,
                 "Specified Trait is not a member of SettingTraits... pack.");
-        Q_ASSERT_X(p_backend, "SettingBundle<SettingTraits...>::get<Trait>",
-                   "Backend pointer was not set.");
+        Q_ASSERT_X(p_backend, Q_FUNC_INFO, "Backend pointer was not set.");
 
         return std::get<SettingTemplate<Trait>*>(m_settingTemplatePtrTuple)->value;
     }
@@ -211,8 +207,7 @@ public:
     void set(const typename Trait::Value& value) {
         static_assert(draupnir::utils::is_one_of_v<Trait,SettingTraits...>,
                 "Specified Trait is not a member of SettingTraits... pack.");
-        Q_ASSERT_X(p_backend, "SettingBundle<SettingTraits...>::set<Trait>",
-                   "Backend pointer was not set.");
+        Q_ASSERT_X(p_backend, Q_FUNC_INFO, "Backend pointer was not set.");
 
         std::get<SettingTemplate<Trait>*>(m_settingTemplatePtrTuple)->value = value;
         SettingTraitSerializer<Backend,Trait>::set(p_backend, value);
@@ -234,8 +229,7 @@ protected:
         p_backend{backend},
         m_settingTemplatePtrTuple{ (static_cast<SettingTemplate<SettingTraits>*>(nullptr))... }
     {
-        Q_ASSERT_X(backend,"SettingsBundle::SettingsBundle",
-                   "Provided backend pointer is nullptr.");
+        Q_ASSERT_X(backend, Q_FUNC_INFO, "Provided backend pointer is nullptr.");
     }
 
     /*! @brief Registers a setting by pointer (called by SettingsRegistry).
@@ -243,8 +237,8 @@ protected:
      *  @param setting Pointer to SettingTemplate<Trait> owned by SettingsRegistry. */
     template<SettingTraitConcept Trait>
     void registerSetting(SettingTemplate<Trait>* setting) {
-        static_assert(contains<Trait>(),
-                      "Specified Trait is not contained within this SettingBundle.");
+        static_assert(contains<Trait>(), "Specified Trait is not contained within this SettingBundle.");
+        Q_ASSERT_X(setting, Q_FUNC_INFO, "setting == nullptr");
 
         std::get<SettingTemplate<Trait>*>(m_settingTemplatePtrTuple) = setting;
     }
@@ -260,7 +254,7 @@ private:
 
     /*! @brief Populates a SettingsBundle by assigning internal trait pointers.
      *  @tparam Bundle Target bundle type. */
-    template<class Bundle,class First, class... Rest>
+    template<SettingsBundleConcept Bundle, SettingTraitConcept First, SettingTraitConcept... Rest>
     inline void _populateSettingBundle(Bundle& bundle) {
         if constexpr (Bundle::template contains<First>()) {
             bundle.registerSetting(std::get<SettingTemplate<First>*>(m_settingTemplatePtrTuple));
@@ -270,12 +264,12 @@ private:
             _populateSettingBundle<Bundle,Rest...>(bundle);
     }
 
-    template<class Source, class First,class... Rest>
+    template<class Source, SettingTraitConcept First, SettingTraitConcept... Rest>
     static constexpr bool _canBePopulatedFromImpl() {
         if constexpr (!Source::template contains<First>()) {
             return false;
         } else if constexpr (sizeof...(Rest) > 0) {
-            return _canBePopulatedFromImpl<Source,Rest...>();
+            return _canBePopulatedFromImpl<Source, Rest...>();
         } else {
             return true;
         }
@@ -289,7 +283,8 @@ private:
  *  @note All queries resolve as follows:
  *        - contains<Trait>() -> false;
  *        - isEmpty() -> true;
- *        - canBePopulatedFrom<Registry>() -> false. */
+ *        - canBePopulatedFrom<Registry>() -> false.
+ * @todo User-Friendliness: Add other methods from SettingsBundler here. */
 
 template<>
 class SettingsBundleTemplate<>
@@ -309,12 +304,12 @@ public:
     /*! @brief Checks at compile time whether the bundle contains the given trait.
      *  @tparam Trait A trait to check.
      *  @return always returns false for the empty specialization. */
-    template<class Trait>
+    template<SettingTraitConcept Trait>
     static constexpr bool contains() { return false; }
 
     /*! @brief Static constexpr variable containing `true` if this instantiation of @ref Draupnir::Settings::SettingsBundleRegistry
      *         contains the specified trait. For empty specialization - contains `false` always. */
-    template<class Trait>
+    template<SettingTraitConcept Trait>
     static constexpr bool contains_v = false;
 
     /*! @brief Returns whether the bundle is empty.
@@ -327,7 +322,8 @@ public:
 
     /*! @brief Compile-time check: can this bundle be populated from the given SettingsRegistry?
      *  @tparam ignored. Empty bundles can not be populated.
-     *  @return false always. */
+     *  @return false always.
+     * @todo Important: As other `loadSettings`-related methods this needs to be standartized. */
     template<class SettingsSource>
     static constexpr bool canBeFullyPopulatedFrom() { return false; }
 

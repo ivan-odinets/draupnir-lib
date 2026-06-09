@@ -57,7 +57,7 @@ namespace Draupnir::Settings
  *
  * @todo Question: Is this class required? */
 
-template<class ValueClass, const char* const settingsKey,auto value>
+template<class ValueClass, const char* const settingsKey, auto value>
 struct SettingTraitTemplate
 {
     /*! @brief Underlying value type. */

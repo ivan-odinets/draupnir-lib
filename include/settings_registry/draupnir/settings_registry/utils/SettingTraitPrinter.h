@@ -39,7 +39,10 @@ concept StreamInsertable =
 
 /*! @class SettingTraitPrinter draupnir/settings_registry/utils/SettingTraitPrinter.h
  *  @brief This is a class.
- * @todo Refractor, make this stable and provide support for other streams (at least ostream). */
+ * @todo Cleanup: Refractor and make this stable.
+ * @todo Tests: Write a test for this class.
+ * @todo Documentation: Write documentation for this class.
+ * @todo Feature: provide support for other streams (at least ostream). */
 
 template<SettingTraitConcept Trait>
 class SettingTraitPrinter
@@ -51,7 +54,6 @@ public:
                << Qt::endl;
     };
 };
-
 
 template<PrimitiveSettingTraitConcept Trait>
 class SettingTraitPrinter<Trait>

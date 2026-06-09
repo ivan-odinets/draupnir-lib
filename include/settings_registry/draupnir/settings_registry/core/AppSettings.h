@@ -48,8 +48,8 @@ namespace Draupnir::Settings
  *           - static Type fromConfigString(const QString&);
  *           - static QString toConfigString(Type);
  *
- * @todo Remove unused things from this class. Question: Is this class indeed required? Or the preserveConfig functionality
- *       can be moved to the SettingsRegistry? */
+ * @todo Cleanup: Remove unused things from this class.
+ * @todo Question: Is this class indeed required? Or the preserveConfig functionality can be moved to the SettingsRegistryTemplate? */
 
 class AppSettings
 {

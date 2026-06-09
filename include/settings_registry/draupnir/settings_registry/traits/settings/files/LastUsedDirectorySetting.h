@@ -40,8 +40,8 @@ namespace Draupnir::Settings
  *           - A storage key ("files/last_used_directory");
  *           - A default value.
  *
- * @todo Allow changing of the defaultValue behaviour using preprocessor. and test this behaviour.
- * @todo Move this trait to more suitable place. Maybe in upcoming Files module? */
+ * @todo Feature: Allow changing of the defaultValue behaviour using preprocessor. and test this behaviour.
+ * @todo Cleanup: Move this trait to more suitable place. Maybe in upcoming Files module? */
 
 struct LastUsedDirectorySetting
 {

@@ -35,7 +35,10 @@ namespace Draupnir::Settings
 /*! @class ValueSerializerTemplate draupnir/settings_registry/utils/ValueSerializerTemplate.h
  *  @ingroup SettingsRegistry
  *  @brief Static template class used within the @ref Draupnir::Settings::SettingsTraitSerializer for value serialization
- *         to / from `QVariant`. */
+ *         to / from `QVariant`.
+ *
+ * @todo Documentation: Write reasonable documentation page when this class needs to be specialized. And write a manual how to
+ *       do so. */
 
 template<class Value>
 class ValueSerializerTemplate
@@ -71,9 +74,10 @@ concept HasCustomEnumFlagsConfigSerialization =
 /*! @class ValueSerializerTemplate draupnir/settings_registry/utils/ValueSerializerTemplate.h
  *  @ingroup SettingsRegistry
  *  @brief This is a class.
- * @todo Improve handling of the cases when enum_flags contains sth very very wrong.
- * @todo Move interval _Helper class to some external util. Maybe in Utils module?
- * @todo Write Reasonable documentation. */
+ * @todo Feature: Improve handling of the cases when enum_flags contains sth very very wrong.
+ * @todo Cleanup: Move interval _Helper class to some external util. Maybe in Utils module?
+ * @todo Documentation: Write Reasonable documentation.
+ * @todo Tests: Write tests for this class. */
 
 template<draupnir::utils::enum_flags_like_concept EnumFlags>
 class ValueSerializerTemplate<EnumFlags>

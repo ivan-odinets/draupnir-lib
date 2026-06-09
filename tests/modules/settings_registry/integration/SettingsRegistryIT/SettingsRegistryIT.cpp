@@ -37,14 +37,13 @@
  *  @ingroup SettingsRegistryTests
  *  @brief This is a very basic test for @ref Draupnir::Settings::SettingsRegistryTemplate and related things.
  *
- * @todo Split this test into several: unit-test for SettingsRegistryTemplate, unit test for SettingsBundleTemplate and
- *       integration between SettingsRegistryTemplate and SettingsBundleTemplate.  */
+ * @todo Cleanup: Split this test into several: unit-test for SettingsRegistryTemplate, unit test for SettingsBundleTemplate
+ *       and integration between SettingsRegistryTemplate and SettingsBundleTemplate.  */
 
 class SettingsRegistryIT final : public QObject
 {
     Q_OBJECT
-
-public:
+private:
 ///@name Tested types
 ///@{
     using MockSettings = SettingsBackendMockTemplate<

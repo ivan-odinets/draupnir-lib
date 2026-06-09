@@ -56,7 +56,8 @@ namespace Draupnir::Settings
 {
 
 /*! @class SettingsTraitsConcatenatorTest tests/modules/settings_registry/unit/SettingsTraitsConcatenatorTest/SettingsTraitsConcatenatorTest.cpp
- *  @brief This is a test for SettingsTraitsConcatenator */
+ *  @ingroup SettingsRegistryTests
+ *  @brief Unit test for @ref Draupnir::Settings::SettingsTraitsConcatenator. */
 
 class SettingsTraitsConcatenatorTest final : public QObject
 {

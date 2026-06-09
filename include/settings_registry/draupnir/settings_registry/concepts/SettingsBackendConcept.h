@@ -30,6 +30,10 @@
 namespace Draupnir::Settings
 {
 
+/*! @ingroup SettingsRegistry
+ *  @brief This is a namespace.
+ * @todo Documentation: Document concepts within this namespace. */
+
 namespace SettingsBackend
 {
 

@@ -34,10 +34,18 @@ namespace Draupnir::Settings
 template<SettingTraitConcept... Traits>
 class SettingsBundleTemplate;
 
+/*! @ingroup SettingsRegistry
+ *  @brief This is a concept.
+ * @todo Documentation: Document this concept. */
+
 template<class C>
 concept HasNestedSettingsBundle =
     requires { typename C::SettingsBundle; } &&
     draupnir::utils::is_instantiation_of_v<typename C::SettingsBundle,Draupnir::Settings::SettingsBundleTemplate>;
+
+/*! @ingroup SettingsRegistry
+ *  @brief This is a concept.
+ * @todo Documentation: Document this concept. */
 
 template<class C>
 concept SettingsBundleConcept =

@@ -36,10 +36,7 @@
 #endif
 
 #include "draupnir/settings_registry/SettingsBundleTemplate.h"
-#include "draupnir/settings_registry/concepts/SettingTraitConcept.h"
-#include "draupnir/settings_registry/core/SettingTemplate.h"
 #include "draupnir/settings_registry/utils/SettingTraitSerializer.h"
-#include "draupnir/utils/type_presense.h"
 
 namespace Draupnir::Settings
 {
@@ -79,9 +76,10 @@ namespace Draupnir::Settings
  * @note One of the marcos: DRAUPNIR_SETTINGS_USE_QSETTINGS, DRAUPNIR_SETTINGS_USE_APPSETTINGS, DRAUPNIR_SETTINGS_USE_CUSTOM
  *       **MUST** be defined. Or compilation will fail.
  *
- * @todo Add interface for partial updating of the settings. E.g. when the setting has sth like QStringList type - not replace
- *       the variable, but use append method and than write to the backend.
- * @todo Question: Maybe backends can be specifyed by the template arguments + specializations?*/
+ * @todo Feature: Add interface for partial updating of the settings. E.g. when the setting has sth like QStringList type - not
+ *       replace the variable, but use append method and than write to the backend.
+ * @todo Question: Maybe backends can be specifyed by the template arguments + specializations?
+ * @todo Tests: Add compile tests for this class. */
 
 template<SettingTraitConcept... Traits>
 class SettingsRegistryTemplate
@@ -111,12 +109,12 @@ public:
     template<SettingTraitConcept SettingTrait>
     static constexpr bool contains_v = contains<SettingTrait>();
 
-    /*! @brief Checks at compile time whether a specific SettingTrait is part of this registry.
-     *  @tparam SettingTrait A trait to check for. */
-    template<SettingTraitConcept SettingTrait>
-    [[deprecated]] static constexpr bool containsSetting() {
-        return draupnir::utils::is_type_in_tuple_v<SettingTemplate<SettingTrait>,AbstractSettingsTuple>;
-    }
+    // /*! @brief Checks at compile time whether a specific SettingTrait is part of this registry.
+    //  *  @tparam SettingTrait A trait to check for. */
+    // template<SettingTraitConcept SettingTrait>
+    // [[deprecated]] static constexpr bool containsSetting() {
+    //     return draupnir::utils::is_type_in_tuple_v<SettingTemplate<SettingTrait>,AbstractSettingsTuple>;
+    // }
 
     /*! @brief Returns whether the SettingsRegistry is empty.
      *  @return False if sizeof...(Traits> != 0. */
@@ -158,10 +156,8 @@ public:
      *       more than of SettingsRegistryTemplate. If the specified backend will be deleted - interacting with methods
      *       of SettingsRegistryTemplate which was using most probably will cause UB. */
     void setBackend(SettingsBackendInterface* backend) {
-        Q_ASSERT_X(backend, "SettingsRegistryTemplate::setBackend",
-                   "Specified backend pointer is nullptr.");
-        Q_ASSERT_X(p_backend == nullptr, "SettingsRegistryTemplate::setBackend",
-                   "This method must be called only once.");
+        Q_ASSERT_X(backend, Q_FUNC_INFO, "backend == nullptr");
+        Q_ASSERT_X(p_backend == nullptr, Q_FUNC_INFO, "This method must be called only once.");
 
         p_backend = backend;
 
@@ -176,11 +172,13 @@ public:
 #if defined(DRAUPNIR_SETTINGS_USE_APPSETTINGS)
     /*! @brief Enable or disable preservation mode (no writing to config file).
      *  @param arg - if true, changes will not be persisted to disk.
-     * @note This is available only when using AppSettings as backend. (DRAUPNIR_SETTINGS_USE_APPSETTINGS macro defined). */
+     * @note This is available only when using AppSettings as backend. (DRAUPNIR_SETTINGS_USE_APPSETTINGS macro defined).
+     * @todo User-Friendliness: Add Q_ASSERT / Q_ASSERT_X validations if the backend was not loaded. */
     void setPreserveConfig(bool state) { p_backend->setPreserveConfig(state); }
 
     /*! @brief Returns true if preservation mode is enabled.
-     * @note This is available only when using AppSettings as backend. (DRAUPNIR_SETTINGS_USE_APPSETTINGS macro defined). */
+     * @note This is available only when using AppSettings as backend. (DRAUPNIR_SETTINGS_USE_APPSETTINGS macro defined).
+     * @todo User-Friendliness: Add Q_ASSERT / Q_ASSERT_X validations if the backend was not loaded. */
     bool preserveConfig() const { return p_backend->preserveConfig(); }
 
 #endif // DRAUPNIR_SETTINGS_USE_APPSETTINGS
@@ -191,11 +189,12 @@ public:
     /*! @brief Prints all settings in the registry to an arbitrary output stream-like object.
      *  @tparam Output Stream-like type that supports `operator<<` for the emitted pieces.
      *  @param output  Output sink (e.g. `QDebug` from `qDebug()/qInfo()`).
-     * @note The output object must support chaining via `operator<<`. */
+     * @note The output object must support chaining via `operator<<`.
+     * @todo User-Friendliness: Add Q_ASSERT / Q_ASSERT_X validations if the backend was not loaded. And static_assert for
+     *       the output type? */
     template<class Output>
     void printTo(Output&& output) {
-        Q_ASSERT_X(isLoaded(), "SettingsRegistryTemplate<Traits...>::printTo",
-                   "This method must be called only for valid SettingsRegistryTemplate objects.");
+        Q_ASSERT_X(isLoaded(), Q_FUNC_INFO, "This method must be called only for valid SettingsRegistryTemplate objects.");
 
         (SettingTraitPrinter<Traits>::print(output, get<Traits>()), ... );
     }
@@ -207,8 +206,7 @@ public:
     Bundle getSettingsBundle() {
         static_assert(Bundle::template canBeFullyPopulatedFrom<SettingsRegistryTemplate<Traits...>>(),
                 "Requested Bundle can not be fully populated by this SettingsRegistry<Traits...> instance.");
-        Q_ASSERT_X(p_backend, "SettingsRegistry<SettingTraits...>::getSettingsBundle<Bundle>()",
-                   "SettingsRegistry<SettingTraits...>::loadSettings method must have been called before.");
+        Q_ASSERT_X(p_backend, Q_FUNC_INFO, "SettingsRegistry<SettingTraits...>::loadSettings method must have been called before.");
 
         Bundle result{p_backend};
         _populateSettingBundle<Bundle,0>(result);
@@ -222,8 +220,7 @@ public:
     SettingsBundleTemplate<SubsetOfTraits...> getSettingBundleForTraits() {
         static_assert(SettingsBundleTemplate<SubsetOfTraits...>::template canBeFullyPopulatedFrom<SettingsRegistryTemplate<Traits...>>(),
                 "Requested Bundle can not be fully populated by this SettingsRegistry<Traits...> instance.");
-        Q_ASSERT_X(p_backend, "SettingsRegistry<SettingTraits...>::getSettingBundleForTraits<SubsetOfTraits...>()",
-                   "SettingsRegistry<SettingTraits...>::loadSettings method must have been called before.");
+        Q_ASSERT_X(p_backend, Q_FUNC_INFO, "SettingsRegistry<SettingTraits...>::loadSettings method must have been called before.");
 
         return getSettingsBundle<SettingsBundleTemplate<SubsetOfTraits...>>();
     };
@@ -235,8 +232,7 @@ public:
     const typename SettingTrait::Value& get() const {
         static_assert(contains<SettingTrait>(),
                 "SettingTrait specified is not registered within this SettingsRegistry.");
-        Q_ASSERT_X(p_backend, "SettingsRegistry<SettingTraits...>::get<SettingTrait>",
-                   "SettingsRegistry<SettingTraits...>::loadSettings method must have been called before.");
+        Q_ASSERT_X(p_backend, Q_FUNC_INFO, "SettingsRegistry<SettingTraits...>::loadSettings method must have been called before.");
         return std::get<SettingTemplate<SettingTrait>>(m_settings).value;
     }
 
@@ -247,8 +243,7 @@ public:
     void set(const typename SettingTrait::Value& value) {
         static_assert(contains<SettingTrait>(),
                 "SettingTrait specified is not registered within this SettingsRegistry.");
-        Q_ASSERT_X(p_backend, "SettingsRegistry<SettingTraits...>::set<SettingTrait>",
-                   "SettingsRegistry<SettingTraits...>::loadSettings method must have been called before.");
+        Q_ASSERT_X(p_backend, Q_FUNC_INFO, "SettingsRegistry<SettingTraits...>::loadSettings method must have been called before.");
         std::get<SettingTemplate<SettingTrait>>(m_settings).value = value;
         SettingTraitSerializer<Backend,SettingTrait>::set(p_backend, value);
     }

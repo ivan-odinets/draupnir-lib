@@ -27,10 +27,13 @@
 #include "draupnir-test/traits/settings/BoolSettingTraits.h"
 #include "draupnir-test/traits/settings/DoubleSettingTraits.h"
 
+#include "draupnir/settings_registry/SettingsBundleTemplate.h"
 #include "draupnir/settings_registry/utils/OptionalSettingsBundle.h"
 
 /*! @class OptionalSettingsBundleTest tests/modules/settings_registry/unit/OptionalSettingsBundleTest/OptionalSettingsBundleTest.cpp
- *  @brief This class tests @ref Draupnir::Settings::OptionalSettingsBundle. */
+ *  @ingroup SettingsRegistryTests
+ *  @brief Unit test for @ref Draupnir::Settings::OptionalSettingsBundle.
+ * @todo Tests: Add tests for loadSettings methods, getters, setters. If adding this auto&& - maybe return type validation tests? */
 
 class OptionalSettingsBundleTest final : public QObject
 {

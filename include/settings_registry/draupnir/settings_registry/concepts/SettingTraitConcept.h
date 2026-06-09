@@ -33,7 +33,7 @@ namespace Draupnir::Settings
 /*! @namespace SettingTrait
  *  @ingroup SettingsRegistry
  *  @brief Namespace containing concepts of individual elements of the setting traits objects.
- * @todo Maybe it make sense to add validation of minimal / maximal value, precision etc here? */
+ * @todo Question: Maybe it make sense to add validation of minimal / maximal value, precision etc here? */
 
 namespace SettingTrait
 {

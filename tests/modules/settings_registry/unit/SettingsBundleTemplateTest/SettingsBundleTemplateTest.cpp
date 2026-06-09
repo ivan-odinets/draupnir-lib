@@ -36,8 +36,9 @@ namespace Draupnir::Settings
 {
 
 /*! @class SettingsBundleTemplateTest tests/modules/settings_registry/unit/SettingsBundleTemplateTest.cpp
+ *  @ingroup SettingsRegistryTests
  *  @brief This is a test for SettingsBundleTemplate
- * @todo Make reasonable version of the test_print_to test method. */
+ * @todo Tests: Make reasonable version of the test_print_to test method. */
 
 class SettingsBundleTemplateTest final : public QObject
 {

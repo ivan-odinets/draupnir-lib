@@ -27,8 +27,8 @@
 
 /*! @file draupnir/SettingsRegistry.h
  *  @ingroup SettingsRegistry
- *  @brief This file is a general include to use the @ref SettingsRegistry module. */
-
+ *  @brief This file is a general include to use the @ref SettingsRegistry module.
+ * @todo User-Friendliness: Make final version of this file. */
 
 // Core things
 #include "draupnir/settings_registry/SettingsRegistryTemplate.h"  // IWYU pragma: keep

@@ -33,13 +33,12 @@
 /*! @class SettingTraitSerializerTest tests/modules/settings_registry/unit/SettingTraitSerializerTest/SettingTraitSerializerTest.cpp
  *  @ingroup SettingsRegistryTests
  *  @brief This test class tests functionality of the SettingTraitSerializer.
- * @todo Add custom complex setting trait test. */
+ * @todo Tests: Add custom complex setting trait test. */
 
 class SettingTraitSerializerTest final : public QObject
 {
     Q_OBJECT
-
-public:
+private:
     using MockBackend = SettingsBackendMockTemplate<
         QStringSettingTrait, QStringListSettingTrait
     >;
@@ -59,9 +58,6 @@ public:
     };
 
     MockBackend mockBackend;
-
-    SettingTraitSerializerTest() = default;
-    ~SettingTraitSerializerTest() = default;
 
 private slots:
     void test_get_default_value() {
