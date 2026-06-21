@@ -25,9 +25,9 @@
 #ifndef FLAGS_H
 #define FLAGS_H
 
+#include "draupnir/utils/concepts/flags_concepts.h"
 #include "draupnir/utils/concepts/type_concepts.h"
-#include "draupnir/utils/integer_wrapper.h"
-#include "draupnir/utils/template_detectors.h"
+#include "draupnir/utils/integer_normalization.h"
 
 namespace draupnir::utils
 {
@@ -285,6 +285,9 @@ public:
     /*! @brief Integer type used by this flags object. */
     using integer = flags_base<Int,flags<Int>>::integer;
 
+    /*! @brief Type of the individual flag. */
+    using flag_type = integer;
+
 ///@name Constructors.
 ///@{
     /*! @brief Constructs zero-initialized flags object. */
@@ -396,12 +399,6 @@ public:
 ///@}
 };
 
-/*! @brief Concept satisfied by instantiations of @ref draupnir::utils::flags.
- *  @tparam Candidate Type to test. */
-
-template<class Candidate>
-concept flags_concept = draupnir::utils::is_instantiation_of_v<Candidate,flags>;
-
 /*! @class enum_flags draupnir/utils/flags.h
  *  @ingroup Utils
  *  @brief Strongly-typed flags wrapper bound to a specific enum type.
@@ -421,7 +418,9 @@ concept flags_concept = draupnir::utils::is_instantiation_of_v<Candidate,flags>;
  *           - bitwise operators (`&`, `|`, `^`, `~`) and their assignment forms;
  *           - helper methods @ref test_flag, @ref set_flag, @ref is_superset, and @ref is_subset;
  *
- * @note `test_flag(0)` follows the QFlags-like rule: it returns `true` only when the stored mask is also zero. */
+ * @note `test_flag(0)` follows the QFlags-like rule: it returns `true` only when the stored mask is also zero.
+ * @todo User-friendliness: Add validation of arguments when some integer for scenario when some integer is assigned / tested
+ *       and this integer can not be build from the Enum keys. */
 
 template<enum_concept Enum>
 class enum_flags : public flags_base<std::underlying_type_t<Enum>,enum_flags<Enum>>
@@ -434,6 +433,9 @@ public:
 
     /*! @brief Integer type used by this enum_flags object. */
     using integer = flags_base<std::underlying_type_t<Enum>,enum_flags<Enum>>::integer;
+
+    /*! @brief Type of the individual flag. */
+    using flag_type = Enum;
 
 ///@name Constructors.
 ///@{
@@ -544,58 +546,6 @@ public:
     template<enum_concept Other> requires(std::same_as<Enum,Other>)
     [[nodiscard]] friend constexpr enum_flags operator^(enum_flags lhs, Other rhs) noexcept { return enum_flags{lhs ^ _base::_normalizer::normalize(rhs)}; }
 ///@}
-};
-
-template<class Candidate>
-concept flags_like_concept =
-    draupnir::utils::is_template_base_of_v<enum_flags, Candidate> ||
-    draupnir::utils::is_template_base_of_v<flags, Candidate>;
-
-
-/*! @brief Concept satisfied by instantiations of @ref draupnir::utils::enum_flags.
- *  @tparam Candidate Type to test. */
-template<class Candidate>
-concept enum_flags_concept =
-    draupnir::utils::is_instantiation_of_v<Candidate,enum_flags>;
-
-/*! @brief Concept satisfied by derivatives of @ref draupnir::utils::enum_flags, but not by instantiations of the @ref draupnir::utils::enum_flags.
- *         itself.
- *  @tparam Candidate Type to test. */
-template<class Candidate>
-concept enum_flags_derived_concept =
-    (draupnir::utils::is_instantiation_of_v<Candidate,enum_flags> == false) &&
-    draupnir::utils::is_template_base_of_v<enum_flags,Candidate>;
-
-/*! @brief Concept satisfied by derivatives of @ref draupnir::utils::enum_flags and by instantiations of the @ref draupnir::utils::enum_flags.
- *         itself.
- *  @tparam Candidate Type to test. */
-template<class Candidate>
-concept enum_flags_like_concept =
-    draupnir::utils::is_instantiation_of_v<Candidate,enum_flags> ||
-    draupnir::utils::is_template_base_of_v<enum_flags,Candidate>;
-
-
-/*! @brief Checks whether `Flags::test_flag(Value)` is a valid expression returning `bool`.
- *  @tparam Flags Flags-like type to test.
- *  @tparam Value Value type to pass into `test_flag`.
- *
- *  @details This concept is intended primarily for compile-time tests of the public API. It evaluates to `true` when the
- *           expression `std::declval<const Flags&>().test_flag(std::declval<Value>())` is well-formed and returns `bool`. */
-
-template<class Flags, class Value>
-concept test_flag_callable = requires(const Flags& flags, Value value) {
-    { flags.test_flag(value) } -> std::same_as<bool>;
-};
-
-/*! @brief Checks whether `Flags::set_flag(Value, bool)` is a valid expression returning `Flags&`.
- *  @tparam Flags Flags-like type to test.
- *  @tparam Value Value type to pass into `set_flag`.
- *
- *  @details This concept is intended primarily for compile-time tests of the public API. It evaluates to `true` when the
- *           expression `std::declval<Flags&>().set_flag(std::declval<Value>(), true)` is well-formed and returns `Flags&`. */
-template<class Flags, class Value>
-concept set_flag_callable = requires(Flags& flags, Value value, bool on) {
-    { flags.set_flag(value, on) } -> std::same_as<Flags&>;
 };
 
 }; // namespace draupnir::utils

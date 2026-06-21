@@ -42,7 +42,8 @@ namespace Draupnir::Ui
  * @todo Feature: Allow creation QAction / QCheckBox / ... with parent.
  * @todo Feature: Add possibility of conenction to different signals from "checkable" elements.
  * @todo Feature: Add support of QAction-derived and QCheckBox-derived widgets.
- * @todo Question: Do we need here support of QGroupBox?*/
+ * @todo Question: Do we need here support of QGroupBox?
+ * @todo Tests: Add tests for this class. */
 
 template<class UiElement>
 class CheckableUiElementHelper
@@ -66,7 +67,7 @@ public:
     static UiElement* createUiElement() {
         UiElement* result = new UiElement{};
         // QCheckBox is checkable by default. For QAction we need to call
-        if constexpr (std::is_same_v<UiElement,QAction>)
+        if constexpr (std::is_same_v<UiElement, QAction>)
             result->setCheckable(true);
         return result;
     }
@@ -84,7 +85,7 @@ public:
     /*! @brief Helper method to conenct provided checkable UI element to a specified callable.
      *  @param callable Slot to call on toggled/triggered(bool).
      *  @return A new checkable UiElement*. */
-    template<typename F>
+    template<typename F> requires(std::invocable<F,bool>)
     static auto connectElement(UiElement* element, F&& callable) {
         return QObject::connect(element, singalAddress, std::forward<F>(callable));
     }
@@ -92,7 +93,7 @@ public:
     /*! @brief Helper method to create and connect a new checkable UI element.
      *  @param callable Slot to call on toggled/triggered(bool).
      *  @return A new UiElement* properly connected and checkable. */
-    template<typename F>
+    template<typename F> requires(std::invocable<F,bool>)
     static UiElement* createConnectedUiElement(F&& callable) {
         UiElement* result = createUiElement();
         connectElement(result, std::forward<F>(callable));
@@ -103,7 +104,7 @@ public:
      *  @param text Text to be shown on the newly created element
      *  @param callable Slot to call on toggled/triggered(bool).
      *  @return A new UiElement* properly connected and checkable. */
-    template<typename F>
+    template<typename F> requires(std::invocable<F,bool>)
     static UiElement* createConnectedUiElement(const QString& text, F&& callable) {
         UiElement* result = createUiElement(text);
         connectElement(result, std::forward<F>(callable));

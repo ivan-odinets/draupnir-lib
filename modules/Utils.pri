@@ -33,9 +33,9 @@
         $$PWD/../include/utils/draupnir/utils/variadic_template_from_array.h \
         $$PWD/../include/utils/draupnir/utils/concepts/constructibility_concepts.h \
         $$PWD/../include/utils/draupnir/utils/concepts/operator_concepts.h \
-        $$PWD/../include/utils/draupnir/utils/concepts/type_concepts.h
+        $$PWD/../include/utils/draupnir/utils/concepts/type_concepts.h \
+        $$PWD/../include/utils/draupnir/utils/concepts/flags_concepts.h
 
     DISTFILES += \
         $$PWD/../docs/pages/Utils.dox
 }
-

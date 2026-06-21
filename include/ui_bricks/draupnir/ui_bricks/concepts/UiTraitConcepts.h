@@ -22,34 +22,24 @@
  *
  */
 
-#ifndef DISPLAYABLEENUMFLAGSCONCEPT_H
-#define DISPLAYABLEENUMFLAGSCONCEPT_H
+#ifndef UITRAITCONCEPTS_H
+#define UITRAITCONCEPTS_H
 
 #include <QString>
-
-#include "draupnir/utils/concepts/type_concepts.h"
-#include "draupnir/utils/flags.h"
 
 namespace Draupnir::Ui
 {
 
 template<class Candidate>
-concept DisplayableEnumFlagsConcept =
-    draupnir::utils::enum_flags_derived_concept<Candidate> &&
-    requires(Candidate flags) {
-        typename Candidate::enum_type;
-        typename Candidate::integer;
+concept HasDisplayString = requires {
+    { Candidate::displayString() } -> std::same_as<QString>;
+};
 
-        requires draupnir::utils::c_array_of_concept<decltype(Candidate::displayedFlags), typename Candidate::enum_type>;
-
-        { Candidate::toDisplayString(flags) } -> std::same_as<QString>;
-    };
-
-template<class Candidate>
-concept DisplayableEnumFlagsWithMasks =
-    DisplayableEnumFlagsConcept<Candidate> &&
-    draupnir::utils::c_array_of_concept<decltype(Candidate::displayedMasks),typename Candidate::integer>;
+template<class Candidate, class Value>
+concept HasValueToDisplayString = requires(const Value& value) {
+    { Candidate::toDisplayString(value) } -> std::same_as<QString>;
+};
 
 }; // namespace Draupnir::Ui
 
-#endif // DISPLAYABLEENUMFLAGSCONCEPT_H
+#endif // UITRAITCONCEPTS_H

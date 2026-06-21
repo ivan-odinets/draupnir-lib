@@ -48,6 +48,13 @@ concept integer_concept = is_integer<Candidate>::value;
 template<integer_concept Integer, class Derived>
 class integer_wrapper;
 
+/*! @brief Concept satisfied by instantiations of @ref draupnir::utils::integer_wrapper.
+ *  @tparam Candidate Type to test. */
+
+template<class Candidate>
+concept integer_wrapper_concept =
+    draupnir::utils::is_template_base_of_v<integer_wrapper,Candidate>;
+
 /*! @ingroup Utils
  *  @brief Matches types recognised by @ref draupnir::utils::is_integer and for types derived from @ref
  *         draupnir::utils::integer_wrapper.

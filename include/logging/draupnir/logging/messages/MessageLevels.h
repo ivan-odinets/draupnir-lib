@@ -97,13 +97,17 @@ public:
     using _Base::enum_flags;
     using _Base::operator=;
 
+    using flag_type = _Base::flag_type;
+
     static constexpr _Base::integer None = 0;
     static constexpr _Base::integer All =
         MessageLevel::Debug | MessageLevel::Info | MessageLevel::Warning | MessageLevel::Error;
 
-    static constexpr _Base::enum_type displayedFlags[] = {
-        MessageLevel::Debug, MessageLevel::Info, MessageLevel::Warning, MessageLevel::Error };
-    static constexpr _Base::integer displayedMasks[] = { All };
+    struct UiSelectorMetadata {
+        static constexpr _Base::enum_type displayedFlags[] = {
+            MessageLevel::Debug, MessageLevel::Info, MessageLevel::Warning, MessageLevel::Error };
+        static constexpr _Base::integer displayedMaskPresets[] = { All };
+    };
 
     static QString toDisplayString(MessageLevels levels) {
         if (levels == All)

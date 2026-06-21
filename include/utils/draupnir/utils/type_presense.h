@@ -120,7 +120,38 @@ struct is_a1tp_instantiation_present : std::disjunction<is_a1tp_instantiation_of
 template<template<auto,class...> typename Template, typename... Args>
 inline constexpr bool is_a1tp_instantiation_present_v = is_a1tp_instantiation_present<Template,Args...>::value;
 
-/*! @struct is_one_of draupnir/utils/type_presense.h
+/*! @struct tuple_contains_if draupnir/utils/type_presense.h
+ *  @ingroup Utils
+ *  @brief Checks whether a `std::tuple` contains at least one type satisfying a compile-time predicate.
+ *  @tparam Predicate Unary type predicate template. Must expose `Predicate<T>::value` convertible to `bool`.
+ *  @tparam Tuple Tuple-like type to inspect. Primary template evaluates to `false`.
+ *
+ *  @details This helper is intended for compile-time checks over `std::tuple<Ts...>` type packs. For every type `T` stored
+ *           in the tuple, `Predicate<T>::value` is evaluated. The resulting value is `true` if at least one tuple element
+ *           type satisfies the predicate.
+ *
+ *           Non-`std::tuple` types fall back to `std::false_type`. */
+
+template<template<class> class Predicate, typename Tuple>
+struct tuple_contains_if : std::false_type {};
+
+/*! @struct tuple_contains_if draupnir/utils/type_presense.h
+ *  @ingroup Utils
+ *  @brief `std::tuple<Ts...>` specialization of @ref tuple_contains_if.
+ *  @tparam Predicate Unary type predicate template.
+ *  @tparam Ts Types stored in the tuple.  */
+
+template<template<class> class Predicate, typename... Ts>
+struct tuple_contains_if<Predicate, std::tuple<Ts...>>
+    : std::bool_constant<(Predicate<Ts>::value || ... )> {};
+
+/*! @ingroup Utils
+ *  @brief Convenience variable template for @ref tuple_contains_if. */
+template<template<class> class Predicate, typename Tuple>
+inline constexpr bool tuple_contains_if_v =
+    tuple_contains_if<Predicate, Tuple>::value;
+
+/*! @struct is_type_in_tuple draupnir/utils/type_presense.h
  *  @ingroup Utils
  *  @tparam T      The type to test.
  *  @tparam Tuple  A `std::tuple<...>` type.

@@ -25,12 +25,14 @@
 #ifndef TUPLE_LIKE_MERGE_H
 #define TUPLE_LIKE_MERGE_H
 
+#include <tuple>
 #include <type_traits>
 
 namespace draupnir::utils
 {
 
 /*! @class tuple_like_merge draupnir/utils/tuple_like_merge.h
+ *  @ingroup Utils
  *  @brief Collects and flattens trait-like types from a mixed pack of types into a single output container, removing
  *         duplicates.
  *  @tparam TupleLike - A tuple-like class template of the form `template<class...> class TupleLike`. All nested “tuple-like”
@@ -182,6 +184,61 @@ public:
 template<template<class...> class TupleLike, template<class...> class Out, class... Ts>
 using tuple_like_merge_t =
     typename tuple_like_merge<TupleLike, Out, Ts...>::type;
+
+/*! @struct tuple_like_concat draupnir/utils/tuple_like_merge.h
+ *  @ingroup Utils
+ *  @brief Concatenates variadic type containers into one output type container.
+ *  @tparam Output Variadic type template used as the resulting container.
+ *  @tparam Tuples Input variadic type containers to concatenate.
+ *
+ *  @details Type-level helper. Extracts type arguments from input containers of the form `Container<Ts...>` and concatenates
+ *           them into `Output<...>`.
+ *
+ *           This helper does not create or move runtime objects. It only transforms types.
+ *
+ *           The output template must be able to accept the resulting number of type arguments.
+ *           In particular, `Output<>` must be valid when no input containers are provided.
+ *
+ * @note Еhis helper works with variadic type containers.
+ * @todo Important: Move this struct to some better location.
+ * @todo Tests: Add tests for this struct. */
+template<template<class...> class Output, class... Tuples>
+struct tuple_like_concat;
+
+/*! @brief Concatenates zero input containers into an empty output container. */
+template<template<class...> class Output>
+struct tuple_like_concat<Output> {
+    using type = Output<>;
+};
+
+/*! @brief Converts a single variadic type container into the requested output container. This specialization also allows
+ *         converting between compatible container templates, for example from `SomeWrapper<Ts...>` to `std::tuple<Ts...>`. */
+template<template<class...> class Output, template<class...> class FirstContainer, class... Args>
+struct tuple_like_concat<Output, FirstContainer<Args...>> {
+    using type = Output<Args...>;
+};
+
+/*! @brief Concatenates two or more variadic type containers. Merges the first two containers into the output container and
+ *         then recursively concatenates the remaining input containers. */
+template<
+    template<class...> class Output,
+    template<class...> class FirstContainer,
+    class... FirstArgs,
+    template<class...> class SecondContainer,
+    class... SecondArgs,
+    class... Rest
+>
+struct tuple_like_concat<Output, FirstContainer<FirstArgs...>, SecondContainer<SecondArgs...>, Rest...> {
+    using type = typename tuple_like_concat<
+        Output,
+        Output<FirstArgs..., SecondArgs...>,
+        Rest...
+    >::type;
+};
+
+/*! @brief Convenience alias for `tuple_like_concat<Output, Args...>::type`. */
+template<template<class...> class Output, class... Args>
+using tuple_like_concat_t = typename tuple_like_concat<Output, Args...>::type;
 
 }; // namespace draupnir::utils
 

@@ -5,10 +5,10 @@ QT += widgets
 
 DEFINES += DRAUPNIR_SETTINGS_USE_CUSTOM
 
-include(....//../../common/MockSettingsTemplate.pri)
+include(../../../../common/TypeHelpers.pri)
 
 include(../../../../../modules/UiBricks.pri)
 
 SOURCES += \
-    EnumFlagsSelectorViewBaseTest.cpp
+    FlagsMaskSelectorBaseTest.cpp
 

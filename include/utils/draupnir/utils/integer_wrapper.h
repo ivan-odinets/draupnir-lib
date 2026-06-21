@@ -274,13 +274,6 @@ protected:
     Integer m_value{};
 };
 
-/*! @brief Concept satisfied by instantiations of @ref draupnir::utils::integer_wrapper.
- *  @tparam Candidate Type to test. */
-
-template<class Candidate>
-concept integer_wrapper_concept =
-    draupnir::utils::is_template_base_of_v<integer_wrapper,Candidate>;
-
 }; // namespace draupnir::utils
 
 /*! @brief Declares a named integer wrapper type based on @ref draupnir::utils::integer_wrapper.

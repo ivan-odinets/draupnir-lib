@@ -130,11 +130,6 @@ public:
     using _Base::enum_flags;
     using _Base::operator=;
 
-    static constexpr enum_type displayedFlags[] = {
-        MessageViewItemField::Value::Brief, MessageViewItemField::Value::What,
-        MessageViewItemField::Value::DateTime, MessageViewItemField::Value::Icon
-    };
-
     static QString toDisplayString(MessageViewItemFields fields) {
         return MessageViewItemField::toDisplayString(static_cast<MessageViewItemField::Value>(fields.value()));
     }
@@ -190,6 +185,13 @@ public:
 
     static QLatin1String noneConfigKey()     { return QLatin1String{"none"}; }
     static QLatin1String allConfigKey()      { return QLatin1String{"all"}; }
+
+    struct UiSelectorMetadata {
+        static constexpr enum_type displayedFlags[] = {
+            MessageViewItemField::Value::Brief, MessageViewItemField::Value::What,
+            MessageViewItemField::Value::DateTime, MessageViewItemField::Value::Icon
+        };
+    };
 };
 
 }; // namespace Draupnir::Logging

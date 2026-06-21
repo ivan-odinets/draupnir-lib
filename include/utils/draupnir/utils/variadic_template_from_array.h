@@ -63,6 +63,9 @@ public:
     using type = typename variadic_template_from_static_array_impl<std::make_index_sequence<std::size(Array)>>::type;
 };
 
+template<auto const& Array, template<auto> class Wrapper, template<class...> class Variadic>
+using variadic_template_from_static_array_t = variadic_template_from_static_array<Array, Wrapper, Variadic>::type;
+
 /*! @ingroup Utils
  *  @brief Convenience alias that builds `std::tuple<Wrapper<Array[I]>...>` from a static array.
  *  @tparam Array Reference to a compile-time accessible static array.
