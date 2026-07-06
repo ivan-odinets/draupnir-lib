@@ -182,7 +182,7 @@ private:
     /*! @brief Internal selector entry for an individual flag trait.
      *  @tparam _Trait Trait type describing one displayed flag entry.
      *  @details Stores the trait type together with the runtime UI element created for that entry.
-     *           The trait is expected to expose a compile-time `value` member and may optionally provide
+     *           The trait is expected to expose a compile-time `value()` member function and may optionally provide
      *           display metadata such as `displayString()`. */
     template<class _Trait>
     struct _FlagTraitWrapper {
@@ -193,8 +193,8 @@ private:
     /*! @brief Internal selector entry for a preset mask trait.
      *  @tparam _Trait Trait type describing one displayed preset mask entry.
      *  @details Stores the trait type together with the runtime UI element created for that entry.
-     *           The trait is expected to expose a compile-time `value` member and may optionally provide
-     *           display metadata such as `displayString()`. */
+     *           The trait is expected to expose a compile-time `value()` member function and may optionally provide display
+     *           metadata such as `displayString()`. */
     template<class _Trait>
     struct _MaskTraitWrapper {
         using Type = _Trait;
@@ -204,11 +204,11 @@ private:
     /*! @brief Minimal trait adapter for a compile-time value.
      *  @tparam Value Flag or preset mask value represented by this generated trait.
      *  @details Used when selector entries are provided as raw compile-time values instead of explicit
-     *           trait types. The adapter exposes the value through the same `value` member expected from
-     *           normal selector traits. */
+     *           trait types. The adapter exposes the value through the same `value()` member function expected from normal selector
+     *           traits. */
     template<auto Value>
     struct _ValueWrapper {
-        static inline auto constexpr value = Value;
+        static constexpr inline auto value() { return Value; };
     };
 
     /*! @brief Normalizes selector flag input into internal flag selector entries.
@@ -238,7 +238,7 @@ private:
      *  @tparam Flags Flags-like type used by the selector.
      *  @tparam FlagTraits Explicit trait types describing displayed flag entries.
      *  @details Each provided trait type is wrapped into `_FlagTraitWrapper<Trait>`. The trait is expected to expose a compile-time
-     *           `value` member and may optionally provide additional display metadata. */
+     *           compatible `value()` member function and may optionally provide additional display metadata. */
     template<class Flags, class... FlagTraits> requires(sizeof...(FlagTraits) > 0)
     struct _FlagsTraitNormalizer<Flags, TemplateArgs::FlagTraitsWrapper<FlagTraits...>> {
         using type = std::tuple<_FlagTraitWrapper<FlagTraits>...>;
@@ -398,10 +398,10 @@ public:
     [[nodiscard]] draupnir::utils::copy_const_from_t<Self, _UiElement>* getUiElement(this Self&& self, Flags key) {
         if constexpr (_hasAnyDisplayedMasks) {
             Q_ASSERT_X(isMaskKnown(key) || isFlagKnown(static_cast<FlagType>(key.value())), Q_FUNC_INFO,
-                       "Specified key is not known to this FlagsMaskSelectorBase.");
+                "Specified key is not known to this FlagsMaskSelectorBase.");
         } else {
             Q_ASSERT_X(isFlagKnown(static_cast<FlagType>(key.value())), Q_FUNC_INFO,
-                       "Specified key is not known to this FlagsMaskSelectorBase.");
+                "Specified key is not known to this FlagsMaskSelectorBase.");
         }
         return self.template _getUiElementImpl<Self, 0>(key);
     }
@@ -414,8 +414,8 @@ public:
             return std::get<_MaskTraitWrapper<Trait>>(self.m_uiElementsTuple).element;
         } else {
             static_assert(
-                draupnir::utils::is_type_in_tuple_v<_FlagTraitWrapper<Trait>, Trait> ||
-                draupnir::utils::is_type_in_tuple_v<_MaskTraitWrapper<Trait>, Trait>
+                draupnir::utils::is_type_in_tuple_v<_FlagTraitWrapper<Trait>, _ElementsTuple> ||
+                draupnir::utils::is_type_in_tuple_v<_MaskTraitWrapper<Trait>, _ElementsTuple>
             );
         }
     };
@@ -556,7 +556,7 @@ private:
 
         // If we have _FlagTraitWrapper - than it makes sense to compare.
         if constexpr (draupnir::utils::is_instantiation_of_v<_TupleElement, _FlagTraitWrapper>) {
-            if (_TupleElement::Type::value == flag) {
+            if (_TupleElement::Type::value() == flag) {
                 return true;
             };
         }
@@ -579,7 +579,7 @@ private:
 
         // If we have _MaskTraitWrapper - than it makes sense to compare.
         if constexpr (draupnir::utils::is_instantiation_of_v<_TupleElement, _MaskTraitWrapper>) {
-            if (_TupleElement::Type::value == flag)
+            if (_TupleElement::Type::value() == flag)
                 return true;
         }
 
@@ -601,7 +601,7 @@ private:
     [[nodiscard]] inline draupnir::utils::copy_const_from_t<Self, _UiElement>* _getUiElementImpl(this Self&& self, _Flags key) {
         using TupleElement = std::tuple_element_t<Index, _ElementsTuple>;
 
-        if (_Flags{TupleElement::Type::value} == key)
+        if (_Flags{TupleElement::Type::value()} == key)
             return std::get<Index>(self.m_uiElementsTuple).element;
 
         if constexpr (Index + 1 < std::tuple_size_v<_ElementsTuple>) {
@@ -628,7 +628,7 @@ private:
     [[nodiscard]] inline draupnir::utils::copy_const_from_t<Self, _UiElement>* _getUiElementImpl(this Self&& self) {
         using TupleElement = std::tuple_element_t<Index, _ElementsTuple>;
 
-        if constexpr (TupleElement::Type::value == Key) {
+        if constexpr (TupleElement::Type::value() == Key) {
             return std::get<Index>(self.m_uiElementsTuple).element;
         } else if constexpr (Index + 1 < std::tuple_size_v<_ElementsTuple>) {
             return self.template _getUiElementImpl<Self, Key, Index + 1>();
@@ -642,8 +642,8 @@ private:
      *  @tparam Wrapper Internal selector entry wrapper type.
      *  @return Display string used for the corresponding UI element.
      *  @details The display string is resolved in the following order:
-     *           - from the entry trait itself, when it provides static `displayString()`;
-     *           - from `_Flags::toDisplayString(value)`, when `_Flags` supports converting the entry value to a display
+     *           - from the entry trait itself, when it provides static `displayName()`;
+     *           - from `_Flags::toDisplayName(value)`, when `_Flags` supports converting the entry value to a display
      *             string.
      *
      *             This allows explicit traits to override display text while keeping raw value-based entries lightweight. */
@@ -654,7 +654,7 @@ private:
         if constexpr (HasDisplayName<Trait>) {
             return Trait::displayName();
         } else if constexpr (HasValueToDisplayName<_Flags, _Flags>) {
-            return _Flags::toDisplayName(_Flags{Trait::value});
+            return _Flags::toDisplayName(_Flags{Trait::value()});
         } else {
             static_assert(HasDisplayName<Trait> || HasValueToDisplayName<_Flags, _Flags>,
                 "Can not resolve display string for selector entry." );
@@ -676,7 +676,7 @@ private:
      * @note This handler is intended for user-triggered changes only. */
     template<class Wrapper> requires(draupnir::utils::is_instantiation_of_v<Wrapper, _FlagTraitWrapper>)
     void _onUserInteraction(bool checked) {
-        const _FlagType value = Wrapper::Type::value;
+        const _FlagType value = Wrapper::Type::value();
         m_displayedFlags.set_flag(value, checked);
 
         if constexpr (_hasAnyDisplayedMasks)
@@ -703,7 +703,7 @@ private:
      * @note This method is available only when the selector contains at least one displayed preset mask. */
     template<class Wrapper> requires(draupnir::utils::is_instantiation_of_v<Wrapper, _MaskTraitWrapper>)
     void _onUserInteraction(bool checked) {
-        const _Flags value = Wrapper::Type::value;
+        const _Flags value = Wrapper::Type::value();
         m_displayedFlags = checked ?
             m_displayedFlags | value :
             m_displayedFlags & ~value ;
@@ -738,7 +738,7 @@ private:
         draupnir::utils::is_instantiation_of_v<TupleElement, _FlagTraitWrapper>
     )
     void _updateFlagUiElement() {
-        getFlagElement<TupleElement::Type::value>()->setChecked(m_displayedFlags.test_flag(TupleElement::Type::value));
+        std::get<TupleElement>(m_uiElementsTuple).element->setChecked(m_displayedFlags.test_flag(TupleElement::Type::value()));
     }
 
     /*! @brief Updates checked state of all individual flag UI elements.
@@ -771,7 +771,7 @@ private:
         _hasAnyDisplayedMasks && draupnir::utils::is_instantiation_of_v<TupleElement, _MaskTraitWrapper>
     )
     void _updateMaskUiElement() {
-        getMaskElement<TupleElement::Type::value>()->setChecked(m_displayedFlags.is_superset(TupleElement::Type::value));
+        std::get<TupleElement>(m_uiElementsTuple).element->setChecked(m_displayedFlags.is_superset(TupleElement::Type::value()));
     }
 
     /*! @brief Ignores individual flag UI elements during preset mask synchronization.
@@ -813,7 +813,7 @@ private:
         _hasAnyDisplayedMasks && draupnir::utils::is_instantiation_of_v<TupleElement, _MaskTraitWrapper>
     )
     void _updateUiElementsOnMaskChange() {
-        getMaskElement<TupleElement::Type::value>()->setChecked(m_displayedFlags.is_superset(TupleElement::Type::value));
+        std::get<TupleElement>(m_uiElementsTuple).element->setChecked(m_displayedFlags.is_superset(TupleElement::Type::value()));
     }
 
     /*! @brief Synchronizes an individual flag UI element after a preset mask state change.
@@ -828,13 +828,13 @@ private:
         draupnir::utils::is_instantiation_of_v<TupleElement, _FlagTraitWrapper>
     )
     void _updateUiElementsOnMaskChange() {
-        const bool newState = m_displayedFlags.test_flag(TupleElement::Type::value);
+        const bool newState = m_displayedFlags.test_flag(TupleElement::Type::value());
         const bool currentState = std::get<TupleElement>(m_uiElementsTuple).element->isChecked();
-        getFlagElement<TupleElement::Type::value>()->setChecked(newState);
+        std::get<TupleElement>(m_uiElementsTuple).element->setChecked(newState);
 
         if constexpr (_hasFlagSelectionChanged_v<_Implementation>) {
             if (newState != currentState)
-                static_cast<_Implementation*>(this)->flagSelectionChanged(TupleElement::Type::value, newState);
+                static_cast<_Implementation*>(this)->flagSelectionChanged(TupleElement::Type::value(), newState);
         }
     }
 ///@}

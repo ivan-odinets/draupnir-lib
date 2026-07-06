@@ -2,7 +2,7 @@
  **********************************************************************************************************************
  *
  * draupnir-lib
- * Copyright (C) 2025-2026 Ivan Odinets <i_odinets@protonmail.com>
+ * Copyright (C) 2026 Ivan Odinets <i_odinets@protonmail.com>
  *
  * This file is part of draupnir-lib
  *
@@ -25,9 +25,7 @@
 #include <QtTest>
 #include <QMenu>
 
-
 #include "draupnir/ui_bricks/core/selectors/EnumFlagsMaskSelectorBase.h"
-
 #include "draupnir/utils/flags.h"
 
 #include "draupnir-test/helpers/TypeHelpers.h"
@@ -53,7 +51,6 @@ public:
     using integer = draupnir::utils::enum_flags<MyEnum>::integer;
     using flag_type = enum_type;
 
-
     static constexpr integer All         = MyEnum::One | MyEnum::Two | MyEnum::Three | MyEnum::Four;
     static constexpr integer OneThree    = MyEnum::One |               MyEnum::Three;
     static constexpr integer OneTwoThree = MyEnum::One | MyEnum::Two | MyEnum::Three;
@@ -63,7 +60,7 @@ public:
         static constexpr integer displayedMaskPresets[] = { OneThree, OneTwoThree, All };
     };
 
-    static QString toDisplayString(MyEnumFlags mask) {
+    static QString toDisplayName(MyEnumFlags mask) {
         // Flags
         if (mask == MyEnum::One)
             return "One";
