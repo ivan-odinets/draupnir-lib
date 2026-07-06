@@ -27,6 +27,7 @@
 
 #include <QObject>
 
+#include "draupnir/settings_registry/utils/FlagsMaskSerializerTemplate.h"
 #include "draupnir/utils/advance_enum.h"
 #include "draupnir/utils/flags.h"
 
@@ -38,13 +39,15 @@ namespace Draupnir::Logging
  *  @brief Provides built-in log message severity levels.
  *
  *  @details Message levels describe the severity or importance of a @ref Draupnir::Logging::Message. A message level is used
- *           together with @ref Draupnir::Logging::MessageCategory to form a complete @ref Draupnir::Logging::MessageType. */
+ *           together with @ref Draupnir::Logging::MessageCategory to form a complete @ref Draupnir::Logging::MessageType.
+ * @todo Documentation: Write reasonable documentation for this class.
+ * @todo Tests: Add some unit tests for this class. */
 
 class MessageLevel
 {
 public:
     MessageLevel() = delete;
-    Q_DISABLE_COPY(MessageLevel);
+    Q_DISABLE_COPY(MessageLevel)
 
     /*! @enum MessageLevel::Value
      *  @brief Built-in message severity levels. */
@@ -55,20 +58,36 @@ public:
         Error   = 0b0000'1000, /*!< @brief Error message. */
     };
 
+    static QLatin1String debugToken() { return QLatin1String{"debug"}; }
+    static QLatin1String infoToken() { return QLatin1String{"info"}; }
+    static QLatin1String warningToken() { return QLatin1String{"warning"}; }
+    static QLatin1String errorToken() { return QLatin1String{"error"}; }
+
+    using Serializer = Draupnir::Settings::FlagSerializerTemplate<
+        Value,
+        Draupnir::Settings::FlagWrapperTemplate<Value::Debug, []() { return debugToken(); }>,
+        Draupnir::Settings::FlagWrapperTemplate<Value::Info, []() { return infoToken(); }>,
+        Draupnir::Settings::FlagWrapperTemplate<Value::Warning, []() { return warningToken(); }>,
+        Draupnir::Settings::FlagWrapperTemplate<Value::Error, []() { return errorToken(); }>
+    >;
+
+    static QString toConfigString(MessageLevel::Value level) {
+        return Serializer::toConfigString(level);
+    }
+
+    static std::optional<MessageLevel::Value> fromConfigString(const QString& string) {
+        return Serializer::fromConfigString(string);
+    }
+
+    static inline QString debugDisplayName();
+    static inline QString infoDisplayName();
+    static inline QString warningDisplayName();
+    static inline QString errorDisplayName();
+
     /*! @brief Converts a message level to a user-friendly display string.
      *  @param value Message level value.
      *  @return Translated display string for the given message level. */
-    static QString toDisplayString(Value value) {
-        switch (value) {
-            case Debug:   return QObject::tr("Debug");
-            case Info:    return QObject::tr("Info");
-            case Warning: return QObject::tr("Warning");
-            case Error:   return QObject::tr("Error");
-        }
-        Q_UNREACHABLE();
-        Q_ASSERT(false);
-        return QString{};
-    }
+    static QString toDisplayName(Value value);
 };
 
 /*! @ingroup Logging
@@ -87,7 +106,9 @@ inline MessageLevel::Value& operator++(MessageLevel::Value& type,int)
 }
 
 /*! @ingroup Logging
- *  @brief Flag set of @ref Draupnir::Logging::MessageLevel::Value values. */
+ *  @brief Flag set of @ref Draupnir::Logging::MessageLevel::Value values.
+ * @todo Documentation: Write reasonable documentation for this class.
+ * @todo Tests: Add some unit tests for this class. */
 
 class MessageLevels final : public draupnir::utils::enum_flags<MessageLevel::Value>
 {
@@ -103,18 +124,36 @@ public:
     static constexpr _Base::integer All =
         MessageLevel::Debug | MessageLevel::Info | MessageLevel::Warning | MessageLevel::Error;
 
-    struct UiSelectorMetadata {
-        static constexpr _Base::enum_type displayedFlags[] = {
-            MessageLevel::Debug, MessageLevel::Info, MessageLevel::Warning, MessageLevel::Error };
-        static constexpr _Base::integer displayedMaskPresets[] = { All };
-    };
+    static QLatin1String allToken() { return QLatin1String{"all"}; }
 
-    static QString toDisplayString(MessageLevels levels) {
+    using Serializer = Draupnir::Settings::FlagsMaskSerializerTemplate<
+        MessageLevels,
+        MessageLevel::Serializer,
+        Draupnir::Settings::NoneFlagsMaskTemplate<MessageLevels>,
+        Draupnir::Settings::FlagsMaskWrapperTemplate<[]() { return All; }, []() { return allToken(); }>
+    >;
+
+    static std::optional<MessageLevels> fromConfigString(const QString& string) {
+        return Serializer::fromConfigString(string);
+    }
+
+    static QString toConfigString(MessageLevels mask) {
+        return Serializer::toConfigString(mask);
+    }
+
+    static QString toDisplayName(MessageLevels levels) {
         if (levels == All)
             return QObject::tr("All");
 
-        return MessageLevel::toDisplayString(static_cast<MessageLevel::Value>(levels.value()));
+        return MessageLevel::toDisplayName(static_cast<MessageLevel::Value>(levels.value()));
     };
+
+    struct UiSelectorMetadata {
+        static constexpr _Base::enum_type displayedFlags[] = {
+                                                              MessageLevel::Debug, MessageLevel::Info, MessageLevel::Warning, MessageLevel::Error };
+        static constexpr _Base::integer displayedMaskPresets[] = { All };
+    };
+
 };
 
 }; // namespace Draupnir::Logging

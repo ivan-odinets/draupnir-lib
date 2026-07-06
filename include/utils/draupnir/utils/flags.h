@@ -138,9 +138,6 @@ public:
     [[nodiscard]] constexpr bool is_subset(const flags_base& other) const noexcept {
         return (this->m_mask & other.m_mask) == this->m_mask;
     }
-    [[nodiscard]] constexpr bool is_subset(flags_base other) const noexcept {
-        return (this->m_mask & other.m_mask) == this->m_mask;
-    }
 ///@}
 
 ///@name Comparison operators.

@@ -26,8 +26,7 @@
 #define MESSAGECATEGORYTRAITCONCEPT_H
 
 #include "draupnir/logging/messages/categories/MessageCategories.h"
-
-#include <QAction>
+#include "draupnir/ui_bricks/concepts/UiTraitConcepts.h"
 
 namespace Draupnir::Logging
 {
@@ -39,15 +38,18 @@ namespace Draupnir::Logging
  *  @details A message category trait describes a single logging/message category known at compile time.
  *
  *           A valid trait must provide:
- *           - `static MessageCategory id()` — stable category identifier.
- *           - `static QString displayName()` — human-readable name for UI.
- *           - `static QString configKey()` — stable string key used in config files. */
+ *           - `static MessageCategory value()` - should return id of the message caregory represented by this trait.
+ *           - `static QString displayName()` - human-readable name for UI.
+ *           - `static QString configString()` - stable string key used in config files. */
 
 template<class Candidate>
 concept MessageCategoryTraitConcept = requires {
-    { Candidate::id() } -> std::same_as<MessageCategory>;
+    { Candidate::value() } -> std::same_as<MessageCategory>;
+
+    requires Ui::HasDisplayName<Candidate>;
     { Candidate::displayName() } -> std::same_as<QString>;
-    { Candidate::configKey() } -> std::same_as<QString>;
+
+    { Candidate::configString() } -> std::same_as<QLatin1String>;
 };
 
 }; // namespace Draupnir::Logging

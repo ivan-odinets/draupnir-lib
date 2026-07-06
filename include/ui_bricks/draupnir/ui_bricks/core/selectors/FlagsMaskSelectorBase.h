@@ -330,7 +330,7 @@ private:
     template<class Flags, class EmptyContainer> requires(
         !_flagsHasSelectorDisplayedMaskPresets &&
         draupnir::utils::is_one_of_v<EmptyContainer, TemplateArgs::MaskTraitsWrapper<>, TemplateArgs::MaskValuesWrapper<>>
-        )
+    )
     struct _MaskTraitNormalizer<Flags, EmptyContainer> {
         using type = std::tuple<>;
     };
@@ -405,6 +405,20 @@ public:
         }
         return self.template _getUiElementImpl<Self, 0>(key);
     }
+
+    template<class Trait, class Self>
+    [[nodiscard]] draupnir::utils::copy_const_from_t<Self, _UiElement>* getUiElement(this Self&& self) {
+        if constexpr (draupnir::utils::is_type_in_tuple_v<_FlagTraitWrapper<Trait>, _ElementsTuple>) {
+            return std::get<_FlagTraitWrapper<Trait>>(self.m_uiElementsTuple).element;
+        } else if constexpr (draupnir::utils::is_type_in_tuple_v<_MaskTraitWrapper<Trait>, _ElementsTuple>) {
+            return std::get<_MaskTraitWrapper<Trait>>(self.m_uiElementsTuple).element;
+        } else {
+            static_assert(
+                draupnir::utils::is_type_in_tuple_v<_FlagTraitWrapper<Trait>, Trait> ||
+                draupnir::utils::is_type_in_tuple_v<_MaskTraitWrapper<Trait>, Trait>
+            );
+        }
+    };
 
     /*! @brief Returns the UI element representing a specific individual flag.
      *  @tparam Key Individual value that must be known by this FlagsMaskSelectorBase.
@@ -506,7 +520,9 @@ protected:
             ((
                  element.element = Ui::CheckableUiElementHelper<_UiElement>::createConnectedUiElement(
                      _getDisplayString<std::remove_cvref_t<decltype(element)>>(),
-                     [this](bool checked){ _onUserInteraction(std::remove_cvref_t<decltype(element)>::Type::value, checked); }
+                     [this](bool checked) {
+                         _onUserInteraction<std::remove_cvref_t<decltype(element)>>(checked);
+                     }
                      )), ... );
         }, m_uiElementsTuple);
 
@@ -635,12 +651,12 @@ private:
     static QString _getDisplayString() {
         using Trait = typename Wrapper::Type;
 
-        if constexpr (HasDisplayString<Trait>) {
-            return Trait::displayString();
-        } else if constexpr (HasValueToDisplayString<_Flags, _Flags>) {
-            return _Flags::toDisplayString(_Flags{Trait::value});
+        if constexpr (HasDisplayName<Trait>) {
+            return Trait::displayName();
+        } else if constexpr (HasValueToDisplayName<_Flags, _Flags>) {
+            return _Flags::toDisplayName(_Flags{Trait::value});
         } else {
-            static_assert(HasDisplayString<Trait> || HasValueToDisplayString<_Flags, _Flags>,
+            static_assert(HasDisplayName<Trait> || HasValueToDisplayName<_Flags, _Flags>,
                 "Can not resolve display string for selector entry." );
             return {};
         }
@@ -658,7 +674,9 @@ private:
      *           Finally, the derived implementation method `_Implementation::flagSelectionChanged(value, checked)`
      *           is invoked. This method should be a Qt signal.
      * @note This handler is intended for user-triggered changes only. */
-    void _onUserInteraction(_FlagType value, bool checked) {
+    template<class Wrapper> requires(draupnir::utils::is_instantiation_of_v<Wrapper, _FlagTraitWrapper>)
+    void _onUserInteraction(bool checked) {
+        const _FlagType value = Wrapper::Type::value;
         m_displayedFlags.set_flag(value, checked);
 
         if constexpr (_hasAnyDisplayedMasks)
@@ -683,7 +701,9 @@ private:
      *
      * @note Preset mask UI elements behave as group toggles: checking one adds its bits, unchecking one removes its bits.
      * @note This method is available only when the selector contains at least one displayed preset mask. */
-    void _onUserInteraction(_Flags value, bool checked) {
+    template<class Wrapper> requires(draupnir::utils::is_instantiation_of_v<Wrapper, _MaskTraitWrapper>)
+    void _onUserInteraction(bool checked) {
+        const _Flags value = Wrapper::Type::value;
         m_displayedFlags = checked ?
             m_displayedFlags | value :
             m_displayedFlags & ~value ;

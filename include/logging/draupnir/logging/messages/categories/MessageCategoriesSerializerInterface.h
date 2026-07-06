@@ -36,11 +36,13 @@ namespace Draupnir::Logging
 class MessageCategoriesSerializerInterface
 {
 public:
+    virtual ~MessageCategoriesSerializerInterface() = default;
+
     virtual std::optional<MessageCategories> fromConfigString(const QString& configString) const = 0;
 
     virtual QString toConfigString(MessageCategories mask) const = 0;
 };
 
-}; // namespace Draupnir::Logging
+} // namespace Draupnir::Logging
 
 #endif // MESSAGECATEGORIESSERIALIZERINTERFACE_H

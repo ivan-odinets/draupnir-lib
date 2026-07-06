@@ -64,7 +64,10 @@
         $$PWD/../include/settings_registry/draupnir/settings_registry/utils/SettingsTraitsConcatenator.h \
         $$PWD/../include/settings_registry/draupnir/settings_registry/utils/SettingTraitPrinter.h \
         $$PWD/../include/settings_registry/draupnir/settings_registry/utils/SettingTraitSerializer.h \
-        $$PWD/../include/settings_registry/draupnir/settings_registry/utils/ValueSerializerTemplate.h
+        $$PWD/../include/settings_registry/draupnir/settings_registry/utils/ValueSerializerTemplate.h \
+        $$PWD/../include/settings_registry/draupnir/settings_registry/concepts/SettingsSerializationConcepts.h \
+        $$PWD/../include/settings_registry/draupnir/settings_registry/utils/FlagSerializerTemplate.h \
+        $$PWD/../include/settings_registry/draupnir/settings_registry/utils/FlagsMaskSerializerTemplate.h
 
     DISTFILES += \
         $$PWD/../docs/pages/SettingsRegistry.dox

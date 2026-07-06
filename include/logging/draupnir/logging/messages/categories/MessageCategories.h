@@ -46,6 +46,10 @@ class MessageCategory : public draupnir::utils::integer_wrapper<quint64, Message
     using _Base = draupnir::utils::integer_wrapper<quint64, MessageCategory>;
 
 public:
+    using _Base::integer_wrapper;
+
+    using _Base::operator=;
+
     /*! @enum MessageCategory::Value
      *  @brief Built-in message category values. */
     enum Value {
@@ -56,14 +60,10 @@ public:
         FirstCustomCategory = 0b100,
     };
 
-    using draupnir::utils::integer_wrapper<quint64, MessageCategory>::integer_wrapper;
-
-    using draupnir::utils::integer_wrapper<quint64, MessageCategory>::operator=;
-
     /*! @brief Returns the next available message category ID.
      *  @param prevType The previous MessageCategory.
      *  @return A new MessageCategory with the value shifted left by 1. */
-    static constexpr MessageCategory nextType(MessageCategory::integer_wrapper prevType) {
+    static constexpr MessageCategory nextType(MessageCategory prevType) {
         return MessageCategory{prevType << 1};
     }
 };

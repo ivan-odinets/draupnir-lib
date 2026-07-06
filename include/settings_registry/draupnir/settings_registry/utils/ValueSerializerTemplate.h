@@ -27,7 +27,8 @@
 
 #include <QVariant>
 
-#include "draupnir/utils/flags.h"
+#include "draupnir/settings_registry/concepts/SettingsSerializationConcepts.h"
+#include "draupnir/utils/concepts/flags_concepts.h"
 
 namespace Draupnir::Settings
 {
@@ -54,22 +55,6 @@ public:
             std::nullopt;
     }
 };
-
-/*! @brief Checks whether an enum-flags-like type provides custom config serialization to string.
- *  @tparam Candidate Type to test.
- *
- *  @details This concept is satisfied when `Candidate` provides a static member functions with the following signatures:
- *           @code
- *           static QString toConfigString(const Candidate&);
- *           static std::optional<Candidate> fromConfigString(const QString&);
- *           @endcode */
-
-template<class Candidate>
-concept HasCustomEnumFlagsConfigSerialization =
-    requires(const Candidate& enumFlags, QString& configString) {
-        { Candidate::toConfigString(enumFlags) } -> std::same_as<QString>;
-        { Candidate::fromConfigString(configString) } -> std::same_as<std::optional<Candidate>>;
-    };
 
 /*! @class ValueSerializerTemplate draupnir/settings_registry/utils/ValueSerializerTemplate.h
  *  @ingroup SettingsRegistry

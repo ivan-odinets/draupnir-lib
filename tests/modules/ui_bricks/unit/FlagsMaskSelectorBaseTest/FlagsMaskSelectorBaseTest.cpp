@@ -85,9 +85,6 @@ public:
     }
 };
 
-
-
-
 class MyEnumFlagsMenu :
     public QMenu,
     public Draupnir::Ui::FlagsMaskSelectorBase<MyEnumFlagsMenu, QAction, MyEnumFlags,

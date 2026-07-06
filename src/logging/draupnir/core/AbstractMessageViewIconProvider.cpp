@@ -30,9 +30,6 @@
 namespace Draupnir::Logging
 {
 
-AbstractMessageViewIconProvider::AbstractMessageViewIconProvider()
-{}
-
 const QIcon& AbstractMessageViewIconProvider::getIcon(const MessageType messageType) const
 {
     switch (messageType.level()) {

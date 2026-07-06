@@ -53,15 +53,25 @@ private:
     using MessageCategoriesRegistry = MessageCategoryRegistryTemplate<
         DefaultMessageCategoryTrait, NetworkMessageCategoryTrait
     >;
+    MessageCategoriesSerializerInterface* categoriesSerializer = nullptr;
 
 private slots:
     void initTestCase() {
-        Draupnir::Settings::ValueSerializerTemplate<MessageCategories>::setMessageCategoriesSerializerInterface(
-            new MessageCategoriesRegistry
-        );
+        categoriesSerializer = new MessageCategoriesRegistry;
+        Draupnir::Settings::ValueSerializerTemplate<MessageCategories>::setMessageCategoriesSerializerInterface(categoriesSerializer);
+    }
+
+    void cleanupTestCase() {
+        delete categoriesSerializer;
+        categoriesSerializer = nullptr;
     }
 
     void test_message_categories_setting() {
+        // Check if individual things are written properly
+        registry.set<Settings::LogWidget::DisplayedMessageCategoriesSetting>(DefaultMessageCategoryTrait::value());
+        QCOMPARE(registry.backend()->value(Settings::LogWidget::DisplayedMessageCategoriesSetting::key()).toString(),
+                 DefaultMessageCategoryTrait::configString());
+
         // Check if All is written properly
         registry.set<Settings::LogWidget::DisplayedMessageCategoriesSetting>(MessageCategories::All);
         QCOMPARE(registry.backend()->value(Settings::LogWidget::DisplayedMessageCategoriesSetting::key()).toString(),
@@ -70,6 +80,33 @@ private slots:
         registry.set<Settings::LogWidget::DisplayedMessageCategoriesSetting>(MessageCategories::None);
         QCOMPARE(registry.backend()->value(Settings::LogWidget::DisplayedMessageCategoriesSetting::key()).toString(),
                  MessageCategories::noneConfigKey());
+    }
+
+    void test_message_fields_setting() {
+        // Check if individual things are written properly
+        registry.set<Settings::LogWidget::DisplayedMessageViewItemFieldsSetting>(MessageViewItemField::Brief);
+        QCOMPARE(registry.backend()->value(Settings::LogWidget::DisplayedMessageViewItemFieldsSetting::key()).toString(),
+                 MessageViewItemField::briefConfigToken());
+        registry.set<Settings::LogWidget::DisplayedMessageViewItemFieldsSetting>(MessageViewItemField::What);
+        QCOMPARE(registry.backend()->value(Settings::LogWidget::DisplayedMessageViewItemFieldsSetting::key()).toString(),
+                 MessageViewItemField::whatConfigToken());
+
+        // Check if All is written properly
+        registry.set<Settings::LogWidget::DisplayedMessageViewItemFieldsSetting>(MessageViewItemFields::All);
+        QCOMPARE(registry.backend()->value(Settings::LogWidget::DisplayedMessageViewItemFieldsSetting::key()).toString(),
+                 MessageViewItemFields::allConfigToken());
+    }
+
+    void test_message_levels_setting() {
+        // Check if individual things are written properly
+        registry.set<Settings::LogWidget::DisplayedMessageLevelsSetting>(MessageLevel::Warning);
+        QCOMPARE(registry.backend()->value(Settings::LogWidget::DisplayedMessageLevelsSetting::key()).toString(),
+                 MessageLevel::warningToken());
+
+        // Check if All written properly
+        registry.set<Settings::LogWidget::DisplayedMessageLevelsSetting>(MessageLevels::All);
+        QCOMPARE(registry.backend()->value(Settings::LogWidget::DisplayedMessageLevelsSetting::key()).toString(),
+                 MessageLevels::allToken());
     }
 };
 

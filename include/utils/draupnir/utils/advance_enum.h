@@ -45,7 +45,7 @@ namespace draupnir::utils
  *  @param v - vnum value to advance. */
 
 template<typename E, E first, E head>
-void advance_enum(E& v)
+constexpr void advance_enum(E& v)
 {
     static_assert(std::is_enum_v<E>,
             "Provided E key is not an enum type.");
@@ -65,7 +65,7 @@ void advance_enum(E& v)
  *  @details Compares v to head; if equal, assigns next; otherwise, recurses. */
 
 template<typename E, E first, E head, E next, E... tail>
-void advance_enum(E& v)
+constexpr void advance_enum(E& v)
 {
     static_assert(std::is_enum_v<E>,
             "Provided E key is not an enum type.");
@@ -86,7 +86,7 @@ void advance_enum(E& v)
 template<typename E, E first, E... values>
 struct enum_values
 {
-    static void advance(E& v) {
+    static constexpr void advance(E& v) {
         static_assert(std::is_enum_v<E>,
                 "Provided E key is not an enum type.");
         advance_enum<E, first, first, values...>(v);

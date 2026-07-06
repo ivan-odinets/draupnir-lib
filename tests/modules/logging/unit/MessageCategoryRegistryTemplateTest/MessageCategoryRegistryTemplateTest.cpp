@@ -51,8 +51,8 @@ private slots:
     void cleanupTestCase() { delete registry; registry = nullptr; }
 
     void test_contains() {
-        QCOMPARE(registry->contains(DefaultMessageCategoryTrait::id()), true);
-        QCOMPARE(registry->contains(NetworkMessageCategoryTrait::id()), true);
+        QCOMPARE(registry->contains(DefaultMessageCategoryTrait::value()), true);
+        QCOMPARE(registry->contains(NetworkMessageCategoryTrait::value()), true);
         QCOMPARE(registry->contains(125), false);
     }
 };

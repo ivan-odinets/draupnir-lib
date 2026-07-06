@@ -30,6 +30,7 @@
 #include <QStringList>
 
 #include "draupnir/logging/concepts/MessageCategoryTraitConcept.h"
+#include "draupnir/settings_registry/utils/FlagsMaskSerializerTemplate.h"
 
 namespace Draupnir::Logging
 {
@@ -43,46 +44,31 @@ class MessageCategoryRegistryTemplate final : public AbstractMessageCategoryRegi
 public:
     bool contains(MessageCategory id) const final { return _containsImpl<Traits...>(id); }
 
-    std::optional<MessageCategories> fromConfigString(const QString& configString) const final {
-        if (configString.isEmpty())
-            return std::nullopt;
+    using SingleCategorySerializer = ::Draupnir::Settings::FlagSerializerTemplate<
+        MessageCategory,
+        Traits...
+    >;
 
-        const QStringList parts = configString.split(',');
-        const bool hasNone = parts.contains(MessageCategories::noneConfigKey());
-        const bool hasAll  = parts.contains(MessageCategories::allConfigKey());
+    using Serializer = ::Draupnir::Settings::FlagsMaskSerializerTemplate<
+        MessageCategories,
+        SingleCategorySerializer,
+        ::Draupnir::Settings::NoneFlagsMaskTemplate<MessageCategories>,
+        ::Draupnir::Settings::FlagsMaskWrapperTemplate<
+            []() { return MessageCategories::All; }, []() { return MessageCategories::allConfigKey(); }>
+    >;
 
-        if ((hasNone || hasAll) && parts.size() != 1)
-            return std::nullopt;
-
-        if (hasNone)
-            return MessageCategories::None;
-        if (hasAll)
-            return MessageCategories::All;
-
-        MessageCategories result{MessageCategories::None};
-        for (const QString& part : parts) {
-            auto maybeField = _fromConfigStringImpl<Traits...>(part);
-            if (!maybeField) return std::nullopt;
-            result.set_flag(maybeField.value(), true);
-        }
-        return std::optional<MessageCategories>{result};
-    };
+    std::optional<MessageCategories> fromConfigString(const QString &configString) const final {
+        return Serializer::fromConfigString(configString);
+    }
 
     QString toConfigString(MessageCategories mask) const final {
-        if (mask == MessageCategories::None)
-            return MessageCategories::noneConfigKey();
-        if (mask == MessageCategories::All)
-            return MessageCategories::allConfigKey();
-
-        QStringList parts{};
-        _toConfigStringImpl<Traits...>(mask, parts);
-        return parts.join(',');
-    };
+        return Serializer::toConfigString(mask);
+    }
 
 private:
     template<MessageCategoryTraitConcept First, MessageCategoryTraitConcept... Rest>
     static bool _containsImpl(MessageCategory id) {
-        if (First::id() == id)
+        if (First::value() == id)
             return true;
 
         if constexpr (sizeof...(Rest) > 0)
@@ -90,28 +76,8 @@ private:
         else
             return false;
     }
-
-    template<MessageCategoryTraitConcept First, MessageCategoryTraitConcept... Rest>
-    static std::optional<MessageCategory> _fromConfigStringImpl(const QString& part) {
-        if (First::configKey() == part)
-            return First::id();
-
-        if constexpr (sizeof...(Rest) > 0)
-            return _fromConfigStringImpl<Rest...>(part);
-        else
-            return std::nullopt;
-    }
-
-    template<MessageCategoryTraitConcept First, MessageCategoryTraitConcept... Rest>
-    static void _toConfigStringImpl(const MessageCategories mask, QStringList& out) {
-        if (mask.test_flag(First::id()))
-            out.append(First::configKey());
-
-        if constexpr (sizeof...(Rest) > 0)
-            _toConfigStringImpl<Rest...>(mask, out);
-    }
 };
 
-};
+} // namespace Draupnir::Logging
 
 #endif // MESSAGECATEGORYREGISTRYTEMPLATE_H

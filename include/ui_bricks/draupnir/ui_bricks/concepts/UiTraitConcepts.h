@@ -31,13 +31,13 @@ namespace Draupnir::Ui
 {
 
 template<class Candidate>
-concept HasDisplayString = requires {
-    { Candidate::displayString() } -> std::same_as<QString>;
+concept HasDisplayName = requires {
+    { Candidate::displayName() } -> std::same_as<QString>;
 };
 
 template<class Candidate, class Value>
-concept HasValueToDisplayString = requires(const Value& value) {
-    { Candidate::toDisplayString(value) } -> std::same_as<QString>;
+concept HasValueToDisplayName = requires(const Value& value) {
+    { Candidate::toDisplayName(value) } -> std::same_as<QString>;
 };
 
 }; // namespace Draupnir::Ui

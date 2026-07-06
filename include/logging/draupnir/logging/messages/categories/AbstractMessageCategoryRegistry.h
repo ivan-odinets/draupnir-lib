@@ -44,6 +44,6 @@ public:
     virtual QString toConfigString(MessageCategories mask) const = 0;
 };
 
-}; // namespace Draupnir::Logging
+} // namespace Draupnir::Logging
 
 #endif // ABSTRACTMESSAGECATEGORYREGISTRY_H

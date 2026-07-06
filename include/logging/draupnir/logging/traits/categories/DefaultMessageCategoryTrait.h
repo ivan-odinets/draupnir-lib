@@ -42,11 +42,11 @@ namespace Draupnir::Logging
 class DefaultMessageCategoryTrait
 {
 public:
-    /*! @brief Returns the stable category identifier. */
-    static constexpr MessageCategory id() { return MessageCategory::Default; }
+    /*! @brief Stable category identifier. */
+    static constexpr MessageCategory value() { return MessageCategory::Default; }
 
     /*! @brief Returns the stable configuration key for this category. */
-    static QString configKey() { return QString("default"); }
+    static QLatin1String configString() { return QLatin1String{"default"}; }
 
     /*! @brief Returns the user-facing translated display name. */
     static QString displayName() { return QObject::tr("Default"); }

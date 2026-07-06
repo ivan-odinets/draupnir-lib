@@ -22,36 +22,42 @@
  *
  */
 
-#ifndef NETWORKMESSAGECATEGORYTRAIT_H
-#define NETWORKMESSAGECATEGORYTRAIT_H
-
-#include <QObject>
-
-#include "draupnir/logging/messages/categories/MessageCategories.h"
+#include "draupnir/logging/messages/MessageLevels.h"
 
 namespace Draupnir::Logging
 {
 
-/*! @class NetworkMessageCategoryTrait draupnir/logging/traits/categories/NetworkMessageCategoryTrait.h
- *  @ingroup Logging
- *  @brief Trait describing the network message category.
- *
- *  @details Provides compile-time metadata for the network logging/message category, including its identifier, configuration
- *           key, and translatable display name. */
-
-class NetworkMessageCategoryTrait
+QString MessageLevel::debugDisplayName()
 {
-public:
-    /*! @brief Stable category identifier. */
-    static constexpr MessageCategory value() { return MessageCategory::Network; }
+    return QObject::tr("Debug");
+}
 
-    /*! @brief Returns the stable configuration key for this category. */
-    static QLatin1String configString() { return QLatin1String{"network"}; }
+QString MessageLevel::infoDisplayName()
+{
+    return QObject::tr("Info");
+}
 
-    /*! @brief Returns the user-facing translated display name. */
-    static QString displayName() { return QObject::tr("Network"); }
-};
+QString MessageLevel::warningDisplayName()
+{
+    return QObject::tr("Warning");
+}
+
+QString MessageLevel::errorDisplayName()
+{
+    return QObject::tr("Error");
+}
+
+QString MessageLevel::toDisplayName(MessageLevel::Value value)
+{
+    switch (value) {
+        case Debug:   return debugDisplayName();
+        case Info:    return infoDisplayName();
+        case Warning: return warningDisplayName();
+        case Error:   return errorDisplayName();
+    }
+    Q_UNREACHABLE();
+    Q_ASSERT(false);
+    return QString{};
+}
 
 }; // namespace Draupnir::Logging
-
-#endif // NETWORKMESSAGECATEGORYTRAIT_H

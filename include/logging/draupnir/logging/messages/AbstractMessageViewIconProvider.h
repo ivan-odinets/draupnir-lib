@@ -32,10 +32,15 @@
 namespace Draupnir::Logging
 {
 
+/*! @class AbstractMessageViewIconProvider
+ *  @ingroup Logging
+ *  @brief This is a class.
+ * @todo Documentation: Write reasonable documentation. */
+
 class AbstractMessageViewIconProvider
 {
 public:
-    AbstractMessageViewIconProvider();
+    AbstractMessageViewIconProvider() = default;
     virtual ~AbstractMessageViewIconProvider() = default;
 
     virtual const QIcon& getIcon(const MessageType messageType) const;

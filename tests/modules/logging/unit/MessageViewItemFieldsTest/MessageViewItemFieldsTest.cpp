@@ -41,19 +41,16 @@ class MessageViewItemFieldsTest final : public QObject
 private:
     // These should work
     static QString briefAndWhatConfigStringKey() { return QStringList{
-        MessageViewItemField::briefConfigKey(), MessageViewItemField::whatConfigKey()
+        MessageViewItemField::briefConfigToken(), MessageViewItemField::whatConfigToken()
     }.join(','); };
     static QString allManuallyConfigStringKey() { return QStringList{
-        MessageViewItemField::briefConfigKey(), MessageViewItemField::whatConfigKey(),
-        MessageViewItemField::datetimeConfigKey(), MessageViewItemField::iconConfigKey()
+        MessageViewItemField::briefConfigToken(), MessageViewItemField::whatConfigToken(),
+        MessageViewItemField::datetimeConfigToken(), MessageViewItemField::iconConfigToken()
     }.join(','); };
 
     // These should fail
-    static QString allAndNoneConfigKey() { return QStringList{
-        MessageViewItemFields::allConfigKey(), MessageViewItemFields::noneConfigKey()
-    }.join(','); };
     static QString allAndIconConfigKey() { return QStringList{
-        MessageViewItemFields::allConfigKey(), MessageViewItemField::iconConfigKey()
+        MessageViewItemFields::allConfigToken(), MessageViewItemField::iconConfigToken()
     }.join(','); };
 
     struct MaskParseCase {
@@ -63,14 +60,13 @@ private:
 
     static inline const std::array parseCases{
         // These should work
-        MaskParseCase{ MessageViewItemField::Brief, MessageViewItemField::briefConfigKey() },
-        MaskParseCase{ MessageViewItemField::What, MessageViewItemField::whatConfigKey() },
-        MaskParseCase{ MessageViewItemField::Icon, MessageViewItemField::iconConfigKey() },
-        MaskParseCase{ MessageViewItemField::DateTime, MessageViewItemField::datetimeConfigKey() },
+        MaskParseCase{ MessageViewItemField::Brief, MessageViewItemField::briefConfigToken() },
+        MaskParseCase{ MessageViewItemField::What, MessageViewItemField::whatConfigToken() },
+        MaskParseCase{ MessageViewItemField::Icon, MessageViewItemField::iconConfigToken() },
+        MaskParseCase{ MessageViewItemField::DateTime, MessageViewItemField::datetimeConfigToken() },
         MaskParseCase{ MessageViewItemField::Brief | MessageViewItemField::What, briefAndWhatConfigStringKey() },
         MaskParseCase{ MessageViewItemFields::All, allManuallyConfigStringKey() },
         // These shouuld fail
-        MaskParseCase{ std::optional<MessageViewItemFields>{std::nullopt}, allAndNoneConfigKey() },
         MaskParseCase{ std::optional<MessageViewItemFields>{std::nullopt}, allAndIconConfigKey() }
     };
 
@@ -86,12 +82,11 @@ private slots:
 
     void test_to_config_string() {
         // Individual keys
-        QCOMPARE(MessageViewItemFields::toConfigString(MessageViewItemFields::None), MessageViewItemFields::noneConfigKey());
-        QCOMPARE(MessageViewItemField::toConfigString(MessageViewItemField::Value::Brief), MessageViewItemField::briefConfigKey());
-        QCOMPARE(MessageViewItemField::toConfigString(MessageViewItemField::Value::What), MessageViewItemField::whatConfigKey());
-        QCOMPARE(MessageViewItemField::toConfigString(MessageViewItemField::Value::Icon), MessageViewItemField::iconConfigKey());
-        QCOMPARE(MessageViewItemField::toConfigString(MessageViewItemField::Value::DateTime), MessageViewItemField::datetimeConfigKey());
-        QCOMPARE(MessageViewItemFields::toConfigString(MessageViewItemFields::All), MessageViewItemFields::allConfigKey());
+        QCOMPARE(MessageViewItemField::toConfigString(MessageViewItemField::Value::Brief), MessageViewItemField::briefConfigToken());
+        QCOMPARE(MessageViewItemField::toConfigString(MessageViewItemField::Value::What), MessageViewItemField::whatConfigToken());
+        QCOMPARE(MessageViewItemField::toConfigString(MessageViewItemField::Value::Icon), MessageViewItemField::iconConfigToken());
+        QCOMPARE(MessageViewItemField::toConfigString(MessageViewItemField::Value::DateTime), MessageViewItemField::datetimeConfigToken());
+        QCOMPARE(MessageViewItemFields::toConfigString(MessageViewItemFields::All), MessageViewItemFields::allConfigToken());
 
         // Combitations
         QCOMPARE(MessageViewItemFields::toConfigString(MessageViewItemField::Brief | MessageViewItemField::What), briefAndWhatConfigStringKey());
