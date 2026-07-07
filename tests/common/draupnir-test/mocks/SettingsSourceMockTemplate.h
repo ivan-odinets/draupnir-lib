@@ -18,7 +18,7 @@ namespace Draupnir::Settings
  *         instantiations.
  * @todo Refractor this class and @ref SettingsBackendMockTemplate. */
 
-template<Draupnir::Settings::SettingTraitConcept... SettingTraits>
+template<SettingTraitConcept... SettingTraits>
 class SettingsSourceMockTemplate
 {
     using Backend = SettingsBackendMockTemplate<SettingTraits...>;

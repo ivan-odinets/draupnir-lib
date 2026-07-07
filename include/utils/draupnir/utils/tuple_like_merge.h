@@ -70,17 +70,20 @@ template<template<class...> class TupleLike, template<class...> class OutputCont
 class tuple_like_merge
 {
 private:
+    template<class...>
+    struct _simple_type_list {};
+
     /*! @brief Trait that checks whether a type @p T is already present within a variadic type container @p Pack.
      *  @tparam T    Type to search for.
      *  @tparam Pack A class template specialization of the form `Pack<Us...>`, where `Us...` is a variadic list of types.
      *  @details This helper metafunction evaluates to `std::true_type` if @p T is exactly equal to at least one of the types in
      *           `Us...`, and to `std::false_type` otherwise. It is used internally to enforce uniqueness of collected trait
      *           types in the accumulator container. */
-    template<typename T, typename Pack>
+    template<typename T, typename PAck>
     struct contains;
 
-    template<typename T, template<class...> class Pack, class... Us>
-    struct contains<T, Pack<Us...>> :
+    template<typename T, class... Us>
+    struct contains<T, _simple_type_list<Us...>> :
         std::bool_constant<(std::is_same_v<T, Us> || ...)> {};
 
     /*! @brief Appends a type @p T to a variadic type container @p Pack only if @p T is not already present in that container.
@@ -92,65 +95,62 @@ private:
     template<typename Pack, typename T>
     struct push_unique;
 
-    template<template<class...> class Pack, class... Us, class T>
-    struct push_unique<Pack<Us...>, T> {
+    template<class... Us, class T>
+    struct push_unique<_simple_type_list<Us...>, T> {
         using type = std::conditional_t<
-            (contains<T, Pack<Us...>>::value),
-            Pack<Us...>,
-            Pack<Us..., T>
+            (contains<T, _simple_type_list<Us...>>::value),
+            _simple_type_list<Us...>,
+            _simple_type_list<Us..., T>
         >;
     };
 
     /*! @brief Processes a single type @p T and updates the accumulator @p Acc accordingly, potentially flattening nested
      *         tuple-like structures.
      *  @tparam _TupleLike   Tuple-like class template used to detect and handle nested structures.
-     *  @tparam Out          Output container class template (same role as @p OutputContainer).
      *  @tparam Acc          Current accumulator type, expected to be of the form `Out<...>`.
      *  @tparam T            Type to be processed.
      *  @details The primary template handles the case where @p T is not an instantiation of @_TupleLike. In that case, @p T
-     *           is treated as a trait “leaf” and is fed into @ref tuple_like_merge::push_unique to be conditionally appended
+     *           is treated as a trait "leaf" and is fed into @ref tuple_like_merge::push_unique to be conditionally appended
      *           to the accumulator.
      *
      *           A partial specialization (defined below) handles the case where @p T is of the form `_TupleLike<Inner...>`.
      *           In that case, the type is flattened by delegating to @ref tuple_like_merge::flatten_pack over the `Inner...`
      *           pack, thereby recursively collecting trait types from nested tuple-like structures. */
-    template<template<class...> class _TupleLike, template<class...> class Out, class Acc, class T >
+    template<template<class...> class _TupleLike, class Acc, class T >
     struct flatten_one;
 
-    template<template<class...> class _TupleLike, template<class...> class Out, class... Us, class T >
-    struct flatten_one<_TupleLike, Out, Out<Us...>, T> {
-        using type = typename push_unique<Out<Us...>, T>::type;
+    template<template<class...> class _TupleLike, class... Us, class T >
+    struct flatten_one<_TupleLike, _simple_type_list<Us...>, T> {
+        using type = typename push_unique<_simple_type_list<Us...>, T>::type;
     };
 
     /*! @brief Recursively processes a variadic pack of types @p Ts... and accumulates the result into @p Acc.
      *  @tparam _TupleLike   Tuple-like class template used for detecting nested tuple-like instances.
-     *  @tparam Out          Output container class template (same role as @p OutputContainer).
      *  @tparam Acc          Current accumulator type, expected to be of the form `Out<...>`.
      *  @tparam Ts...        Types to be processed.
-     *  @details This helper metafunction is a variadic “fold” over @p Ts..., where each element in the pack is processed via
+     *  @details This helper metafunction is a variadic "fold" over @p Ts..., where each element in the pack is processed via
      *           @ref tuple_like_merge::flatten_one. The base case is an empty parameter pack @p Ts..., in which case `type` is
      *           simply @p Acc. The recursive case processes the first type @p Head, obtains an updated accumulator type, and
      *           then recurses on the remaining types @p Tail.... */
-    template<template<class...> class _TupleLike, template<class...> class Out, class Acc, class... Ts >
+    template<template<class...> class _TupleLike, class Acc, class... Ts >
     struct flatten_pack;
 
-    template<template<class...> class _TupleLike, template<class...> class Out, class Acc>
-    struct flatten_pack<_TupleLike, Out, Acc> {
+    template<template<class...> class _TupleLike, class Acc>
+    struct flatten_pack<_TupleLike, Acc> {
         using type = Acc;
     };
 
-    template<template<class...> class _TupleLike, template<class...> class Out, class Acc, class Head, class... Tail>
-    struct flatten_pack<_TupleLike, Out, Acc, Head, Tail...>
+    template<template<class...> class _TupleLike, class Acc, class Head, class... Tail>
+    struct flatten_pack<_TupleLike, Acc, Head, Tail...>
     {
-        using AfterHead = typename flatten_one<_TupleLike, Out, Acc, Head>::type;
+        using AfterHead = typename flatten_one<_TupleLike, Acc, Head>::type;
 
-        using type = typename flatten_pack<_TupleLike, Out, AfterHead, Tail...>::type;
+        using type = typename flatten_pack<_TupleLike, AfterHead, Tail...>::type;
     };
 
     /*! @brief Specialization of @ref tuple_like_merge::flatten_one for the case where the processed type is a tuple-like
      *         instantiation.
      *  @tparam _TupleLike   Tuple-like class template being matched.
-     *  @tparam Out          Output container class template.
      *  @tparam Us...        Already accumulated trait types stored in `Out<Us...>`.
      *  @tparam Inner...     Types contained within the tuple-like instantiation
      *                      `_TupleLike<Inner...>`.
@@ -158,19 +158,29 @@ private:
      *           a leaf. Instead, it delegates to @ref tuple_like_merge::flatten_pack with the current accumulator and the
      *           `Inner...` types, effectively flattening nested tuple-like layers and continuing trait collection
      *           recursively. */
-    template<template<class...> class _TupleLike, template<class...> class Out, class... Us, class... Inner>
-    struct flatten_one<_TupleLike, Out, Out<Us...>, _TupleLike<Inner...>>
+    template<template<class...> class _TupleLike, class... Us, class... Inner>
+    struct flatten_one<_TupleLike, _simple_type_list<Us...>, _TupleLike<Inner...>>
     {
-        using type = typename flatten_pack<_TupleLike, Out, Out<Us...>, Inner...>::type;
+        using type = typename flatten_pack<_TupleLike, _simple_type_list<Us...>, Inner...>::type;
     };
+
+    template<class Acc>
+    struct rebind_to_output;
+
+    template<class... Us>
+    struct rebind_to_output<_simple_type_list<Us...>> {
+        using type = OutputContainer<Us...>;
+    };
+
 public:
 
     /*! @brief The final collected type.
      *  @details This alias represents the end result of the entire collection process. It is an instantiation of @p
      *           OutputContainer parameterized with all distinct trait types discovered while recursively traversing @p
      *           Types... and any nested @p TupleLike instantiations they may contain. */
-    using type =
-        typename flatten_pack<TupleLike, OutputContainer, OutputContainer<>, Types...>::type;
+    using type = typename rebind_to_output<
+        typename flatten_pack<TupleLike, _simple_type_list<>, Types...>::type
+    >::type;
 };
 
 /*! @brief Convenience alias for @ref tuple_like_merge that directly exposes the nested @ref tuple_like_merge::type alias.
