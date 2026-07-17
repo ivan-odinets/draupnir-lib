@@ -51,7 +51,7 @@ void MessageListModel::append(MessageViewItem* message)
 {
     Q_ASSERT_X(message, "MessageListModel::append", "Provided MessageViewItem* is nullptr.");
     int lastIndex = m_data.count();
-    beginInsertRows(QModelIndex(),lastIndex,lastIndex+1);
+    beginInsertRows(QModelIndex(), lastIndex, lastIndex);
     m_data.append(message);
     endInsertRows();
 }

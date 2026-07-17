@@ -22,26 +22,28 @@
  *
  */
 
-#ifndef NONOTIFICATIONTRAIT_H
-#define NONOTIFICATIONTRAIT_H
+#ifndef MESSAGENOTIFICATIONSETTINGTRAIT_H
+#define MESSAGENOTIFICATIONSETTINGTRAIT_H
 
+#include "draupnir/notifications/concepts/MessageTypeTraitConcept.h"
 #include "draupnir/notifications/core/NotificationTypes.h"
 
 namespace Draupnir::Notifications
 {
 
-/*! @brief This is a class
- *  @ingroup Notifications
- * @todo Documentation: Write documentation */
-
-class NoNotificationTrait
+template<MessageTypeTraitConcept MessageTypeTrait>
+struct MessageNotificationSettingTrait
 {
 public:
-    static constexpr NotificationTypes value() { return NotificationType::NoNotification; }
-    static QLatin1String configString() { return QLatin1String{"none"}; }
-    static QString displayName() { return QObject::tr("None"); }
+    using Value = Draupnir::Notifications::NotificationTypes;
+
+    static QString key() { return MessageTypeTrait::configString(); }
+
+    static Draupnir::Notifications::NotificationTypes defaultValue() {
+        return Draupnir::Notifications::NotificationType::NoNotification;
+    }
 };
 
-}; // namespace Draupnir::Notifications
+};
 
-#endif // NONOTIFICATIONTRAIT_H
+#endif // MESSAGENOTIFICATIONSETTINGTRAIT_H

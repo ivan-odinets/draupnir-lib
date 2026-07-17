@@ -56,7 +56,13 @@ QString MessageViewItem::getViewString(const MessageViewItemFields& fields) cons
 const QIcon& MessageViewItem::icon() const
 {
     Q_ASSERT(p_iconProvider);
-    return p_iconProvider->getIcon(type());
+    return iconFor(type());
+}
+
+const QIcon& MessageViewItem::iconFor(MessageType type)
+{
+    Q_ASSERT(p_iconProvider);
+    return p_iconProvider->getIcon(type);
 }
 
 };

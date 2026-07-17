@@ -23,6 +23,7 @@
  */
 
 #include <QtTest>
+#include <QAbstractItemModelTester>
 #include <QCoreApplication>
 
 #include "draupnir/logging/messages/AbstractMessageViewIconProvider.h"
@@ -34,21 +35,26 @@ namespace Draupnir::Logging
 
 /*! @class MessageListModelTest tests/modules/logging/unit/MessageListModelTest.cpp
  *  @ingroup LoggingTests
- *  @brief Unit test for @ref Draupnir::Logging::MessageListModel class.
- * @todo Add testing of signals emission. */
+ *  @brief Unit test for @ref Draupnir::Logging::MessageListModel class. */
 
 class MessageListModelTest : public QObject
 {
     Q_OBJECT
 private:
     AbstractMessageViewIconProvider iconProvider;
+    QAbstractItemModelTester* modelTester = nullptr;
     MessageListModel* model = nullptr;
-
 
 private slots:
     void initTestCase() { MessageViewItem::registerIconProvider(&iconProvider); }
-    void init() { model = new MessageListModel; }
-    void cleanup() { delete model; model = nullptr; }
+    void init() {
+        model = new MessageListModel;
+        modelTester = new QAbstractItemModelTester{model, QAbstractItemModelTester::FailureReportingMode::QtTest};
+    }
+    void cleanup() {
+        delete model; model = nullptr;
+        delete modelTester; modelTester = nullptr;
+    }
 
     void test_count() {
         QCOMPARE(model->columnCount(),1);

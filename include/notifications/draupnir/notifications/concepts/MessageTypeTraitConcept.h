@@ -22,26 +22,20 @@
  *
  */
 
-#ifndef TRAYNOTIFICATIONTRAIT_H
-#define TRAYNOTIFICATIONTRAIT_H
+#ifndef MESSAGETYPETRAITCONCEPT_H
+#define MESSAGETYPETRAITCONCEPT_H
 
-#include "draupnir/notifications/core/NotificationTypes.h"
+#include "draupnir/logging/messages/MessageTypes.h"
 
 namespace Draupnir::Notifications
 {
 
-/*! @brief This is a class
- *  @ingroup Notifications
- * @todo Documentation: Write documentation */
-
-class TrayNotificationTrait
-{
-public:
-    static constexpr NotificationType value() { return NotificationType::TrayNotification; }
-    static QLatin1String configString() { return QLatin1String{"tray"}; }
-    static QString displayName() { return QObject::tr("Tray"); }
+template<class Candidate>
+concept MessageTypeTraitConcept = requires {
+    { Candidate::type() } -> std::same_as<Draupnir::Logging::MessageType>;
+    { Candidate::configString() } -> std::same_as<QLatin1String>;
 };
 
-}; // namespace Draupnir::Notifications
+};
 
-#endif // TRAYNOTIFICATIONTRAIT_H
+#endif // MESSAGETYPETRAITCONCEPT_H

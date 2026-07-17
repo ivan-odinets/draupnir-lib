@@ -64,7 +64,7 @@ template<SettingsBackendConcept Backend, SettingTraitConcept SettingTrait>
 class SettingTraitSerializer;
 
 template<SettingsBackendConcept Backend, PrimitiveSettingTraitConcept SettingTrait>
-class SettingTraitSerializer<Backend,SettingTrait>
+class SettingTraitSerializer<Backend, SettingTrait>
 {
 public:
     using Value = typename SettingTrait::Value;

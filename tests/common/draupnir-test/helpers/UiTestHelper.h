@@ -40,15 +40,20 @@
 class UiTestHelper
 {
 public:
+    template<class Widget>
+    static Widget* findActiveModalWidget() {
+        QWidget* activeModalWidget = QApplication::activeModalWidget();
+        if (!activeModalWidget) {
+            qDebug() << "QApplication::activeModalWidget() == nullptr";
+            return nullptr;
+        }
+        return qobject_cast<Widget*>(QApplication::activeModalWidget());
+    }
+
     template<class Widget, class Task>
     static void scheduleForActiveModalWidget(Task&& task, int delay = 200) {
         QTimer::singleShot(delay, [task = std::forward<Task>(task)]() {
-            QWidget* activeModalWidget = QApplication::activeModalWidget();
-            if (!activeModalWidget) {
-                qDebug() << "QApplication::activeModalWidget() == nullptr";
-                QVERIFY(activeModalWidget);
-            }
-            auto* widget = qobject_cast<Widget*>(QApplication::activeModalWidget());
+            auto* widget = findActiveModalWidget<Widget>();
             if (!widget) {
                 qDebug() << "QApplication::activeModalWidget()->metaObject()->className() = "
                          << QApplication::activeModalWidget()->metaObject()->className();
@@ -57,6 +62,52 @@ public:
             task(widget);
         });
     };
+
+    template<class Widget>
+    static Widget* waitForActiveModalWidget(int timeout = 200) {
+        Widget* result = nullptr;
+
+        QTest::qWaitFor([&]() {
+            result = findActiveModalWidget<Widget>();
+            return result != nullptr;
+        }, timeout);
+
+        return result;
+    };
+
+    template<class Widget>
+    static QList<Widget*> findTopLevelWidgets() {
+        const auto rawWidgetList = QApplication::topLevelWidgets();
+        QList<Widget*> result;
+        for (QWidget* rawWidget : rawWidgetList) {
+            Widget* convertedWidegt = qobject_cast<Widget*>(rawWidget);
+            if (convertedWidegt)
+                result.append(convertedWidegt);
+        }
+        return result;
+    }
+
+    template<class Widget>
+    static Widget* findFirstTopLevelWidget() {
+        for (QWidget* widget : QApplication::topLevelWidgets()) {
+            Widget* converted = qobject_cast<Widget*>(widget);
+            if (converted && converted->isVisible())
+                return converted;
+        }
+
+        return nullptr;
+    }
+
+    template<class Widget>
+    static Widget* waitForFirstTopLevelWidget(int timeout = 200) {
+        Widget* result = nullptr;
+        const bool _ = QTest::qWaitFor([&]() {
+            result = findFirstTopLevelWidget<Widget>();
+            return result != nullptr;
+        }, timeout);
+        return result;
+    }
+
 
     template<class Widget, class Task>
     static void scheduleForTopLevelWidgets(Task&& task, int delay = 200) {
@@ -76,6 +127,28 @@ public:
             }
             QVERIFY(count != 0);
         });
+    }
+
+    template<class Widget>
+    static Widget* findFirstWidget() {
+        for (QWidget* widget : QApplication::allWidgets()) {
+            Widget* converted = qobject_cast<Widget*>(widget);
+            if (converted && converted->isVisible())
+                return converted;
+        }
+
+        return nullptr;
+    }
+
+    template<class Widget>
+    static QList<Widget*> findAllWidgets() {
+        QList<Widget*> result;
+        for (QWidget* widget : QApplication::allWidgets()) {
+            Widget* converted = qobject_cast<Widget*>(widget);
+            if (converted && converted->isVisible())
+                result.append(converted);
+        }
+        return result;
     }
 
     template<class Widget, class Task>

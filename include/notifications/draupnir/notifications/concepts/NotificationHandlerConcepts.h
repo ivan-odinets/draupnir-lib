@@ -22,29 +22,32 @@
  *
  */
 
-#ifndef NOTIFICATIONTYPECONCEPT_H
-#define NOTIFICATIONTYPECONCEPT_H
+#ifndef NOTIFICATIONHANDLERCONCEPTS_H
+#define NOTIFICATIONHANDLERCONCEPTS_H
 
-#include <concepts>
-
-#include "draupnir/notifications/core/NotificationTypes.h"
+#include "draupnir/logging/messages/Message.h"
 
 namespace Draupnir::Notifications
 {
 
-/*! @brief Defines the interface required for notification type traits.
- *  @ingroup Notifications
- *
- *  @details A matching trait must provide a notification type identifier, a translated user-visible name and a configuration
- *           key. */
+template<class Candidate>
+concept StatelessHandlerConcept = requires(
+    Draupnir::Logging::Message* message, const Draupnir::Logging::MessageList& messageList
+    ) {
+    { Candidate::showMessage(message) } -> std::same_as<void>;
+    { Candidate::showMessageList(messageList) } -> std::same_as<void>;
+};
 
 template<class Candidate>
-concept NotificationTypeTraitConcept = requires {
-    { Candidate::value() } -> std::same_as<NotificationType>;
-    { Candidate::displayName() } -> std::same_as<QString>;
-    { Candidate::configString() } -> std::same_as<QLatin1String>;
+concept StatefulHandlerConcept = requires(
+    Candidate& obj,
+    Draupnir::Logging::Message* message, const Draupnir::Logging::MessageList& messageList
+) {
+    { obj.showMessage(message) } -> std::same_as<void>;
+    { obj.showMessageList(messageList) } -> std::same_as<void>;
+    requires(!StatelessHandlerConcept<Candidate>);
 };
 
-};
+}; // namespace Draupnir::Notifications
 
-#endif // NOTIFICATIONTYPECONCEPT_H
+#endif // NOTIFICATIONHANDLERCONCEPTS_H

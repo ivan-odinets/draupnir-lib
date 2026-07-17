@@ -67,7 +67,7 @@ public:
     void showMessage(MessageViewItem* message);
 
     /*! @brief Returns pointer to a currently displayed @ref Draupnir::Logging::MessageViewItem object. */
-    const MessageViewItem* message() const { return p_message; }
+    MessageViewItem* message() { return p_message; }
 
 protected:
     /*! @brief Reimplementation of this method required for retranslation of this dialog. */

@@ -7,6 +7,7 @@
         File::Spec->catdir("logging","integration"),
         File::Spec->catdir("logging","unit"),
         File::Spec->catdir("notifications","unit"),
+        File::Spec->catdir("notifications","integration"),
         File::Spec->catdir("proxy_helper","unit"),
         File::Spec->catdir("settings_registry","integration"),
         File::Spec->catdir("settings_registry","unit"),

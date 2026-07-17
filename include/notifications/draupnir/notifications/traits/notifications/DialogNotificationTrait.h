@@ -22,29 +22,33 @@
  *
  */
 
-#ifndef NOTIFICATIONTYPECONCEPT_H
-#define NOTIFICATIONTYPECONCEPT_H
-
-#include <concepts>
+#ifndef DIALOGNOTIFICATIONTRAIT_H
+#define DIALOGNOTIFICATIONTRAIT_H
 
 #include "draupnir/notifications/core/NotificationTypes.h"
 
 namespace Draupnir::Notifications
 {
 
-/*! @brief Defines the interface required for notification type traits.
+/*! @class DialogNotificationTrait include/draupnir/notifications/traits/notifications/DialogNotificationTrait.h
  *  @ingroup Notifications
+ *  @brief Describes the dialog notification type.
  *
- *  @details A matching trait must provide a notification type identifier, a translated user-visible name and a configuration
- *           key. */
+ *  @details Provides the notification identifier, configuration key and user-visible name used by the notification system. */
 
-template<class Candidate>
-concept NotificationTypeTraitConcept = requires {
-    { Candidate::value() } -> std::same_as<NotificationType>;
-    { Candidate::displayName() } -> std::same_as<QString>;
-    { Candidate::configString() } -> std::same_as<QLatin1String>;
+class DialogNotificationTrait
+{
+public:
+    /*! @brief Returns the notification type represented by this trait. */
+    static constexpr NotificationType value() { return NotificationType::DialogNotification; }
+
+    /*! @brief Returns the key used to store this notification type in configuration. */
+    static QLatin1String configString() { return QLatin1String{"dialog"}; }
+
+    /*! @brief Returns the translated user-visible name of this notification type. */
+    static QString displayName() { return QObject::tr("Dialog"); }
 };
 
-};
+}; // namespace Draupnir::Notifications
 
-#endif // NOTIFICATIONTYPECONCEPT_H
+#endif // DIALOGNOTIFICATIONTRAIT_H

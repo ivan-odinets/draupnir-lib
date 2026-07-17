@@ -27,7 +27,6 @@
 
 #include "draupnir/notifications/concepts/NotificationTypeConcept.h"
 #include "draupnir/notifications/core/NotificationTypeSerializerInterface.h"
-#include "draupnir/notifications/traits/NoNotificationTrait.h"
 #include "draupnir/settings_registry/utils/FlagsMaskSerializerTemplate.h"
 
 namespace Draupnir::Notifications
@@ -50,7 +49,7 @@ public:
     using Serialzier = Draupnir::Settings::FlagsMaskSerializerTemplate<
         NotificationTypes,
         SingleNotificationSerializer,
-        NoNotificationTrait
+        Draupnir::Settings::NoneFlagsMaskTemplate<NotificationTypes>
     >;
 
     std::optional<NotificationTypes> fromConfigString(const QString& string) const final {

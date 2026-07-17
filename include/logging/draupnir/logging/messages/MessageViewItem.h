@@ -50,7 +50,7 @@ public:
     explicit MessageViewItem(Message* message);
     ~MessageViewItem() = default;
 
-    const Message* message() const { return p_message; }
+    Message* message() { return p_message; }
 
     /*! @brief Returns type of @ref Draupnir::Logging::Message object, refered by this @ref MessageViewItem. */
     MessageType type() const { return p_message->type(); };
@@ -70,6 +70,9 @@ public:
 
     /*! @brief This method returns an `QIcon` for the type of this @ref Message. */
     const QIcon& icon() const;
+
+    /*! @brief This method returns an `QIcon` for the provided @ref MessageType. */
+    static const QIcon& iconFor(MessageType type);
 
 private:
     static AbstractMessageViewIconProvider* p_iconProvider;

@@ -22,29 +22,35 @@
  *
  */
 
-#ifndef NOTIFICATIONTYPECONCEPT_H
-#define NOTIFICATIONTYPECONCEPT_H
+#ifndef MESSAGETYPETRAITTEMPLATE_H
+#define MESSAGETYPETRAITTEMPLATE_H
 
-#include <concepts>
-
-#include "draupnir/notifications/core/NotificationTypes.h"
+#include "draupnir/logging/concepts/MessageCategoryTraitConcept.h"
+#include "draupnir/logging/messages/MessageTypes.h"
 
 namespace Draupnir::Notifications
 {
 
-/*! @brief Defines the interface required for notification type traits.
- *  @ingroup Notifications
- *
- *  @details A matching trait must provide a notification type identifier, a translated user-visible name and a configuration
- *           key. */
+template<
+    Draupnir::Logging::MessageCategoryTraitConcept MessageCategory,
+    Draupnir::Logging::MessageLevel::Value MessageLevel
+    >
+class MessageTypeTraitTemplate
+{
+public:
+    static Draupnir::Logging::MessageType type() {
+        return Draupnir::Logging::MessageType(MessageLevel, MessageCategory::value());
+    }
 
-template<class Candidate>
-concept NotificationTypeTraitConcept = requires {
-    { Candidate::value() } -> std::same_as<NotificationType>;
-    { Candidate::displayName() } -> std::same_as<QString>;
-    { Candidate::configString() } -> std::same_as<QLatin1String>;
+    static QLatin1String configString() {
+        static QByteArray storage =
+            MessageCategory::configString().latin1() +
+            Draupnir::Logging::MessageLevel::Serializer::toConfigString(MessageLevel).toLatin1();
+        return QLatin1String{storage};
+    }
+
 };
 
 };
 
-#endif // NOTIFICATIONTYPECONCEPT_H
+#endif // MESSAGETYPETRAITTEMPLATE_H

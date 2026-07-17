@@ -22,26 +22,28 @@
  *
  */
 
-#ifndef DIALOGNOTIFICATIONTRAIT_H
-#define DIALOGNOTIFICATIONTRAIT_H
+#ifndef NOTIFICATIONHANDLERTEMPLATE_H
+#define NOTIFICATIONHANDLERTEMPLATE_H
 
-#include "draupnir/notifications/core/NotificationTypes.h"
+#include "draupnir/notifications/concepts/NotificationTypeConcept.h"
 
 namespace Draupnir::Notifications
 {
 
-/*! @brief This is a class
+/*! @class NotificationHandlerTemplate
  *  @ingroup Notifications
- * @todo Documentation: Write documentation */
+ *  @brief Primary template for notification handlers.
+ *  @tparam NotificationType Trait describing the notification type.
+ *
+ *  @details Must be explicitly specialized for every supported notification type trait. Instantiating the unspecialized
+ *           template produces a compilation error. */
 
-class DialogNotification
+template<NotificationTypeTraitConcept NotificationType>
+class NotificationHandlerTemplate
 {
-public:
-    static constexpr NotificationType value() { return NotificationType::DialogNotification; }
-    static QLatin1String configString() { return QLatin1String{"dialog"}; }
-    static QString displayName() { return QObject::tr("Dialog"); }
+    static_assert(false, "NotificationHandlerTemplate must be specialized for every notification type trait.");
 };
 
 }; // namespace Draupnir::Notifications
 
-#endif // DIALOGNOTIFICATIONTRAIT_H
+#endif // NOTIFICATIONHANDLERTEMPLATE_H
