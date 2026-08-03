@@ -48,7 +48,7 @@ public:
     }
 
     QVariant value(const QString& key, const QVariant& defaultValue = QVariant{}) {
-        return _valueImpl<0, SettingTraits...>(key,defaultValue);
+        return _valueImpl<0, SettingTraits...>(key, defaultValue);
     }
 
     void setValue(const QString& key, const QVariant& value) final {
@@ -57,7 +57,10 @@ public:
 
     template<Draupnir::Settings::PrimitiveSettingTraitConcept Trait>
     QVariant getQVariant() {
-        return value(Trait::key(), Draupnir::Settings::ValueSerializerTemplate<typename Trait::Value>::toQVariant(Trait::defaultValue()));
+        return value(
+            Trait::key(),
+            Draupnir::Settings::ValueSerializerTemplate<typename Trait::Value>::toQVariant(Trait::defaultValue())
+        );
     }
 
 private:
@@ -65,9 +68,8 @@ private:
 
     template<class First,class... Rest>
     bool _containsImpl(const QString& key) const {
-        if (First::key() == key) {
+        if (First::key() == key)
             return true;
-        }
 
         if constexpr (sizeof...(Rest) > 0) {
             return _containsImpl<Rest...>(key);
@@ -84,7 +86,7 @@ private:
         if constexpr (sizeof...(Rest) > 0) {
             return _valueImpl<Index+1, Rest...>(key,defaultValue);
         } else {
-            return QVariant{};
+            return defaultValue;
         }
     }
 

@@ -220,7 +220,7 @@ protected:
     template<SettingTraitConcept...>
     friend class SettingsRegistryTemplate;
 
-    template<SettingTraitConcept...>
+    template<class...>
     friend class SettingsSourceMockTemplate;
 
     /*! @brief Constructor. Called by SettingsRegistry when initializing the bundle.

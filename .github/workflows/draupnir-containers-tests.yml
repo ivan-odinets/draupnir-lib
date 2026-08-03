@@ -5,7 +5,7 @@ on:
     paths:
       - '.github/workflows/draupnir-containers-tests.yml'
       - 'jobs/draupnir_containers_tests.pm'
-      - 'include/draupnir/containers/draupnir/**'
+      - 'include/containers/draupnir/**'
       - 'modules/Containers.pri'
       - 'tests/modules/containers/**'
   workflow_dispatch:

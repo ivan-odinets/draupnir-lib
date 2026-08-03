@@ -6,7 +6,6 @@ QT += widgets
 DEFINES += DRAUPNIR_SETTINGS_USE_CUSTOM
 DEFINES += DRAUPNIR_MESSAGE_SYSTEM_SINGLETHREAD
 
-include(../../../../common/SettingsBackendMockTemplate.pri)
 include(../../../../common/SettingsSourceMockTemplate.pri)
 
 include(../../../../../modules/Logging.pri)

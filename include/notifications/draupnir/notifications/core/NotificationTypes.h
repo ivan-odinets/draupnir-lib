@@ -33,11 +33,16 @@
 namespace Draupnir::Notifications
 {
 
-/*! @brief This is a class
+/*! @class NotificationType draupnir/notifications/core/NotificationTypes.h
  *  @ingroup Notifications
- * @todo Documentation: Write documentation */
+ *  @brief Identifies a notification delivery mechanism.
+ *
+ *  @details Notification type values occupy individual bits and may be combined into a @ref Draupnir::Notifications::NotificationTypes
+ *           mask.
+ *
+ *           The type is a lightweight, copyable, assignable, comparable, and hashable integer wrapper. */
 
-class NotificationType : public draupnir::utils::integer_wrapper<uint16_t, NotificationType>
+class NotificationType final : public draupnir::utils::integer_wrapper<uint16_t, NotificationType>
 {
     using _Base = draupnir::utils::integer_wrapper<uint16_t, NotificationType>;
 public:
@@ -47,25 +52,37 @@ public:
 
     using _Base::operator=;
 
-    enum DefaultTypes {
-        /*! @brief None: No notification; silently logged. */
+    /*! @enum DefaultTypes
+     *  @brief Built-in and reserved notification type values. */
+    enum DefaultTypes : underlying_type {
+        /*! @brief No user-facing notification is produced. */
         NoNotification          = 0b0000'0000,
-        /*! @brief DialogNotification: Show notification as @ref Draupnir::Logging::MessageDisplayDialog. */
+        /*! @brief Displays the message in a dialog window. */
         DialogNotification      = 0b0000'0001,
-        /*! @brief TrayNotification: Show notification in system tray. */
+        /*! @brief Displays the message through the system tray. */
         TrayNotification        = 0b0000'0010,
-        /*! @brief Fallback for unrecognized/invalid types. */
-        UnknownNotification     = 0b0000'0100
+        /*! @brief First value reserved for application-defined notification types. */
+        FirstCustomNotification = 0b0000'0100
     };
+
+    /*! @brief Returns the notification type following another type.
+     *  @param previousType Previous non-zero notification type.
+     *  @return Notification type whose value is shifted one bit to the left.
+     * @pre `previousType` must contain a non-zero value.
+     * @pre Its value must leave enough space for a one-bit left shift without overflowing the underlying integer. */
+    [[nodiscard]] static constexpr NotificationType nextType(NotificationType previousType) noexcept {
+        return NotificationType{previousType << 1};
+    }
 };
 
-[[nodiscard]] inline uint qHash(NotificationType key, uint seed = 0) noexcept {
-    return ::qHash(key.value(), seed);
-}
-
-/*! @brief This is a class
+/*! @class NotificationTypes draupnir/notifications/core/NotificationTypes.h
  *  @ingroup Notifications
- * @todo Documentation: Write documentation */
+ *  @brief Flag mask containing zero or more notification types.
+ *
+ *  @details Combines @ref Draupnir::Notifications::NotificationType values into a single mask describing the notification mechanisms
+ *           that should be used for a message.
+ *
+ *           An empty mask represents @ref NotificationType::NoNotification. The type is copyable, assignable, comparable, and hashable. */
 
 class NotificationTypes : public draupnir::utils::flags<NotificationType>
 {
@@ -75,11 +92,54 @@ public:
     using _Base::operator=;
 };
 
+/*! @brief Calculates a Qt hash value for a notification type.
+ *  @ingroup Notifications
+ *  @param key Notification type to hash.
+ *  @param seed Initial hash seed.
+ *  @return Hash value of the underlying notification type identifier. */
+
 [[nodiscard]] inline uint qHash(NotificationTypes key, uint seed = 0) noexcept {
     return ::qHash(key.value(), seed);
 }
 
-}; // namespace Draupnir::Notifications
+/*! @brief Calculates a Qt hash value for a notification type mask.
+ *  @ingroup Notifications
+ *  @param key Notification type mask to hash.
+ *  @param seed Initial hash seed.
+ *  @return Hash value of the underlying mask. */
+
+[[nodiscard]] inline uint qHash(NotificationType key, uint seed = 0) noexcept {
+    return ::qHash(key.value(), seed);
+}
+
+} // namespace Draupnir::Notifications
+
+namespace std
+{
+
+/*! @ingroup Notifications
+ *  @brief Standard hash implementation for @ref Draupnir::Notifications::NotificationType. */
+
+template<>
+struct hash<Draupnir::Notifications::NotificationType>
+{
+    [[nodiscard]] std::size_t operator()(Draupnir::Notifications::NotificationType type) const noexcept {
+        return std::hash<Draupnir::Notifications::NotificationType::underlying_type>{}(type.value());
+    }
+};
+
+/*! @ingroup Notifications
+ *  @brief Standard hash implementation for @ref Draupnir::Notifications::NotificationTypes. */
+
+template<>
+struct hash<Draupnir::Notifications::NotificationTypes>
+{
+    [[nodiscard]] std::size_t operator()(Draupnir::Notifications::NotificationTypes types) const noexcept {
+        return std::hash<Draupnir::Notifications::NotificationType::underlying_type>{}(types.value().value());
+    }
+};
+
+} // namespace std
 
 Q_DECLARE_METATYPE(Draupnir::Notifications::NotificationType);
 Q_DECLARE_METATYPE(Draupnir::Notifications::NotificationType::DefaultTypes);

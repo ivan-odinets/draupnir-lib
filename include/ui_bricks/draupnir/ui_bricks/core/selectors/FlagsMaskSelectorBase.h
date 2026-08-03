@@ -115,6 +115,7 @@ struct FlagValuesWrapper { DEFINE_COMPILE_TIME(FlagValuesWrapper); };
  *       changes are handled through internally connected UI element callbacks.
  *
  * @todo Important: Add support for `QComboBox`-based selectors.
+ * @todo Question: Maybe force _Implementation / Traits to export _Flags and / or deduct _Flags somehow in another way
  * @todo User-friendliness: Extend validation of arguments: all flags are single-bit things, all masks are not equal to Flags AND
  *       can be composed from flags (?).
  * @todo Important: Clarify ownership/lifetime rules for generated UI elements and fix memory leak when creating Ui elements.

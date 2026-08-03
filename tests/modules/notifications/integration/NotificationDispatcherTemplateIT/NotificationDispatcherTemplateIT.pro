@@ -7,7 +7,7 @@ DEFINES += DRAUPNIR_SETTINGS_USE_CUSTOM
 DEFINES += DRAUPNIR_LOGGING_SINGLETHREAD
 
 include(../../../../../modules/Notifications.pri)
-include(../../../../common/UiHelpers.pri)
+include(../../../../common/MessageDisplayDialogHelpers.pri)
 
 SOURCES += \
     NotificationDispatcherTemplateIT.cpp

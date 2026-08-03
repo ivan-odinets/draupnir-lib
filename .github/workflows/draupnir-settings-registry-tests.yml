@@ -4,7 +4,7 @@ on:
   push:
     paths:
       - '.github/workflows/draupnir-settings-registry-tests.yml'
-      - 'include/draupnir/settings_registry/draupnir/**'
+      - 'include/settings_registry/draupnir/**'
       - 'jobs/draupnir_settings_registry_tests.pm'
       - 'modules/SettingsRegistry.pri'
       - 'src/settings_registry/**'

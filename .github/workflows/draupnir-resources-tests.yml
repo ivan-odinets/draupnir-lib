@@ -4,7 +4,7 @@ on:
   push:
     paths:
       - '.github/workflows/draupnir-resources-tests.yml'
-      - 'include/draupnir/resources/draupnir/**'
+      - 'include/resources/draupnir/**'
       - 'jobs/draupnir_resources_tests.pm'
       - 'modules/DraupnirResources.pri'
       - 'src/resources/**'

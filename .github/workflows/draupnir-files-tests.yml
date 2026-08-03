@@ -5,7 +5,7 @@ on:
     paths:
       - '.github/workflows/draupnir-files-tests.yml'
       - 'jobs/draupnir_files_tests.pm'
-      - 'include/draupnir/files/draupnir/**'
+      - 'include/files/draupnir/**'
       - 'modules/DraupnirFiles.pri'
       - 'src/files/**'
       - 'tests/modules/files/**'

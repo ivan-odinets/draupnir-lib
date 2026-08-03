@@ -27,9 +27,12 @@
 
 #include <QWidget>
 
-#include "draupnir/logging/messages/MessageViewItemFields.h"
-#include "draupnir/logging/messages/categories/MessageCategories.h"
-#include "draupnir/logging/traits/settings/LogWidgetSettingsTraits.h"
+#include "draupnir/messages/core/MessageViewItemFields.h"
+#include "draupnir/messages/categories/MessageCategories.h"
+#include "draupnir/logging/traits/settings/log_widget/DisplayedMessageCategoriesSettingTrait.h"
+#include "draupnir/logging/traits/settings/log_widget/DisplayedMessageLevelsSettingTrait.h"
+#include "draupnir/logging/traits/settings/log_widget/IconSizeSetting.h"
+#include "draupnir/logging/traits/settings/log_widget/DisplayedMessageViewItemFieldsSettingTrait.h"
 #include "draupnir/settings_registry/SettingsBundleTemplate.h"
 
 class QLabel;
@@ -37,7 +40,7 @@ class QPushButton;
 class QSlider;
 class QToolButton;
 
-namespace Draupnir::Logging
+namespace Draupnir::Messages
 {
 
 class MessageListModel;
@@ -68,9 +71,9 @@ public:
     /*! @brief Alias for @ref Draupnir::Settings::SettingsBundleTemplate instantiation, which holds settings traits being
      *         used by this @ref LogWidget. */
     using SettingsBundle = Draupnir::Settings::SettingsBundleTemplate<
-        Draupnir::Logging::Settings::LogWidget::IconSizeSetting,
-        Draupnir::Logging::Settings::LogWidget::DisplayedMessageViewItemFieldsSetting,
-        Draupnir::Logging::Settings::LogWidget::DisplayedMessageCategoriesSetting
+        Draupnir::Logging::Settings::LogWidget::IconSizeSettingTrait,
+        Draupnir::Logging::Settings::LogWidget::DisplayedMessageViewItemFieldsSettingTrait,
+        Draupnir::Logging::Settings::LogWidget::DisplayedMessageCategoriesSettingTrait
     >;
 
     /*! @brief Default constructor. Accepts pointer to parent `QWidget` object and creates @ref LogWidget, which needs to be
@@ -102,13 +105,13 @@ public:
 
     /*! @brief Sets the @ref Draupnir::Logging::MessageListModel to be displayed in the internal @ref Draupnir::Logging::MessageListView.
      *  @param model Pointer to a valid @ref Draupnir::Logging::MessageListModel. */
-    void setMessageListModel(MessageListModel* model);
+    void setMessageListModel(Draupnir::Messages::MessageListModel* model);
 
-    /*! @brief Returns currently used @ref Draupnir::Logging::MessageListModel.
-     * @note Displaying the messages from the model is done through the @ref Draupnir::Logging::MessageListProxyModel (
+    /*! @brief Returns currently used @ref Draupnir::Messages::MessageListModel.
+     * @note Displaying the messages from the model is done through the @ref Draupnir::Messages::MessageListProxyModel (
      *       within the @ref Draupnir::Logging::MessageListView widget). This method will return **the original** model
      *       passed to @ref Draupnir::Logging::LogWidget, but **not the** @ref MessageListProxyModel being used internally. */
-    MessageListModel* messageListModel() { return p_messageListModel; }
+    Draupnir::Messages::MessageListModel* messageListModel();
 
 protected:
     /*! @brief Handles dynamic retranslation when the application language changes.
@@ -118,10 +121,10 @@ protected:
 
 private slots:
     /*! @brief This private slot handles changes of displayed message types. */
-    void _onMessageCategoryFilterChanged(MessageCategory, bool);
+    void _onMessageCategoryFilterChanged(Draupnir::Messages::MessageCategory, bool);
 
     /*! @brief This private slot handles changes of displayed message fields. */
-    void _onMessageFieldVisibilityChanged(MessageViewItemField::Value field, bool isDisplayed);
+    void _onMessageFieldVisibilityChanged(Draupnir::Messages::MessageViewItemField::Value field, bool isDisplayed);
 
     /*! @brief This private slot handles movement of the icon size selector slider. */
     void _onIconSizeChange(int newSize);
@@ -141,10 +144,10 @@ private:
 
     // Non-displayed fields
     SettingsBundle m_settingsBundle;
-    MessageListModel* p_messageListModel;
+//    MessageListModel* p_messageListModel;
 
     // UI-subelements
-    MessageListView* w_messagesListView;
+    Draupnir::Messages::MessageListView* w_messagesListView;
     // Icon size changers
     QLabel* w_iconSizeLabel;
     QSlider* w_iconSizeSlider;

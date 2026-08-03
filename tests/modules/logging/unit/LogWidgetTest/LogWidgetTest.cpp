@@ -30,10 +30,13 @@
 #include "draupnir-test/mocks/SettingsSourceMockTemplate.h"
 
 #include "draupnir/logging/ui/widgets/LogWidget.h"
-#include "draupnir/logging/ui/widgets/MessageListView.h"
+#include "draupnir/messages/ui/widgets/MessageListView.h"
 #include "draupnir/settings_registry/utils/SettingsTraitsConcatenator.h"
 
-namespace Draupnir::Logging {
+namespace Draupnir::Logging
+{
+
+using namespace Draupnir::Logging::Settings::LogWidget;
 
 /*! @class LogWidgetTest tests/modules/logging/unit/LogWidgetTest.cpp
  *  @ingroup LoggingTests
@@ -55,10 +58,10 @@ private slots:
     void cleanup() { delete widget; widget = nullptr; }
 
     void test_icon_size_behaviour() {
-        const QSize oldSize = settingsSource.template get<Draupnir::Logging::Settings::LogWidget::IconSizeSetting>();
+        const QSize oldSize = settingsSource.template get<IconSizeSettingTrait>();
         const QSize newSize{42,42};
         QVERIFY(widget->w_messagesListView->iconSize() != newSize);
-        settingsSource.template set<Draupnir::Logging::Settings::LogWidget::IconSizeSetting>(newSize);
+        settingsSource.template set<IconSizeSettingTrait>(newSize);
         // Load settings
         widget->loadSettings(&settingsSource);
         // Check if icon size is loaded
@@ -66,7 +69,7 @@ private slots:
         QCOMPARE(widget->w_iconSizeSlider->value(), newSize.width());
 
         // Restore state
-        settingsSource.template set<Draupnir::Logging::Settings::LogWidget::IconSizeSetting>(oldSize);
+        settingsSource.template set<IconSizeSettingTrait>(oldSize);
     }
 };
 

@@ -23,119 +23,94 @@
  */
 
 #include <QtTest>
-#include <QDebug>
 #include <QCoreApplication>
+#include <QDebug>
 
-#include "draupnir/logging/messages/AbstractMessageViewIconProvider.h"
-#include "draupnir/logging/ui/widgets/MessageDisplayWidget.h"
-#include "draupnir/notifications/handlers/DialogNotificationHandler.h"
-#include "draupnir/notifications/handlers/TrayNotificationHandler.h"
-#include "draupnir/notifications/handlers/NotificationDispatcherTemplate.h"
+#include "draupnir/messages/core/Message.h"
+#include "draupnir/messages/core/MessageTypeIconProvider.h"
+#include "draupnir/messages/core/MessageViewItem.h"
+#include "draupnir/notifications/channels/DialogNotificationChannel.h"
+#include "draupnir/notifications/channels/TrayNotificationChannel.h"
+#include "draupnir/notifications/core/NotificationDispatcherTemplate.h"
 
-#include "draupnir-test/helpers/UiTestHelper.h"
+#include "draupnir-test/helpers/MessageDisplayDialogHelpers.h"
 
-using namespace Draupnir::Logging;
+using namespace Draupnir::Messages;
 using namespace Draupnir::Notifications;
 
 /*! @class NotificationDispatcherTemplateIT tests/modules/notifications/integration/NotificationDispatcherTemplateIT.cpp
- *  @ingroup NotificationsTests */
+ *  @ingroup NotificationsTests
+ *  @brief Integration test for the @ref Draupnir::Notifications::NotificationDispatcherTemplate. */
 
 class NotificationDispatcherTemplateIT final : public QObject
 {
     Q_OBJECT
 private:
     using NotificationDispatcher = NotificationDispatcherTemplate<
-        DialogNotificationTrait,
-        TrayNotificationTrait
+        DialogNotificationChannel,
+        TrayNotificationChannel
     >;
 
     using StatelessNotificationDispatcher = NotificationDispatcherTemplate<
-        DialogNotificationTrait
+        DialogNotificationChannel
     >;
 
     NotificationDispatcher* dispatcher = nullptr;
 
-    Message* dummyMessage = nullptr;
-    MessageList dummyMessageList = MessageList{};
-    AbstractMessageViewIconProvider* iconProvider = nullptr;
-
-    void verify_single_message_dialog_shown_correctly() {
-        auto displayedDialog = QPointer(UiTestHelper::waitForFirstTopLevelWidget<MessageDisplayDialog>(1500));
-        QVERIFY(displayedDialog);
-        auto messageWidget = UiTestHelper::findFirstWidget<MessageDisplayWidget>();
-        QVERIFY(messageWidget);
-        QCOMPARE(messageWidget->message()->message(), dummyMessage);
-
-        displayedDialog->close();
-        QTRY_VERIFY(displayedDialog.isNull());
-    }
-
-    void verify_several_message_dialog_shown_correctly() {
-        auto displayedDialog = QPointer(UiTestHelper::waitForFirstTopLevelWidget<MessageDisplayDialog>(1500));
-        QVERIFY(displayedDialog);
-        auto messageWidetsList = UiTestHelper::findAllWidgets<MessageDisplayWidget>();
-        QCOMPARE(messageWidetsList.count(), dummyMessageList.count());
-        for (MessageDisplayWidget* messageWidget : messageWidetsList) {
-            QVERIFY(dummyMessageList.contains(messageWidget->message()->message()));
-        }
-
-        displayedDialog->close();
-        QTRY_VERIFY(displayedDialog.isNull());
-    }
+    MessagePtr dummyMessage =
+        Message::create("Very Important Message", MessageLevel::Info);
+    MessageList dummyMessageList = MessageList{
+        Message::create("One",   MessageLevel::Debug),
+        Message::create("two",   MessageLevel::Info),
+        Message::create("Three", MessageLevel::Warning),
+        Message::create("Four",  MessageLevel::Error)
+    };
 
 private slots:
     void initTestCase() {
-        iconProvider = new AbstractMessageViewIconProvider;
-        MessageViewItem::registerIconProvider(iconProvider);
-        dummyMessage = Message::create("Very Important Message", MessageLevel::Info);
-        dummyMessageList = MessageList{
-            Message::create("One",   MessageLevel::Debug),
-            Message::create("two",   MessageLevel::Info),
-            Message::create("Three", MessageLevel::Warning),
-            Message::create("Four",  MessageLevel::Error)
-        };
-    }
-
-    void cleanupTestCase() {
-        delete dummyMessage; dummyMessage = nullptr;
-        delete iconProvider; iconProvider = nullptr;
-        qDeleteAll(dummyMessageList);
+        MessageViewItem::registerIconProvider(new MessageTypeIconProvider);
     }
 
     void init() { dispatcher = new NotificationDispatcher; }
     void cleanup() { delete dispatcher; dispatcher = nullptr; }
 
     void test_initial_state() {
-        QVERIFY(dispatcher->getNotificationHandler<TrayNotificationTrait>().trayIcon() == nullptr);
-        QVERIFY(NotificationDispatcher::hasAnyStatefullHandlers_v == true);
-        QVERIFY(StatelessNotificationDispatcher::hasAnyStatefullHandlers_v == false);
+        QVERIFY(dispatcher->getNotificationHandler<TrayNotificationChannel>().trayIcon() == nullptr);
+        QVERIFY(NotificationDispatcher::hasInstanceChannels_v == true);
+        QVERIFY(StatelessNotificationDispatcher::hasInstanceChannels_v == false);
 
         QCOMPARE(sizeof(StatelessNotificationDispatcher), 1);
         QVERIFY(sizeof(NotificationDispatcher) > sizeof(StatelessNotificationDispatcher));
     }
 
     void test_show_message() {
+        std::expected<void,QString> result;
         // When
-        dispatcher->showMessage(DialogNotificationTrait::value(), dummyMessage);
+        dispatcher->showMessage(DialogNotificationChannel::Trait::value(), dummyMessage);
         // Than
-        verify_single_message_dialog_shown_correctly();
+        result = MessageDisplayDialogHelpers::dialogWasDisplayedWith(MessageList{dummyMessage});
+        if (!result) QFAIL(result.error().toLatin1().constData());
 
         // When
-        StatelessNotificationDispatcher::showMessage(DialogNotificationTrait::value(), dummyMessage);
+        StatelessNotificationDispatcher::showMessage(DialogNotificationChannel::Trait::value(), dummyMessage);
         // Than
-        verify_single_message_dialog_shown_correctly();
+        result = MessageDisplayDialogHelpers::dialogWasDisplayedWith(MessageList{dummyMessage});
+        if (!result) QFAIL(result.error().toLatin1().constData());
     }
 
     void test_show_message_list() {
+        std::expected<void,QString> result;
         // When
-        dispatcher->showMessageList(DialogNotificationTrait::value(), dummyMessageList);
+        dispatcher->showMessageList(DialogNotificationChannel::Trait::value(), dummyMessageList);
         // Then
-        verify_several_message_dialog_shown_correctly();
+        result = MessageDisplayDialogHelpers::dialogWasDisplayedWith(dummyMessageList);
+        if (!result) QFAIL(result.error().toLatin1().constData());
 
         // When
-        StatelessNotificationDispatcher::showMessageList(DialogNotificationTrait::value(), dummyMessageList);
+        StatelessNotificationDispatcher::showMessageList(DialogNotificationChannel::Trait::value(), dummyMessageList);
         // Then
-        verify_several_message_dialog_shown_correctly();
+        result = MessageDisplayDialogHelpers::dialogWasDisplayedWith(dummyMessageList);
+        if (!result) QFAIL(result.error().toLatin1().constData());
     }
 };
 

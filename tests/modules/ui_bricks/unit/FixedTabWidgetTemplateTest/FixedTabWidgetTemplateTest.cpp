@@ -35,7 +35,8 @@
 #include "draupnir-test/traits/widgets/WidgetTabTraits.h"
 
 /*! @class FixedTabWidgetTemplateTest tests/ui_bricks/unit/FixedTabWidgetTemplateTest/FixedTabWidgetTemplateTest.cpp
- *  @brief This test class tests basic functionality of the FixedTabWidgetTemplate. */
+ *  @ingroup UiBricksTests
+ *  @brief Unit test for the @ref Draupnir::UiBricks::FixedTabWidgetTemplate. */
 
 class FixedTabWidgetTemplateTest final : public QObject
 {
@@ -67,7 +68,7 @@ public:
     SettingsSource settingsSource;
 
 private slots:
-    void initTestCase() { settingsSource.loadSettings(); }
+    void initTestCase() { settingsSource.reset(); }
 
     void test_initialization() {
         auto tabWidgetOne = new TabWidgetOne;

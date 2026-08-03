@@ -4,7 +4,7 @@ on:
   push:
     paths:
       - '.github/workflows/draupnir-ui-bricks-tests.yml'
-      - 'include/draupnir/ui_bricks/draupnir/**'
+      - 'include/ui_bricks/draupnir/**'
       - 'jobs/draupnir_ui_bricks_tests.pm'
       - 'modules/UiBricks.pri'
       - 'src/ui_bricks/**'

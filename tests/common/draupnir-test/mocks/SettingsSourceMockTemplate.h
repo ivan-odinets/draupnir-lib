@@ -18,7 +18,7 @@ namespace Draupnir::Settings
  *         instantiations.
  * @todo Refractor this class and @ref SettingsBackendMockTemplate. */
 
-template<SettingTraitConcept... SettingTraits>
+template<class... SettingTraits>
 class SettingsSourceMockTemplate
 {
     using Backend = SettingsBackendMockTemplate<SettingTraits...>;
@@ -26,13 +26,17 @@ class SettingsSourceMockTemplate
     using AbstractSettingsTuple = std::tuple<Draupnir::Settings::SettingTemplate<SettingTraits>...>;
 
 public:
+    /*! @brief Returns `true` if the specified SettingTrait is known within this @ref Draupnir::Settings::SettingsSourceMockTemplate. */
     template<Draupnir::Settings::SettingTraitConcept Trait>
     static constexpr bool contains() {
         return draupnir::utils::is_type_in_tuple_v<Draupnir::Settings::SettingTemplate<Trait>,AbstractSettingsTuple>;
     }
 
-    void loadSettings() {
-        _loadSettingsImpl();
+    /*! @brief Resets state of the @ref RegistryMockTemplate to the default state. This includes resetting internally stored instances
+     *         of the @ref Draupnir::Settings::SettingTemplate instantiations with the default values of the corresponding `SettingTraits...`
+     *         traits and writing the same values in the internal @ref Draupnir::Settings::SettingsBackendMockTemplate. */
+    void reset() {
+        _resetImpl();
     }
 
     Backend* backend() { return &m_backend; }
@@ -78,13 +82,16 @@ private:
     };
 
     template<std::size_t Index = 0>
-    inline void _loadSettingsImpl() {
-        std::get<Index>(m_settings).value = Draupnir::Settings::SettingTraitSerializer<
-            Backend, typename _TraitForIndex<Index>::type
-        >::get(&m_backend);
+    inline void _resetImpl() {
+        using CurrentTrait = _TraitForIndex<Index>::type;
+
+        std::get<Index>(m_settings).value = CurrentTrait::defaultValue();
+        Draupnir::Settings::SettingTraitSerializer<
+            Backend, CurrentTrait
+        >::set(&m_backend, CurrentTrait::defaultValue());
 
         if constexpr (Index + 1 < std::tuple_size_v<AbstractSettingsTuple>)
-            _loadSettingsImpl<Index+1>();
+            _resetImpl<Index+1>();
     }
 
     template<class Bundle,std::size_t Index = 0>
@@ -100,6 +107,6 @@ private:
     }
 };
 
-}; // namespace Draupnir::Settings
+} // namespace Draupnir::Settings
 
 #endif // SETTINGSSOURCEMOCKTEMPLATE_H

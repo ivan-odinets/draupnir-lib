@@ -94,3 +94,11 @@
  /*! @defgroup LoggingTests
   *  @ingroup Tests
   *  @brief Test classes for @ref Logging. */
+
+/*! @namespace Draupnir::Logging::Settings
+ *  @ingroup Logging
+ *  @brief Namespace for settings-related things within the @ref Logging module. */
+
+/*! @namespace Draupnir::Logging::Settings::LogWidget
+ *  @ingroup Logging
+ *  @brief Namespace for settings traits of the @ref Draupnir::Logging::LogWidget widget. */

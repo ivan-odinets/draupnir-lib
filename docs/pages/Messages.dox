@@ -1,0 +1,11 @@
+/*! @defgroup Messages
+ *  @brief This module contains details about messages.
+ * @todo Documentation: Write documentation for the Messages module. */
+
+/*! @namespace Draupnir::Messages
+ *  @ingroup Messages
+ *  @brief Namespace containing classes from the Messages module. */
+
+ /*! @defgroup MessagesTests
+  *  @ingroup Tests
+  *  @brief Test classes for @ref Messages. */

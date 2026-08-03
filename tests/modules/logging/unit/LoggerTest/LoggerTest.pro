@@ -6,7 +6,7 @@ QT += widgets
 DEFINES += DRAUPNIR_SETTINGS_USE_CUSTOM
 DEFINES += DRAUPNIR_LOGGING_SINGLETHREAD
 
-include(../../../../common/MessageHandlerMock.pri)
+include(../../../../common/MessageReceiverMock.pri)
 
 include(../../../../../modules/Logging.pri)
 

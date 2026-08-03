@@ -5,7 +5,7 @@ on:
     paths:
       - '.github/workflows/draupnir-loptr-tests.yml'
       - 'jobs/draupnir_loptr_tests.pm'
-      - 'include/draupnir/loptr/draupnir/**'
+      - 'include/loptr/draupnir/**'
       - 'modules/Loptr.pri'
       - 'src/loptr/**'
       - 'tests/modules/loptr/**'

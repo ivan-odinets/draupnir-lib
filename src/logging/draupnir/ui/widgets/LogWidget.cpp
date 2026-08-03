@@ -33,16 +33,15 @@
 #include <QToolTip>
 #include <QVBoxLayout>
 
-#include "draupnir/logging/models/MessageListModel.h"
-#include "draupnir/logging/ui/widgets/MessageListView.h"
+#include "draupnir/messages/models/MessageListModel.h"
+#include "draupnir/messages/ui/widgets/MessageListView.h"
 
 namespace Draupnir::Logging
 {
 
 LogWidget::LogWidget(QWidget* parent) :
     QWidget{parent},
-    p_messageListModel{nullptr},
-    w_messagesListView{new MessageListView},
+    w_messagesListView{new Draupnir::Messages::MessageListView},
     w_iconSizeLabel{new QLabel},
     w_iconSizeSlider{new QSlider{Qt::Horizontal}},
     w_clearLogButton{new QPushButton}
@@ -69,10 +68,10 @@ LogWidget::LogWidget(QWidget* parent) :
 
     // Display default settings values
     using namespace Draupnir::Logging::Settings::LogWidget;
-    w_messagesListView->setIconSize(IconSizeSetting::defaultValue());
-    w_messagesListView->setDisplayedMessageCategoriesMask(DisplayedMessageCategoriesSetting::defaultValue());
-    w_messagesListView->setDisplayedMessageLevelsMask(DisplayedMessageLevelsSetting::defaultValue());
-    w_messagesListView->setDisplayedMessageViewItemFieldsMask(DisplayedMessageViewItemFieldsSetting::defaultValue());
+    w_messagesListView->setIconSize(IconSizeSettingTrait::defaultValue());
+    w_messagesListView->setDisplayedMessageCategoriesMask(DisplayedMessageCategoriesSettingTrait::defaultValue());
+    w_messagesListView->setDisplayedMessageLevelsMask(DisplayedMessageLevelsSettingTrait::defaultValue());
+    w_messagesListView->setDisplayedMessageViewItemFieldsMask(DisplayedMessageViewItemFieldsSettingTrait::defaultValue());
     w_iconSizeSlider->setMinimum(12);
     w_iconSizeSlider->setMaximum(128);
 
@@ -83,12 +82,15 @@ LogWidget::LogWidget(QWidget* parent) :
             this, &LogWidget::_onIconSizeEditFinished);
 }
 
-void LogWidget::setMessageListModel(MessageListModel* model)
+void LogWidget::setMessageListModel(Draupnir::Messages::MessageListModel* model)
 {
     Q_ASSERT_X(model, Q_FUNC_INFO, "Provided model pointer is nullptr");
-    p_messageListModel = model;
-
     w_messagesListView->setModel(model);
+}
+
+Draupnir::Messages::MessageListModel* LogWidget::messageListModel()
+{
+    return static_cast<Draupnir::Messages::MessageListModel*>(w_messagesListView->model());
 }
 
 void LogWidget::changeEvent(QEvent* event)
@@ -99,17 +101,17 @@ void LogWidget::changeEvent(QEvent* event)
     QWidget::changeEvent(event);
 }
 
-void LogWidget::_onMessageCategoryFilterChanged(MessageCategory, bool)
+void LogWidget::_onMessageCategoryFilterChanged(Draupnir::Messages::MessageCategory, bool)
 {
-    // using namespace Draupnir::Messages::Settings::LogWidget;
-    m_settingsBundle.template set<Settings::LogWidget::DisplayedMessageCategoriesSetting>(
+    using namespace Draupnir::Logging::Settings::LogWidget;
+    m_settingsBundle.template set<DisplayedMessageCategoriesSettingTrait>(
         w_messagesListView->displayedMessageCategoriesMask());
 }
 
-void LogWidget::_onMessageFieldVisibilityChanged(Draupnir::Logging::MessageViewItemField::Value, bool)
+void LogWidget::_onMessageFieldVisibilityChanged(Draupnir::Messages::MessageViewItemField::Value, bool)
 {
     using namespace Draupnir::Logging::Settings::LogWidget;
-    m_settingsBundle.template set<DisplayedMessageViewItemFieldsSetting>(
+    m_settingsBundle.template set<DisplayedMessageViewItemFieldsSettingTrait>(
         w_messagesListView->displayedMessageViewItemFieldsMask());
 }
 
@@ -125,15 +127,15 @@ void LogWidget::_onIconSizeChange(int newSize)
 void LogWidget::_onIconSizeEditFinished()
 {
     using namespace Draupnir::Logging::Settings::LogWidget;
-    m_settingsBundle.template set<IconSizeSetting>(w_messagesListView->iconSize());
+    m_settingsBundle.template set<IconSizeSettingTrait>(w_messagesListView->iconSize());
 }
 
 void LogWidget::_onLogClearClicked()
 {
-    Q_ASSERT_X(p_messageListModel, "LogWidget::_onLogClearClicked",
-        "MessageListModel must have been set before.");
+    // Q_ASSERT_X(p_messageListModel, "LogWidget::_onLogClearClicked",
+    //     "MessageListModel must have been set before.");
 
-    p_messageListModel->clear();
+    // p_messageListModel->clear();
 }
 
 void LogWidget::_applyLoadedSettings()
@@ -141,20 +143,20 @@ void LogWidget::_applyLoadedSettings()
     using namespace Draupnir::Logging::Settings::LogWidget;
 
     // MessageListView -> IconSize
-    const QSize size = m_settingsBundle.template get<IconSizeSetting>();
+    const QSize size = m_settingsBundle.template get<IconSizeSettingTrait>();
     if (size.height() != size.width()) {
-        w_iconSizeSlider->setSliderPosition(IconSizeSetting::defaultValue().height());
-        w_messagesListView->setIconSize(IconSizeSetting::defaultValue());
+        w_iconSizeSlider->setSliderPosition(IconSizeSettingTrait::defaultValue().height());
+        w_messagesListView->setIconSize(IconSizeSettingTrait::defaultValue());
     } else {
         w_iconSizeSlider->setSliderPosition(size.width());
         w_messagesListView->setIconSize(size);
     }
 
     // MessageListView -> DisplayedMessageCategories
-    w_messagesListView->setDisplayedMessageCategoriesMask(m_settingsBundle.get<DisplayedMessageCategoriesSetting>());
+    w_messagesListView->setDisplayedMessageCategoriesMask(m_settingsBundle.get<DisplayedMessageCategoriesSettingTrait>());
 
     // MessageListView -> DisplayedMessageViewItemFields
-    w_messagesListView->setDisplayedMessageViewItemFieldsMask(m_settingsBundle.template get<DisplayedMessageViewItemFieldsSetting>());
+    w_messagesListView->setDisplayedMessageViewItemFieldsMask(m_settingsBundle.template get<DisplayedMessageViewItemFieldsSettingTrait>());
 }
 
 void LogWidget::_retranslateUi()

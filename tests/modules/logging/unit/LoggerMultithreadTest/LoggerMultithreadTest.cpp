@@ -25,9 +25,10 @@
 #include <QtTest>
 #include <QtConcurrent>
 
-#include "draupnir/logging/Logger.h"
+#include "draupnir/logging/core/Logger.h"
 
-#include "draupnir-test/mocks/MessageHandlerMock.h"
+#include "draupnir-test/helpers/ConcurrentTestHelpers.h"
+#include "draupnir-test/mocks/MessageReceiverMock.h"
 
 namespace Draupnir::Logging
 {
@@ -40,28 +41,9 @@ class LoggerMultithreadTest final : public QObject
 {
     Q_OBJECT
 private:
-    MessageHandlerMock dummyHandler;
+    MessageReceiverMock dummyHandler;
 
     Logger* dummyLogger = nullptr;
-
-    /*! @brief Helper method which will create `threadCount` threads each calling the callable `callCount` times.
-     * @todo Question: Maybe this method can be transfered to the seperate helper? */
-    void performSpamCalls(const int threadCount, const int callCount, const std::function<void()>& callable) {
-        QList<QFuture<void>> futureList;
-
-        // Start threads
-        for (int i = 0; i < threadCount; i++) {
-            auto future = QtConcurrent::run([&callable,callCount](){
-                for (int j = 0; j < callCount; j++)
-                    callable();
-            });
-            futureList.append(future);
-        }
-
-        // Wait for threads to be finished
-        for (auto& future : futureList)
-            future.waitForFinished();
-    }
 
 private slots:
     void init() { dummyLogger = new Logger; }
@@ -73,14 +55,14 @@ private slots:
         constexpr int expectedGroupCount = threadCount * callCount;
 
         // Try to call Logger::beginMessageGroup method from many threads
-        performSpamCalls(threadCount,callCount,[this](){
-            dummyLogger->beginMessageGroup();
+        ConcurrentTestHelpers::performSpamCalls(threadCount,callCount,[this](){
+            static_cast<void>(dummyLogger->beginMessageGroup());
         });
 
         QTRY_COMPARE(dummyLogger->m_messageGroupsMap.count(), expectedGroupCount);
 
         // To suppress qDebug output from Logger destructor
-        dummyLogger->setMessageHandler(&dummyHandler);
+        dummyLogger->setMessageReceiver(&dummyHandler);
     }
 
     void test_is_group_existing() {
@@ -89,12 +71,12 @@ private slots:
         constexpr int expectedGroupCount = threadCount * callCount;
 
         // Prepeare message groups in a single thread
-        QList<MessageGroup> groupList;
+        QList<Draupnir::Logging::MessageGroupId> groupList;
         for (int i = 0; i < expectedGroupCount; i++)
             groupList.append(dummyLogger->beginMessageGroup());
 
-        // Try to call Logger::beginMessageGroup method from many threads
-        performSpamCalls(threadCount,callCount,[this,&groupList](){
+        // Try to call Logger::isGroupExisting method from many threads
+        ConcurrentTestHelpers::performSpamCalls(threadCount,callCount,[this,&groupList](){
             int index = rand() % expectedGroupCount;
             QVERIFY(dummyLogger->isGroupExisting(groupList.at(index)));
         });
@@ -102,7 +84,7 @@ private slots:
         // Well, if we have not crashed - maybe the Logger is thread-safe
 
         // To suppress qDebug output from Logger destructor
-        dummyLogger->setMessageHandler(&dummyHandler);
+        dummyLogger->setMessageReceiver(&dummyHandler);
     }
 
     void test_end_message_group() {
@@ -112,9 +94,9 @@ private slots:
 
         // Prepeare lists of message groups in a single thread. One list of groups per one thread.
         // groupCount the total cmount of groups to be created
-        QList<QList<MessageGroup>> listOfGroupLists;
+        QList<QList<Draupnir::Logging::MessageGroupId>> listOfGroupLists;
         for (int i = 0; i < threadCount; i++) {
-            QList<MessageGroup> groupList;
+            QList<Draupnir::Logging::MessageGroupId> groupList;
             for (int j = 0; j < callCount; j++)
                 groupList.append(dummyLogger->beginMessageGroup());
             listOfGroupLists.append(groupList);
@@ -142,7 +124,7 @@ private slots:
         QCOMPARE(dummyLogger->m_messageGroupsMap.count(), 0);
 
         // To suppress qDebug output from Logger destructor
-        dummyLogger->setMessageHandler(&dummyHandler);
+        dummyLogger->setMessageReceiver(&dummyHandler);
     }
 
     void test_multithread_logging_without_handler() {
@@ -151,15 +133,15 @@ private slots:
         constexpr int expectedMessages = threadCount * callCount;
 
         // Try to call one of logging methods from many threads
-        performSpamCalls(threadCount,callCount,[this](){
+        ConcurrentTestHelpers::performSpamCalls(threadCount,callCount,[this](){
             dummyLogger->logDebug(QString{"Blah"});
         });
 
-        QTRY_COMPARE(dummyLogger->p_tempMessageStorage->count(), expectedMessages);
+        QTRY_COMPARE(dummyLogger->m_tempMessageStorage.count(), expectedMessages);
 
         // To suppress qDebug output from Logger destructor
-        dummyLogger->setMessageHandler(&dummyHandler);
-        QTRY_COMPARE(dummyHandler.messagesReceived.count(), expectedMessages);
+        dummyLogger->setMessageReceiver(&dummyHandler);
+        QTRY_COMPARE(dummyHandler.messagesReceived().count(), expectedMessages);
         dummyHandler.clear();
     }
 
@@ -168,16 +150,16 @@ private slots:
         constexpr int callCount = 100;
         constexpr int expectedMessages = threadCount * callCount;
 
-        dummyLogger->setMessageHandler(&dummyHandler);
+        dummyLogger->setMessageReceiver(&dummyHandler);
 
         // Try to call one of logging methods from many threads
-        performSpamCalls(threadCount, callCount, [this](){
+        ConcurrentTestHelpers::performSpamCalls(threadCount, callCount, [this](){
             dummyLogger->logDebug(QString{"Blah"});
         });
 
         // We NEED QTRY_COMPARE here instead of QCOMPARE because passing of Messages from Logger to the AbstractMessageHandler
         // is happening via signal/slot mechanism.
-        QTRY_COMPARE(dummyHandler.messagesReceived.count(), expectedMessages);
+        QTRY_COMPARE(dummyHandler.messagesReceived().count(), expectedMessages);
     }
 
     void test_multithread_batch_logging_with_handler() {
@@ -185,12 +167,12 @@ private slots:
         constexpr int callCount = 100;
         constexpr int totalMessageCount = threadCount * callCount;
 
-        dummyLogger->setMessageHandler(&dummyHandler);
+        dummyLogger->setMessageReceiver(&dummyHandler);
 
         const auto groupOne = dummyLogger->beginMessageGroup();
         const auto groupTwo = dummyLogger->beginMessageGroup();
 
-        performSpamCalls(threadCount,callCount,[this,groupOne,groupTwo](){
+        ConcurrentTestHelpers::performSpamCalls(threadCount,callCount,[this,groupOne,groupTwo](){
             if (rand() % 2) {
                 dummyLogger->logDebug("debug",groupOne);
             } else {
@@ -205,12 +187,12 @@ private slots:
         int messagesSomewhere =
                 dummyLogger->m_messageGroupsMap[groupOne].count() +
                 dummyLogger->m_messageGroupsMap[groupTwo].count() +
-                dummyHandler.messagesReceived.count();
+                dummyHandler.messagesReceived().count();
         QCOMPARE(messagesSomewhere, totalMessageCount);
     }
 };
 
-}; // namespace Draupnir::Logger
+} // namespace Draupnir::Logger
 
 QTEST_MAIN(Draupnir::Logging::LoggerMultithreadTest)
 

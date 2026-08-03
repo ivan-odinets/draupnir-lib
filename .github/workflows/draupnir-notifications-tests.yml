@@ -4,7 +4,7 @@ on:
   push:
     paths:
       - '.github/workflows/draupnir-notifications-tests.yml'
-      - 'include/draupnir/notifications/draupnir/**'
+      - 'include/notifications/draupnir/**'
       - 'jobs/draupnir_notifications_tests.pm'
       - 'modules/Notifications.pri'
       - 'src/notifications/**'

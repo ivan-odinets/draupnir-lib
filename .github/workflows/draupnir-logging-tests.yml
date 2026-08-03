@@ -4,7 +4,7 @@ on:
   push:
     paths:
       - '.github/workflows/draupnir-logging-tests.yml'
-      - 'include/draupnir/logging/draupnir/**'
+      - 'include/logging/draupnir/**'
       - 'jobs/draupnir_logging_tests.pm'
       - 'modules/Logging.pri'
       - 'src/logging/**'

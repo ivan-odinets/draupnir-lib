@@ -4,7 +4,7 @@ on:
   push:
     paths:
       - '.github/workflows/draupnir-proxy-helper-tests.yml'
-      - 'include/draupnir/proxy_helper/draupnir/**'
+      - 'include/proxy_helper/draupnir/**'
       - 'jobs/draupnir_proxy_helper_tests.pm'
       - 'modules/ProxyHelper.pri'
       - 'src/proxy_helper/**'

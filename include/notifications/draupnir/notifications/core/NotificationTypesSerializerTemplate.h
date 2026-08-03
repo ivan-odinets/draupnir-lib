@@ -25,42 +25,58 @@
 #ifndef NOTIFICATIONTYPESSERIALIZERTEMPLATE_H
 #define NOTIFICATIONTYPESSERIALIZERTEMPLATE_H
 
-#include "draupnir/notifications/concepts/NotificationTypeConcept.h"
-#include "draupnir/notifications/core/NotificationTypeSerializerInterface.h"
+#include "draupnir/notifications/concepts/NotificationChannelConcept.h"
+#include "draupnir/notifications/core/NotificationTypesSerializerInterface.h"
 #include "draupnir/settings_registry/utils/FlagsMaskSerializerTemplate.h"
 
 namespace Draupnir::Notifications
 {
 
-/*! @brief This is a class
+/*! @class NotificationTypesSerializerTemplate draupnir/notifications/core/NotificationTypesSerializerInterface.h
  *  @ingroup Notifications
- * @todo Documentation: Write documentation */
+ *  @brief Serializes notification type masks using a compile-time set of notification traits.
+ *  @tparam Traits Notification traits describing the supported notification types and their configuration tokens.
+ *
+ *  @details Uses @ref Draupnir::Settings::FlagSerializerTemplate to serialize individual notification types and
+ *           @ref Draupnir::Settings::FlagsMaskSerializerTemplate to serialize complete @ref Draupnir::Notifications::NotificationTypes masks.
+ *
+ *           The empty notification mask is represented using the configuration token provided by @ref Draupnir::Settings::NoneFlagsMaskTemplate. */
 
-template<NotificationTypeTraitConcept... Traits>
-class NotificationTypesSerializerTemplate final : public NotificationTypeSerializerInterface
+template<NotificationTraitConcept... Traits>
+class NotificationTypesSerializerTemplate final : public NotificationTypesSerializerInterface
 {
 public:
+    /*! @brief Destroys the notification types serializer. */
     ~NotificationTypesSerializerTemplate() final = default;
+
+    /*! @brief Serializer used for individual notification type values. */
     using SingleNotificationSerializer = Draupnir::Settings::FlagSerializerTemplate<
         NotificationType,
         Traits...
     >;
-
-    using Serialzier = Draupnir::Settings::FlagsMaskSerializerTemplate<
+    /*! @brief Serializer used for complete notification type masks. */
+    using Serializer = Draupnir::Settings::FlagsMaskSerializerTemplate<
         NotificationTypes,
         SingleNotificationSerializer,
         Draupnir::Settings::NoneFlagsMaskTemplate<NotificationTypes>
     >;
 
-    std::optional<NotificationTypes> fromConfigString(const QString& string) const final {
-        return Serialzier::fromConfigString(string);
+    /*! @brief Parses notification types from a configuration string.
+     *  @param string Configuration string to parse.
+     *  @return Parsed notification type mask, or `std::nullopt` if `string` is invalid or contains unsupported notification
+     *          type tokens. */
+    [[nodiscard]] std::optional<NotificationTypes> fromConfigString(const QString& string) const final {
+        return Serializer::fromConfigString(string);
     }
 
-    QString toConfigString(NotificationTypes mask) const final {
-        return Serialzier::toConfigString(mask);
+    /*! @brief Converts a notification type mask to a configuration string.
+     *  @param mask Notification type mask to serialize.
+     *  @return Configuration string representing `mask`. */
+    [[nodiscard]] QString toConfigString(NotificationTypes mask) const final {
+        return Serializer::toConfigString(mask);
     }
 };
 
-}; // namespace Draupnir::Notifications
+} // namespace Draupnir::Notifications
 
 #endif // NOTIFICATIONTYPESSERIALIZERTEMPLATE_H

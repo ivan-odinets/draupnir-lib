@@ -6,58 +6,28 @@
 
     include(Containers.pri)
     include(DraupnirVersion.pri)
+    include(Messages.pri)
     include(SettingsRegistry.pri)
     include(UiBricks.pri)
 
     INCLUDEPATH += $$PWD/../include/logging
 
-    SOURCES +=
-
     HEADERS += \
-    $$PWD/../include/logging/draupnir/logging/messages/AbstractMessageViewIconProvider.h \
-        $$PWD/../include/logging/draupnir/logging/messages/Message.h \
-        $$PWD/../include/logging/draupnir/logging/Logger.h \
-        $$PWD/../include/logging/draupnir/logging/core/AbstractMessageHandler.h \
-        $$PWD/../include/logging/draupnir/logging/messages/MessageGroup.h \
-        $$PWD/../include/logging/draupnir/logging/messages/MessageLevels.h \
-        $$PWD/../include/logging/draupnir/logging/messages/MessageTypes.h \
-        $$PWD/../include/logging/draupnir/logging/messages/MessageViewItem.h \
-        $$PWD/../include/logging/draupnir/logging/messages/MessageViewItemFields.h \
-        $$PWD/../include/logging/draupnir/logging/messages/categories/MessageCategories.h \
-        $$PWD/../include/logging/draupnir/logging/models/MessageListModel.h \
-        $$PWD/../include/logging/draupnir/logging/models/MessageListProxyModel.h \
-        $$PWD/../include/logging/draupnir/logging/ui/widgets/MessageDisplayWidget.h \
-        $$PWD/../include/logging/draupnir/logging/ui/widgets/MessageListView.h \
-        $$PWD/../include/logging/draupnir/logging/ui/windows/MessageDisplayDialog.h \
-        $$PWD/../include/logging/draupnir/logging/concepts/MessageCategoryTraitConcept.h \
-        $$PWD/../include/logging/draupnir/logging/messages/categories/AbstractMessageCategoryRegistry.h \
-        $$PWD/../include/logging/draupnir/logging/messages/categories/MessageCategoriesSerializerInterface.h \
-        $$PWD/../include/logging/draupnir/logging/messages/categories/MessageCategoryRegistryTemplate.h \
-        $$PWD/../include/logging/draupnir/logging/traits/categories/DefaultMessageCategoryTrait.h \
-        $$PWD/../include/logging/draupnir/logging/traits/categories/NetworkMessageCategoryTrait.h \
-        $$PWD/../include/logging/draupnir/logging/traits/settings/LogWidgetSettingsTraits.h \
-        $$PWD/../include/logging/draupnir/logging/ui/menus/MessageLevelsSelectorMenu.h \
-        $$PWD/../include/logging/draupnir/logging/ui/menus/MessageViewItemFieldsSelectorMenu.h \
-        $$PWD/../include/logging/draupnir/logging/ui/menus/AbstractMessageCategoriesSelectorMenu.h \
-        $$PWD/../include/logging/draupnir/logging/ui/menus/MessageCategoriesSelectorMenuTemplate.h \
-        $$PWD/../include/logging/draupnir/logging/ui/widgets/LogWidget.h
-
+        $$PWD/../include/logging/draupnir/logging/core/Logger.h \
+        $$PWD/../include/logging/draupnir/logging/core/MessageGroupId.h \
+        $$PWD/../include/logging/draupnir/logging/core/MessageReceiverTemplate.h \
+        $$PWD/../include/logging/draupnir/logging/traits/settings/log_widget/DisplayedMessageLevelsSettingTrait.h \
+        $$PWD/../include/logging/draupnir/logging/ui/widgets/LogWidget.h \
+        $$PWD/../include/logging/draupnir/logging/core/AbstractMessageReceiver.h \
+        $$PWD/../include/logging/draupnir/logging/traits/settings/log_widget/DisplayedMessageCategoriesSettingTrait.h \
+        $$PWD/../include/logging/draupnir/logging/traits/settings/log_widget/DisplayedMessageViewItemFieldsSettingTrait.h \
+        $$PWD/../include/logging/draupnir/logging/traits/settings/log_widget/IconSizeSetting.h
 
     DISTFILES += \
         $$PWD/../docs/pages/Logging.dox
 
     SOURCES += \
-        $$PWD/../src/logging/draupnir/Logger.cpp \
-        $$PWD/../src/logging/draupnir/core/AbstractMessageViewIconProvider.cpp \
-        $$PWD/../src/logging/draupnir/messages/MessageViewItem.cpp \
-        $$PWD/../src/logging/draupnir/messages/MessageViewItemFields.cpp \
-        $$PWD/../src/logging/draupnir/models/MessageListModel.cpp \
-        $$PWD/../src/logging/draupnir/models/MessageListProxyModel.cpp \
-        $$PWD/../src/logging/draupnir/ui/widgets/MessageDisplayWidget.cpp \
-        $$PWD/../src/logging/draupnir/ui/widgets/MessageListView.cpp \
-        $$PWD/../src/logging/draupnir/ui/windows/MessageDisplayDialog.cpp \
-        $$PWD/../src/logging/draupnir/ui/menus/MessageViewItemFieldsSelectorMenu.cpp \
-        $$PWD/../src/logging/draupnir/ui/menus/MessageLevelsSelectorMenu.cpp \
-        $$PWD/../src/logging/draupnir/messages/MessageLevels.cpp \
+       $$PWD/../src/logging/draupnir/core/Logger.cpp \
         $$PWD/../src/logging/draupnir/ui/widgets/LogWidget.cpp
 }
+
