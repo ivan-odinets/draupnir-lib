@@ -27,7 +27,7 @@
 
 #include <type_traits>
 
-#include "draupnir/utils/class_marcos.h"
+#include "draupnir/utils/class_macros.h"
 
 namespace draupnir::utils
 {
@@ -71,7 +71,7 @@ namespace draupnir::utils
 template<bool Cond>
 class type_if {
 private:
-    DEFINE_COMPILE_TIME(type_if);
+    DRAUPNIR_DEFINE_COMPILE_TIME(type_if);
 
     /*! @brief Implementation detail: picks one of two carrier types using `std::conditional_t`. */
     template<bool _Cond, class IfTrue, class IfFalse>
@@ -100,7 +100,7 @@ private:
     template<class ThenCarrier>
     struct _then_node {
     private:
-        DEFINE_COMPILE_TIME(_then_node);
+        DRAUPNIR_DEFINE_COMPILE_TIME(_then_node);
 
         /*! @brief Implementation detail: selects between `ThenCarrier` and `ElseCarrier` and returns the chosen `::type`.
          *  @tparam ElseCarrier Carrier for the else-branch (must expose `ElseCarrier::type`). */

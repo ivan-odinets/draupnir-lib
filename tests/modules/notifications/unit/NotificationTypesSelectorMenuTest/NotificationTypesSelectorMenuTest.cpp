@@ -27,21 +27,22 @@
 #include <QCoreApplication>
 
 #include "draupnir/notifications/ui/menus/NotificationTypesSelectorMenuTemplate.h"
-#include "draupnir/notifications/traits/DialogNotificationTrait.h"
-#include "draupnir/notifications/traits/TrayNotificationTrait.h"
+#include "draupnir/notifications/channels/DialogNotificationChannel.h"
+#include "draupnir/notifications/channels/TrayNotificationChannel.h"
 
 using namespace Draupnir::Notifications;
 
 /*! @class NotificationTypesSelectorMenuTest tests/modules/message_system/unit/NotificationTypesSelectorMenuTest.cpp
- *  @ingroup NotificationsTests */
+ *  @ingroup NotificationsTests
+ *  @brief Unit test for the @ref Draupnir::Notifications::NotificationTypesSelectorMenuTemplate class. */
 
 class NotificationTypesSelectorMenuTest final : public QObject
 {
     Q_OBJECT
 private:
     using NotificationTypesSelectorMenu = NotificationTypesSelectorMenuTemplate<
-        TrayNotificationTrait,
-        DialogNotification
+        TrayNotificationChannel::Trait,
+        DialogNotificationChannel::Trait
     >;
     NotificationTypesSelectorMenu* menu = nullptr;
 
@@ -53,7 +54,10 @@ private slots:
     void cleanup() { delete menu; menu = nullptr; }
 
     void test_initial_state() {
-        QCOMPARE(menu->selectedMask(), NotificationType::NoNotification);
+        const auto actionsList = menu->actions();
+        QCOMPARE(actionsList.count(), 4);
+        QVERIFY(actionsList.contains(menu->getFlagElement<NotificationType::DialogNotification>()));
+        QVERIFY(actionsList.contains(menu->getFlagElement<NotificationType::TrayNotification>()));
     }
 };
 

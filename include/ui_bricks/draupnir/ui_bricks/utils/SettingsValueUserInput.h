@@ -31,7 +31,7 @@
 
 #include "draupnir/settings_registry/concepts/SettingTraitConcept.h"
 #include "draupnir/ui_bricks/utils/DialogDecorator.h"
-#include "draupnir/utils/type_presense.h"
+#include "draupnir/utils/type_presence.h"
 
 namespace Draupnir::Handlers
 {

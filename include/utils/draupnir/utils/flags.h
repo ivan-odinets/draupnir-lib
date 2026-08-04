@@ -63,9 +63,18 @@ protected:
 
     static inline constexpr Int _zero = Int{};
 
+    template<class I>
+    struct _primitive_int_deductor;
+
+    template<integer_concept I>
+    struct _primitive_int_deductor<I> { using type = I; };
+
+    template<integer_wrapper_concept I>
+    struct _primitive_int_deductor<I> { using type = I::underlying_type; };
+
 public:
-    /*! @brief Alias to access integer type used by this flags object instantiation. */
-    using integer = Int;
+    /*! @brief Primitive built-in integer type underlying the mask representation. */
+    using primitive_integer = _primitive_int_deductor<Int>::type;
 
 ///@name Constructors.
 ///@{
@@ -279,11 +288,8 @@ class flags : public flags_base<Int,flags<Int>>
     using _base = flags_base<Int,flags<Int>>;
 
 public:
-    /*! @brief Integer type used by this flags object. */
-    using integer = flags_base<Int,flags<Int>>::integer;
-
     /*! @brief Type of the individual flag. */
-    using flag_type = integer;
+    using flag_type = Int;
 
 ///@name Constructors.
 ///@{
@@ -428,9 +434,6 @@ public:
     /*! @brief Associated enum type. */
     using enum_type = Enum;
 
-    /*! @brief Integer type used by this enum_flags object. */
-    using integer = flags_base<std::underlying_type_t<Enum>,enum_flags<Enum>>::integer;
-
     /*! @brief Type of the individual flag. */
     using flag_type = Enum;
 
@@ -545,6 +548,6 @@ public:
 ///@}
 };
 
-}; // namespace draupnir::utils
+} // namespace draupnir::utils
 
 #endif // FLAGS_H

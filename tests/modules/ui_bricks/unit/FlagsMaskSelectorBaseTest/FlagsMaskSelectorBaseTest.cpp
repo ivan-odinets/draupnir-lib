@@ -48,16 +48,16 @@ public:
     using draupnir::utils::enum_flags<MyEnum>::operator=;
 
     using enum_type = draupnir::utils::enum_flags<MyEnum>::enum_type;
-    using integer = draupnir::utils::enum_flags<MyEnum>::integer;
+    using primitive_integer = draupnir::utils::enum_flags<MyEnum>::primitive_integer;
     using flag_type = enum_type;
 
-    static constexpr integer All         = MyEnum::One | MyEnum::Two | MyEnum::Three | MyEnum::Four;
-    static constexpr integer OneThree    = MyEnum::One |               MyEnum::Three;
-    static constexpr integer OneTwoThree = MyEnum::One | MyEnum::Two | MyEnum::Three;
+    static constexpr primitive_integer All         = MyEnum::One | MyEnum::Two | MyEnum::Three | MyEnum::Four;
+    static constexpr primitive_integer OneThree    = MyEnum::One |               MyEnum::Three;
+    static constexpr primitive_integer OneTwoThree = MyEnum::One | MyEnum::Two | MyEnum::Three;
 
     struct UiSelectorMetadata {
         static constexpr MyEnum displayedFlags[] = { MyEnum::One, MyEnum::Two, MyEnum::Three, MyEnum::Four };
-        static constexpr integer displayedMaskPresets[] = { OneThree, OneTwoThree, All };
+        static constexpr primitive_integer displayedMaskPresets[] = { OneThree, OneTwoThree, All };
     };
 
     static QString toDisplayName(MyEnumFlags mask) {
@@ -121,9 +121,9 @@ signals:
 namespace Draupnir::Ui
 {
 
-/*! @class EnumFlagsSelectorViewBaseTest tests/modules/ui_bricks/unit/EnumFlagsSelectorViewBaseTest/EnumFlagsSelectorViewBaseTest.cpp
+/*! @class FlagsMaskSelectorBaseTest tests/modules/ui_bricks/unit/FlagsMaskSelectorBaseTest/FlagsMaskSelectorBaseTest.cpp
  *  @ingroup UiBricksTests
- *  @brief Unit test for @ref Draupnir::UiBricks::FlagsMaskSelectorBase.
+ *  @brief Unit test for the @ref Draupnir::UiBricks::FlagsMaskSelectorBase class.
  * @todo Optional: Put MyEnum / MyEnumFlags into seperate shared file.
  * @todo Test case: Add testing of the following: retranslateUiElements method, getUiElement and related.
  * @todo Documentation: Extend the documentation for this test. */
@@ -538,7 +538,7 @@ private slots:
     }
 
     void test_is_flag_selected() {
-        // // Test QMenu-based
+        // Test QMenu-based
         test_is_flag_selected_impl<MyEnumFlagsMenu>(menu);
         // Test Widget-based
         test_is_flag_selected_impl<MyEnumFlagsWidget>(widget);

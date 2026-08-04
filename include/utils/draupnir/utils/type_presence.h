@@ -22,8 +22,8 @@
  *
  */
 
-#ifndef TYPE_PRESENSE_H
-#define TYPE_PRESENSE_H
+#ifndef TYPE_PRESENCE_H
+#define TYPE_PRESENCE_H
 
 /*! @file draupnir/utils/type_presense.h
  *  @ingroup Utils
@@ -236,4 +236,4 @@ inline constexpr bool is_template_instantiation_present_in_tuple_v = is_template
 
 }; // draupnir::utils
 
-#endif // TYPE_PRESENSE_H
+#endif // TYPE_PRESENCE_H

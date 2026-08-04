@@ -25,14 +25,15 @@
 #include <QtTest>
 #include <QCoreApplication>
 
-/*! @class FileMenuEntriesHandlerIT
- *  @brief This is a test class for testing basic functionality of the FileMenuEntriesHandler */
-
 #include "draupnir/ui_bricks/handlers/file_menu/FileMenuEntriesHandler.h"
 #include "draupnir/utils/type_list.h"
 
 #include "draupnir-test/mocks/DummySingleFileManager.h"
 #include "draupnir-test/mocks/SettingsSourceMockTemplate.h"
+
+/*! @class FileMenuEntriesHandlerIT
+ *  @ingroup UiBricksTests
+ *  @brief Integration test for the @ref Draupnir::Handlers::FileMenuHandler class. */
 
 class FileMenuEntriesHandlerIT : public QObject
 {

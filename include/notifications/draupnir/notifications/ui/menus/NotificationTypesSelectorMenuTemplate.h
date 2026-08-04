@@ -28,12 +28,14 @@
 #include "draupnir/notifications/ui/menus/AbstractNotificationTypesSelectorMenu.h"
 #include "draupnir/ui_bricks/core/selectors/FlagsMaskSelectorBase.h"
 
-#include "draupnir/notifications/traits/NoNotificationTrait.h"
+#include "draupnir/notifications/concepts/NotificationChannelConcept.h"
+#include "draupnir/notifications/core/NotificationTypes.h"
+#include "draupnir/notifications/traits/notifications/NoneNotificationTrait.h"
 
 namespace Draupnir::Notifications
 {
 
-template<class... NotificationTypeTraits>
+template<NotificationTraitConcept... NotificationTypeTraits>
 class NotificationTypesSelectorMenuTemplate :
     public AbstractNotificationTypesSelectorMenu,
     public Draupnir::Ui::FlagsMaskSelectorBase<
@@ -41,7 +43,7 @@ class NotificationTypesSelectorMenuTemplate :
         QAction,
         NotificationTypes,
         Draupnir::Ui::TemplateArgs::FlagTraitsWrapper<NotificationTypeTraits...>,
-        Draupnir::Ui::TemplateArgs::MaskTraitsWrapper<NoNotificationTrait>
+        Draupnir::Ui::TemplateArgs::MaskTraitsWrapper<NoneNotificationTrait>
     >
 {
 private:
@@ -50,18 +52,18 @@ private:
         QAction,
         NotificationTypes,
         Draupnir::Ui::TemplateArgs::FlagTraitsWrapper<NotificationTypeTraits...>,
-        Draupnir::Ui::TemplateArgs::MaskTraitsWrapper<NoNotificationTrait>
+        Draupnir::Ui::TemplateArgs::MaskTraitsWrapper<NoneNotificationTrait>
     >;
 
 public:
     NotificationTypesSelectorMenuTemplate(QWidget* parent = nullptr) :
         AbstractNotificationTypesSelectorMenu{parent},
-        _Base{NoNotificationTrait::value()}
+        _Base{NotificationTypes::None}
     { _setupUi(); }
 
     NotificationTypesSelectorMenuTemplate(const QString& title, QWidget* parent = nullptr) :
         AbstractNotificationTypesSelectorMenu{title, parent},
-        _Base{NoNotificationTrait::value()}
+        _Base{NotificationTypes::None}
     { _setupUi(); }
 
     ~NotificationTypesSelectorMenuTemplate() final = default;
@@ -78,6 +80,8 @@ protected:
 
 private:
     void _setupUi() {
+        addAction(_Base::template getUiElement<NoneNotificationTrait>());
+        addSeparator();
         // NotificationType is an integer_wrapper-based type, and to pass it as NTTP we need to cast it to the
         // underlying integer explicitly. At least for now.
         (addAction(_Base::template getFlagElement<NotificationTypeTraits::value().value()>()), ... );

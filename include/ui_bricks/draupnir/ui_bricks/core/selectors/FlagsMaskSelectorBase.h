@@ -29,10 +29,10 @@
 
 #include "draupnir/ui_bricks/concepts/UiTraitConcepts.h"
 #include "draupnir/ui_bricks/utils/CheckableUiElementHelper.h"
-#include "draupnir/utils/class_marcos.h"
+#include "draupnir/utils/class_macros.h"
 #include "draupnir/utils/template_detectors.h"
 #include "draupnir/utils/tuple_like_merge.h"
-#include "draupnir/utils/type_presense.h"
+#include "draupnir/utils/type_presence.h"
 #include "draupnir/utils/type_qualifiers_helpers.h"
 #include "draupnir/utils/variadic_template_from_array.h"
 #include "draupnir/utils/concepts/type_concepts.h"
@@ -53,21 +53,21 @@ namespace TemplateArgs
  *  @tparam Traits Trait types describing displayed mask entries. */
 
 template<class... Traits>
-struct MaskTraitsWrapper { DEFINE_COMPILE_TIME(MaskTraitsWrapper); };
+struct MaskTraitsWrapper { DRAUPNIR_DEFINE_COMPILE_TIME(MaskTraitsWrapper); };
 
 /*! @brief Type-pack wrapper for explicit flag trait types.
  *  @ingroup UiBricks
  *  @tparam Traits Trait types describing displayed individual flag entries. */
 
 template<class... Traits>
-struct FlagTraitsWrapper { DEFINE_COMPILE_TIME(FlagTraitsWrapper); };
+struct FlagTraitsWrapper { DRAUPNIR_DEFINE_COMPILE_TIME(FlagTraitsWrapper); };
 
 /*! @brief Value-pack wrapper for explicit mask values.
  *  @ingroup UiBricks
  *  @tparam Values Compile-time mask values to be converted into mask traits. */
 
 template<auto... Values>
-struct MaskValuesWrapper { DEFINE_COMPILE_TIME(MaskValuesWrapper); };
+struct MaskValuesWrapper { DRAUPNIR_DEFINE_COMPILE_TIME(MaskValuesWrapper); };
 
 
 /*! @brief Value-pack wrapper for explicit individual flag values.
@@ -75,7 +75,7 @@ struct MaskValuesWrapper { DEFINE_COMPILE_TIME(MaskValuesWrapper); };
  *  @tparam Values Compile-time flag values to be converted into flag traits. */
 
 template<auto... Values>
-struct FlagValuesWrapper { DEFINE_COMPILE_TIME(FlagValuesWrapper); };
+struct FlagValuesWrapper { DRAUPNIR_DEFINE_COMPILE_TIME(FlagValuesWrapper); };
 
 }; // namespace TemplateArgs
 
@@ -128,7 +128,7 @@ template<
     draupnir::utils::flags_like_concept _Flags,
     class _FlagTraitContainer = TemplateArgs::FlagTraitsWrapper<>,
     class _MaskTraitContainer = TemplateArgs::MaskTraitsWrapper<>
-    >
+>
 class FlagsMaskSelectorBase
 {
 private:
@@ -136,7 +136,7 @@ private:
     using _FlagType = typename _Flags::flag_type;
 
     /*! @brief Alias for the underlying integer used to store individual flag and masks values. To be used internally. */
-    using _UnderlyingInteger = typename _Flags::integer;
+    using _UnderlyingInteger = typename _Flags::primitive_integer;
 
     /*! @brief Detects whether a candidate implementation provides flag selection notifications.
      *  @tparam Candidate Candidate CRTP implementation type.

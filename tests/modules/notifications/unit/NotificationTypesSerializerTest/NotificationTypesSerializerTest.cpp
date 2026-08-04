@@ -27,8 +27,8 @@
 #include <QCoreApplication>
 
 #include "draupnir/notifications/core/NotificationTypesSerializerTemplate.h"
-#include "draupnir/notifications/traits/notifications/DialogNotificationTrait.h"
-#include "draupnir/notifications/traits/notifications/TrayNotificationTrait.h"
+#include "draupnir/notifications/channels/DialogNotificationChannel.h"
+#include "draupnir/notifications/channels/TrayNotificationChannel.h"
 
 using namespace Draupnir::Notifications;
 
@@ -40,8 +40,8 @@ class NotificationTypesSerializerTest final : public QObject
     Q_OBJECT
 private:
     using NotificationTypesSerializer = NotificationTypesSerializerTemplate<
-        DialogNotificationTrait,
-        TrayNotificationTrait
+        DialogNotificationChannel::Trait,
+        TrayNotificationChannel::Trait
     >;
     NotificationTypesSerializer* serializer = nullptr;
 

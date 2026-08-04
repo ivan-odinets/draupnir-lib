@@ -27,7 +27,7 @@
 
 #include "draupnir/notifications/concepts/NotificationChannelConcept.h"
 #include "draupnir/utils/filter_if.h"
-#include "draupnir/utils/type_presense.h"
+#include "draupnir/utils/type_presence.h"
 
 namespace Draupnir::Notifications
 {

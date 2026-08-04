@@ -11,7 +11,7 @@
 
     HEADERS += \
         $$PWD/../include/utils/draupnir/utils/advance_enum.h \
-        $$PWD/../include/utils/draupnir/utils/class_marcos.h \
+        $$PWD/../include/utils/draupnir/utils/class_macros.h \
         $$PWD/../include/utils/draupnir/utils/conditional_type_extractors.h \
         $$PWD/../include/utils/draupnir/utils/filter_if.h \
         $$PWD/../include/utils/draupnir/utils/flags.h \
@@ -28,7 +28,7 @@
         $$PWD/../include/utils/draupnir/utils/type_if.h \
         $$PWD/../include/utils/draupnir/utils/type_list.h \
         $$PWD/../include/utils/draupnir/utils/type_name_utils.h \
-        $$PWD/../include/utils/draupnir/utils/type_presense.h \
+        $$PWD/../include/utils/draupnir/utils/type_presence.h \
         $$PWD/../include/utils/draupnir/utils/type_qualifiers_helpers.h \
         $$PWD/../include/utils/draupnir/utils/variadic_template_from_array.h \
         $$PWD/../include/utils/draupnir/utils/concepts/constructibility_concepts.h \

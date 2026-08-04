@@ -25,12 +25,12 @@
 #ifndef TYPE_LIST_H
 #define TYPE_LIST_H
 
-#include "draupnir/utils/class_marcos.h"
+#include "draupnir/utils/class_macros.h"
 #include "draupnir/utils/index_of.h"
 #include "draupnir/utils/template_adapters.h"
 #include "draupnir/utils/type_if.h"
 #include "draupnir/utils/type_extractors.h"
-#include "draupnir/utils/type_presense.h"
+#include "draupnir/utils/type_presence.h"
 
 namespace draupnir::utils
 {
@@ -65,7 +65,7 @@ namespace draupnir::utils
 template<class... Ts>
 class type_list
 {
-    DEFINE_COMPILE_TIME(type_list);
+    DRAUPNIR_DEFINE_COMPILE_TIME(type_list);
 
 protected:
     /*! @brief Grant access to other @ref type_list instantiations for internal helpers. */

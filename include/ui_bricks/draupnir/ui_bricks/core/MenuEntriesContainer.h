@@ -33,7 +33,7 @@
 
 #include "draupnir/ui_bricks/concepts/MenuEntryConcept.h"
 #include "draupnir/utils/type_list.h"
-#include "draupnir/utils/type_presense.h"
+#include "draupnir/utils/type_presence.h"
 #include "draupnir/utils/type_qualifiers_helpers.h"
 
 class QMenu;

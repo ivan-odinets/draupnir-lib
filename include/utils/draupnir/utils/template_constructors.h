@@ -34,7 +34,7 @@
 
 #include <type_traits>
 
-#include "template_detectors.h"
+#include "draupnir/utils/template_detectors.h"
 
 namespace draupnir::utils
 {
@@ -61,13 +61,13 @@ inline constexpr T make_zero_value() {
     } else if constexpr (std::is_arithmetic_v<T>) {
         return T{0};
     } else if constexpr (is_pair_v<T>) {
-        return []<typename First, typename Second>(std::__type_identity<std::pair<First, Second>>) {
+        return []<typename First, typename Second>(std::type_identity<std::pair<First, Second>>) {
             return std::pair{make_zero_value<First>(), make_zero_value<Second>()};
-        }(std::__type_identity<T>{});
+        }(std::type_identity<T>{});
     } else if constexpr (is_tuple_v<T>) {
-        return []<typename... Ts>(std::__type_identity<std::tuple<Ts...>>) {
+        return []<typename... Ts>(std::type_identity<std::tuple<Ts...>>) {
             return std::tuple{make_zero_value<Ts>()...};
-        }(std::__type_identity<T>{});
+        }(std::type_identity<T>{});
     } else {
         return T{};
     }
@@ -82,7 +82,9 @@ inline constexpr T make_zero_value() {
  *           returns a tuple of pointers, where each pointer points to a new default-constructed instance of the pointed-to
  *           type.
  *
- *           Memory is allocated using `new`, and it is the caller's responsibility to delete the objects afterwards. */
+ *           Memory is allocated using `new`, and it is the caller's responsibility to delete the objects afterwards.
+ * @todo Important: Handle cases when one of the operators `new` is throwing exception. Two overloads: one for nothrow constructors
+ *       and second - with cleanup of created objects and rethrowing exception further. */
 
 template<typename Tuple>
 inline Tuple create_tuple_new() {

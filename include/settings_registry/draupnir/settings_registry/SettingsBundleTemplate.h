@@ -33,7 +33,7 @@
 #include "draupnir/settings_registry/core/SettingTemplate.h"
 #include "draupnir/settings_registry/utils/SettingTraitPrinter.h"
 #include "draupnir/settings_registry/utils/SettingTraitSerializer.h"
-#include "draupnir/utils/type_presense.h"
+#include "draupnir/utils/type_presence.h"
 
 #if defined(DRAUPNIR_SETTINGS_USE_QSETTINGS)
     #include <QSettings>

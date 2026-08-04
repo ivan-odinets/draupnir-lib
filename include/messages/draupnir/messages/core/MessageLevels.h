@@ -167,10 +167,10 @@ public:
     using flag_type = _Base::flag_type;
 
     /*! @brief Empty message-level mask. */
-    static constexpr _Base::integer None = 0;
+    static constexpr _Base::primitive_integer None = 0;
 
     /*! @brief Mask containing all built-in message levels. */
-    static constexpr _Base::integer All =
+    static constexpr _Base::primitive_integer All =
         MessageLevel::Debug | MessageLevel::Info | MessageLevel::Warning | MessageLevel::Error;
 
     /*! @brief Returns the configuration token for the @ref All mask.
@@ -221,7 +221,7 @@ public:
             MessageLevel::Debug, MessageLevel::Info, MessageLevel::Warning, MessageLevel::Error };
 
         /*! @brief Predefined message-level masks displayed by UI selectors. */
-        static constexpr _Base::integer displayedMaskPresets[] = { All };
+        static constexpr _Base::primitive_integer displayedMaskPresets[] = { All };
     };
 
 };

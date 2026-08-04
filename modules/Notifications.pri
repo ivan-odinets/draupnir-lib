@@ -21,11 +21,12 @@
         $$PWD/../include/notifications/draupnir/notifications/core/NotificationTypesSerializerTemplate.h \
         $$PWD/../include/notifications/draupnir/notifications/ui/menus/AbstractNotificationTypesSelectorMenu.h \
         $$PWD/../include/notifications/draupnir/notifications/ui/menus/NotificationTypesSelectorMenuTemplate.h \
-        $$PWD/../include/notifications/draupnir/notifications/handlers/MessageHandlerTemplate.h
+        $$PWD/../include/notifications/draupnir/notifications/handlers/MessageHandlerTemplate.h \
+        $$PWD/../include/notifications/draupnir/notifications/traits/notifications/NoneNotificationTrait.h
 
-SOURCES += \
-    $$PWD/../src/notifications/draupnir/channels/DialogNotificationChannel.cpp \
-    $$PWD/../src/notifications/draupnir/channels/TrayNotificationChannel.cpp
+    SOURCES += \
+        $$PWD/../src/notifications/draupnir/channels/DialogNotificationChannel.cpp \
+        $$PWD/../src/notifications/draupnir/channels/TrayNotificationChannel.cpp
 }
 
 

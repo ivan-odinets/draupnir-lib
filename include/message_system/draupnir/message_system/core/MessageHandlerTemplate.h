@@ -32,7 +32,7 @@
 #include "draupnir/notifications/core/NotificationDispatcherTemplate.h"
 #include "draupnir/notifications/traits/settings/MessageNotificationSettingTraitTemplate.h"
 #include "draupnir/settings_registry/SettingsBundleTemplate.h"
-#include "draupnir/utils/class_marcos.h"
+#include "draupnir/utils/class_macros.h"
 
 namespace Draupnir::MessageSystem
 {
@@ -41,10 +41,10 @@ namespace TemplateArgs
 {
 
 template<Draupnir::Messages::MessageTypeTraitConcept...>
-struct MessageTypeTraitsWrapper { DEFINE_COMPILE_TIME(MessageTypeTraitsWrapper); };
+struct MessageTypeTraitsWrapper { DRAUPNIR_DEFINE_COMPILE_TIME(MessageTypeTraitsWrapper); };
 
 template<Draupnir::Notifications::NotificationChannelConcept...>
-struct NotificationChannelsWrapper { DEFINE_COMPILE_TIME(NotificationChannelsWrapper); };
+struct NotificationChannelsWrapper { DRAUPNIR_DEFINE_COMPILE_TIME(NotificationChannelsWrapper); };
 
 }; // namespace TemplateArgs
 

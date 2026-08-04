@@ -90,6 +90,8 @@ class NotificationTypes : public draupnir::utils::flags<NotificationType>
 public:
     using _Base::flags;
     using _Base::operator=;
+
+    static constexpr _Base::primitive_integer None{0};
 };
 
 /*! @brief Calculates a Qt hash value for a notification type.

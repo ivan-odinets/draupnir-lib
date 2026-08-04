@@ -30,7 +30,8 @@
 #include "draupnir-test/mocks/SettingsSourceMockTemplate.h"
 
 /*! @class MainWindowTemplateTest tests/ui_bricks/unit/MainWindowTemplateTest/MainWindowTemplateTest.cpp
- *  @brief This test class tests basic functionality of the @ref Draupnir::Ui::MainWindowTemplate. */
+ *  @ingroup UiBricksTests
+ *  @brief Unit test for the @ref Draupnir::Ui::MainWindowTemplate class. */
 
 class MainWindowTemplateTest final : public QObject
 {

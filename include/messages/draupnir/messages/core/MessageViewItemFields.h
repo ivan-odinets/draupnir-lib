@@ -174,7 +174,7 @@ class MessageViewItemFields final : public draupnir::utils::enum_flags<MessageVi
 
 public:
     /*! @brief Integer storage type used by the underlying flag mask. */
-    using integer = _Base::integer;
+    using primitive_integer = _Base::primitive_integer;
 
     /*! @brief Enum type used as individual message view item flags. */
     using enum_type = _Base::enum_type;
@@ -186,10 +186,10 @@ public:
     MessageViewItemFields() = default;
 
     /*! @brief Empty field mask. No message view item fields are displayed. */
-    static constexpr _Base::integer None = 0;
+    static constexpr _Base::primitive_integer None = 0;
 
     /*! @brief Mask containing all supported message view item fields. */
-    static constexpr _Base::integer All =
+    static constexpr _Base::primitive_integer All =
         MessageViewItemField::Value::Brief |
         MessageViewItemField::Value::What |
         MessageViewItemField::Value::DateTime |
@@ -232,7 +232,7 @@ public:
      *  @return Human-readable name suitable for UI display.
      * @note This helper assumes that @p fields represents a value supported by @ref @Draupnir::Messages::MessageViewItemField::toDisplayString.
      *       If arbitrary flag combinations are allowed, prefer formatting the mask as a list of individual field names. */
-    template<MessageViewItemFields::integer mask>
+    template<MessageViewItemFields::primitive_integer mask>
     [[nodiscard]] static QString toDisplayName() {
         static_assert((mask & ~All) == 0, "Unknown MessageViewItemFields bits");
         static_assert(mask != None, "Empty field mask has no single display name");
@@ -293,7 +293,7 @@ template<>
 struct hash<Draupnir::Messages::MessageViewItemFields>
 {
     [[nodiscard]] std::size_t operator()(Draupnir::Messages::MessageViewItemFields fields) const noexcept {
-        return std::hash<Draupnir::Messages::MessageViewItemFields::integer>{}(fields.value());
+        return std::hash<Draupnir::Messages::MessageViewItemFields::primitive_integer>{}(fields.value());
     }
 };
 

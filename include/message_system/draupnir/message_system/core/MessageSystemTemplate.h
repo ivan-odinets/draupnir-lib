@@ -44,7 +44,7 @@ namespace Draupnir::MessageSystem
  *  @tparam Traits Trait types describing displayed MessagaCategories entries. */
 
 template<class... Traits>
-struct CategoriesTraitsWrapper { DEFINE_COMPILE_TIME(CategoriesTraitsWrapper); };
+struct CategoriesTraitsWrapper { DRAUPNIR_DEFINE_COMPILE_TIME(CategoriesTraitsWrapper); };
 
 template<Draupnir::Messages::MessageCategoryTraitConcept... MessageCategories>
 class MessageCategoryTraitContainer {};

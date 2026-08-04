@@ -22,8 +22,8 @@
  *
  */
 
-#ifndef CLASS_MARCOS_H
-#define CLASS_MARCOS_H
+#ifndef CLASS_MACROS_H
+#define CLASS_MACROS_H
 
 /*! @file draupnir/utils/class_macros.h
  *  @ingroup Utils
@@ -33,7 +33,7 @@
  *           compile-time “type container” by deleting all constructors, destructor and copy/move operations. This is useful for
  *           metafunction holders, traits and other types that are never meant to be instantiated. */
 
-/*! @def DEFINE_COMPILE_TIME(Class)
+/*! @def DRAUPNIR_DEFINE_COMPILE_TIME(Class)
  *  @brief Disable all runtime construction and assignment for `Class`.
  *  @param Class Name of the class for which all constructors, destructor and copy/move operations should be deleted.
  *
@@ -50,12 +50,12 @@
  *           Example usage:
  *           @code
  *           struct MyMeta {
- *               DEFINE_COMPILE_TIME(MyMeta)
+ *               DRAUPNIR_DEFINE_COMPILE_TIME(MyMeta)
  *               using type = int;
  *           };
  *           @endcode */
 
-#define DEFINE_COMPILE_TIME(Class) \
+#define DRAUPNIR_DEFINE_COMPILE_TIME(Class) \
     Class() = delete;              \
     ~Class() = delete;             \
     Class(const Class&) = delete;  \
@@ -63,4 +63,4 @@
     Class& operator=(const Class&) = delete;
 
 
-#endif // CLASS_MARCOS_H
+#endif // CLASS_MACROS_H

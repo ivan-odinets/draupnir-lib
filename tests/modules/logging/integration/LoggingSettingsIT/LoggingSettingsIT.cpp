@@ -135,7 +135,7 @@ private slots:
         // Check if individual things are written properly
         registry.set<IconSizeSettingTrait>(newSize);
         QCOMPARE(
-            registry.backend()->value(IconSizeSettingTrait::key()).toString(),
+            registry.backend()->value(IconSizeSettingTrait::key()),
             newSize
         );
     }

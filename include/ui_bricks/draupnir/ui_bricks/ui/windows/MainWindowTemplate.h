@@ -41,7 +41,7 @@
 #include "draupnir/ui_bricks/traits/features/MinimizableToTray.h"
 #include "draupnir/ui_bricks/traits/features/RememberWindowSize.h"
 #include "draupnir/ui_bricks/traits/features/UseTrayIcon.h"              // IWYU pragma: keep
-#include "draupnir/utils/type_presense.h"
+#include "draupnir/utils/type_presence.h"
 #include "draupnir/utils/type_extractors.h"
 #include "draupnir/utils/filter_if.h"
 

@@ -89,11 +89,11 @@ public:
     using _Base::operator=;
 
     /*! @brief Empty category mask. */
-    static constexpr _Base::integer None = 0;
+    static constexpr _Base::primitive_integer None = 0;
 
     /*! @brief Mask containing every bit supported by the underlying type.
      * @note This includes bits not currently assigned to registered message categories. */
-    static constexpr _Base::integer All =
+    static constexpr _Base::primitive_integer All =
         std::numeric_limits<MessageCategory::underlying_type>::max();
 
     /*! @brief Returns the configuration token for the @ref None mask.
