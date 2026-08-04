@@ -114,15 +114,17 @@ public:
      *  @param string Config string to parse.
      *  @return Parsed flag value, or `std::nullopt` if the string is not recognized.
      * @todo Question: swicth from std::optional to std::expected with error message? */
-    static std::optional<FlagClass> fromConfigString(const QString& string) {
+    [[nodiscard]] static std::optional<FlagClass> fromConfigString(const QString& string) {
         return _fromConfigStringImpl<FlagWrapperEntries...>(string);
     }
 
     /*! @brief Converts a single flag value to config string.
      *  @param value Flag value to serialize.
-     *  @return Config string associated with @p value.
-     *  @details Passing a value not described by @p FlagWrapperEntries is a programming error. */
-    static QString toConfigString(FlagClass value) {
+     *  @return Config string associated with `value`.
+     *  @details Passing a value not described by `FlagWrapperEntries` is a programming error.
+     * @todo Feature: Allow choosing behaviour for handling wrong arguments. Q_ASSERT / UB / fallback. For example by using
+     *       DRAUPNIR_ENABLE_SAFE_RELEASE macro. */
+    [[nodiscard]] static QString toConfigString(FlagClass value) {
         return _toConfigStringImpl<FlagWrapperEntries...>(value);
     }
 

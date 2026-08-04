@@ -22,20 +22,20 @@
  *
  */
 
-#include <QtTest>
 #include <QCoreApplication>
+#include <QtTest>
+
+#include "draupnir/settings_registry/core/SettingsRegistryTemplate.h"
 
 #include "draupnir-test/mocks/SettingsBackendMockTemplate.h"
-#include "draupnir-test/traits/settings/DoubleSettingTraits.h"
 #include "draupnir-test/traits/settings/BoolSettingTraits.h"
-#include "draupnir-test/traits/settings/WidgetIndexSettingTraits.h"
 #include "draupnir-test/traits/settings/ComplexValueSettingTrait.h"
-
-#include "draupnir/settings_registry/SettingsRegistryTemplate.h"
+#include "draupnir-test/traits/settings/DoubleSettingTraits.h"
+#include "draupnir-test/traits/settings/WidgetIndexSettingTraits.h"
 
 /*! @class SettingsRegistryIT tests/modules/settings_registry/integration/SettingsRegistryIT/SettingsRegistryIT.cpp
  *  @ingroup SettingsRegistryTests
- *  @brief This is a very basic test for @ref Draupnir::Settings::SettingsRegistryTemplate and related things.
+ *  @brief Integration test for the @ref Draupnir::Settings::SettingsRegistryTemplate class and related things.
  *
  * @todo Cleanup: Split this test into several: unit-test for SettingsRegistryTemplate, unit test for SettingsBundleTemplate
  *       and integration between SettingsRegistryTemplate and SettingsBundleTemplate.  */
@@ -97,7 +97,7 @@ private slots:
     void test_initialization() {
         SettingsRegistry otherRegistry;
         // Test non-loaded SettingsRegistry
-        QCOMPARE(otherRegistry.settings(), nullptr);
+        QCOMPARE(otherRegistry.backend(), nullptr);
         QCOMPARE(otherRegistry.isLoaded(), false);
     }
 
@@ -107,7 +107,7 @@ private slots:
 
         // Load the backend and see what happens
         otherRegistry.setBackend(&otherBackend);
-        QCOMPARE(otherRegistry.settings(),static_cast<Draupnir::Settings::SettingsBackendInterface*>(&otherBackend));
+        QCOMPARE(otherRegistry.backend(),static_cast<Draupnir::Settings::SettingsBackendInterface*>(&otherBackend));
         QVERIFY(otherRegistry.isLoaded());
 
         // By default we should have the default values.

@@ -24,11 +24,11 @@
 
 #include <QtTest>
 
+#include "draupnir/settings_registry/core/SettingsBundleTemplate.h"
+#include "draupnir/settings_registry/utils/OptionalSettingsBundle.h"
+
 #include "draupnir-test/traits/settings/BoolSettingTraits.h"
 #include "draupnir-test/traits/settings/DoubleSettingTraits.h"
-
-#include "draupnir/settings_registry/SettingsBundleTemplate.h"
-#include "draupnir/settings_registry/utils/OptionalSettingsBundle.h"
 
 /*! @class OptionalSettingsBundleTest tests/modules/settings_registry/unit/OptionalSettingsBundleTest/OptionalSettingsBundleTest.cpp
  *  @ingroup SettingsRegistryTests

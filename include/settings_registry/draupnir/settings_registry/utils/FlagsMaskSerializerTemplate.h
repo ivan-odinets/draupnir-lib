@@ -150,7 +150,7 @@ public:
      *
      *           A multi-token string is interpreted as a comma-separated list of individual flags. Every token must be
      *           recognized by @p SingleFlagSerializer; otherwise parsing fails. */
-    static std::optional<Flags> fromConfigString(const QString& string) {
+    [[nodiscard]] static std::optional<Flags> fromConfigString(const QString& string) {
         if (string.isEmpty())
             return std::nullopt;
 
@@ -177,7 +177,7 @@ public:
      *  @return Config string representing @p flags.
      *  @details Preset masks are checked first. If @p flags exactly matches a preset mask, the corresponding preset token
      *           is returned. Otherwise the mask is serialized as comma-separated individual flag tokens using @p SingleFlagSerializer. */
-    static QString toConfigString(const Flags& flags) {
+    [[nodiscard]] static QString toConfigString(const Flags& flags) {
         // First lets check if we have one of preset things
         std::optional<QString> maybePresetMaskString = _knownMaskToConfigString<PresetMaskWrapperEntries...>(flags);
         if (maybePresetMaskString)

@@ -25,7 +25,7 @@
 #ifndef MINIMIZABLEONCLOSE_H
 #define MINIMIZABLEONCLOSE_H
 
-#include "draupnir/settings_registry/SettingsBundleTemplate.h"
+#include "draupnir/settings_registry/core/SettingsBundleTemplate.h"
 #include "draupnir/ui_bricks/traits/settings/main_window/MinimizeOnCloseSetting.h"
 
 namespace Draupnir::Ui::MainWindow

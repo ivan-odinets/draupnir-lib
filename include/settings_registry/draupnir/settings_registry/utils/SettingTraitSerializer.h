@@ -71,8 +71,11 @@ public:
 
     /*! @brief Loads the setting value from the backend.
      *  @param settings Pointer to the backend (must not be nullptr).
-     *  @return The stored value if present and valid, otherwise the trait's default. */
-    inline static Value get(Backend* settings) {
+     *  @return The stored value if present and valid, otherwise the trait's default.
+     * @todo Feature: Add proper logging of the invalid values parsed. Question: Simple qWarning() vs Logger ?
+     * @todo Feature: Allow choosing behaviour for handling wrong arguments. Q_ASSERT / UB / fallback. For example by using
+     *       DRAUPNIR_ENABLE_SAFE_RELEASE macro. */
+    [[nodiscard]] inline static Value get(Backend* settings) {
         Q_ASSERT_X(settings, Q_FUNC_INFO, "Provided settings pointer is nullptr.");
 
         if (!settings->contains(SettingTrait::key()))
@@ -85,8 +88,10 @@ public:
     /*! @brief Stores the setting value into the backend.
      *  @param settings Pointer to the backend (must not be nullptr).
      *  @param value The value to persist.
-     * @todo Question: Maybe add some validation like "if ValueSerializerTemplate<Value>::toQVariant works"? */
-    inline static void set(Backend* settings, const Value& value) {
+     * @todo Question: Maybe add some validation like "if ValueSerializerTemplate<Value>::toQVariant works"?
+     * @todo Feature: Allow choosing behaviour for handling wrong arguments. Q_ASSERT / UB / fallback. For example by using
+     *       DRAUPNIR_ENABLE_SAFE_RELEASE macro. */
+     inline static void set(Backend* settings, const Value& value) {
         Q_ASSERT_X(settings, Q_FUNC_INFO, "Provided settings pointer is nullptr.");
 
         settings->setValue(SettingTrait::key(), ValueSerializerTemplate<Value>::toQVariant(value));

@@ -27,7 +27,7 @@
 
 #include <QMessageBox>
 
-#include "draupnir/settings_registry/SettingsBundleTemplate.h"
+#include "draupnir/settings_registry/core/SettingsBundleTemplate.h"
 #include "draupnir/settings_registry/traits/settings/files/RecentFilesListSetting.h"
 #include "draupnir/ui_bricks/traits/menu_entries/FileMenuEntries.h"
 

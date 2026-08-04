@@ -30,7 +30,7 @@
 #include <QDir>
 #include <QMessageBox>
 
-#include "draupnir/settings_registry/SettingsBundleTemplate.h"
+#include "draupnir/settings_registry/core/SettingsBundleTemplate.h"
 #include "draupnir/ui_bricks/traits/menu_entries/FileMenuEntries.h"
 #include "draupnir/settings_registry/traits/settings/files/LastUsedDirectorySetting.h"
 

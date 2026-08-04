@@ -62,7 +62,7 @@ public:
     static constexpr std::size_t keys_size = std::size(keys_array);
 
     /*! @brief Element type of the provided array. */
-    using key_type = decltype(keys_array[0]);
+    using key_type = std::remove_cvref_t<decltype(keys_array[0])>;
 
     /*! @brief Type of pairs within array. */
     using pair_type = std::pair<const key_type,value_type>;

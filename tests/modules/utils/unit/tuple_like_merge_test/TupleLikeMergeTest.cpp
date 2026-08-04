@@ -24,11 +24,15 @@
 
 #include <QtTest>
 
-#include "draupnir/utils/type_presense.h"
+#include "draupnir/utils/type_presence.h"
 
 #include "draupnir/utils/tuple_like_merge.h"
 
 using namespace draupnir::utils;
+
+/*! @class TupleLikeMergeTest tests/modules/utils/unit/TupleLikeMergeTest.cpp
+ *  @ingroup UtilsTests
+ *  @brief This is a unit test for the @ref draupnir::utils::tuple_like_merge / @ref draupnir::utils::tuple_like_merge_t */
 
 class TupleLikeMergeTest final : public QObject
 {

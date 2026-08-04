@@ -2,7 +2,7 @@
  **********************************************************************************************************************
  *
  * draupnir-lib
- * Copyright (C) 2025 Ivan Odinets <i_odinets@protonmail.com>
+ * Copyright (C) 2025-2026 Ivan Odinets <i_odinets@protonmail.com>
  *
  * This file is part of draupnir-lib
  *
@@ -34,6 +34,7 @@ namespace Draupnir::Loptr
 
 void Barrel::doABarrelRoll(int duration)
 {
+    Q_ASSERT_X(duration >= 0, Q_FUNC_INFO, "Duration must me >= 0");
     QScreen* screen = QGuiApplication::primaryScreen();
     if (!screen)
         return;
@@ -47,4 +48,4 @@ void Barrel::doABarrelRoll(int duration)
     overlay->startAnimation(duration);
 }
 
-}; // namespace Draupnir::Loptr
+} // namespace Draupnir::Loptr

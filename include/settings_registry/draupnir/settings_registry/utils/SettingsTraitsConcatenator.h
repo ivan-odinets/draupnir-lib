@@ -25,7 +25,7 @@
 #ifndef SETTINGSTRAITSCONCATENATOR_H
 #define SETTINGSTRAITSCONCATENATOR_H
 
-#include "draupnir/settings_registry/SettingsRegistryTemplate.h"
+#include "draupnir/settings_registry/core/SettingsRegistryTemplate.h"
 #include "draupnir/utils/tuple_like_merge.h"
 
 namespace Draupnir::Settings

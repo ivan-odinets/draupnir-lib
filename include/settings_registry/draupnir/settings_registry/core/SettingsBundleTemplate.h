@@ -71,6 +71,7 @@ namespace Draupnir::Settings
  *
  * @todo Feature: Add interface for partial updating of the settings. E.g. when the setting has sth like QStringList type -
  *       not replace the variable, but use append method and than write to the backend.
+ * @todo Feature: Add some kind of detection mechanism (mostly for the debug builds) of SettingsRegistryTemplate deletion
  * @todo Tests: Add compile tests for this class. */
 
 template<SettingTraitConcept... SettingTraits>
@@ -91,7 +92,7 @@ class SettingsBundleTemplate
 
 public:
     /*! @brief Returns amount of individual traits within this SettingsBundleTemplate. */
-    static constexpr std::size_t traitCount() {
+    [[nodiscard]] static constexpr std::size_t traitCount() {
         return std::tuple_size_v<SettingTemplatePtrTuple>;
     }
 
@@ -102,7 +103,7 @@ public:
      *  @tparam Trait A trait to check.
      *  @return true If Trait is in SettingTraits... and false Otherwise */
     template<SettingTraitConcept Trait>
-    static constexpr bool contains() {
+    [[nodiscard]] static constexpr bool contains() {
         return draupnir::utils::is_type_in_tuple_v<SettingTemplate<Trait>*,SettingTemplatePtrTuple>;
     }
 
@@ -113,7 +114,7 @@ public:
 
     /*! @brief Returns whether the bundle is empty.
      *  @return Always false for this general template. Specialization SettingsBundle<> returns true. */
-    static constexpr bool isEmpty() { return false; }
+    [[nodiscard]] static constexpr bool isEmpty() { return false; }
 
     /*! @brief Static template constexpr variable containing `true` if this instantiation of the @ref Draupnir::Settings::SettingsBundle
      *         template is empty. Always `false` for general case and always `true` for SettingsBundle<> specialization. */
@@ -124,7 +125,7 @@ public:
      *  @return true if all SettingTraits in this bundle are present in the registry, false otherwise.
      * @todo Important: As other `loadSettings`-related methods this needs to be standartized. */
     template<class SettingsSource>
-    static constexpr bool canBeFullyPopulatedFrom() {
+    [[nodiscard]] static constexpr bool canBeFullyPopulatedFrom() {
         return _canBePopulatedFromImpl<SettingsSource,SettingTraits...>();
     }
 
@@ -142,22 +143,24 @@ public:
 
     /*! @brief Checks whether the bundle has been bound to backend.
      *  @return true if backend pointer is not nullptr, false otherwise. */
-    bool isLoaded() const { return p_backend != nullptr; }
+    [[nodiscard]] bool isLoaded() const { return p_backend != nullptr; }
 
     /*! @brief Checks whether the bundle is fully usable.
      *  @return true if backend pointer is non-null and all registered SettingTemplate pointers are non-null. */
-    bool isValid() const {
+    [[nodiscard]] bool isValid() const {
         return (p_backend != nullptr) &&
                (!std::apply([](auto*... ptrs) { return (... || (ptrs == nullptr)); }, m_settingTemplatePtrTuple));
     }
 
     /*! @brief Returns the pointer to the enabled Backend. */
-    Backend* settings() { return p_backend; }
+    [[nodiscard]] Backend* settings() { return p_backend; }
 
     /*! @brief Prints all settings in the bundle to an arbitrary output stream-like object.
      *  @tparam Output Stream-like type that supports `operator<<` for the emitted pieces.
      *  @param output  Output sink (e.g. `QDebug` from `qDebug()/qInfo()`).
-     * @note The output object must support chaining via `operator<<`. */
+     * @note The output object must support chaining via `operator<<`.
+     * @todo Feature: Allow choosing behaviour for handling wrong arguments. Q_ASSERT / UB / fallback. For example by using
+     *       DRAUPNIR_ENABLE_SAFE_RELEASE macro. */
     template<class Output>
     void printTo(Output&& output) {
         Q_ASSERT_X(isValid(), Q_FUNC_INFO, "This method must be called only for valid SettingsBundleTemplate objects.");
@@ -165,8 +168,11 @@ public:
         (SettingTraitPrinter<SettingTraits>::template print<Output>(std::forward<Output>(output), get<SettingTraits>()), ... );
     }
 
+    /*! @brief This is a method.
+     * @todo Feature: Allow choosing behaviour for handling wrong arguments. Q_ASSERT / UB / fallback. For example by using
+     *       DRAUPNIR_ENABLE_SAFE_RELEASE macro. */
     template<SettingsBundleConcept Bundle>
-    Bundle getSettingsBundle() {
+    [[nodiscard]] Bundle getSettingsBundle() {
         static_assert(Bundle::template canBeFullyPopulatedFrom<SettingsBundleTemplate<SettingTraits...>>(),
                 "Requested Bundle can not be fully populated by this SettingsBundle<SettingTraits...> instance.");
         Q_ASSERT_X(p_backend, Q_FUNC_INFO, "This bundle must have been initialized from corresponding SettingsRegistry.");
@@ -178,9 +184,11 @@ public:
 
     /*! @brief Shortcut to get a SettingsBundle for a specific subset of traits. Equivalent to
      *         getSettingsBundle<SettingsBundle<SubsetOfTraits...>>().
-     *  @tparam SubsetOfTraits One or more traits that exist within this registry. */
+     *  @tparam SubsetOfTraits One or more traits that exist within this registry.
+     * @todo Feature: Allow choosing behaviour for handling wrong arguments. Q_ASSERT / UB / fallback. For example by using
+     *       DRAUPNIR_ENABLE_SAFE_RELEASE macro. */
     template<SettingTraitConcept... SubsetOfTraits>
-    SettingsBundleTemplate<SubsetOfTraits...> getSettingBundleForTraits() {
+    [[nodiscard]] SettingsBundleTemplate<SubsetOfTraits...> getSettingBundleForTraits() {
         static_assert(SettingsBundleTemplate<SubsetOfTraits...>::template canBeFullyPopulatedFrom<SettingsBundleTemplate<SettingTraits...>>(),
                 "Requested Bundle can not be fully populated by this SettingsBundle<SettingTraits...> instance.");
         Q_ASSERT_X(p_backend, Q_FUNC_INFO, "This bundle must have been initialized from corresponding SettingsRegistry.");
@@ -190,9 +198,11 @@ public:
 
     /*! @brief Returns a const reference to the value associated with a specific SettingTrait.
      *  @tparam Trait Must be one of the traits in the bundle.
-     *  @return Const reference to the setting's value. */
+     *  @return Const reference to the setting's value.
+     * @todo Feature: Allow choosing behaviour for handling wrong arguments. Q_ASSERT / UB / fallback. For example by using
+     *       DRAUPNIR_ENABLE_SAFE_RELEASE macro. */
     template<SettingTraitConcept Trait>
-    const typename Trait::Value& get() const {
+    [[nodiscard]] const typename Trait::Value& get() const {
         static_assert(draupnir::utils::is_one_of_v<Trait,SettingTraits...>,
                 "Specified Trait is not a member of SettingTraits... pack.");
         Q_ASSERT_X(p_backend, Q_FUNC_INFO, "Backend pointer was not set.");
@@ -202,7 +212,9 @@ public:
 
     /*! @brief Sets and persists the value of a specific SettingTrait.
      *  @tparam Trait Must be one of the traits in the bundle.
-     *  @param value New value to store. */
+     *  @param value New value to store.
+     * @todo Feature: Allow choosing behaviour for handling wrong arguments. Q_ASSERT / UB / fallback. For example by using
+     *       DRAUPNIR_ENABLE_SAFE_RELEASE macro. */
     template<SettingTraitConcept Trait>
     void set(const typename Trait::Value& value) {
         static_assert(draupnir::utils::is_one_of_v<Trait,SettingTraits...>,
@@ -224,7 +236,9 @@ protected:
     friend class SettingsSourceMockTemplate;
 
     /*! @brief Constructor. Called by SettingsRegistry when initializing the bundle.
-     *  @param settings Pointer to the shared backend. */
+     *  @param settings Pointer to the shared backend.
+     * @todo Feature: Allow choosing behaviour for handling wrong arguments. Q_ASSERT / UB / fallback. For example by using
+     *       DRAUPNIR_ENABLE_SAFE_RELEASE macro. */
     SettingsBundleTemplate(Backend* backend) :
         p_backend{backend},
         m_settingTemplatePtrTuple{ (static_cast<SettingTemplate<SettingTraits>*>(nullptr))... }
@@ -234,7 +248,9 @@ protected:
 
     /*! @brief Registers a setting by pointer (called by SettingsRegistry).
      *  @tparam Trait Must be a trait declared in this bundle.
-     *  @param setting Pointer to SettingTemplate<Trait> owned by SettingsRegistry. */
+     *  @param setting Pointer to SettingTemplate<Trait> owned by SettingsRegistry.
+     * @todo Feature: Allow choosing behaviour for handling wrong arguments. Q_ASSERT / UB / fallback. For example by using
+     *       DRAUPNIR_ENABLE_SAFE_RELEASE macro. */
     template<SettingTraitConcept Trait>
     void registerSetting(SettingTemplate<Trait>* setting) {
         static_assert(contains<Trait>(), "Specified Trait is not contained within this SettingBundle.");

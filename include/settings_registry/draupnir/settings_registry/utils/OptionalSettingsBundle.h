@@ -110,7 +110,7 @@ public:
     /*! @brief Provides direct access to the underlying settings bundle.
      *  @return A non-const reference to the stored `Bundle` instance.
      * @todo Question: Do we need access to SettingsBundle if it was not loaded? */
-    auto& bundle() { return m_settings; }
+    [[nodiscard]] auto& bundle() { return m_settings; }
 
     /*! @brief Retrieves the value of a specific setting trait from the bundle.
      *  @tparam SettingTrait A setting trait that must be contained in `Bundle`.
@@ -119,7 +119,7 @@ public:
      *           is not part of the bundle, compilation fails with a `static_assert`.
      * @todo User-Friendliness: Improve static_assert message. Add Q_ASSERT / Q_ASSERT_X validation if settings are loaded. */
     template<SettingTraitConcept SettingTrait>
-    const typename SettingTrait::Value& get() const {
+    [[nodiscard]] const typename SettingTrait::Value& get() const {
         static_assert(Bundle::template contains<SettingTrait>());
         return m_settings.template get<SettingTrait>();
     }

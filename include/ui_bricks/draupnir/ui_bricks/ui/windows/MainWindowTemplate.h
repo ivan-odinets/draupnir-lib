@@ -30,7 +30,7 @@
 #include <QCloseEvent>
 #include <QEvent>
 
-#include "draupnir/SettingsRegistry.h" // IWYU pragma: keep
+#include "draupnir/DSettingsRegistry.h" // IWYU pragma: kee
 #include "draupnir/ui_bricks/animations/AnimationBuilder.h"
 #include "draupnir/ui_bricks/traits/features/ClosureConfirmation.h" // IWYU pragma: keep
 #include "draupnir/ui_bricks/ui/widgets/FixedCentralTabWidgetTemplate.h"       // IWYU pragma: keep

@@ -24,7 +24,7 @@
 
 #include <QtTest>
 
-#include "draupnir/settings_registry/SettingsRegistryTemplate.h"
+#include "draupnir/settings_registry/core/SettingsRegistryTemplate.h"
 
 #include "draupnir-test/mocks/SettingsBackendMockTemplate.h"
 #include "draupnir-test/traits/settings/BoolSettingTraits.h"
@@ -37,7 +37,7 @@ namespace Draupnir::Settings
 
 /*! @class SettingsBundleTemplateTest tests/modules/settings_registry/unit/SettingsBundleTemplateTest.cpp
  *  @ingroup SettingsRegistryTests
- *  @brief This is a test for SettingsBundleTemplate
+ *  @brief Unit test for the @ref Draupnir::Settings::SettingsBundleTemplate class.
  * @todo Tests: Make reasonable version of the test_print_to test method. */
 
 class SettingsBundleTemplateTest final : public QObject
@@ -117,7 +117,7 @@ private slots:
 
     void test_initialization() {
         // We need this for test to work
-        QVERIFY(settingsRegistry.settings() != nullptr);
+        QVERIFY(settingsRegistry.backend() != nullptr);
 
         SettingsBundle nonLoadedBundle;
         QCOMPARE(nonLoadedBundle.settings(), nullptr);

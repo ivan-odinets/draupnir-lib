@@ -49,13 +49,13 @@
     }
 
     HEADERS += \
-        $$PWD/../include/settings_registry/draupnir/SettingsRegistry.h \
-        $$PWD/../include/settings_registry/draupnir/settings_registry/SettingsBundleTemplate.h \
-        $$PWD/../include/settings_registry/draupnir/settings_registry/SettingsRegistryTemplate.h \
+        $$PWD/../include/settings_registry/draupnir/DSettingsRegistry.h \
         $$PWD/../include/settings_registry/draupnir/settings_registry/concepts/SettingsBackendConcept.h \
         $$PWD/../include/settings_registry/draupnir/settings_registry/concepts/SettingsBundleConcept.h \
         $$PWD/../include/settings_registry/draupnir/settings_registry/concepts/SettingTraitConcept.h \
         $$PWD/../include/settings_registry/draupnir/settings_registry/core/SettingTemplate.h \
+        $$PWD/../include/settings_registry/draupnir/settings_registry/core/SettingsBundleTemplate.h \
+        $$PWD/../include/settings_registry/draupnir/settings_registry/core/SettingsRegistryTemplate.h \
         $$PWD/../include/settings_registry/draupnir/settings_registry/traits/settings/files/LastUsedDirectorySetting.h \
         $$PWD/../include/settings_registry/draupnir/settings_registry/traits/settings/files/RecentFilesListSetting.h \
         $$PWD/../include/settings_registry/draupnir/settings_registry/traits/settings/templates/SettingTraitTemplate.h \

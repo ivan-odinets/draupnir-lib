@@ -24,19 +24,20 @@
 
 #include <QtTest>
 
-#include "draupnir/utils/type_presense.h"
+#include "draupnir/utils/type_presence.h"
 
 using namespace draupnir::utils;
 
-/*! @class TypePresenseTest tests/modules/utils/unit/type_presense_test/TypePresenseTest.cpp
- *  @brief Test class for testing entities present within @ref draupnir/utils/type_presense.h. */
+/*! @class TypePresenceTest tests/modules/utils/unit/type_presense_test/TypePresenceTest.cpp
+ *  @ingroup UtilsTests
+ *  @brief Unit test for entities present within @ref draupnir/utils/type_presense.h. */
 
-class TypePresenseTest final : public QObject
+class TypePresenceTest final : public QObject
 {
     Q_OBJECT
 public:
-    TypePresenseTest() = default;
-    ~TypePresenseTest() final = default;
+    TypePresenceTest() = default;
+    ~TypePresenceTest() final = default;
 
     using SomeQStringAlias = QString;
     using CustomInt = int;
@@ -90,6 +91,6 @@ private slots:
     }
 };
 
-QTEST_APPLESS_MAIN(TypePresenseTest)
+QTEST_APPLESS_MAIN(TypePresenceTest)
 
-#include "TypePresenseTest.moc"
+#include "TypePresenceTest.moc"

@@ -29,6 +29,7 @@ namespace Draupnir::Loptr
 {
 
 /*! @class Barrel draupnir/loptr/utils/Barrel.h
+ *  @ingroup Loptr
  *  @brief This class contains static methods to do a barrel roll.
  *
  * @note This class is part of Loptr module, which is mostly for fun. However feel free to use code from this module in
@@ -50,6 +51,6 @@ public:
     static void doABarrelRoll(int duration = defaultDuration);
 };
 
-}; // namespace Draupnir::Loptr
+} // namespace Draupnir::Loptr
 
 #endif // BARREL_H

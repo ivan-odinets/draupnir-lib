@@ -89,7 +89,8 @@
  *               qDebug() << bundle.get<CacheDirectorySetting>();
  *               @endcode
  *
- * @todo Documentation: Improve and extend this documentation page. */
+ * @todo Documentation: Improve and extend this documentation page.
+ * @todo Feature: Add reasonable SettingsSourceConcept. */
 
 /*! @namespace Draupnir::Settings
  *  @ingroup SettingsRegistry

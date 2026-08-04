@@ -34,22 +34,34 @@ namespace Draupnir::Settings
 template<SettingTraitConcept... Traits>
 class SettingsBundleTemplate;
 
-/*! @ingroup SettingsRegistry
- *  @brief This is a concept.
- * @todo Documentation: Document this concept. */
+/*! @concept HasNestedSettingsBundle
+ *  @ingroup SettingsRegistry
+ *  @brief Checks whether a type exposes a nested settings-bundle type.
+ *  @tparam Candidate Type to inspect.
+ *  @details The concept is satisfied when `Candidate` declares a nested `SettingsBundle` type that is an instantiation of @ref
+ *           Draupnir::Settings::SettingsBundleTemplate. It is intended for components that publicly describe their settings
+ *           requirements through a nested type alias: `using SettingsBundle = SettingsBundleTemplate<SomeSettingTrait>;` */
 
-template<class C>
+template<class Candidate>
 concept HasNestedSettingsBundle =
-    requires { typename C::SettingsBundle; } &&
-    draupnir::utils::is_instantiation_of_v<typename C::SettingsBundle,Draupnir::Settings::SettingsBundleTemplate>;
+    requires { typename Candidate::SettingsBundle; } &&
+    draupnir::utils::is_instantiation_of_v<
+        typename Candidate::SettingsBundle,
+        Draupnir::Settings::SettingsBundleTemplate
+    >;
 
-/*! @ingroup SettingsRegistry
- *  @brief This is a concept.
- * @todo Documentation: Document this concept. */
+/*! @concept SettingsBundleConcept draupnir/settings_registry/SettingsBundleConcept.h
+ *  @ingroup SettingsRegistry
+ *  @brief Checks whether a type is a settings-bundle specialization.
+ *  @tparam Candidate Type to inspect.
+ *  @details The concept is satisfied when `Candidate` is an instantiation of @ref Draupnir::Settings::SettingsBundleTemplate. */
 
-template<class C>
+template<class Candidate>
 concept SettingsBundleConcept =
-    requires { draupnir::utils::is_instantiation_of_v<C,Draupnir::Settings::SettingsBundleTemplate>; };
+    draupnir::utils::is_instantiation_of_v<
+        Candidate,
+        Draupnir::Settings::SettingsBundleTemplate
+    >;
 
 }; // namespace Draupnir::Settings
 

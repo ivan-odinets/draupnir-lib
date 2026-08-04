@@ -31,7 +31,7 @@
 #include "draupnir/notifications/concepts/NotificationChannelConcept.h"
 #include "draupnir/notifications/core/NotificationDispatcherTemplate.h"
 #include "draupnir/notifications/traits/settings/MessageNotificationSettingTraitTemplate.h"
-#include "draupnir/settings_registry/SettingsBundleTemplate.h"
+#include "draupnir/settings_registry/core/SettingsBundleTemplate.h"
 #include "draupnir/utils/class_macros.h"
 
 namespace Draupnir::MessageSystem

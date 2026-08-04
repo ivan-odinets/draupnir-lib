@@ -4,4 +4,4 @@ include(../../../../common/TestConfig.pri)
 include(../../../../../modules/Utils.pri)
 
 SOURCES +=  \
-    TypePresenseTest.cpp
+    TypePresenceTest.cpp

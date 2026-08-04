@@ -25,12 +25,13 @@
 #include <QtTest>
 
 #include "draupnir/utils/filter_if.h"
-#include "draupnir/utils/type_presense.h"
+#include "draupnir/utils/type_presence.h"
 
 using namespace draupnir::utils;
 
 /*! @class FilterIfTest tests/modules/utils/unit/filter_if_test/FilterIfTest.cpp
- *  @brief Test class for testing entities present within @ref draupnir/utils/filter_if.h. */
+ *  @ingroup UtilsTests
+ *  @brief This is a unit test for the @ref draupnir::utils::filter_if / @ref draupnir::utils::filter_if_t (@ref draupnir/utils/filter_if.h. */
 
 class FilterIfTest final : public QObject
 {

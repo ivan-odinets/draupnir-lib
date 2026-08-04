@@ -33,7 +33,7 @@
 #include "draupnir/logging/traits/settings/log_widget/DisplayedMessageLevelsSettingTrait.h"
 #include "draupnir/logging/traits/settings/log_widget/IconSizeSetting.h"
 #include "draupnir/logging/traits/settings/log_widget/DisplayedMessageViewItemFieldsSettingTrait.h"
-#include "draupnir/settings_registry/SettingsBundleTemplate.h"
+#include "draupnir/settings_registry/core/SettingsBundleTemplate.h"
 
 class QLabel;
 class QPushButton;
